@@ -1,0 +1,14 @@
+[project]
+name = "let-us-brew-an-ai-model"
+version = "0.1.0"
+description = "Controlled empirical investigation into what a small language model learns from one job: NL spec -> Python program"
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "numpy",
+    "tokenizers",
+    "scikit-learn",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Data / artifacts (regenerable — keep the generators, not the outputs)
+artifacts/datasets/
+artifacts/checkpoints/
+artifacts/results/
+artifacts/tokenizer/
+experiments/*/output/
+!artifacts/manifests/
+
+# Book build outputs
+book/*.pdf
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
