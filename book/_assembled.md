@@ -10,174 +10,165 @@ author: "Zhiqi Research"
 
 # 1. Let Us Brew an AI Model
 
-**Working subtitle:** What tiny language models can actually learn when given one job.
-
----
-
-A tiny model appears to solve a programming problem. It reads a sentence — *"Write a
-function that takes two numbers, a and b, and returns their sum."* — and produces
-just the right Python:
+A tiny model is given one job. It reads a sentence — *"write a function that takes
+two numbers, a and b, and returns their sum"* — and it writes back the right Python:
 
 ```python
 def solve(a, b):
     return a + b
 ```
 
-We run the hidden tests. It passes all of them. If this were a demo, we'd celebrate
-and move on.
+We run the hidden tests. It passes. If this were a demo, we'd move on.
 
-But this book is not a demo. So instead of celebrating, we ask the question that
-everything in this book hinges on:
+But this is not a demo. So before we celebrate, we ask the one question that turns
+this whole book into an experiment rather than a party trick:
 
-> **Why did it answer correctly?**
+> **Why did it get it right?**
 
-Maybe it genuinely learned the mapping from the words "sum" and "a and b" to the
-computation `a + b`. Or maybe it memorized the exact sentence from training. Or
-maybe it recognized this as a near-duplicate of an example it saw, and copied the
-reply. Or maybe a simpler machine — one that does nothing but look up the closest
-training example — could have done the same thing. Or maybe the test only looked
-hard to pass.
+Maybe it genuinely learned that "sum" and "a and b" mean "add them together." Maybe
+it memorized that exact sentence from training. Maybe it noticed this was nearly
+identical to an example it saw and copied the answer. Maybe a much dumber machine —
+one that does nothing but look up the closest training example — could have done the
+same thing. Or maybe our test wasn't as hard as we thought.
 
-The difficult part is not making the model answer. The difficult part is **knowing
-why it answered.**
+Making the model answer is easy. **Knowing why it answered is the whole game.**
 
-## The one-job constraint
+## One job, and a way to check it
 
-This book gives a small language model exactly one, narrowly defined, objectively
-testable job:
+We give the model exactly one, narrow, checkable job:
 
-> **natural-language specification → Python program**
+> **read a plain-English programming request → produce a working Python program**
 
-A model receives a description of a programming task and generates a solution. The
-program is executed against hidden tests. That single choice — *executable output +
-hidden tests* — is what makes this an experiment rather than a demo, because it gives
-us things an ordinary language-model toy rarely does:
+Then we *run* that program against hidden tests. That single choice — executable
+output plus hidden tests — is what makes this a real experiment instead of a showcase,
+because it hands us the things a language-model toy usually lacks:
 
-- deterministic inputs
-- executable outputs
-- objective evaluation
-- synthetic data generation
-- controlled difficulty
-- hidden tests
-- compositional splits
-- memorization tests
-- shortcut audits
-- reproducible experiments
+- inputs we control,
+- code we can actually execute,
+- an objective pass/fail,
+- data we can generate in any quantity,
+- difficulty we can dial up or down,
+- tests we can keep hidden from the model,
+- splits we can design to expose memorization,
+- audits we can run to catch shortcuts.
 
-## What this book is (and is not)
+## What this book is (and isn't)
 
-This is **not** a transformer tutorial, and it is **not** a guide to building a
-chatbot, an agent, a coding assistant, or a frontier model. It is a controlled
-empirical investigation: *how much structured programming capability can a small
-language model actually learn, and how can we tell whether it learned it rather than
-memorized it or exploited a shortcut?*
+This is not a transformer tutorial. It is not a guide to chatbots, agents, or coding
+assistants. It is a careful, honest investigation of a single question:
 
-The model is the instrument. The experiment is the subject.
+> **How much structured programming capability can a small language model actually
+> learn — and how do we tell whether it *learned* it, rather than memorized it or
+> found a cheap shortcut?**
 
-## The difficult part
+## The part that's actually hard
 
-A natural first reaction is: "building a small model is the hard part." It isn't.
-Once the laboratory works, a ~0.9M-parameter model will reliably map a handful of
-programming sentences to correct Python in-distribution. That part is almost easy.
+The natural guess is that *building* a small model is the hard part. It isn't. Once
+the laboratory works, a ~0.9 million-parameter model will reliably turn a handful of
+programming sentences into correct Python — in-distribution, that is nearly easy.
 
-The hard part is everything after: proving the model didn't just memorize, testing
-whether it generalizes when you change the *wording* but not the *computation*,
-testing whether it can *combine* two things it knows into something it never saw, and
-auditing the evaluator to make sure the number it reports is trustworthy.
+The hard part is everything after: proving it didn't just copy, checking whether it
+still works when you change the *words* but not the *computation*, testing whether it
+can *combine* two things it knows into a third thing it's never seen, and auditing our
+own evaluator to make sure the number it reports means anything.
 
-This book builds a laboratory, runs those experiments, and reports exactly what
-happened — including the places where the model fell flat and where our own
-evaluator turned out to be wrong.
+This book builds a laboratory, runs those tests, and reports — plainly — what
+happened. Including the moments the model fell flat, and the moment we discovered our
+own measuring stick was broken, not the model.
 
-The model was the instrument. The experiment was the subject. Let's brew.
+**The model was the instrument. The experiment was the subject. Let's brew.**
 
 
 \newpage
 
 # 2. What Does It Mean to Learn?
 
-We are going to use a word a lot in this book: *learned*. Before we do, we have to
-be precise about what it means. "The model learned to add" is a sentence many
-readers would accept. That acceptance is exactly the problem.
+We're going to use a word a lot in this book: *learned*. Before we do, we have to be
+honest about what it means — because "the model learned to add" is a sentence people
+say all the time, and it's usually hiding a big assumption.
 
-## An operational definition
+## A simple way to think about it
 
-We will not use "learning" as a philosophical term. For this book, a model
-demonstrates learned capability when **all** of the following hold, to the degree
-the evidence supports:
+Imagine a child who aces a worksheet of addition problems. Every problem is like
+"4 + 3 = ?" and the child gets them all right. We'd be tempted to say "the child can
+add."
 
-1. **Performance improves systematically during training** — the loss goes down, and
-   the behavior we care about reliably improves.
-2. **Performance transfers to held-out examples** — it works on instances it never
-   saw, not just the ones in training.
-3. **Performance survives controlled changes to superficial features** — things like
-   a different variable name, a different wording, or a harmless distractor, none of
-   which should change the underlying computation.
-4. **Performance survives appropriately designed structural changes** — it can
-   combine known pieces in a new arrangement, not just reproduce arrangements it
-   already saw.
-5. **Simpler explanations have been tested and rejected.** The alternatives —
-   exact memorization, retrieval of a near-duplicate, a template, dataset leakage, or
-   an evaluator artifact — must be ruled out to the degree the experiment supports.
+But there are two very different ways to get that perfect score:
 
-This definition is deliberately limited. We do not claim to determine whether the
-model "understands" programming in a philosophical sense. We ask narrower,
-answerable questions: *does it generalize? to what? and can a simpler mechanism
-explain the result?*
+1. The child *understands addition* — show them "37 + 58" and they solve it, because
+   they know how to add any two numbers.
+2. The child *memorized the exact answers* — they've seen these exact problems before
+   and just remember that "4 + 3 = 7," but hand them a problem they've never seen and
+   they freeze.
 
-## The four-level generalization spectrum
+A perfect worksheet grade can't tell these two apart. **The worksheet is a bad test.**
+Only a *new* problem can.
 
-This is the book's central conceptual framework, and we will use it to organize most
-of our experiments. It is a spectrum of *how* a result could have been obtained, from
-the least to the most demanding.
+This is the entire premise of the book in one image. Our model gets a perfect-ish
+worksheet sometimes. The question is always: would it pass the *new* problem?
 
-**Level 1 — Memorization.** The model reproduces or exploits information closely
-represented in training: an exact example, an exact constant, a familiar template,
-memorized wording, a near-duplicate. Question: *can the result be explained by
-remembering?*
+## What "learned" means here
 
-**Level 2 — Distributional generalization.** The model succeeds on new examples
-drawn from essentially the same distribution. It has seen the operation and the
-frontier of *which* words and values, but not these exact instances. Question: *can
-it perform on unseen instances of the same task?*
+So we define it narrowly and honestly. A model shows **learned capability** when, to
+the degree the evidence supports:
 
-**Level 3 — Surface generalization.** The underlying problem is unchanged, but
-superficial properties change: new constants, new variable names, new function
-names, paraphrased wording, reordered clauses, harmless distractors. Question: *does
-the capability survive changes that should not alter the computation?*
+1. **It gets better as it trains** — the loss falls, and the thing we care about
+   reliably improves.
+2. **It works on examples it never saw** — not just the ones in training.
+3. **It survives harmless changes** — different variable names, different wording, a
+   different way of saying the same instruction.
+4. **It can combine things it knows** — put two learned pieces together in a new
+   arrangement, not just repeat an arrangement it already saw.
+5. **Simpler explanations have been ruled out.** The mundane alternatives —
+   memorization, copying a near-duplicate, a template, a leaked test, a buggy
+   evaluator — must be tested and rejected.
 
-**Level 4 — Structural generalization.** The model must combine known components in
-structures that were not present during training. If it was trained on `A`, `B`, and
-`C`, can it do `A`-inside-`B`, or `B`-and-`C`, or `A` applied to the result of `C`?
-Question: *can it compose learned capabilities, or only reproduce learned
-combinations?*
+We are deliberately **not** asking whether the model "really understands" in a
+philosophical sense. We're asking narrower, answerable things: does it generalize? to
+what? and could a dumber mechanism explain the result?
 
-**A rule we will follow strictly:** never collapse these four levels into a single
-"generalization" number. A model that scores 90% "in-distribution" and 0% "on new
-wording" has not generalized; it has memorized the phrasing. Reporting one number
-would hide exactly the thing we most want to know.
+## The four levels of generalization
 
-## The recurring shortcut audit
+This is the book's organizing idea. Think of it as a ladder of how much we should
+trust a result — from "probably just remembered" to "genuinely combined."
 
-Because we refuse to trust a single number, every major experiment in this book asks
-the same question:
+**Level 1 — Memorization.** The model reproduces something it saw in training: an exact
+example, an exact constant, a familiar phrase, a near-duplicate. *Question: could this
+just be remembering?*
 
-> **How could the model have gotten this result without learning what we think it
-> learned?**
+**Level 2 — Same task, new examples.** The model works on a new instance of the same
+kind of problem. *Question: does it work on problems it hasn't seen before?*
 
-The candidate shortcuts are always the same list: memorized templates, memorized
-constants, memorized identifiers, memoriized function names, wording artifacts,
-sentence-length artifacts, dataset imbalance, train/test leakage, near-duplicates,
-reference-solution artifacts, retrieval, evaluator weaknesses, hardcoded answers,
-hidden-test leakage, output-format artifacts.
+**Level 3 — Same problem, different surface.** The computation is identical, but the
+*outer layer* changes: new numbers, new variable names, reworded instruction,
+harmless distractors. *Question: does it survive changes that shouldn't matter?*
 
-Every major experimental chapter therefore contains a **shortcut audit** with six
-parts: (1) the suspected shortcut, (2) why it could explain the result, (3) the
-control experiment, (4) the result of that control, (5) what the control rules out,
-and (6) what remains unresolved.
+**Level 4 — New combination.** The model must combine pieces it knows into something
+that never appeared in training. It learned A, B, and C separately — can it do A
+*sandwiched inside* B, or A followed by C? *Question: can it put things together, or
+only repeat what it already saw?*
 
-This audit — not the headline accuracy — is the book's signature. It is the
-difference between "the model works" and "we know why the model works."
+**A rule we'll follow strictly:** never mash these four into one number. A model that
+scores 90% on familiar problems and 0% on a reworded version has not "generalized" —
+it memorized the phrasing. One number would hide exactly the thing we care about.
+
+## The recurring question: "how did it cheat?"
+
+Because we refuse to trust a single score, every experiment asks the same skeptical
+question:
+
+> **How could the model have gotten this without learning what we think it learned?**
+
+The usual suspects are always on the table: memorized templates, memorized constants,
+memorized name patterns, wording quirks, unbalanced data, train/test leakage,
+near-duplicates, retrieval, a weak evaluator, hardcoded answers, hidden-test leakage.
+
+Every major experiment therefore ends with a **shortcut audit**, six steps: (1) the
+suspected cheat, (2) why it could explain the result, (3) a control test, (4) what the
+control found, (5) what that rules out, and (6) what's still unresolved.
+
+That audit — not the headline number — is the book's signature. It's the difference
+between "the model works" and "we know why the model works."
 
 
 \newpage
@@ -821,6 +812,69 @@ stop making the task easier and start making it *probe* generalization.
 
 \newpage
 
+# 11. How Much Data?
+
+The most obvious question about any model is also the one people answer too quickly:
+*how much data does it need?* We measured this directly, holding the model and the
+training protocol fixed and varying only the dataset size.
+
+## The setup
+
+We train the same ~0.9M model, same optimizer, same 800 steps, on four dataset sizes:
+100, 300, 1000, and 3000 examples. Then we measure in-distribution pass@1 on a
+held-out pool.
+
+## The result
+
+| dataset size | final train loss | **pass@1 (held-out)** |
+|--------------|------------------|-----------------------|
+| 100          | ~0.000           | **0.100**             |
+| 300          | ~0.000           | **0.098**             |
+| 1000         | 0.022            | **0.300**             |
+| 3000         | 0.025            | **0.641**             |
+
+## What it tells us
+
+**More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
+0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
+this narrow mapping.
+
+**There is a small-data plateau.** At 100 and 300 examples the model is essentially
+identical (~0.10). The improvement only becomes substantial between 1000 and 3000. So
+there is a *threshold* below which the model gets almost nothing and above which
+performance climbs. That threshold is a real, measurable property of the task and
+model.
+
+## The motif, restated
+
+Notice the most important detail: at 100 and 300 examples the **training loss hits
+~0.000** — the model has *memorized* its tiny training set — yet pass@1 is only ~0.10.
+A loss of zero on a small set buys almost nothing on unseen examples.
+
+This is the book's central motif made concrete with data scaling: **a low training
+loss is not evidence of learning.** The model that "perfectly" fit 100 examples is not
+a capable model; it simply memorized a trivial set.
+
+## The honest caveat
+
+This experiment measured *quantity*. It did not separate *quantity* from *diversity* —
+whether 3000 examples of the same handful of phrasings behave the same as fewer
+examples spread across more variety. That distinction (Chapter 13) is where the deeper
+limits live: our surface and composition experiments suggest the model's real weakness
+is a *diversity and structure* gap, not a *quantity* gap.
+
+## The practical answer
+
+For a single narrow operation on a ~0.9M model, you need on the order of thousands of
+examples before in-distribution performance becomes workable. Below that, the model
+memorizes its tiny set and gains nothing on unseen problems. And — anticipating the
+rest of the book — even at 3000 examples the model is still surface-fragile and
+non-compositional, because those limits come from the *kind* of data and the model's
+inductive structure, not from the sheer *amount*.
+
+
+\newpage
+
 # 12. How Much Brain?
 
 The most instinctive answer to "the model failed to compose" is: **make it bigger.**
@@ -1041,180 +1095,173 @@ that exposes it — is worth more than any single accuracy number.
 
 # 15. New Words, Same Problem
 
-The pilot told us the task was too easy; the composition experiment told us the
-model cannot combine what it knows. But there is a more subtle question in between,
-and it is arguably the one that matters most for whether we can trust any of this.
+Here is the sneakiest question in the book, and it's the one that should worry you
+most about any machine-learning result:
 
-**When the model does well, is it doing the computation, or just recognizing the
-wording?**
+> **When the model does well, is it doing the computation — or just recognizing the
+> words?**
 
-A model that maps the *words* "sum" and "a and b" to `a + b` is not necessarily doing
-arithmetic. It might be doing a far dumber thing: associating the *exact phrasing* it
-saw in training with the code that followed it. If that is what is happening, then
-the capability is not in the model's head as "addition" — it is a fragile surface
-reflex that will break the moment the phrasing changes.
+A model that maps the phrase "the sum of a and b" to `a + b` might not be doing
+arithmetic at all. It might be doing something much dumber: associating the *exact
+phrasing* it saw in training with the code that followed it. If that's what's
+happening, then the ability isn't "addition" in the model's head — it's a fragile
+reflex tied to specific words, and it'll break the moment you say the same thing a
+different way.
 
-To find out, we run the **surface-generalization** experiment (Level 3). The insight
-is that if you change something that *should not* change the computation — the
-variable names, or the words used to express the same instruction — and the model
-fails, then the model never learned the computation. It learned the phrasing.
+To find out, we run the **surface-generalization** test. The logic is simple and
+elegant: if you change something that *shouldn't* change the computation — the variable
+names, or the wording — and the model fails, then it never really learned the
+computation. It learned the phrasing.
 
 ## The setup
 
-We trained the model on pilot arithmetic primitives, but with a twist: we gave it only
-**letter identifiers** (`a`, `b`) and only **some** of the wording template families.
-Then we re-expressed the *identical* task three different ways and tested whether the
-model's capability survived.
+We trained the model on arithmetic primitives, but only with **letter names** (`a`, `b`)
+and only a **subset of the wording** used to describe each operation. Then we re-asked
+the *identical* task three different ways and watched whether the model's ability
+survived.
 
 ## The result
 
 | Test | **MODEL** | TEMPLATE | RETRIEVAL |
 |------|-----------|----------|-----------|
-| In-distribution | **0.900** | 0.800 | 1.000 |
-| New identifiers (`a,b` → `left,right`) | **0.350** | 0.800 | 0.683 |
-| **Held-out wording** (a paraphrase family never seen) | **0.000** | 0.875 | 0.125 |
+| Same as training | **0.900** | 0.800 | 1.000 |
+| Same computation, `a,b` → `left,right` | **0.350** | 0.800 | 0.683 |
+| **Same computation, reworded** | **0.000** | 0.875 | 0.125 |
 
-Watch what happens as we change only the *surface*, not the computation.
+Look at what happens when we touch only the *surface*, not the math.
 
-- **Same computation, different variable names.** The model was trained with `a` and
-  `b`. We ask it the same question but with `left` and `right` — the *identical*
-  operation. Performance drops from **0.900 to 0.350**.
+- **New variable names.** The model was trained on `a` and `b`. We ask the same
+  question with `left` and `right` — the *identical* operation. Performance collapses
+  from **0.900 to 0.350**.
 
-- **Same computation, different wording.** We rephrase the instruction using a
-  template family the model never saw during training. It is the exact same problem,
-  just said differently. Performance drops to **0.000**.
+- **Reworded instruction.** We say the exact same problem using a phrasing the model
+  never saw during training. Performance drops to **0.000**.
 
-## What this means
+## The damning comparison
 
-This is the moment the model's "capability" is revealed to be shallow. The model is
-not grounded in the meaning — it is **anchored to the surface form.**
+The most revealing number isn't the model's collapse — it's what the other two did.
 
-The most damning detail is the comparison against the baselines. When we change the
-*words*, the **template baseline gets *better*, not worse** (0.875, up from 0.800),
-because a rule system that recognizes keywords doesn't care about the surrounding
-wording. The **retrieval baseline** also holds up better (0.683). Only the **learned
-model** collapses — because the model learned the *specific phrasing*, not the
-*concept*.
+When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
+up from 0.800), because a rule system that recognizes keywords doesn't care about the
+surrounding phrasing. The **retrieval baseline** also holds up (0.683). Only the
+**learned model** falls apart — because the model learned the *specific sentences*, not
+the *idea*.
 
-So the model's in-distribution success (0.900) was largely **phrasing memorization**.
-It had learned that *this exact kind of sentence maps to that program*. It had not
-learned "take two numbers and return their sum" as an abstract operation that
-survives being said any number of ways.
+So the model's 0.900 in-distribution score was largely **phrasing memorization**. It
+had learned "this exact kind of sentence maps to that program." It had not learned
+"take two numbers and return their sum" as something you can say any number of ways
+and still mean.
 
 ## The shortcut audit
 
-1. **Suspected shortcut: wording / phrasing memorization.**
-   **Why it could explain it:** the model associated training phrasing with code.
-   **Control:** held out a whole template family from training; tested on it.
+1. **Suspected cheat: phrasing memorization.**
+   **Why it fits:** the model tied training phrasings to code.
+   **Control:** held one whole phrasing style out of training, tested on it.
    **Result:** 0.000.
-   **What it rules out:** the claim that the model is grounded in the computation.
-   **What remains:** whether the failure is *specifically* the wording pattern, or the
-   new vocabulary/identifiers (a surface-control experiment separates these).
+   **Ruled out:** that the model is grounded in the computation.
+   **Still open:** is it the wording pattern or the new vocabulary? Need a
+   surface-control to separate them.
 
-2. **Suspected shortcut: identifier memorization.**
-   **Why it could explain it:** trained on `a,b`, maybe it hardwired those names.
-   **Control:** retest with `left,right`.
+2. **Suspected cheat: name memorization.**
+   **Why it fits:** trained on `a,b`, maybe it hardwired those labels.
+   **Control:** retest on `left,right`.
    **Result:** 0.350 — a big but partial drop.
-   **What it rules out:** pure identifier-memorization (still fails partly, so it's
-   tied to the letters too, but not the whole story).
+   **Ruled out:** pure name-memorization (it still fails partly, but names aren't the
+   whole story).
 
 ## The honest takeaway
 
-A model that scores 0.900 in-distribution and 0.000 on a rephrasing of the same
-problem has not generalized to the problem. It has generalized to the phrasing. This
-is the difference between "the model works" and "the model works when I say it the
-way I said it in training" — and it is the single most important lesson of the
-generalization chapters.
+A model that scores 0.900 on familiar phrasings and 0.000 on a rewording of the same
+problem has not generalized to the *problem*. It generalized to the *phrasing*. That's
+the difference between "the model works" and "the model works when I say it the way I
+said it in training" — and it's the most important lesson of the generalization
+chapters.
 
 
 \newpage
 
 # 16. Same Pieces, New Combination
 
-This is the experiment this book was always heading toward.
+This is the experiment this whole book was building toward. Everything so far asked
+whether the model learned a *single* operation. It did. But knowing one operation isn't
+the same as being able to **put two operations together** into something you've never
+seen. And that combination — not the individual pieces — is what we mean by
+"capability."
 
-Everything so far measured whether the model learned a *single* operation. It did —
-in-distribution, reliably, ~90% of the time. But learning one operation is not the
-same as being able to **combine** operations you know into something you have never
-seen. That combination is the heart of programming, and arguably of "capability"
-itself. A model that can add and can take absolute values but cannot return the sum
-of the absolute values of two numbers does not yet have compositional capability —
-it has two separate, unrelated reflexes.
+Think of it this way. A model that can add, and can take absolute values, but cannot
+return the sum of the absolute values of two numbers, does not have compositional
+ability. It has two unrelated reflexes.
 
-So we constructed the experiment that isolates that exact ability.
+So we built the test that isolates exactly that.
 
-## The compositional split
+## The split
 
 We trained the model on **primitives only** — `add`, `sub`, `mul`, `max_of`,
-`min_of`, `abs_of`, `list_sum`, `list_len`, `first_element`, and one composite —
-1,400 tasks in total. The model saw no composite operation of any kind.
+`min_of`, `abs_of`, `list_sum`, `list_len`, `first_element` — 1,400 tasks. The model
+saw **no combined operation at all.**
 
-Then we built a **hold-out set of composite operations**, each of which composes two
-of those primitives but never appeared during training:
+Then we built a hold-out of **composite** operations, each of which fuses two of those
+primitives, and none of which appeared in training:
 
-| composite | primitives it composes |
-|-----------|------------------------|
-| `abs_add` | `abs` then `add` |
-| `sub_abs` | `sub` then `abs` |
+| composite | what it fuses |
+|-----------|---------------|
+| `abs_add` | `abs`, then `add` |
+| `sub_abs` | `sub`, then `abs` |
 | `sum_of_abs` | `abs` over a list sum |
 | `max_add` | `max(add, sub)` |
-| `double_first` | index then `mul` |
-| `len_minus_one` | `len` then `sub` |
+| `double_first` | index, then times 2 |
+| `len_minus_one` | `len`, then minus one |
 
-Crucially, the model *knew every primitive involved* — it scored ~90% on each of
-them. The only new thing was the **combination**.
+The crucial fact: the model *knew every primitive involved* — it scored ~90% on each.
+The only new thing was the **combination**.
 
 ## The result
 
-| Candidate | In-distribution | **Compositional (held-out)** |
-|-----------|-----------------|------------------------------|
+| Candidate | In-distribution | **Composition (held-out)** |
+|-----------|-----------------|----------------------------|
 | **MODEL** | **0.900** | **0.000** |
 | TEMPLATE | 0.800 | 0.000 |
 | RETRIEVAL | 1.000 | 0.000 |
 
-The model scored **0.000** on compositional generalization. Not "partly" — zero.
+The model scored **0.000** on composition. Not "poorly" — zero.
 
-And it is not a fluke of the evaluator. We inspected what the model actually
-generated for a composite prompt. For `abs_add` — "take the absolute value of each
-and return their sum" — it produced:
+And it's not a fluke of our measuring. We looked at what it actually generated for a
+composite prompt. Told to "take the absolute value of each and return their sum," it
+produced:
 
-```
+```python
 def solve(a, b):
     return a - b
 ```
 
-which is not even the right primitives. For others it emitted malformed fragments or
-reverted to a single memorized primitive pattern. It did not say "I know abs, I know
-add, therefore I can do abs_add." It had no such compositional ability at all.
+which isn't even the right primitives. For others it emitted broken fragments or
+reverted to a single memorized pattern. It never said "I know abs and I know add, so I
+can do abs + abs." It had no such ability.
 
-## The audit: is this a fair test?
+## Is this a fair test?
 
-We must rule out the possibility that this 0.000 is an evaluator artifact or an
-unfair split. The evidence that it is *fair* is decisive: **the baseline systems also
-scored 0.000.** Retrieval got 0.000 because no composite exists in the training set —
-there is literally nothing to retrieve. The template rule system got 0.000 because it
-has no composite rule. So the 0.000 is not a sign the task is impossible or wrongly
-scored; it is a sign that the *only* way to get a composite answer is to genuinely
-compose it — and the model cannot.
+We must rule out that the 0.000 is a broken evaluator or an unfair split. The proof
+it's fair is decisive: **the baseline systems also scored 0.000.** Retrieval got 0
+because no composite exists in training — there's literally nothing to look up. The
+template rule system got 0 because it has no composite rule. So the 0.000 doesn't mean
+the test is impossible or mis-scored; it means the *only* way to answer is to genuinely
+compose — and the model can't.
 
 ## What this teaches
 
-This is as clean a measurement as this book produced, and it is the answer to our
-central question at this scale:
+This is as clean a measurement as this book produced:
 
-> **A ~0.9M-parameter model can learn individual primitives to ~90% accuracy, but it
-> cannot compose them into structures it never saw during training. Compositional
-> generalization fails completely — even when every component is well learned.**
+> **A ~0.9M model can learn individual operations to ~90%, but it cannot combine them
+> into structures it never saw. Compositional generalization fails completely — even
+> when every ingredient is well learned.**
 
-That is a real capability boundary, and it is *not* the same as "the model is bad."
-The model is genuinely good at the single operations. The boundary is specifically
-about **combination**.
+And crucially, this is *not* the same as "the model is bad." The model is genuinely
+good at the individual operations. The boundary is specifically about **combining**
+them.
 
-The natural next question — and we answer it in Chapter 12 — is whether this is a
-capacity problem (would a bigger model fix it?) or a structural/data problem (does
-the model need to see *combinations* of the right kind during training?). That
-distinction is the difference between "we need a bigger machine" and "we need a
-different kind of data." As we'll see, at this scale it is not capacity.
+The natural next question — and the reason for Chapter 12 — is whether this is a
+capacity problem ("just make it bigger") or a structural/data problem ("does it need
+to see combinations?"). As we'll see, at this scale, it is not capacity.
 
 
 \newpage
@@ -1274,6 +1321,133 @@ number" and "we know the number means something." The specific lessons:
 
 A judge that has been red-teamed is one we can believe. A judge we've only used is
 one we cannot.
+
+
+\newpage
+
+# 18. Now Give It More Python
+
+The pilot lived inside a deliberately small subset of Python — arithmetic, a few
+comparisons, a couple of list operations, basic conditionals. That narrowness is what
+let us measure capability cleanly. But a capability map built on one tiny subset only
+tells you where the boundary is *for that subset*. Real capability grows by adding
+more of the language, one controlled step at a time.
+
+This chapter is about the **capability ladder** — the discipline of expanding what the
+model is allowed to do, one rung at a time, so we can watch where it starts to fall
+apart.
+
+## The ladder
+
+We planned a progression of controlled Python capabilities:
+
+| Level | Capability | Example |
+|-------|-----------|---------|
+| 1 | arithmetic | `return a + b` |
+| 2 | variables | `total = 0` |
+| 3 | comparisons / conditionals | `if a > b` |
+| 4 | lists | `xs[0]`, `len(xs)` |
+| 5 | indexing | `xs[i]` |
+| 6 | loops | `for x in xs` |
+| 7 | nested composition | two operations at once |
+| 8 | simple functions | `def f(x): ...` |
+
+For each we would: define it, generate data for it, train on it, evaluate it, audit
+shortcuts, and record the result — *before* moving to the next rung.
+
+## What the pilot showed us about the ladder
+
+We did not climb the whole ladder in this book's first pass — we built the mechanism
+that *allows* climbing it. But the pilot already revealed where the ladder's later
+rungs get hard, and it is not where you'd guess.
+
+The pilot handled arithmetic and simple lists well in-distribution (Level 1–4, ~0.90).
+The break came at **composition** — combining two learned operations — which is the
+heart of Level 7. And crucially, that break was *not* about adding more Python syntax.
+The model already knew the syntax of `abs` and `add`; it just couldn't put them
+together.
+
+So the ladder's real dividing line is not "how much Python," it is "can it *compose*
+the Python it already knows." That is the boundary the book is really about.
+
+## The discipline that matters
+
+The ladder enforces the one-variable-at-a-time rule. You do not add lists, loops,
+and functions all at once — you add one and re-measure. This is what lets you attribute
+a change in capability to a specific change in allowed Python.
+
+And it is a *ladder*, not a guarantee. The model may stop climbing at any rung, and
+that stopping point is itself a result. We found the stop at composition: the model
+can do each rung's primitives, but cannot combine them. That finding — cheap and
+specific — is worth more than a glossy claim of having "reached Python Level 8."
+
+
+\newpage
+
+# 19. The Capability Ladder Revisited
+
+We have climbed parts of the ladder through the experiments. This chapter compiles
+what we found into the picture the ladder was always meant to produce: a map of where
+capability appears, where it holds, and where it breaks.
+
+## The ladder, with the measured results
+
+| Level | Capability | Measured result |
+|-------|-----------|-----------------|
+| 1 | arithmetic | ✅ learned, ~0.90 in-dist |
+| 2–3 | variables, conditionals | ✅ learned |
+| 4–5 | lists, indexing | ✅ learned |
+| 6 | loops | ✅ learned |
+| 7 | **composition** | ❌ **0.000** — the wall |
+| 8 | simple functions | not isolated |
+
+The model climbed the early rungs cleanly. It stopped at **composition**.
+
+## Where capability appears, holds, and breaks
+
+**Appears:** individual operations are learned reliably (~0.90 in-distribution) and
+generalize across *instances* (held-out + canary → general program). The model is a
+genuine learner for a single operation.
+
+**Holds only within a surface form.** The moment the surface changes — different
+variable names, or a different way of saying the same instruction — the capability
+collapses (0.350 on new identifiers, **0.000** on new wording). So the early rungs are
+not *robust*; they are *phrasing-tied*.
+
+**Breaks at composition.** The most important boundary: the model cannot combine two
+things it knows. `abs` + `add` → 0.000, even though it knows both. And this break is
+**invariant to scale** — a 7.4× larger model (6.5M) still scores 0.000 on composition.
+
+## The model-size and data-size boundaries
+
+- **Model size:** 0.88M → 6.5M changed nothing for composition (still 0.000). The
+  composition wall is not a capacity ceiling in this regime.
+- **Data size:** 100 → 3000 examples improved in-distribution (0.10 → 0.64) but did not
+  touch composition. More quantity helps the shallow score, not the deep boundary.
+
+## The failure map
+
+| Failure mode | On what the model breaks |
+|--------------|--------------------------|
+| Surface fragility | new wording → 0.000; new identifiers → 0.350 |
+| Composition | unseen combination of known primitives → 0.000 |
+| Continual forgetting | sequential A→B destroys A (0.000); replay fixes (1.000) |
+
+## What the ladder finally tells us
+
+The ladder is not a shelf of "caps" the model unlocks. It is a map of *where the
+boundary lies*. For our ~0.9M model:
+
+- it genuinely climbs the individual-capability rungs,
+- but each rung is **surface-tied**, not robust,
+- and the ladder stops at **composition** — the one thing that separates "a bag of
+  reflexes" from "capability."
+
+And the most useful part: this map is honest about *what doesn't change it*. The
+composition boundary survived a 7.4× capacity increase and a 30× data increase. That
+is a strong, falsifiable statement about where the limit lives and where it does *not*
+live — which points the next investigation at *structural* data and inductive bias,
+not at scaling.
 
 
 \newpage

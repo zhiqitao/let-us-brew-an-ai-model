@@ -1,86 +1,83 @@
 # 15. New Words, Same Problem
 
-The pilot told us the task was too easy; the composition experiment told us the
-model cannot combine what it knows. But there is a more subtle question in between,
-and it is arguably the one that matters most for whether we can trust any of this.
+Here is the sneakiest question in the book, and it's the one that should worry you
+most about any machine-learning result:
 
-**When the model does well, is it doing the computation, or just recognizing the
-wording?**
+> **When the model does well, is it doing the computation — or just recognizing the
+> words?**
 
-A model that maps the *words* "sum" and "a and b" to `a + b` is not necessarily doing
-arithmetic. It might be doing a far dumber thing: associating the *exact phrasing* it
-saw in training with the code that followed it. If that is what is happening, then
-the capability is not in the model's head as "addition" — it is a fragile surface
-reflex that will break the moment the phrasing changes.
+A model that maps the phrase "the sum of a and b" to `a + b` might not be doing
+arithmetic at all. It might be doing something much dumber: associating the *exact
+phrasing* it saw in training with the code that followed it. If that's what's
+happening, then the ability isn't "addition" in the model's head — it's a fragile
+reflex tied to specific words, and it'll break the moment you say the same thing a
+different way.
 
-To find out, we run the **surface-generalization** experiment (Level 3). The insight
-is that if you change something that *should not* change the computation — the
-variable names, or the words used to express the same instruction — and the model
-fails, then the model never learned the computation. It learned the phrasing.
+To find out, we run the **surface-generalization** test. The logic is simple and
+elegant: if you change something that *shouldn't* change the computation — the variable
+names, or the wording — and the model fails, then it never really learned the
+computation. It learned the phrasing.
 
 ## The setup
 
-We trained the model on pilot arithmetic primitives, but with a twist: we gave it only
-**letter identifiers** (`a`, `b`) and only **some** of the wording template families.
-Then we re-expressed the *identical* task three different ways and tested whether the
-model's capability survived.
+We trained the model on arithmetic primitives, but only with **letter names** (`a`, `b`)
+and only a **subset of the wording** used to describe each operation. Then we re-asked
+the *identical* task three different ways and watched whether the model's ability
+survived.
 
 ## The result
 
 | Test | **MODEL** | TEMPLATE | RETRIEVAL |
 |------|-----------|----------|-----------|
-| In-distribution | **0.900** | 0.800 | 1.000 |
-| New identifiers (`a,b` → `left,right`) | **0.350** | 0.800 | 0.683 |
-| **Held-out wording** (a paraphrase family never seen) | **0.000** | 0.875 | 0.125 |
+| Same as training | **0.900** | 0.800 | 1.000 |
+| Same computation, `a,b` → `left,right` | **0.350** | 0.800 | 0.683 |
+| **Same computation, reworded** | **0.000** | 0.875 | 0.125 |
 
-Watch what happens as we change only the *surface*, not the computation.
+Look at what happens when we touch only the *surface*, not the math.
 
-- **Same computation, different variable names.** The model was trained with `a` and
-  `b`. We ask it the same question but with `left` and `right` — the *identical*
-  operation. Performance drops from **0.900 to 0.350**.
+- **New variable names.** The model was trained on `a` and `b`. We ask the same
+  question with `left` and `right` — the *identical* operation. Performance collapses
+  from **0.900 to 0.350**.
 
-- **Same computation, different wording.** We rephrase the instruction using a
-  template family the model never saw during training. It is the exact same problem,
-  just said differently. Performance drops to **0.000**.
+- **Reworded instruction.** We say the exact same problem using a phrasing the model
+  never saw during training. Performance drops to **0.000**.
 
-## What this means
+## The damning comparison
 
-This is the moment the model's "capability" is revealed to be shallow. The model is
-not grounded in the meaning — it is **anchored to the surface form.**
+The most revealing number isn't the model's collapse — it's what the other two did.
 
-The most damning detail is the comparison against the baselines. When we change the
-*words*, the **template baseline gets *better*, not worse** (0.875, up from 0.800),
-because a rule system that recognizes keywords doesn't care about the surrounding
-wording. The **retrieval baseline** also holds up better (0.683). Only the **learned
-model** collapses — because the model learned the *specific phrasing*, not the
-*concept*.
+When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
+up from 0.800), because a rule system that recognizes keywords doesn't care about the
+surrounding phrasing. The **retrieval baseline** also holds up (0.683). Only the
+**learned model** falls apart — because the model learned the *specific sentences*, not
+the *idea*.
 
-So the model's in-distribution success (0.900) was largely **phrasing memorization**.
-It had learned that *this exact kind of sentence maps to that program*. It had not
-learned "take two numbers and return their sum" as an abstract operation that
-survives being said any number of ways.
+So the model's 0.900 in-distribution score was largely **phrasing memorization**. It
+had learned "this exact kind of sentence maps to that program." It had not learned
+"take two numbers and return their sum" as something you can say any number of ways
+and still mean.
 
 ## The shortcut audit
 
-1. **Suspected shortcut: wording / phrasing memorization.**
-   **Why it could explain it:** the model associated training phrasing with code.
-   **Control:** held out a whole template family from training; tested on it.
+1. **Suspected cheat: phrasing memorization.**
+   **Why it fits:** the model tied training phrasings to code.
+   **Control:** held one whole phrasing style out of training, tested on it.
    **Result:** 0.000.
-   **What it rules out:** the claim that the model is grounded in the computation.
-   **What remains:** whether the failure is *specifically* the wording pattern, or the
-   new vocabulary/identifiers (a surface-control experiment separates these).
+   **Ruled out:** that the model is grounded in the computation.
+   **Still open:** is it the wording pattern or the new vocabulary? Need a
+   surface-control to separate them.
 
-2. **Suspected shortcut: identifier memorization.**
-   **Why it could explain it:** trained on `a,b`, maybe it hardwired those names.
-   **Control:** retest with `left,right`.
+2. **Suspected cheat: name memorization.**
+   **Why it fits:** trained on `a,b`, maybe it hardwired those labels.
+   **Control:** retest on `left,right`.
    **Result:** 0.350 — a big but partial drop.
-   **What it rules out:** pure identifier-memorization (still fails partly, so it's
-   tied to the letters too, but not the whole story).
+   **Ruled out:** pure name-memorization (it still fails partly, but names aren't the
+   whole story).
 
 ## The honest takeaway
 
-A model that scores 0.900 in-distribution and 0.000 on a rephrasing of the same
-problem has not generalized to the problem. It has generalized to the phrasing. This
-is the difference between "the model works" and "the model works when I say it the
-way I said it in training" — and it is the single most important lesson of the
-generalization chapters.
+A model that scores 0.900 on familiar phrasings and 0.000 on a rewording of the same
+problem has not generalized to the *problem*. It generalized to the *phrasing*. That's
+the difference between "the model works" and "the model works when I say it the way I
+said it in training" — and it's the most important lesson of the generalization
+chapters.

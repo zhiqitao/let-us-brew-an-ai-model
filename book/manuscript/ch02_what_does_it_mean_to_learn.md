@@ -1,84 +1,88 @@
 # 2. What Does It Mean to Learn?
 
-We are going to use a word a lot in this book: *learned*. Before we do, we have to
-be precise about what it means. "The model learned to add" is a sentence many
-readers would accept. That acceptance is exactly the problem.
+We're going to use a word a lot in this book: *learned*. Before we do, we have to be
+honest about what it means — because "the model learned to add" is a sentence people
+say all the time, and it's usually hiding a big assumption.
 
-## An operational definition
+## A simple way to think about it
 
-We will not use "learning" as a philosophical term. For this book, a model
-demonstrates learned capability when **all** of the following hold, to the degree
-the evidence supports:
+Imagine a child who aces a worksheet of addition problems. Every problem is like
+"4 + 3 = ?" and the child gets them all right. We'd be tempted to say "the child can
+add."
 
-1. **Performance improves systematically during training** — the loss goes down, and
-   the behavior we care about reliably improves.
-2. **Performance transfers to held-out examples** — it works on instances it never
-   saw, not just the ones in training.
-3. **Performance survives controlled changes to superficial features** — things like
-   a different variable name, a different wording, or a harmless distractor, none of
-   which should change the underlying computation.
-4. **Performance survives appropriately designed structural changes** — it can
-   combine known pieces in a new arrangement, not just reproduce arrangements it
-   already saw.
-5. **Simpler explanations have been tested and rejected.** The alternatives —
-   exact memorization, retrieval of a near-duplicate, a template, dataset leakage, or
-   an evaluator artifact — must be ruled out to the degree the experiment supports.
+But there are two very different ways to get that perfect score:
 
-This definition is deliberately limited. We do not claim to determine whether the
-model "understands" programming in a philosophical sense. We ask narrower,
-answerable questions: *does it generalize? to what? and can a simpler mechanism
-explain the result?*
+1. The child *understands addition* — show them "37 + 58" and they solve it, because
+   they know how to add any two numbers.
+2. The child *memorized the exact answers* — they've seen these exact problems before
+   and just remember that "4 + 3 = 7," but hand them a problem they've never seen and
+   they freeze.
 
-## The four-level generalization spectrum
+A perfect worksheet grade can't tell these two apart. **The worksheet is a bad test.**
+Only a *new* problem can.
 
-This is the book's central conceptual framework, and we will use it to organize most
-of our experiments. It is a spectrum of *how* a result could have been obtained, from
-the least to the most demanding.
+This is the entire premise of the book in one image. Our model gets a perfect-ish
+worksheet sometimes. The question is always: would it pass the *new* problem?
 
-**Level 1 — Memorization.** The model reproduces or exploits information closely
-represented in training: an exact example, an exact constant, a familiar template,
-memorized wording, a near-duplicate. Question: *can the result be explained by
-remembering?*
+## What "learned" means here
 
-**Level 2 — Distributional generalization.** The model succeeds on new examples
-drawn from essentially the same distribution. It has seen the operation and the
-frontier of *which* words and values, but not these exact instances. Question: *can
-it perform on unseen instances of the same task?*
+So we define it narrowly and honestly. A model shows **learned capability** when, to
+the degree the evidence supports:
 
-**Level 3 — Surface generalization.** The underlying problem is unchanged, but
-superficial properties change: new constants, new variable names, new function
-names, paraphrased wording, reordered clauses, harmless distractors. Question: *does
-the capability survive changes that should not alter the computation?*
+1. **It gets better as it trains** — the loss falls, and the thing we care about
+   reliably improves.
+2. **It works on examples it never saw** — not just the ones in training.
+3. **It survives harmless changes** — different variable names, different wording, a
+   different way of saying the same instruction.
+4. **It can combine things it knows** — put two learned pieces together in a new
+   arrangement, not just repeat an arrangement it already saw.
+5. **Simpler explanations have been ruled out.** The mundane alternatives —
+   memorization, copying a near-duplicate, a template, a leaked test, a buggy
+   evaluator — must be tested and rejected.
 
-**Level 4 — Structural generalization.** The model must combine known components in
-structures that were not present during training. If it was trained on `A`, `B`, and
-`C`, can it do `A`-inside-`B`, or `B`-and-`C`, or `A` applied to the result of `C`?
-Question: *can it compose learned capabilities, or only reproduce learned
-combinations?*
+We are deliberately **not** asking whether the model "really understands" in a
+philosophical sense. We're asking narrower, answerable things: does it generalize? to
+what? and could a dumber mechanism explain the result?
 
-**A rule we will follow strictly:** never collapse these four levels into a single
-"generalization" number. A model that scores 90% "in-distribution" and 0% "on new
-wording" has not generalized; it has memorized the phrasing. Reporting one number
-would hide exactly the thing we most want to know.
+## The four levels of generalization
 
-## The recurring shortcut audit
+This is the book's organizing idea. Think of it as a ladder of how much we should
+trust a result — from "probably just remembered" to "genuinely combined."
 
-Because we refuse to trust a single number, every major experiment in this book asks
-the same question:
+**Level 1 — Memorization.** The model reproduces something it saw in training: an exact
+example, an exact constant, a familiar phrase, a near-duplicate. *Question: could this
+just be remembering?*
 
-> **How could the model have gotten this result without learning what we think it
-> learned?**
+**Level 2 — Same task, new examples.** The model works on a new instance of the same
+kind of problem. *Question: does it work on problems it hasn't seen before?*
 
-The candidate shortcuts are always the same list: memorized templates, memorized
-constants, memorized identifiers, memoriized function names, wording artifacts,
-sentence-length artifacts, dataset imbalance, train/test leakage, near-duplicates,
-reference-solution artifacts, retrieval, evaluator weaknesses, hardcoded answers,
-hidden-test leakage, output-format artifacts.
+**Level 3 — Same problem, different surface.** The computation is identical, but the
+*outer layer* changes: new numbers, new variable names, reworded instruction,
+harmless distractors. *Question: does it survive changes that shouldn't matter?*
 
-Every major experimental chapter therefore contains a **shortcut audit** with six
-parts: (1) the suspected shortcut, (2) why it could explain the result, (3) the
-control experiment, (4) the result of that control, (5) what the control rules out,
-and (6) what remains unresolved.
+**Level 4 — New combination.** The model must combine pieces it knows into something
+that never appeared in training. It learned A, B, and C separately — can it do A
+*sandwiched inside* B, or A followed by C? *Question: can it put things together, or
+only repeat what it already saw?*
 
-This audit — not the headline accuracy — is the book's signature. It is the
-difference between "the model works" and "we know why the model works."
+**A rule we'll follow strictly:** never mash these four into one number. A model that
+scores 90% on familiar problems and 0% on a reworded version has not "generalized" —
+it memorized the phrasing. One number would hide exactly the thing we care about.
+
+## The recurring question: "how did it cheat?"
+
+Because we refuse to trust a single score, every experiment asks the same skeptical
+question:
+
+> **How could the model have gotten this without learning what we think it learned?**
+
+The usual suspects are always on the table: memorized templates, memorized constants,
+memorized name patterns, wording quirks, unbalanced data, train/test leakage,
+near-duplicates, retrieval, a weak evaluator, hardcoded answers, hidden-test leakage.
+
+Every major experiment therefore ends with a **shortcut audit**, six steps: (1) the
+suspected cheat, (2) why it could explain the result, (3) a control test, (4) what the
+control found, (5) what that rules out, and (6) what's still unresolved.
+
+That audit — not the headline number — is the book's signature. It's the difference
+between "the model works" and "we know why the model works."
