@@ -1,8 +1,12 @@
 # 11. How Much Data?
 
-The most obvious question about any model is also the one people answer too quickly:
-*how much data does it need?* We measured this directly, holding the model and the
-training protocol fixed and varying only the dataset size.
+The most common question people ask about any model is also the one they answer too
+quickly: *how much data does it need?* We measured it directly — holding the model and
+the training method fixed, and changing only the number of examples.
+
+Think of it like studying for a test. Read one page and you'll fail. Read a bit more
+and you'll still fail. But there's a point where reading enough actually clicks and
+you start passing. Where's that point for a model? That's what this experiment finds.
 
 ## The setup
 

@@ -1,14 +1,15 @@
 # 18. Now Give It More Python
 
-The pilot lived inside a deliberately small subset of Python — arithmetic, a few
-comparisons, a couple of list operations, basic conditionals. That narrowness is what
-let us measure capability cleanly. But a capability map built on one tiny subset only
-tells you where the boundary is *for that subset*. Real capability grows by adding
-more of the language, one controlled step at a time.
+Our pilot model lived inside a deliberately small corner of Python — a bit of
+arithmetic, a couple of comparisons, a few list operations, some basic if/else. That
+tiny corner is what let us measure capability cleanly: change one small thing at a
+time and watch what happens.
 
-This chapter is about the **capability ladder** — the discipline of expanding what the
-model is allowed to do, one rung at a time, so we can watch where it starts to fall
-apart.
+But a capability map drawn on one tiny corner only tells you where the boundary is
+*for that corner.* Real capability grows by letting the model use more of the language.
+This chapter is about the **capability ladder** — the discipline of widening what the
+model may do, one controlled step at a time, so we can watch exactly where it starts
+to fall apart.
 
 ## The ladder
 

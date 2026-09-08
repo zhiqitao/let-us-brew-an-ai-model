@@ -1,9 +1,13 @@
 # 6. Build the Judge
 
-We need a way to decide whether a generated program is correct. This is the **judge**:
-an execution-based evaluator. Getting it right is not a detail — the judge is the
-instrument whose readings the whole book depends on. If the judge is wrong, every
-number is wrong. So we build it carefully, and then we attack it.
+How do you know a student's answer is right? You check it against the answer key. But
+what if your answer key is wrong? Then every student who gets it "right" is actually
+wrong, and you'd never know.
+
+That's the risk with our **judge** — the evaluator that decides whether a generated
+program is correct. It's the instrument whose readings the whole book depends on. If
+the judge is wrong, every number in this book is wrong. So we build it carefully, and
+then we attack it.
 
 ## The four-stage pipeline
 

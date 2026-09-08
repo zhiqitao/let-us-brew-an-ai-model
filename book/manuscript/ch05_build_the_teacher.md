@@ -1,9 +1,17 @@
 # 5. Build the Teacher
 
-We need data. But the kind of data we need cannot be scraped from the internet — it
-has to be *engineered* so that we can control exactly what the model is and isn't
-exposed to, and so we can carve it into generalization tests. That is the role of the
-**teacher**, the dataset generator.
+We need data. But not just any data — we need data we can *trust* to be fair, and
+data we can carve up to test the model honestly.
+
+Think of a teacher preparing worksheets for a test. A bad teacher writes twenty
+questions that are all the same question with different numbers — the student can
+memorize one template. A good teacher writes questions that look different on the
+surface but test the same idea, so a student who actually learned the idea passes
+whether or not they've seen the phrasing.
+
+Our **teacher** is that good worksheet-writer: it generates training data with the
+right kind of controlled diversity, and it never lets the surface give away the
+answer so easily that a lazy model could cheat.
 
 ## Semantic-first
 

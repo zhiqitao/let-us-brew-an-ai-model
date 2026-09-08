@@ -1,13 +1,13 @@
 # 17. Red-Team the Judge
 
-We built a judge and I argued it is the instrument we stake the book on. Chapter 6
+We built a judge and I argued it's the instrument we stake the book on. Chapter 6
 showed how we test it (mutation testing) and that it caught a bug. This chapter is the
-aggressive version: we stop politely checking the judge and start deliberately
-attacking it, the way a determined adversary (or a suspicious reader) would.
+aggressive version: we stop politely checking the judge and start deliberately trying
+to *break* it — the way a determined detractor (or a suspicious reader) would.
 
-The question is the one that hangs over the whole book:
-
-> **How much confidence should we place in a number produced by our judge?**
+Think of it as hiring a devil's advocate whose only job is to find a flaw in your
+conclusion. We want to know how confident we can be in any number our judge produces —
+and the only way to find out is to attack it.
 
 ## The attack surface
 

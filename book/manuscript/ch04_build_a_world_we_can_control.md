@@ -1,8 +1,12 @@
 # 4. Build a World We Can Control
 
-The model will produce Python. Before we trust anything it produces, we need a way to
-run that Python safely and *deterministically* — and to decide, precisely, what is
-allowed. This is the **sandbox**: the "world" in which the model operates.
+Imagine you've hired someone to write code, but you don't fully trust them. You
+wouldn't hand them the keys to your server. You'd give them a sandbox — a walled-off
+room where they can work, but where the dangerous tools are simply not there.
+
+That's exactly what we do with the model. It writes Python, and we need to run that
+Python safely and deterministically, while deciding precisely what it's *allowed* to
+do. That walled-off room is the **sandbox** — the world the model lives in.
 
 ## The principle: whitelist, not blocklist
 

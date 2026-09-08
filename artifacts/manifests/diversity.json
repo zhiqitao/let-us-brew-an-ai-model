@@ -1,0 +1,22 @@
+{
+  "results": {
+    "minimal_diversity": {
+      "in_dist": 0.5,
+      "surface": 0.0,
+      "train_time_s": 395.4
+    },
+    "high_diversity": {
+      "in_dist": 1.0,
+      "surface": 1.0,
+      "train_time_s": 383.7
+    }
+  },
+  "config": {
+    "steps": 900,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "n_train": 1200,
+    "seed": 0
+  }
+}

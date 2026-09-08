@@ -1,16 +1,19 @@
 # 13. Same Data, More Diverse Data
 
-Chapter 11 asked *how much* data. There is a subtler question that often matters
-more: what *kind* of data. In particular, is it better to have many examples of the
-same thing, or fewer examples spread across more variety?
+Chapter 11 asked *how much* data. There's a subtler question that often matters more:
+what *kind* of data. Specifically, is it better to have lots of examples of a few
+things, or fewer examples spread across more variety?
 
-The temptation is to treat "more data" as one lever. It isn't. There are at least two
-distinct things you can add, and they behave differently:
+The easy answer is to treat "more data" as one lever. It isn't. There are at least two
+different things you can add, and they behave differently. Think of it like teaching a
+kid shapes. Show them a hundred triangles and they'll recognize triangles. Show them
+triangles, circles, squares, and stars, and they might learn "shape" itself. Same
+number of examples, very different kind of learning.
 
-- **more examples** — more instances of the same templates and variation, and
+- **more examples** — more instances of the same templates, and
 - **more diversity** — more distinct *kinds* of structure and wording.
 
-The distinction matters enough that the book states it as a rule:
+The distinction is important enough to state as a rule:
 
 > **More data ≠ more information ≠ more diversity.**
 

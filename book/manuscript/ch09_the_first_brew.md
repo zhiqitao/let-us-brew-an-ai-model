@@ -1,9 +1,12 @@
 # 9. The First Brew
 
-Everything is built. Now we train the model for the first time, and watch what
-happens. This chapter is deliberately underlined and unheroic: the goal is not a
-triumphant result, but to establish that the experimental loop works and to see the
-model's honest behavior as it learns.
+Everything's built. Now the moment of truth: we train the model for the first time and
+watch what happens.
+
+This chapter is deliberately unheroic. The goal isn't a triumphant result — it's to
+confirm the loop works and to see the model's honest behavior as it learns. Think of
+it as the first time you run a recipe you've been assembling: you're not hoping for a
+masterpiece, you're checking that the oven works and nothing explodes.
 
 ## The data
 

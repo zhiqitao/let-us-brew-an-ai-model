@@ -1,7 +1,13 @@
 # 8. The Smallest Brain
 
-Now we get to the student. Everything so far — the world, the teacher, the judge, the
-rivals — exists to ask one question about this thing. So let us meet it.
+Now the student. Everything so far — the world, the teacher, the judge, the rivals —
+exists to ask one question about this thing. So let's meet it.
+
+Meet the model: a small, deliberately plain decoder-only transformer. It's not fancy,
+and that's the point. Just like a chemistry lab uses simple glassware so you can see
+exactly what's happening, we use a simple, transparent model so we can understand
+exactly what it's doing. A 20-layer exotic architecture would be a black box; a clean,
+standard transformer is one we can reason about.
 
 ## What it is
 

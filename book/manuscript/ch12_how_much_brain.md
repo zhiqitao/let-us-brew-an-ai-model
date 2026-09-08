@@ -1,11 +1,12 @@
 # 12. How Much Brain?
 
-The most instinctive answer to "the model failed to compose" is: **make it bigger.**
-More parameters, more capacity, more "brain." If a ~0.9M model can't combine what it
-knows, surely a larger one can.
+When a model disappoints us, the instinctive response is: *make it bigger.* More
+parameters, more capacity, more "brain." If a small model can't combine what it knows,
+surely a larger one can.
 
-This chapter tests that instinct directly, and the answer is one of the cleanest
-negative results in the book.
+This chapter tests that instinct directly. And the answer is one of the cleanest
+negative results in the book — because it turns out that at our scale, "just make it
+bigger" changes almost nothing.
 
 ## The setup
 

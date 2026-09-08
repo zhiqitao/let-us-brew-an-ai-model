@@ -175,11 +175,14 @@ between "the model works" and "we know why the model works."
 
 # 3. Give the Model One Job
 
-Before we can run any experiment, we have to define the task so precisely that a
-machine can execute it and we can objectively score it. This is the discipline that
-makes everything after possible. Vague tasks give vague answers; a task with
-deterministic inputs, executable outputs, and hidden tests gives crisp, auditable
-answers.
+Before we can run any experiment, we have to pin down the task so precisely that a
+machine can carry it out and we can score it objectively. Vague tasks give vague
+answers; a task with concrete inputs, runnable outputs, and hidden tests gives
+crisp, checkable answers.
+
+Think of a well-designed exam question. It's not enough to say "write a program about
+numbers." You need: exactly what the input is, exactly what the program should do, and
+exactly how to check if it's right. That's what we're about to define.
 
 ## The task
 
@@ -275,9 +278,13 @@ run and score it: a controlled world, a teacher, a judge, and rivals.
 
 # 4. Build a World We Can Control
 
-The model will produce Python. Before we trust anything it produces, we need a way to
-run that Python safely and *deterministically* — and to decide, precisely, what is
-allowed. This is the **sandbox**: the "world" in which the model operates.
+Imagine you've hired someone to write code, but you don't fully trust them. You
+wouldn't hand them the keys to your server. You'd give them a sandbox — a walled-off
+room where they can work, but where the dangerous tools are simply not there.
+
+That's exactly what we do with the model. It writes Python, and we need to run that
+Python safely and deterministically, while deciding precisely what it's *allowed* to
+do. That walled-off room is the **sandbox** — the world the model lives in.
 
 ## The principle: whitelist, not blocklist
 
@@ -358,10 +365,18 @@ a sandbox that also correctly refuses is the real achievement.
 
 # 5. Build the Teacher
 
-We need data. But the kind of data we need cannot be scraped from the internet — it
-has to be *engineered* so that we can control exactly what the model is and isn't
-exposed to, and so we can carve it into generalization tests. That is the role of the
-**teacher**, the dataset generator.
+We need data. But not just any data — we need data we can *trust* to be fair, and
+data we can carve up to test the model honestly.
+
+Think of a teacher preparing worksheets for a test. A bad teacher writes twenty
+questions that are all the same question with different numbers — the student can
+memorize one template. A good teacher writes questions that look different on the
+surface but test the same idea, so a student who actually learned the idea passes
+whether or not they've seen the phrasing.
+
+Our **teacher** is that good worksheet-writer: it generates training data with the
+right kind of controlled diversity, and it never lets the surface give away the
+answer so easily that a lazy model could cheat.
 
 ## Semantic-first
 
@@ -445,10 +460,14 @@ out ourselves, before the model does.
 
 # 6. Build the Judge
 
-We need a way to decide whether a generated program is correct. This is the **judge**:
-an execution-based evaluator. Getting it right is not a detail — the judge is the
-instrument whose readings the whole book depends on. If the judge is wrong, every
-number is wrong. So we build it carefully, and then we attack it.
+How do you know a student's answer is right? You check it against the answer key. But
+what if your answer key is wrong? Then every student who gets it "right" is actually
+wrong, and you'd never know.
+
+That's the risk with our **judge** — the evaluator that decides whether a generated
+program is correct. It's the instrument whose readings the whole book depends on. If
+the judge is wrong, every number in this book is wrong. So we build it carefully, and
+then we attack it.
 
 ## The four-stage pipeline
 
@@ -592,8 +611,14 @@ results of all.
 
 # 8. The Smallest Brain
 
-Now we get to the student. Everything so far — the world, the teacher, the judge, the
-rivals — exists to ask one question about this thing. So let us meet it.
+Now the student. Everything so far — the world, the teacher, the judge, the rivals —
+exists to ask one question about this thing. So let's meet it.
+
+Meet the model: a small, deliberately plain decoder-only transformer. It's not fancy,
+and that's the point. Just like a chemistry lab uses simple glassware so you can see
+exactly what's happening, we use a simple, transparent model so we can understand
+exactly what it's doing. A 20-layer exotic architecture would be a black box; a clean,
+standard transformer is one we can reason about.
 
 ## What it is
 
@@ -658,10 +683,13 @@ enough to be legible, which is what Stage 0–1 needs.
 
 # 9. The First Brew
 
-Everything is built. Now we train the model for the first time, and watch what
-happens. This chapter is deliberately underlined and unheroic: the goal is not a
-triumphant result, but to establish that the experimental loop works and to see the
-model's honest behavior as it learns.
+Everything's built. Now the moment of truth: we train the model for the first time and
+watch what happens.
+
+This chapter is deliberately unheroic. The goal isn't a triumphant result — it's to
+confirm the loop works and to see the model's honest behavior as it learns. Think of
+it as the first time you run a recipe you've been assembling: you're not hoping for a
+masterpiece, you're checking that the oven works and nothing explodes.
 
 ## The data
 
@@ -814,9 +842,13 @@ stop making the task easier and start making it *probe* generalization.
 
 # 11. How Much Data?
 
-The most obvious question about any model is also the one people answer too quickly:
-*how much data does it need?* We measured this directly, holding the model and the
-training protocol fixed and varying only the dataset size.
+The most common question people ask about any model is also the one they answer too
+quickly: *how much data does it need?* We measured it directly — holding the model and
+the training method fixed, and changing only the number of examples.
+
+Think of it like studying for a test. Read one page and you'll fail. Read a bit more
+and you'll still fail. But there's a point where reading enough actually clicks and
+you start passing. Where's that point for a model? That's what this experiment finds.
 
 ## The setup
 
@@ -877,12 +909,13 @@ inductive structure, not from the sheer *amount*.
 
 # 12. How Much Brain?
 
-The most instinctive answer to "the model failed to compose" is: **make it bigger.**
-More parameters, more capacity, more "brain." If a ~0.9M model can't combine what it
-knows, surely a larger one can.
+When a model disappoints us, the instinctive response is: *make it bigger.* More
+parameters, more capacity, more "brain." If a small model can't combine what it knows,
+surely a larger one can.
 
-This chapter tests that instinct directly, and the answer is one of the cleanest
-negative results in the book.
+This chapter tests that instinct directly. And the answer is one of the cleanest
+negative results in the book — because it turns out that at our scale, "just make it
+bigger" changes almost nothing.
 
 ## The setup
 
@@ -954,17 +987,20 @@ subject.
 
 # 13. Same Data, More Diverse Data
 
-Chapter 11 asked *how much* data. There is a subtler question that often matters
-more: what *kind* of data. In particular, is it better to have many examples of the
-same thing, or fewer examples spread across more variety?
+Chapter 11 asked *how much* data. There's a subtler question that often matters more:
+what *kind* of data. Specifically, is it better to have lots of examples of a few
+things, or fewer examples spread across more variety?
 
-The temptation is to treat "more data" as one lever. It isn't. There are at least two
-distinct things you can add, and they behave differently:
+The easy answer is to treat "more data" as one lever. It isn't. There are at least two
+different things you can add, and they behave differently. Think of it like teaching a
+kid shapes. Show them a hundred triangles and they'll recognize triangles. Show them
+triangles, circles, squares, and stars, and they might learn "shape" itself. Same
+number of examples, very different kind of learning.
 
-- **more examples** — more instances of the same templates and variation, and
+- **more examples** — more instances of the same templates, and
 - **more diversity** — more distinct *kinds* of structure and wording.
 
-The distinction matters enough that the book states it as a rule:
+The distinction is important enough to state as a rule:
 
 > **More data ≠ more information ≠ more diversity.**
 
@@ -1268,14 +1304,14 @@ to see combinations?"). As we'll see, at this scale, it is not capacity.
 
 # 17. Red-Team the Judge
 
-We built a judge and I argued it is the instrument we stake the book on. Chapter 6
+We built a judge and I argued it's the instrument we stake the book on. Chapter 6
 showed how we test it (mutation testing) and that it caught a bug. This chapter is the
-aggressive version: we stop politely checking the judge and start deliberately
-attacking it, the way a determined adversary (or a suspicious reader) would.
+aggressive version: we stop politely checking the judge and start deliberately trying
+to *break* it — the way a determined detractor (or a suspicious reader) would.
 
-The question is the one that hangs over the whole book:
-
-> **How much confidence should we place in a number produced by our judge?**
+Think of it as hiring a devil's advocate whose only job is to find a flaw in your
+conclusion. We want to know how confident we can be in any number our judge produces —
+and the only way to find out is to attack it.
 
 ## The attack surface
 
@@ -1327,15 +1363,16 @@ one we cannot.
 
 # 18. Now Give It More Python
 
-The pilot lived inside a deliberately small subset of Python — arithmetic, a few
-comparisons, a couple of list operations, basic conditionals. That narrowness is what
-let us measure capability cleanly. But a capability map built on one tiny subset only
-tells you where the boundary is *for that subset*. Real capability grows by adding
-more of the language, one controlled step at a time.
+Our pilot model lived inside a deliberately small corner of Python — a bit of
+arithmetic, a couple of comparisons, a few list operations, some basic if/else. That
+tiny corner is what let us measure capability cleanly: change one small thing at a
+time and watch what happens.
 
-This chapter is about the **capability ladder** — the discipline of expanding what the
-model is allowed to do, one rung at a time, so we can watch where it starts to fall
-apart.
+But a capability map drawn on one tiny corner only tells you where the boundary is
+*for that corner.* Real capability grows by letting the model use more of the language.
+This chapter is about the **capability ladder** — the discipline of widening what the
+model may do, one controlled step at a time, so we can watch exactly where it starts
+to fall apart.
 
 ## The ladder
 

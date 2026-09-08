@@ -1,10 +1,13 @@
 # 3. Give the Model One Job
 
-Before we can run any experiment, we have to define the task so precisely that a
-machine can execute it and we can objectively score it. This is the discipline that
-makes everything after possible. Vague tasks give vague answers; a task with
-deterministic inputs, executable outputs, and hidden tests gives crisp, auditable
-answers.
+Before we can run any experiment, we have to pin down the task so precisely that a
+machine can carry it out and we can score it objectively. Vague tasks give vague
+answers; a task with concrete inputs, runnable outputs, and hidden tests gives
+crisp, checkable answers.
+
+Think of a well-designed exam question. It's not enough to say "write a program about
+numbers." You need: exactly what the input is, exactly what the program should do, and
+exactly how to check if it's right. That's what we're about to define.
 
 ## The task
 
