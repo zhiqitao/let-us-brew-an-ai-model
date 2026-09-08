@@ -1,0 +1,41 @@
+{
+  "rows": [
+    {
+      "dataset_size": 100,
+      "final_loss": 0.0,
+      "pass_at_1": 0.1,
+      "train_time_s": 495.7
+    },
+    {
+      "dataset_size": 300,
+      "final_loss": 0.0,
+      "pass_at_1": 0.098,
+      "train_time_s": 486.6
+    },
+    {
+      "dataset_size": 1000,
+      "final_loss": 0.022,
+      "pass_at_1": 0.3,
+      "train_time_s": 481.6
+    },
+    {
+      "dataset_size": 3000,
+      "final_loss": 0.025,
+      "pass_at_1": 0.641,
+      "train_time_s": 581.4
+    }
+  ],
+  "config": {
+    "sizes": [
+      100,
+      300,
+      1000,
+      3000
+    ],
+    "steps": 800,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "seed": 0
+  }
+}
