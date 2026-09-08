@@ -1,0 +1,7 @@
+{
+  "exact_train": 60,
+  "train_n": 60,
+  "pass1_train": 60,
+  "pass1_test": 59,
+  "test_n": 60
+}
