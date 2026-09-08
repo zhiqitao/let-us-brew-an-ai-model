@@ -14,27 +14,25 @@ class RetrievalBaseline:
     def __init__(self, train_tasks):
         """Store training tasks and build a TF-IDF index over their prompts."""
         self.tasks = train_tasks
-        self.index = self._build_index([t["nl"]["prompt"] for t in train_tasks])
-
-    def _build_index(self, texts):
+        self._cos = None
         try:
             from sklearn.feature_extraction.text import TfidfVectorizer
             from sklearn.metrics.pairwise import cosine_similarity
             self._cos = cosine_similarity
+            texts = [t["nl"]["prompt"] for t in train_tasks]
             self._vec = TfidfVectorizer().fit(texts)
-            return self._vec
+            self._train_mat = self._vec.transform(texts)  # precompute ONCE
+            self.index = self._vec
         except ImportError:
-            self._cos = None
-            return None
+            self.index = None
+            self._train_mat = None
 
     def retrieve(self, prompt):
         """Return the reference program of the most-similar training task."""
-        if self.index is None or self._cos is None:
+        if self._train_mat is None or self._cos is None:
             return None
-        from sklearn.metrics.pairwise import cosine_similarity
-        q = self.index.transform([prompt])
-        train_mat = self.index.transform([t["nl"]["prompt"] for t in self.tasks])
-        sim = cosine_similarity(q, train_mat)[0]
+        q = self._vec.transform([prompt])
+        sim = self._cos(q, self._train_mat)[0]
         best = int(sim.argmax())
         return self.tasks[best]["reference_code"]
 
