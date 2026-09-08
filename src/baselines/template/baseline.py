@@ -41,9 +41,23 @@ def template_baseline_generate(task):
     op = detect_operation(task["nl"]["prompt"])
     if op is None:
         return "def solve(*args):\n    return 0"  # deliberately wrong -> won't pass
-    # Reuse the semantics' arg names; regenerate reference for the detected op.
-    sem = dict(task["semantics"]); sem["operation"] = op
+    # Build a semantics record whose arg names match the detected op's arity.
+    sem = dict(task["semantics"])
+    sem["operation"] = op
+    sem["args"] = _args_for(op, sem.get("args", []))
     try:
         return generate_reference(sem)
     except ValueError:
         return "def solve(*args):\n    return 0"
+
+
+def _args_for(op, orig_args):
+    """Return a fresh args list with names appropriate to `op`'s arity."""
+    # Original names if present, else fallback names.
+    base = [a["name"] for a in orig_args] or ["a", "b", "c", "x", "xs"]
+    arity = {"add": 2, "sub": 2, "mul": 2, "max_of": 2, "min_of": 2,
+             "cond_abs_max": 2, "abs_of": 1, "list_sum": 1, "list_len": 1,
+             "first_element": 1}.get(op, 1)
+    names = (base + ["a", "b", "c", "x", "y", "xs"])[:arity]
+    arg_type = "list" if op in ("list_sum", "list_len", "first_element") else "int"
+    return [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(arity)]

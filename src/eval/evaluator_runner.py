@@ -19,7 +19,12 @@ def generate_code(model, tokenizer, prompt, max_new=80, prompt_marker="\n"):
     out = model.generate(ctx, max_new=max_new)
     gen_ids = out[0].tolist()
     code = tokenizer.decode(gen_ids[len(ids):])
-    return code
+    # Truncate at the first NUL byte (a valid Python program never contains it).
+    # The model tends to pad with NUL after producing a complete program.
+    nul = code.find("\x00")
+    if nul != -1:
+        code = code[:nul]
+    return code.strip()
 
 
 def evaluate_candidates(tasks, judge, candidate_fn, label):

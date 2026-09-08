@@ -1,0 +1,44 @@
+{
+  "experiment_id": "stage1_seed0",
+  "status": "MEASURED",
+  "config": {
+    "steps": 1500,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "bs": 16,
+    "lr": 0.001,
+    "seed": 0
+  },
+  "model_params": {
+    "embedding": 53632,
+    "non_embedding": 830592,
+    "total": 884224
+  },
+  "tokenizer_vocab": 291,
+  "train_time_s": 514.3,
+  "final_train_loss": 0.0208,
+  "results": [
+    {
+      "label": "MODEL",
+      "syntax_rate": 0.0,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0
+    },
+    {
+      "label": "TEMPLATE",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.9,
+      "pass_at_1": 0.8
+    },
+    {
+      "label": "RETRIEVAL",
+      "syntax_rate": 1.0,
+      "executable_rate": 1.0,
+      "pass_at_1": 1.0
+    }
+  ],
+  "dataset_version": "v0_1",
+  "evaluator_version": "v0_1",
+  "spec_version": "python_capability_v0_1"
+}
