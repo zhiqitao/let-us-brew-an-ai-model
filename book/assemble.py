@@ -35,6 +35,7 @@ ORDER = [
     "ch22_the_capability_map.md",
     "ch23_what_small_models_can_actually_learn.md",
     "ch24_the_model_wasnt_the_point.md",
+    "appendix_a_generator.md",
 ]
 
 TITLE = """---
