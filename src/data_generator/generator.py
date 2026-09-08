@@ -74,22 +74,22 @@ def _complexity(op):
             "list_sum": 3, "list_len": 2, "first_element": 1}.get(op, 1)
 
 
-def make_task(operation, task_id, seed, id_set="letters", split="train"):
+def make_task(operation, task_id, seed, id_set="letters", split="train", family=None):
     """Produce one complete Task record."""
     rng = random.Random(seed)
     sem = make_semantics(operation, rng, id_set)
     ref = generate_reference(sem, rng)
-    prompt, family = render_nl(sem, rng=rng)
+    prompt, fam_name = render_nl(sem, family=family, rng=rng)
     tests = generate_hidden_tests(sem, rng=rng)
     return {
         "task_id": task_id,
         "semantics": sem,
         "reference_code": ref,
-        "nl": {"prompt": prompt, "template_family": family, "paraphrase": prompt},
+        "nl": {"prompt": prompt, "template_family": fam_name, "paraphrase": prompt},
         "hidden_tests": tests,
         "metadata": {
-            "linguistic_template": family,
-            "paraphrase_family": family,
+            "linguistic_template": fam_name,
+            "paraphrase_family": fam_name,
             "seed": seed,
             "identifier_set": id_set,
         },
