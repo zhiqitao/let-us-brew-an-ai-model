@@ -53,11 +53,14 @@ def template_baseline_generate(task):
 
 def _args_for(op, orig_args):
     """Return a fresh args list with names appropriate to `op`'s arity."""
-    # Original names if present, else fallback names.
     base = [a["name"] for a in orig_args] or ["a", "b", "c", "x", "xs"]
     arity = {"add": 2, "sub": 2, "mul": 2, "max_of": 2, "min_of": 2,
              "cond_abs_max": 2, "abs_of": 1, "list_sum": 1, "list_len": 1,
-             "first_element": 1}.get(op, 1)
+             "first_element": 1,
+             # composite
+             "abs_add": 2, "sub_abs": 2, "max_add": 2, "sum_of_abs": 1,
+             "double_first": 1, "len_minus_one": 1}.get(op, 2)
     names = (base + ["a", "b", "c", "x", "y", "xs"])[:arity]
-    arg_type = "list" if op in ("list_sum", "list_len", "first_element") else "int"
+    arg_type = "list" if op in ("list_sum", "list_len", "first_element",
+                                "sum_of_abs", "double_first", "len_minus_one") else "int"
     return [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(arity)]

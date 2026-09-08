@@ -57,11 +57,37 @@ def generate_hidden_tests(sem, rng=None, count=8):
         add([5], note="single")
         add(0 if False else xs, note="reuse")
 
-    elif op == "abs_of":
+    if op == "abs_of":
         add(_rand_int(rng), note="basic")
         add(0, note="zero")
         add(-_rand_int(rng, 1, 50), note="negative")
         add(-_rand_int(rng, 900, 999), note="large-negative")
+
+    elif op in ("abs_add", "sub_abs", "max_add"):
+        a = _rand_int(rng); b = _rand_int(rng)
+        add(a, b, note="basic")
+        add(0, 0, note="zero")
+        add(-_rand_int(rng, 1, 50), _rand_int(rng, 1, 50), note="negative")
+        add(_rand_int(rng, 1, 50), -_rand_int(rng, 1, 50), note="negative")
+        add(-_rand_int(rng, 20, 60), -_rand_int(rng, 20, 60), note="both-negative")
+        add(_rand_int(rng, 900, 1000), _rand_int(rng, 900, 1000), note="large")
+        add(_rand_int(rng), _rand_int(rng), note="random")
+
+    elif op in ("sum_of_abs",):
+        add([], note="empty")
+        add([_rand_int(rng) for _ in range(rng.randint(1, 6))], note="basic")
+        add([-1, -2, -3], note="all-negative")
+        add([_rand_int(rng, -9, 9) for _ in range(4)], note="mixed")
+        add([_rand_int(rng, 10, 99), -_rand_int(rng, 10, 99)], note="large-mixed")
+
+    elif op in ("double_first", "len_minus_one"):
+        xs = [_rand_int(rng) for _ in range(rng.randint(1, 6))]
+        if op == "len_minus_one":
+            add([], note="empty")
+        if op == "double_first":
+            add([_rand_int(rng)], note="single")
+        add(xs, note="basic")
+        add([_rand_int(rng, 100, 999), _rand_int(rng)], note="large-first")
 
     # cap count
     return tests[:count]
@@ -89,4 +115,17 @@ def _expected(op, vals):
         return len(vals[0])
     if op == "first_element":
         return vals[0][0]
+    # composite operations (structural generalization)
+    if op == "abs_add":
+        return abs(vals[0]) + abs(vals[1])
+    if op == "sub_abs":
+        return abs(vals[0] - vals[1])
+    if op == "sum_of_abs":
+        return sum(abs(x) for x in vals[0])
+    if op == "max_add":
+        return max(vals[0] + vals[1], vals[0] - vals[1])
+    if op == "double_first":
+        return 2 * vals[0][0]
+    if op == "len_minus_one":
+        return len(vals[0]) - 1
     raise ValueError(f"unsupported operation: {op}")

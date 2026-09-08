@@ -43,3 +43,19 @@ def test_all_pilot_operations_have_nl_family():
     from src.data_generator.generator import OPERATIONS
     for op in OPERATIONS:
         assert op in FAMILIES, f"no NL template family for {op}"
+
+
+def test_composite_reference_passes_its_own_tests():
+    from src.data_generator.generator import generate_compositional
+    d = generate_compositional(n_per_op=4, seed=2)
+    assert len(d) >= 4
+    for t in d:
+        r = j.evaluate_problem(t["reference_code"], t["hidden_tests"])
+        assert r["pass_at_1"], f"composite {t['semantics']['operation']} failed own tests"
+
+
+def test_composite_ops_have_nl_family():
+    from src.nl_renderer.renderer import FAMILIES
+    from src.data_generator.generator import COMPOSITE_OPERATIONS
+    for op in COMPOSITE_OPERATIONS:
+        assert op in FAMILIES, f"no NL template family for composite {op}"

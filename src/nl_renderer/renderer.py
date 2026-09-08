@@ -43,6 +43,39 @@ def _unary_a(op, names, rng):
     return f"Write a function that takes a number {x} and returns its absolute value."
 
 
+def _comp_add_abs(op, names, rng):
+    x, y = names[0], names[1]
+    return (f"Write a function that takes two numbers {x} and {y}, takes the absolute "
+            f"value of each, and returns their sum.")
+
+
+def _comp_sub_abs(op, names, rng):
+    x, y = names[0], names[1]
+    return f"Write a function that returns the absolute value of {x} minus {y}."
+
+
+def _comp_sum_abs(op, names, rng):
+    x = names[0]
+    return (f"Write a function that takes a list of numbers {x} and returns the sum "
+            f"of the absolute value of each element.")
+
+
+def _comp_max_add(op, names, rng):
+    x, y = names[0], names[1]
+    return (f"Write a function that, given {x} and {y}, returns whichever is larger: "
+            f"{x} plus {y}, or {x} minus {y}.")
+
+
+def _comp_double_first(op, names, rng):
+    x = names[0]
+    return f"Write a function that takes a list {x} and returns twice its first element."
+
+
+def _comp_len_minus_one(op, names, rng):
+    x = names[0]
+    return f"Write a function that takes a list {x} and returns one less than its length."
+
+
 FAMILIES = {
     "add": [_a, _b, _c],
     "sub": [_a, _b, _c],
@@ -54,6 +87,13 @@ FAMILIES = {
     "list_len": [_list_a, _list_b],
     "first_element": [_list_a, _list_b],
     "cond_abs_max": [_a],
+    # composite (held out of training; only for compositional test split)
+    "abs_add": [_comp_add_abs],
+    "sub_abs": [_comp_sub_abs],
+    "sum_of_abs": [_comp_sum_abs],
+    "max_add": [_comp_max_add],
+    "double_first": [_comp_double_first],
+    "len_minus_one": [_comp_len_minus_one],
 }
 
 

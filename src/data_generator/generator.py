@@ -24,6 +24,14 @@ OPERATIONS = {
     "cond_abs_max": 2,
 }
 
+# COMPOSITE operations: each composes two primitives. These are held OUT of the
+# training set and only appear in the compositional hold-out split, so the model
+# must COMPOSE (Level-4 structural generalization) rather than retrieve.
+COMPOSITE_OPERATIONS = {
+    "abs_add": 2, "sub_abs": 2, "sum_of_abs": 1,
+    "max_add": 2, "double_first": 1, "len_minus_one": 1,
+}
+
 # Identifier sets: short letter names vs verbose descriptive names. We vary these to
 # control for identifier-leakage in surface-generalization experiments.
 IDENTIFIER_SETS = {
@@ -34,16 +42,18 @@ IDENTIFIER_SETS = {
 
 def make_semantics(operation, rng, id_set="letters"):
     """Build a `semantics` dict for a task (the ground truth)."""
-    n = OPERATIONS[operation]
+    from src.data_generator.generator import OPERATIONS, COMPOSITE_OPERATIONS
+    n = (OPERATIONS if operation in OPERATIONS else COMPOSITE_OPERATIONS)[operation]
     idents = IDENTIFIER_SETS[id_set][:n + 2]
     names = list(idents[:n])
-    arg_type = "list" if operation in ("list_sum", "list_len", "first_element") else "int"
+    arg_type = "list" if operation in ("list_sum", "list_len", "first_element",
+                                       "sum_of_abs", "double_first", "len_minus_one") else "int"
     args = [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(n)]
     return {
         "operation": operation,
         "args": args,
         "input_types": [arg_type] * n,
-        "output_type": arg_type if operation in ("list_len", "first_element") else "int",
+        "output_type": arg_type if operation in ("list_len", "first_element", "len_minus_one") else "int",
         "capability_tags": _tags(operation),
         "complexity": _complexity(operation),
     }
@@ -102,6 +112,24 @@ def generate_dataset(n_per_op=60, id_set="letters", seed=0):
         for i in range(n_per_op):
             tasks.append(make_task(op, f"{op}_{i:04d}", seed + i, id_set=id_set))
     return tasks
+
+
+def generate_compositional(n_per_op=40, id_set="letters", seed=1000):
+    """Generate COMPOSITE (held-out) tasks for the structural-generalization split.
+
+    These compose primitives the model was trained on, but the COMBINATION itself
+    never appears in training — so the model must compose, not retrieve.
+    """
+    rng = random.Random(seed)
+    tasks = []
+    for op in COMPOSITE_OPERATIONS:
+        for i in range(n_per_op):
+            tasks.append(make_task(op, f"{op}_{i:04d}", seed + i, id_set=id_set))
+    return tasks
+
+
+def all_operation_names():
+    return list(OPERATIONS) + list(COMPOSITE_OPERATIONS)
 
 
 if __name__ == "__main__":
