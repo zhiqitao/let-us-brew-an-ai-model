@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Schema v0.1",
+  "description": "Semantic representation of one programming task. One semantic record drives the reference program, the natural-language specification, and the hidden tests.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "semantics",
+    "spec_version",
+    "dataset_version",
+    "split"
+  ],
+  "properties": {
+    "task_id": { "type": "string", "description": "Unique task identifier" },
+    "spec_version": { "type": "string", "description": "Python capability spec version, e.g. python_capability_v0_1" },
+    "dataset_version": { "type": "string", "description": "Dataset generator version" },
+    "split": { "enum": ["train", "val", "test", "gen_constants", "gen_identifiers", "gen_wording", "gen_templates", "composition_holdout"] },
+    "semantics": {
+      "type": "object",
+      "description": "The semantic intent. This is the ground truth the reference code, NL spec, and hidden tests are generated FROM.",
+      "required": ["operation", "input_types", "output_type"],
+      "properties": {
+        "operation": {
+          "type": "string",
+          "description": "The abstract operation, e.g. add, mul, max, sum_list, first_element, cond_max"
+        },
+        "args": {
+          "type": "array",
+          "description": "Argument descriptors, e.g. [{name: a, type: int, role: operand}, {name: b, type: int, role: operand}]",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "role": { "type": "string" }
+            }
+          }
+        },
+        "input_types": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Types of the function inputs, e.g. [int, int] or [list]"
+        },
+        "output_type": { "type": "string", "description": "Return type, e.g. int" },
+        "constants": {
+          "type": "array",
+          "items": { "type": ["integer", "number"] },
+          "description": "Explicit constants baked into the task, if any"
+        },
+        "structure": {
+          "type": "object",
+          "description": "Optional treespec of the reference program AST shape (for metadata + compositional splits)",
+          "properties": {
+            "nodes": { "type": "integer" },
+            "depth": { "type": "integer" },
+            "composition": { "type": "string", "description": "e.g. single, add_of_two, nested, sequence" }
+          }
+        },
+        "complexity": {
+          "type": "integer",
+          "description": "Rough complexity class, e.g. number of operations"
+        },
+        "capability_tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Which capability-ladder capabilities this task exercises, e.g. [arithmetic, variables]"
+        }
+      }
+    },
+    "reference_code": {
+      "type": "string",
+      "description": "The ground-truth reference Python program (pure function)"
+    },
+    "nl": {
+      "type": "object",
+      "description": "The natural-language specification(s).",
+      "properties": {
+        "template_family": { "type": "string", "description": "Which paraphrase family this wording came from" },
+        "paraphrase": { "type": "string", "description": "The rendered natural-language prompt" },
+        "prompt": { "type": "string", "description": "Full prompt sent to the model" },
+        "alt_prompts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Alternative paraphrases for surface-generalization tests"
+        }
+      }
+    },
+    "hidden_tests": {
+      "type": "array",
+      "description": "Independent test cases. Each: {args: [...], expected: ...}",
+      "items": {
+        "type": "object",
+        "properties": {
+          "args": { "type": "array" },
+          "expected": { "type": ["integer", "number", "boolean", "string", "array", "object", "null"] },
+          "note": { "type": "string", "description": "e.g. zero, negative, boundary, large" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Reproducibility metadata for this task.",
+      "properties": {
+        "linguistic_template": { "type": "string" },
+        "paraphrase_family": { "type": "string" },
+        "seed": { "type": "integer" },
+        "constant_set": { "type": "string", "description": "Which constant distribution this task drew from" },
+        "identifier_set": { "type": "string", "description": "Which identifier-set this task drew from (e.g. letters vs verbose words)" }
+      }
+    }
+  }
+}
