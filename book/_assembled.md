@@ -1423,9 +1423,13 @@ specific — is worth more than a glossy claim of having "reached Python Level 8
 
 # 19. The Capability Ladder Revisited
 
-We have climbed parts of the ladder through the experiments. This chapter compiles
-what we found into the picture the ladder was always meant to produce: a map of where
+We've climbed parts of the ladder through the experiments. This chapter pulls together
+what we found into the picture the ladder was always meant to give us: a map of where
 capability appears, where it holds, and where it breaks.
+
+Think of the ladder as a staircase of increasingly demanding skills. You can see how
+many steps the model climbed — and, more interestingly, the exact step where it
+stopped, and what it took to get there.
 
 ## The ladder, with the measured results
 
@@ -1491,16 +1495,20 @@ not at scaling.
 
 # 20. What Happens When We Teach It Something New?
 
-Every chapter so far has asked how a small model behaves on one task. But real
-capability is not acquired in one shot — it is *grown* by adding new things over time.
-Which raises the question at the heart of continual learning: when you teach a model
-something new, does the new capability survive, and does the model **keep** the old
-ones?
+Every chapter so far has asked how the model handles one task. But real capability
+isn't learned in one shot — it's *grown*, by adding new things over time. That raises
+the question at the heart of continual learning: when you teach a model something new,
+does the new thing stick — and does the model **keep** the old things?
 
-There is a well-known failure mode here, and it goes by the alarmist name
-**catastrophic forgetting** — the tendency for a model, after training on task B, to
-lose what it learned on task A. The question is whether that happens to our small
-model, and crucially, whether the *way* we train determines it.
+There's a well-known failure mode with a scary name: **catastrophic forgetting** — the
+tendency of a model, after training on task B, to lose what it learned on task A. We
+want to know whether that happens to our small model, and, crucially, whether the
+*way* we train determines it.
+
+Think of it like learning a new language. If you study French for a year, then stop
+and study Spanish exclusively, how much French do you still have? It depends a lot on
+whether you keep practicing French while learning Spanish — which is exactly what this
+experiment tests.
 
 ## The setup
 
@@ -1582,11 +1590,15 @@ it is one of the most practically useful results in the book.
 
 \newpage
 
-# Chapter 20/21 — The Cost of Capability
+# 21. The Cost of Capability
 
-This chapter answers: *what does each additional capability actually cost?* Using the
-measured experiments, we build a cost matrix that makes the trade-offs explicit —
-and reveals something important about what "capability" is costing us.
+We've measured what the model can do and where it breaks. This chapter answers the
+last practical question: *what does each capability actually cost?*
+
+The obvious "costs" — data, parameters, training time — are the easy ones. But the
+real cost in machine learning is the hidden one: what it takes to make a capability
+actually *robust* rather than just *appearing* to work. That's where the expensive and
+surprising part lives.
 
 ## The cost matrix
 

@@ -1,8 +1,12 @@
 # 19. The Capability Ladder Revisited
 
-We have climbed parts of the ladder through the experiments. This chapter compiles
-what we found into the picture the ladder was always meant to produce: a map of where
+We've climbed parts of the ladder through the experiments. This chapter pulls together
+what we found into the picture the ladder was always meant to give us: a map of where
 capability appears, where it holds, and where it breaks.
+
+Think of the ladder as a staircase of increasingly demanding skills. You can see how
+many steps the model climbed — and, more interestingly, the exact step where it
+stopped, and what it took to get there.
 
 ## The ladder, with the measured results
 

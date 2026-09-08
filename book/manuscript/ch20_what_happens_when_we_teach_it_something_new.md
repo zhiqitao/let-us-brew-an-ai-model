@@ -1,15 +1,19 @@
 # 20. What Happens When We Teach It Something New?
 
-Every chapter so far has asked how a small model behaves on one task. But real
-capability is not acquired in one shot — it is *grown* by adding new things over time.
-Which raises the question at the heart of continual learning: when you teach a model
-something new, does the new capability survive, and does the model **keep** the old
-ones?
+Every chapter so far has asked how the model handles one task. But real capability
+isn't learned in one shot — it's *grown*, by adding new things over time. That raises
+the question at the heart of continual learning: when you teach a model something new,
+does the new thing stick — and does the model **keep** the old things?
 
-There is a well-known failure mode here, and it goes by the alarmist name
-**catastrophic forgetting** — the tendency for a model, after training on task B, to
-lose what it learned on task A. The question is whether that happens to our small
-model, and crucially, whether the *way* we train determines it.
+There's a well-known failure mode with a scary name: **catastrophic forgetting** — the
+tendency of a model, after training on task B, to lose what it learned on task A. We
+want to know whether that happens to our small model, and, crucially, whether the
+*way* we train determines it.
+
+Think of it like learning a new language. If you study French for a year, then stop
+and study Spanish exclusively, how much French do you still have? It depends a lot on
+whether you keep practicing French while learning Spanish — which is exactly what this
+experiment tests.
 
 ## The setup
 

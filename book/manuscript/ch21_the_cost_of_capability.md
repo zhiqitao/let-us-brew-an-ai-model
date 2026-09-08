@@ -1,8 +1,12 @@
-# Chapter 20/21 — The Cost of Capability
+# 21. The Cost of Capability
 
-This chapter answers: *what does each additional capability actually cost?* Using the
-measured experiments, we build a cost matrix that makes the trade-offs explicit —
-and reveals something important about what "capability" is costing us.
+We've measured what the model can do and where it breaks. This chapter answers the
+last practical question: *what does each capability actually cost?*
+
+The obvious "costs" — data, parameters, training time — are the easy ones. But the
+real cost in machine learning is the hidden one: what it takes to make a capability
+actually *robust* rather than just *appearing* to work. That's where the expensive and
+surprising part lives.
 
 ## The cost matrix
 
