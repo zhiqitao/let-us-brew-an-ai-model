@@ -1,13 +1,21 @@
 # 17. Red-Team the Judge
 
-We built a judge and I argued it's the instrument we stake the book on. Chapter 6
+We built a judge and argued it is the instrument we stake the book on. Chapter 6
 showed how we test it (mutation testing) and that it caught a bug. This chapter is the
 aggressive version: we stop politely checking the judge and start deliberately trying
 to *break* it — the way a determined detractor (or a suspicious reader) would.
 
-Think of it as hiring a devil's advocate whose only job is to find a flaw in your
-conclusion. We want to know how confident we can be in any number our judge produces —
+Think of it as hiring a devil's advocate whose only job is to find a flaw in the conclusion. We want to know how confident we can be in any number our judge produces —
 and the only way to find out is to attack it.
+
+There is a reason to be particularly aggressive here, and it goes to the heart of the
+book. Our whole method is built on trusting measurements: we claim the model is
+surface-tied, non-compositional, that it forgets under sequential training. Every one
+of those claims passes through the judge. So if the judge is broken in even one
+respect, every conclusion in the book could be subtly wrong. Red-teaming the judge is
+not a single chapter's task; it is the standing obligation of the whole experiment. And
+it is an *unbounded* one — we can never prove the judge is perfect, only that we have
+tried hard to break it and failed.
 
 ## The attack surface
 
@@ -27,6 +35,12 @@ enumerate the ways a candidate could slip through:
 - **ambiguous specifications** — a prompt the model could reasonably read two ways,
 - **evaluator inconsistencies** — the same program scored differently in two runs.
 
+This list is a map of the ways the judge could be fooled — and each entry is a place
+we must probe. The point of enumerating the surface is that skepticism is only useful
+when it is specific. "The judge might be wrong" is not actionable. "The judge might
+let a hardcoded-output program pass if the tests are too narrow" is a concrete thing
+we can check.
+
 ## What we found
 
 The mutation suite is the sharpest tool here. By generating deliberately-broken
@@ -34,6 +48,14 @@ variants of the reference solution and checking that the hidden tests catch them
 measured how discriminating the tests really are. If an obviously-wrong mutant — say
 `+` changed to `-` — passes our tests, the tests are too weak and must be strengthened
 until important mutant classes are reliably detected.
+
+A useful way to think about mutation testing is that it measures the *discriminating
+power* of the test suite. A test suite that passes for a correct program and fails for
+an incorrect one is a good suite. A suite that passes for both is not testing
+anything — it is going through the motions. The mutation score tells us, concretely,
+how much of that "should be caught" space our tests actually cover. And the whole
+point is to drive it up: the more wrong programs the judge rejects, the more we trust
+that a program it accepts is actually right.
 
 And the judge's honesty was validated the hard way: it reported the model at 0.000 on
 our very first evaluation, and that was a *judge bug*, not a model failure. Once we
@@ -48,8 +70,15 @@ number" and "we know the number means something." The specific lessons:
 - **Strengthen tests until wrong programs fail.** The mutation score is the measure.
 - **Trust the judge less than the tests.** The judge is a pipeline; the *hidden tests*
   are what actually catch errors, so they must be numerous and edge-case-complete.
-- **Attack your own instrument deliberately.** The adversarial habit — "how could this
+- **Attack our own instrument deliberately.** The adversarial habit — "how could this
   number be wrong?" — is what keeps the whole experiment honest.
 
-A judge that has been red-teamed is one we can believe. A judge we've only used is
-one we cannot.
+A judge that has been red-teamed is one we can believe. A judge we've only used is one
+we cannot.
+
+And there is a final lesson that reaches beyond judges. Every measurement instrument —
+in science, in engineering, in daily life — can fail in ways its designer did not
+anticipate. The discipline of attacking our own apparatus is the same discipline that
+makes a result worth believing. It is not paranoia; it is the price of a claim we can
+stand behind. The book's whole credibility rests on having paid it, and having
+recorded that we paid it, rather than merely asserting that we are trustworthy.

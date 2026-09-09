@@ -20,10 +20,10 @@ The naive way to generate data is to write a template and fill in a few blanks:
 template -> sentence -> code
 ```
 
-You write "add {a} and {b}" and a few code snippets, and you're done. This is fast and
+We write "add {a} and {b}" and a few code snippets, and we are done. This is fast and
 easy, and it's exactly the wrong way to do it. The problem is that the sentence and
 the code are generated **independently**, from a template, so there's no guarantee they
-mean the same thing. You can end up with a sentence that says "add" but code that
+mean the same thing. We can end up with a sentence that says "add" but code that
 subtracts, or a test that checks the wrong thing.
 
 We do the opposite. We start from the **meaning** and generate everything else **from
@@ -39,7 +39,7 @@ SEMANTIC INTENT
 
 The key insight is at the top: **one semantic record drives all three.** There is no
 way for the sentence to disagree with the code or the tests, because they are all the
-same meaning, rendered three ways. If you start with "the function should return
+same meaning, rendered three ways. If we start with "the function should return
 `a + b`," the sentence says "sum," the code adds, and the tests check addition — and
 they can't drift apart, because they all came from the same seed.
 

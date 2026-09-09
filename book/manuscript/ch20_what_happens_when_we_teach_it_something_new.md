@@ -2,7 +2,7 @@
 
 Every chapter so far has asked how the model handles one task. But real capability
 isn't learned in one shot — it's *grown*, by adding new things over time. That raises
-the question at the heart of continual learning: when you teach a model something new,
+the question at the heart of continual learning: when we teach a model something new,
 does the new thing stick — and does the model **keep** the old things?
 
 There's a well-known failure mode with a scary name: **catastrophic forgetting** — the
@@ -10,10 +10,12 @@ tendency of a model, after training on task B, to lose what it learned on task A
 want to know whether that happens to our small model, and, crucially, whether the
 *way* we train determines it.
 
-Think of it like learning a new language. If you study French for a year, then stop
-and study Spanish exclusively, how much French do you still have? It depends a lot on
-whether you keep practicing French while learning Spanish — which is exactly what this
-experiment tests.
+Think of it like learning a new language. Study French for a year, then stop
+and study Spanish exclusively — how much French is left? A lot depends on whether
+French keeps being practiced while Spanish is learned — which is exactly what this
+experiment tests. And it is a question almost every learning system faces: a deployed
+model is rarely trained once and frozen. It is updated, re-trained, fine-tuned on new
+data. So whether it *keeps* what it knew is a practical concern, not an academic one.
 
 ## The setup
 
@@ -26,11 +28,22 @@ We train on A, then introduce B, and measure both:
 - **B acquisition** — did it learn the new capability?
 - **A retention** — did it keep the old one, or did learning B destroy it?
 
+This double measurement is the crux of the design. Many continual-learning reports
+measure only whether the model acquired the *new* task, and that alone can make the
+whole thing look like a success. But the interesting failure is usually what was *lost*
+to get there. So we insist on measuring both, every time.
+
 We run this under two protocols, changing only the *order and mixing*, not the model,
 data, or optimizer:
 
 - **sequential:** learn A fully, then learn B with no A exposure.
 - **replay / mixed:** interleave A and B examples throughout.
+
+Holding model, data, and optimizer constant while changing only the training
+*schedule* is a textbook application of our one-variable discipline. If the results
+differ between the two protocols, the difference cannot be attributed to the model,
+the data, or the optimizer — it must be the schedule. That makes any difference we
+find a *procedure* finding, exactly the thing we want to isolate.
 
 ## The result
 ![Continual learning](figures/fig_continual.png)
@@ -52,22 +65,38 @@ model's A-retention is a perfect **1.000**, and B-acquisition is **0.889** — i
 to sequential. So replay bought complete retention of the old capability with **no
 trade-off whatsoever** in learning the new one.
 
-## What this teaches
+## Why this result is so striking
+
+The symmetry is what makes this remarkable. Under sequential training, the model
+forgets A completely (0.000) but learns B fine (0.889). Under replay, it keeps A
+perfectly (1.000) *and* learns B just as well (0.889). Nothing about the model, the
+data, or the optimizer changed — only whether the old examples stayed in the mix while
+the new ones were learned.
 
 This is the clearest case in the book where the **training protocol, not the model or
 the data, determines the outcome.** Same model. Same data. Same optimizer. The only
 difference is whether the first capability stays "in the mix" while the second is
 learned. Sequential forgets; replay retains.
 
-The lesson generalizes directly: when you add a new capability to a model, *how* you
-do it matters more than any property of the model itself. If you let the new task
-dominate the gradient signal and remove the old data, the old capability collapses.
-If you keep old and new interleaved, the model can hold both.
+There is an intuition that makes this easy to see. Imagine a muscle being trained on
+exercise A. If it then trains exclusively on exercise B and never revisits A, the
+muscle's adaptation to A fades. But if A and B alternate, both stay. The model's
+weights are like that muscle — the gradient signal from new examples keeps pushing
+them, and if nothing pulls them back toward the old behavior, the old behavior
+erases. Replay is simply making sure the old examples are still in the rotation.
+
+The lesson generalizes directly: when a new capability is added to a model, *how* it
+is done matters more than any property of the model itself. If the new task is allowed
+to dominate the gradient signal and the old data is removed, the old capability
+collapses. If old and new stay interleaved, the model can hold both.
+
+## Reframing a common assumption
 
 And it reframes a common assumption. People often reach for "a bigger model" when
 confronted with a model that forgets. This experiment shows the forgetting was never
 a capacity problem — a ~0.9M model holds both capabilities perfectly under replay. It
-was a *training procedure* problem.
+was a *training procedure* problem. Here, as with composition, the instinctive fix
+("make it bigger") would have been exactly wrong.
 
 The pattern here echoes a deeper truth we've seen all book: the headline number
 ("did it learn the new thing?") hides the interesting failure ("what did it lose to
@@ -88,7 +117,16 @@ to always measure *both* the new and the old.
 
 ## The honest summary
 
-Acquiring a new capability can destroy an old one — and it is entirely up to how you
+Acquiring a new capability can destroy an old one — and it is entirely up to how we
 train. Sequential training forgets; replay retains with no cost. This is a controlled,
 reproducible demonstration that catastrophic forgetting is a procedure problem, and
 it is one of the most practically useful results in the book.
+
+What makes it feel like a real discovery is that the right answer was sitting in a
+choice we made near-automatically. When we first set up the experiment, sequential
+training was the path of least resistance — learn one thing, then the next. The
+surprise came from asking the question we almost didn't ask: what did the model lose
+to learn the new thing? And the fix — just keeping old examples in the mix — was so
+simple it was almost anticlimactic. But that simplicity is the point. Sometimes the
+most important finding in an experiment is not a complex technique but a simple
+change to the way we were already working.

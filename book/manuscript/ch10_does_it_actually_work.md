@@ -3,8 +3,10 @@
 We have a trained model, a judge, and a test set. The natural question is the one
 the whole book has been building toward: *does it actually work?*
 
-And the answer, as with almost everything in this book, is **"it depends on what you
-mean,"** and then **"let's measure it rather than argue."**
+And the answer, as with almost everything in this book, is **"it depends on what we mean,"** and then **"let's measure it rather than argue."** Because "works" is not a
+single number. It is a question about *which* kind of capability, under *which*
+conditions, measured in *which* way. The job of this chapter is to take that vague
+word and replace it with something we can actually see.
 
 ## The setup
 
@@ -15,7 +17,9 @@ embedding and 830,592 are the actual computation. It saw 1,500 gradient steps on
 batch of 16, reaching a training loss of **0.0208**.
 
 We then asked it to solve 300 **held-out** test tasks it never saw, and scored each
-generated program by executing it against that task's hidden tests.
+generated program by executing it against that task's hidden tests. This is the
+moment of truth for the whole apparatus: everything we built — the world, the
+teacher, the judge, the rivals — converges on this measurement.
 
 ## What we measured: pass@1
 
@@ -51,6 +55,44 @@ training example.
 This is exactly the "task too easy" outcome the experimental plan anticipated, and it
 is scientifically useful: it tells us *how to make the next task harder.*
 
+## The moment that broke us (and the evaluator, not the model)
+
+There is a story behind these numbers that is more instructive than the numbers
+themselves, and it is worth telling plainly. When we ran the evaluation for the very
+first time, the model scored **0.000**. Not 0.897 — zero. Every single generated
+program failed the syntax check.
+
+Our first instinct, naturally, was that the model was useless. We had spent hours
+building a careful apparatus and the tiny model could not even produce a parseable
+program. It would have been easy to conclude "the model doesn't work" and write the
+whole thing off.
+
+But the book's own discipline — *test the tester* — demanded we ask whether the
+*judge* was the problem, not the model. So we looked at what the judge actually
+saw. And there it was: the generated programs were perfectly valid Python, except
+they had a run of **NUL bytes** (`\x00`) appended after the finished program. The
+model had learned to pad its output with a byte that means "nothing," and Python's
+parser rejects NUL bytes outright. So `ast.parse` threw a syntax error on perfectly
+good code, and the judge scored the model's valid program as a *syntax failure*.
+
+The fix was a single line: truncate the generated program at the first NUL byte. A
+trivial change, and suddenly the model's score leapt from 0.000 to 0.897.
+
+This is the single most important lesson of the whole book, and it is not about the
+model at all. **The evaluator was broken, not the model.** We had designed every
+experiment to detect shortcuts and outright cheating in the *model*, and we nearly
+missed the one case where the measuring stick itself was faulty. The "test the
+tester" principle — that we must verify the tool measures what we think it measures
+before trusting a single number it produces — was not a formality. It just saved the
+entire project from a false negative.
+
+The reason we caught it is worth pausing on. We did not catch it because we are
+clever. We caught it because we had *already* built a method for testing testers
+(the mutation suite in Chapter 6), and we had written the pilot's results to a
+manifest and looked at the intermediate numbers, not just the headline. Had we
+grabbed the final pass@1 and moved on, we would have shipped a book claiming a tiny
+model cannot write Python — a conclusion that was wrong.
+
 ## The shortcut audit
 
 Before we trust the "0.897" number, we have to ask how the model might have gotten
@@ -84,6 +126,10 @@ model learns, and — perhaps most valuably — the experiment told us something
 *uncomfortable but true*. The task is retrieval-solvable, and a model that beats a
 template rule system yet sits below a lookup table has not yet been tested on the
 thing we care about most: whether it generalizes.
+
+And we were reminded, in the most direct way possible, that the measuring stick is as
+much a subject of the experiment as the model. The instrument and the thing measured
+both needed to be honest, and only one of them initially was.
 
 That is the baseline from which every later experiment is measured. From here, we
 stop making the task easier and start making it *probe* generalization.

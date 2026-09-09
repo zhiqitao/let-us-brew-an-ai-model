@@ -32,24 +32,27 @@ not parroting.
    the split is fair: only genuine composition solves it, and the model has none.
 
 **The scaling conclusion is the sharpest negative result.** Composition stays at
-**0.000** across model sizes from 0.88M to 10.2M. More capacity does not buy
-composition. This is not a capacity ceiling in the ~1–10M regime; it is a
+**0.000** across model sizes from 0.88M to 29.3M. More capacity does not buy
+composition. This is not a capacity ceiling in the ~1–30M regime; it is a
 structural/learning limit.
 
-## The four-point grid (so far)
+## The four-point grid (measured)
 
 | Model | in-distribution | composition |
 |-------|-----------------|-------------|
 | 0.88M | 0.900 | **0.000** |
 | 6.5M  | 0.900 | **0.000** |
 | 10.2M | 0.383 | **0.000** |
-| 30M   | *(Pending)*    | *(Pending)* |
+| 29.3M | 0.897 | **0.000** |
 
-Two honest notes on this grid. First, the 10.2M point's *in-distribution* regressed to
-0.383 — the deeper config was under-trained on this narrow task, an instance of
-"bigger isn't always better" at tiny scale; it doesn't change the composition result.
-Second, the 30M point is confirmatory: the composition conclusion is already robust at
-three sizes.
+Four sizes, spanning ~33× in capacity. Composition is **0.000 at every one** — a
+robust, falsifiable finding that the boundary is not about how much brain the model
+has. Two honest notes on the grid. First, the 10.2M point's *in-distribution*
+regressed to 0.383 — the deeper config was under-trained on this narrow task, an
+instance of "bigger isn't always better" at tiny scale; it does not change the
+composition result. Second, in-distribution performance is **not monotonic** in
+capacity (0.900 → 0.900 → 0.383 → 0.897), a worthwhile reminder that more capacity is
+not a strictly-increasing guarantee even at these sizes.
 
 ## The methodology findings
 
@@ -58,7 +61,7 @@ are as valuable as any model number:
 
 - **Test the tester.** Our own evaluator reported the model at 0.000 on its first run.
   It was the *judge* that was broken (a null-byte artifact), not the model. Fixing it
-  revealed the true 0.897. Never trust a number from a system you haven't audited.
+  revealed the true 0.897. Never trust a number from a system we have not audited.
 - **Test the teacher.** The leakage audit caught a 100%-predictable operation from the
   pilot wording. This is why surface splits need held-out template families.
 - **Test the data.** The diversity-vs-quantity experiment showed the *same* example
@@ -71,6 +74,27 @@ are as valuable as any model number:
 - **The protocol, not capacity, determines continual learning.** Sequential training
   destroyed capability A (0.000) when learning B; replay preserved A perfectly (1.000)
   at no cost to B. This is a *procedure* finding.
+
+## The brewing experience, distilled
+
+Beyond the numbers, there is a way of working this book was really about. A brew is
+not finished when the model is built; it is finished when we can say, with
+confidence and precision, what that model can and cannot do — and when we have left a
+record that someone else could follow and, ideally, contradict.
+
+That process had a rhythm. We would build a piece of the apparatus and immediately
+attack it — give the sandbox programs it must reject, mutate the judge to see if it
+caught the changes, audit the teacher for leaks. We would run an experiment, get a
+number, and then spend as much effort asking *how the model might have cheated* as we
+had spent getting the number. And more than once, the interesting discovery was not
+in the model's behavior but in our own tools: the judge that mis-scored a working
+model, the data generator that leaked the operation, the pilot task that a lookup
+table could solve perfectly.
+
+This is the honest shape of empirical work. It is seldom a straight line from
+hypothesis to clean result. It is a loop of building, testing the builder, being
+surprised, and revising. The surprise is not a detour from the method; it is the
+method. And a book about science should show that loop, not hide it.
 
 ## Where this brew leads
 
@@ -108,3 +132,5 @@ got an answer worth having:
 And the brakes we learned — test the tester, test the teacher, compare against
 baselines, audit shortcuts, preserve failures — are the durable part. That is the
 method worth keeping, and it's the reason the book's real subject was never the model.
+The brew was never only about the model; it was about learning to ask a question
+carefully enough that the answer could be trusted.

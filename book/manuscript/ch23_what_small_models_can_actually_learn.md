@@ -4,7 +4,7 @@ We have run a small, disciplined set of experiments and measured a coherent boun
 Let us now state, carefully and honestly, what the experiments showed — the
 synthesis the whole book has been assembling.
 
-Everything below is scoped to **our** setup: a ~0.9M–6.5M decoder-only transformer,
+Everything below is scoped to **our** setup: a ~0.9M–29.3M decoder-only transformer,
 trained on a few thousand generated natural-language-to-Python tasks, evaluated by a
 mutation-tested execution-based judge. These are claims about this brew, not
 universal laws about all small models.
@@ -56,7 +56,7 @@ compositional engine.
 > A ~0.9M model genuinely learns individual mappings and generalizes them across
 > *instances*, but the knowledge is surface-tied (new wording → 0.000) and
 > non-compositional (unseen combinations → 0.000) — and neither more capacity
-> (6.5M) nor more data (within what we tested) is close to fixing it.
+> (up to 29.3M) nor more data (within what we tested) is close to fixing it.
 
 ## What it's NOT, and why that matters
 

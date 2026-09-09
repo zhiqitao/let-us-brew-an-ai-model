@@ -20,7 +20,7 @@ generation output appended null-byte padding, and Python's parser rejects null b
 So the **judge** was scoring valid programs as syntax errors.
 
 **What we learned.** The most important lesson of the book, demonstrated on ourselves:
-*never trust a number from a system you haven't audited.* Fixing the judge revealed the
+*never trust a number from a system we have not audited.* Fixing the judge revealed the
 model's true 0.897. If we'd taken 0.000 at face value, we'd have wrongly concluded the
 approach failed.
 

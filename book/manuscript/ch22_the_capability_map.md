@@ -24,7 +24,7 @@ model:
 
 | Lever | Tested | Effect on composition |
 |-------|--------|-----------------------|
-| Model size | 0.88M → 6.5M (7.4×) | **none** — still 0.000 |
+| Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
 | Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64), not composition |
 | Training protocol | sequential vs replay | **big** — fixes continual retention (0.000→1.000) |
 
@@ -34,8 +34,8 @@ model:
 - The model learns single operations to ~90% in-distribution and generalizes them
   across instances (L1/L2).
 - It is surface-tied: new wording → 0.000, new identifiers → 0.350 (L3).
-- It cannot compose: unseen combinations → 0.000, and neither 7.4× capacity nor
-  more data changes this (L4).
+- It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
+  0.88M→29.3M) nor more data changes this (L4).
 - Continual learning is a procedure problem: sequential forgets (A → 0.000), replay
   retains (A → 1.000) with no acquisition cost.
 - The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too

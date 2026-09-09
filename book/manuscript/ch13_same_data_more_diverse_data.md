@@ -5,7 +5,7 @@ what *kind* of data. Specifically, is it better to have lots of examples of a fe
 things, or fewer examples spread across more variety?
 
 The easy answer is to treat "more data" as one lever. It isn't. There are at least two
-different things you can add, and they behave differently. Think of it like teaching a
+different things we can add, and they behave differently. Think of it like teaching a
 kid shapes. Show them a hundred triangles and they'll recognize triangles. Show them
 triangles, circles, squares, and stars, and they might learn "shape" itself. Same
 number of examples, very different kind of learning.
@@ -16,6 +16,11 @@ number of examples, very different kind of learning.
 The distinction is important enough to state as a rule:
 
 > **More data ≠ more information ≠ more diversity.**
+
+And this is the chapter where we stop treating it as a hunch and measure it directly.
+Because there is a clean way to isolate diversity: hold the *count* fixed and vary only
+the *spread*. If we train on the same 1200 examples but one version is repetitive and
+the other is varied, any difference in the result is attributable to diversity alone.
 
 ## What our experiments hinted
 ![Diversity vs quantity](figures/fig_diversity.png)
@@ -33,23 +38,89 @@ saw many of them, and it learned nothing general because the diversity was low.
 In other words, the very quantity that produced the impressive in-distribution score
 is what made it surface-fragile. The model was well-fed but narrow.
 
+## The direct test: same count, different diversity
+
+To turn this from indirect evidence into a direct measurement, we ran a controlled
+comparison. We kept the example count **identical** — the same 1200 examples — across
+two training sets:
+
+- **minimal diversity:** the examples are drawn from a few templates with little
+  variation in wording or identifier names.
+- **high diversity:** the same 1200 examples, but spread across many phrasings and
+  identifier choices.
+
+Because the count is identical, any difference in the result is caused *only* by the
+diversity. This is a clean one-variable experiment, and it is the strongest test of the
+hypothesis.
+
+## The measured result
+
+Here is what came out. This is, in our view, the single most actionable number in the
+whole book.
+
+| Training set | in-distribution | surface |
+|--------------|-----------------|---------|
+| **minimal diversity** | 0.500 | **0.000** |
+| **high diversity** | **1.000** | **1.000** |
+
+Let us read this carefully. Same number of examples — 1200 in both cases. But the two
+models behaved completely differently.
+
+- **Minimal diversity:** in-distribution 0.500, surface 0.000. The model did okay on
+  the narrow task (0.500) but was completely brittle to any surface change (0.000). It
+  learned the few phrasings it was given and nothing about the *idea*.
+- **High diversity:** in-distribution **1.000**, surface **1.000**. The model mastered
+  the task *and* held up perfectly under surface change. It learned the actual
+  operation, not a phrasing.
+
+That is a swing from 0.500/0.000 to 1.000/1.000 — all from changing *how* the examples
+varied, not *how many* there were. The same count. The same model. Only the diversity
+differed.
+
+## What this really means
+
+This is the book's most useful finding, and it reframes the whole data question. It is
+not that "more data is better." It is that **the kind of variation in the data is what
+creates robust capability.**
+
+A model fed many examples of few phrasings memorizes the phrasings. A model fed the
+same number of examples spread across many phrasings learns the *underlying operation*
+— because the only thing that stays constant across varied phrasings is the operation
+itself. When the wording varies but the meaning stays the same, the model has no
+choice but to attach its learning to the meaning rather than to any particular
+surface. Diversity does not just add information; it *forces* abstraction.
+
+This connects directly to the book's central theme. We spent the book asking whether
+the model *learned* or merely associated. Here is a lever that pushes it from
+association toward learning: vary the surface form until the only stable thing is the
+meaning. The model's inability to generalize under repetition was not a mysterious
+limitation — it was a direct consequence of a training set that gave it no reason to
+abstract.
+
+## The honest caveat
+
+It is worth noting that this experiment measured *surface* diversity. It showed that
+varying phrasing and identifiers makes the model robust to surface change (the Level-3
+boundary). It does **not** show that diversity fixes *compositional* generalization
+(the Level-4 boundary) — that is a separate, harder question. Whether the same lever
+helps a model combine two things it knows is the most natural next experiment, and it
+is called out in the conclusion.
+
+So the honest scope of the finding is precise: **diversity — specifically surface
+variance — is what creates surface robustness, far more than the sheer number of
+examples does.** Whether diversity reaches deeper, into composition, remains open.
+
 ## The lesson
 
-This reframes what "more data" buys. To make a capability *robust*, you need not just
+This reframes what "more data" buys. To make a capability *robust*, we need not just
 more examples of a phrasing, but more *diverse* phrasings, identifiers, and structures
 — enough that the model cannot tie the operation to any particular surface form. Our
 experiments show the model's weakness is not a lack of data *quantity*, but a lack of
-data *diversity* (or, deeper, a lack of the structural kind of data needed for
+data *diversity* (and, deeper, a lack of the structural kind of data needed for
 composition — see Chapter 16).
 
-## A caution on the distinction
-
-We have not fully separated "more examples" from "more diversity" in a single
-controlled experiment — that factor is worth isolating. But the *indirect* evidence is
-strong and consistent: quantity alone drove up the surface-fragile in-distribution
-score, while the failures that matter (new wording, new identifiers, composition) all
-point to a diversity and structure gap, not a quantity gap.
-
-The honest conclusion is that these are different levers, we have strong evidence that
-quantity helps the narrow score, and we have reason to believe diversity — not quantity
-— is what robustness requires. Isolating that directly is a natural next experiment.
+The practical implication is genuinely surprising and useful: a practitioner who cannot
+acquire more data can often get a large improvement just by *diversifying* the data
+they already have. Re-phrasing the same examples, varying the identifiers, and
+spreading across template families can turn a brittle 0.500/0.000 model into a robust
+1.000/1.000 — with zero additional data. That is the kind of result that changes how a dataset would actually be built.

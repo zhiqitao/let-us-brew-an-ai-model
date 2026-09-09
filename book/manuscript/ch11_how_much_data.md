@@ -4,15 +4,28 @@ The most common question people ask about any model is also the one they answer 
 quickly: *how much data does it need?* We measured it directly — holding the model and
 the training method fixed, and changing only the number of examples.
 
-Think of it like studying for a test. Read one page and you'll fail. Read a bit more
-and you'll still fail. But there's a point where reading enough actually clicks and
-you start passing. Where's that point for a model? That's what this experiment finds.
+Think of it like studying for a test. Read one page and we fail. Read a bit more
+and we still fail. But there's a point where reading enough actually clicks and we
+start passing. Where's that point for a model? That's what this experiment finds.
+
+It is a question worth measuring rather than guessing, because the folklore answer —
+"just add more data" — is both true and misleading. More data does help. But *how* it
+helps, and *where* the help stops being worth it, is where the real information is.
+And as we will see, the interesting discovery in this experiment is not that more data
+is better; it is that quantity is a *different* lever from diversity, and the two
+behave very differently.
 
 ## The setup
 
 We train the same ~0.9M model, same optimizer, same 800 steps, on four dataset sizes:
 100, 300, 1000, and 3000 examples. Then we measure in-distribution pass@1 on a
 held-out pool.
+
+Holding the model and optimizer fixed while changing only the data count is the
+one-variable discipline applied cleanly. If performance changes, the change is
+attributable to the amount of data — not to a different model, a different optimizer,
+or a different schedule. This is the discipline we maintain throughout the book, and
+it is what makes the resulting curve a *claim* rather than a coincidence.
 
 ## The result
 
@@ -36,6 +49,14 @@ there is a *threshold* below which the model gets almost nothing and above which
 performance climbs. That threshold is a real, measurable property of the task and
 model.
 
+This is the shape that matters. It is not a smooth, gentle rise. It is a flat line,
+then a sudden climb. That flat-then-steep shape is what we would expect if the model needs a minimum amount of data before it can form *any* reliable association — below
+that, it simply does not have enough examples to learn the mapping, and adding a
+couple hundred more changes nothing. Above it, each additional batch of data starts
+paying off. Finding that threshold is more useful than knowing "more data is good,"
+because it tells us the *knee* of the curve, and the knee is where a practitioner
+should aim.
+
 ## The motif, restated
 
 Notice the most important detail: at 100 and 300 examples the **training loss hits
@@ -44,7 +65,25 @@ A loss of zero on a small set buys almost nothing on unseen examples.
 
 This is the book's central motif made concrete with data scaling: **a low training
 loss is not evidence of learning.** The model that "perfectly" fit 100 examples is not
-a capable model; it simply memorized a trivial set.
+a capable model; it simply memorized a trivial set. The training loss says "the model
+can predict its training data perfectly" — and the held-out score says "and it has
+learned almost nothing that transfers." These two facts sit side by side, and they are
+both true. Only the held-out number tells us about actual capability.
+
+## The brewing experience
+
+There is a specific moment in this experiment worth recalling. Running on 100 examples
+was fast — a blink. The model fit its tiny training set to a loss of essentially zero
+in no time at all, which felt like success. Then we evaluated on held-out problems and
+got 0.100. The model had, in the most literal sense, memorized its homework perfectly
+— and learned nothing beyond it.
+
+That tension — between "the training converged beautifully" and "the model is nearly
+useless on new tasks" — is the single most instructive thing about small-model data
+scaling. It is the reason we never trust a training loss, and it is the reason the
+whole book is organized around held-out measurement rather than training curves. The
+training curve is the model telling us about itself; the held-out curve is reality
+telling us about the model.
 
 ## The honest caveat
 
@@ -56,9 +95,14 @@ is a *diversity and structure* gap, not a *quantity* gap.
 
 ## The practical answer
 
-For a single narrow operation on a ~0.9M model, you need on the order of thousands of
+For a single narrow operation on a ~0.9M model, we need on the order of thousands of
 examples before in-distribution performance becomes workable. Below that, the model
 memorizes its tiny set and gains nothing on unseen problems. And — anticipating the
 rest of the book — even at 3000 examples the model is still surface-fragile and
 non-compositional, because those limits come from the *kind* of data and the model's
 inductive structure, not from the sheer *amount*.
+
+The practical takeaway is thus a two-part answer. To get even the *narrow* score up, thousands of examples are needed. But the narrow score is not the hard-won prize. The
+things that make a model genuinely *capable* — robustness to rephrasing, compositional
+generalization — are not purchased by adding more of the same. That is the deeper
+finding, and it is the subject of the next two chapters.

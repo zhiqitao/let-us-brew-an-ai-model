@@ -1,7 +1,6 @@
 # Appendix A — The Generator, Every Piece
 
-Chapter 5 describes the teacher conceptually. This appendix shows the actual source,
-so you can see — and reproduce — exactly how the data was made. All of this lives in
+Chapter 5 describes the teacher conceptually. This appendix shows the actual source, so we can see — and reproduce — exactly how the data was made. All of this lives in
 `src/data_generator/` and `src/program_generator/`, `src/nl_renderer/`,
 `src/test_generator/` in the companion repository.
 

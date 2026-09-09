@@ -58,7 +58,7 @@ the laboratory works, a ~0.9 million-parameter model will reliably turn a handfu
 programming sentences into correct Python — in-distribution, that is nearly easy.
 
 The hard part is everything after: proving it didn't just copy, checking whether it
-still works when you change the *words* but not the *computation*, testing whether it
+still works when the *words* change but not the *computation*, testing whether it
 can *combine* two things it knows into a third thing it's never seen, and auditing our
 own evaluator to make sure the number it reports means anything.
 

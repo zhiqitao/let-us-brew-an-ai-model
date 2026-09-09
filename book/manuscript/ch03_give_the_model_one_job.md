@@ -5,8 +5,7 @@ machine can carry it out and we can score it objectively. Vague tasks give vague
 answers; a task with concrete inputs, runnable outputs, and hidden tests gives
 crisp, checkable answers.
 
-Think of a well-designed exam question. It's not enough to say "write a program about
-numbers." You need: exactly what the input is, exactly what the program should do, and
+Think of a well-designed exam question. It's not enough to say "write a program about numbers." We need: exactly what the input is, exactly what the program should do, and
 exactly how to check if it's right. That's what we're about to define.
 
 ## The task

@@ -13,6 +13,21 @@ apply the mapping to things it never saw. Our Stage-1 result said the model gets
 a weak guarantee if the held-out problems are surface-near to training ones. So we
 test memorization explicitly.
 
+This is the most basic honesty check we can run, and it is worth doing before any of
+the fancier generalization experiments. Because if the model were simply memorizing, it
+would be absurd to write a whole book about its compositional failures — a parrot
+doesn't compose anything. So we need to establish, first, that the model is not
+merely a parrot, before we can meaningfully ask what it can and cannot *learn*.
+
+## The challenge of detecting memorization
+
+The tricky thing is that memorization and learning look identical on the training
+data. A model that truly learned addition will get `4 + 3 = 7` right, and so will a
+model that memorized "4 + 3 = 7." Both ace the training set. So we cannot tell them
+apart by looking at training performance at all. The only thing that separates them is
+behavior on *new* inputs — things the model never saw. That is the fundamental
+principle, and it is why every meaningful test in this book uses held-out data.
+
 ## Three tests
 
 We use three complementary probes on the trained pilot model.
@@ -31,6 +46,14 @@ memorized the 60-prompt sample.
 in training, and ask the model to produce the program. If the model outputs the
 general program (e.g. `return a + b`), it is doing the computation. If it outputs some
 fixed literal or garbage, it might be memorizing something else.
+
+The canary is the sharpest probe, and it is worth explaining why. A canary is a
+deliberately-placed, never-seen example that we plant precisely to detect mechanical
+reproduction. If the model were memorizing literal answers, it would have no way to
+produce the *general* program for an input it never saw — it would either reproduce a
+memorized constant or fail. When it instead emits `def solve(a,b): return a+b`, it has
+demonstrated it is not reproducing a stored literal; it is generating a general
+program from a general rule.
 
 ## The result
 
@@ -53,11 +76,16 @@ For **simple primitives**, the model behaves like a **learner, not a parrot**:
 - On a **canary** it emits the general program, not a memorized literal — so it did
   not memorize answer values.
 
+So at the level of *individual examples*, the model is not a parrot. It has learned
+something that transfers to new instances of the same operation. This is real learning
+of a narrow kind, and it is worth stating clearly: the model did not merely memorize
+its training set. It formed a general rule for each primitive.
+
 ## The shortcut audit, and the honest boundary
 
 This is the subtle part. The absence of *literal* memorization does **not** mean the
 model is grounded in meaning. Exactly the opposite mechanism is at work. Our Stage-3
-experiment showed that if you change the *surface form* — the variable names or the
+experiment showed that if we change the *surface form* — the variable names or the
 wording — the model's performance collapses to 0.000. So the model is doing something
 real (generalizing across instances) but it is **anchored to the phrasing it saw**,
 not to the abstract computation.
@@ -80,3 +108,14 @@ memorize?"* but *"is its success explained by surface association, or by grounde
 computation?"* Our probes show a clear answer for this model: it escapes example-
 memorization but is caught by surface-memorization. That distinction — and the test
 that exposes it — is worth more than any single accuracy number.
+
+What this tells us is that "memorization" is not a single thing. There are at least
+two kinds, and they have very different implications. The model did *not* memorize
+specific training pairs — it generalizes across instances. But it *did* memorize the
+surface form — it can only generalize within the phrasing it saw. So the honest
+characterization is that the model's knowledge sits at a specific level of the
+taxonomy: it has moved past Level 1 (reproducing exact examples) into Level 2 (new
+instances of the same task), but it is firmly stuck at Level 1 with respect to the
+*surface* — it cannot survive a change to the outer layer. Distinguishing these kinds
+of memorization, and knowing which one we are looking at, is the whole point of the
+experiment.

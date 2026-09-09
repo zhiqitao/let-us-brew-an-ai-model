@@ -28,8 +28,8 @@ The experiments told a clean, coherent, honest story:
   below both baselines.
 - **And it cannot compose.** Even though it knows every primitive, it scores **0.000**
   on operations that combine two things it knows.
-- **Neither capacity nor data fixes it at this scale.** A 7.4× larger model and many
-  more examples leave the composition boundary at 0.000.
+- **Neither capacity nor data fixes it at this scale.** A ~33× larger model (up to
+  29.3M) and many more examples leave the composition boundary at 0.000.
 
 Along the way, the laboratory caught itself. The first time we evaluated the model, it
 scored 0.000 — and it wasn't the model's fault. The evaluator was broken (a NUL-
@@ -54,12 +54,12 @@ achievements here.
 
 ## What the reader takes away
 
-If you take one thing from this book, it is a habit, not a fact:
+If we take one thing from this book, it is a habit, not a fact:
 
-> **Never trust a number from a model you don't understand, or from an experiment you
+> **Never trust a number from a model we don't understand, or from an experiment we
 > haven't audited.**
 
-Before you believe "the model learned to add," you have to be able to answer: remove
+Before we believe "the model learned to add," we have to be able to answer: remove
 the memorization, the retrieval, the templates, the leakage, the evaluator artifacts —
 what remains? In our case, for simple primitives, what remained was genuine
 learning-within-a-surface-form. It was real, and it was narrow, and it did not
