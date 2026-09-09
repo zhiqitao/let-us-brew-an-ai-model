@@ -941,6 +941,7 @@ held-out pool.
 | 3000         | 0.025            | **0.641**             |
 
 ## What it tells us
+![Data scaling](figures/fig_data_scaling.png)
 
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
 0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
@@ -1080,6 +1081,7 @@ The distinction is important enough to state as a rule:
 > **More data ≠ more information ≠ more diversity.**
 
 ## What our experiments hinted
+![Diversity vs quantity](figures/fig_diversity.png)
 
 The data-scaling curve (Chapter 11) showed that simply adding *examples* of the same
 sort climbs in-distribution performance — 0.10 at 100, 0.64 at 3000. So more examples
@@ -1251,6 +1253,7 @@ Look at what happens when we touch only the *surface*, not the math.
 ## The damning comparison
 
 The most revealing number isn't the model's collapse — it's what the other two did.
+![Surface generalization](figures/fig_surface.png)
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
@@ -1327,6 +1330,7 @@ The crucial fact: the model *knew every primitive involved* — it scored ~90% o
 The only new thing was the **combination**.
 
 ## The result
+![Model size and composition](figures/fig_model_size.png)
 
 | Candidate | In-distribution | **Composition (held-out)** |
 |-----------|-----------------|----------------------------|
@@ -1603,6 +1607,7 @@ data, or optimizer:
 - **replay / mixed:** interleave A and B examples throughout.
 
 ## The result
+![Continual learning](figures/fig_continual.png)
 
 | Protocol | **A-retention** | **B-acquisition** |
 |----------|-----------------|-------------------|

@@ -24,6 +24,7 @@ held-out pool.
 | 3000         | 0.025            | **0.641**             |
 
 ## What it tells us
+![Data scaling](figures/fig_data_scaling.png)
 
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
 0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even

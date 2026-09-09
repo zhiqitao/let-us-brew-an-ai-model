@@ -45,6 +45,7 @@ Look at what happens when we touch only the *surface*, not the math.
 ## The damning comparison
 
 The most revealing number isn't the model's collapse — it's what the other two did.
+![Surface generalization](figures/fig_surface.png)
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the

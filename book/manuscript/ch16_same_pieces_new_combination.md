@@ -34,6 +34,7 @@ The crucial fact: the model *knew every primitive involved* — it scored ~90% o
 The only new thing was the **combination**.
 
 ## The result
+![Model size and composition](figures/fig_model_size.png)
 
 | Candidate | In-distribution | **Composition (held-out)** |
 |-----------|-----------------|----------------------------|

@@ -33,6 +33,7 @@ data, or optimizer:
 - **replay / mixed:** interleave A and B examples throughout.
 
 ## The result
+![Continual learning](figures/fig_continual.png)
 
 | Protocol | **A-retention** | **B-acquisition** |
 |----------|-----------------|-------------------|

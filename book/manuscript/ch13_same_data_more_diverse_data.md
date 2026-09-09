@@ -18,6 +18,7 @@ The distinction is important enough to state as a rule:
 > **More data ≠ more information ≠ more diversity.**
 
 ## What our experiments hinted
+![Diversity vs quantity](figures/fig_diversity.png)
 
 The data-scaling curve (Chapter 11) showed that simply adding *examples* of the same
 sort climbs in-distribution performance — 0.10 at 100, 0.64 at 3000. So more examples

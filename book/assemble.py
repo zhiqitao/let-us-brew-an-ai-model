@@ -65,7 +65,7 @@ def main():
     for ext in exts:
         cmd = ["pandoc", md, "-o", OUT, "-V", "geometry:margin=1in",
                "-V", "fontsize=11pt"] + ([ext] if ext else [])
-        r = subprocess.run(cmd, capture_output=True, text=True)
+        r = subprocess.run(cmd, capture_output=True, text=True, cwd=os.path.join(ROOT, "book"))
         if r.returncode == 0:
             print(f"compiled -> {OUT}")
             done = True
