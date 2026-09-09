@@ -55,9 +55,11 @@ iteration loop, and a fast loop is what lets a scientific investigation move.
 
 A common mistake is to quote just a round "10M parameters." We refuse to hide the
 important part. The model has **884,224** parameters, of which only **830,592** are
-the actual computation. The other **53,632** are the **embedding** — and the
-embedding is often the silent dominant term in a tiny model. If we do not separate them, "0.9M parameters" can mislead: a big fraction might just be storing the
-vocabulary, not doing any computation.
+the actual computation. The other **53,632** are the **embeddings** — the token
+embedding (291 × 128 = 37,248) plus the positional embedding (128 × 128 = 16,384) —
+which is the part that just stores the vocabulary and position, not the part that
+does the learning. If we do not separate them, "0.9M parameters" can mislead: a big
+fraction might just be the embedding tables, not any computation.
 
 So we always report the split: embedding vs. non-embedding.
 

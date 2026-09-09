@@ -30,10 +30,11 @@ unseen tasks, not memorized ones.
 The student is a small, deliberately plain decoder-only transformer: 4 layers, hidden
 dimension 128, 4 attention heads, a compact ~291-token vocabulary, and 128-token
 context. Total **884,224 parameters** — but we report the split honestly, because it
-matters more than the round number: **53,632** are the embedding (just storing the
-vocabulary), and **830,592** are the actual computation. A tiny model's parameter count
-is often dominated by its vocabulary table, which is the least interesting part; we
-never want a "0.9M parameter model" claim to hide that most of it is a lookup table.
+matters more than the round number: **53,632** are the embeddings (the token and
+positional tables, which just store the vocabulary and position), and **830,592** are
+the actual computation. A tiny model's parameter count is often dominated by its
+embedding tables, which are the least interesting part; we never want a "0.9M
+parameter model" claim to hide that most of it is lookup tables.
 
 ## The training process, step by step
 
