@@ -1,26 +1,26 @@
 {
   "config": {
     "ckpt": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/checkpoints/stage4_composition.pt",
-    "tok": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/tokenizer/comp_tok.json",
-    "n_embd": 256,
-    "n_layer": 8,
+    "tok": "artifacts/tokenizer/comp_tok.json",
+    "n_embd": 288,
+    "n_layer": 10,
     "n_head": 8,
     "seed": 0,
     "comp_per_op": 40,
-    "sample": 40
+    "sample": 120
   },
   "in_distribution": [
     {
       "label": "MODEL",
-      "syntax_rate": 0.9,
-      "executable_rate": 0.9,
-      "pass_at_1": 0.9
+      "syntax_rate": 0.45,
+      "executable_rate": 0.45,
+      "pass_at_1": 0.38333333333333336
     },
     {
       "label": "TEMPLATE",
       "syntax_rate": 1.0,
-      "executable_rate": 0.925,
-      "pass_at_1": 0.825
+      "executable_rate": 0.8916666666666667,
+      "pass_at_1": 0.8083333333333333
     },
     {
       "label": "RETRIEVAL",
@@ -39,13 +39,13 @@
     {
       "label": "TEMPLATE",
       "syntax_rate": 1.0,
-      "executable_rate": 0.425,
+      "executable_rate": 0.575,
       "pass_at_1": 0.0
     },
     {
       "label": "RETRIEVAL",
       "syntax_rate": 1.0,
-      "executable_rate": 0.4,
+      "executable_rate": 0.525,
       "pass_at_1": 0.0
     }
   ]

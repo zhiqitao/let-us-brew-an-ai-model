@@ -11,6 +11,7 @@ composition. Tokenizer and data identical.
 |-------|--------|----------------|--------------------|
 | Stage-4 baseline | 884,224 (0.88M) | 0.900 | **0.000** |
 | **Scaling** | 6,500,352 (6.5M) | 0.900 | **0.000** |
+| **10M point** | 10,195,776 (10.2M) | **0.383** | **0.000** |
 
 ## Interpretation — a clean negative result
 
@@ -38,3 +39,24 @@ python scripts/run_composition.py --steps 1000 --n-embd 256 --n-layer 8 --n-head
   --seed 0 --comp-per-op 40
 python scripts/eval_ckpt.py --sample 40   # re-eval saved ckpt quickly
 ```
+
+
+## A surprising side-finding: the 10M model got *worse* in-distribution
+
+On a clean larger-sample re-evaluation, the **10M** model's in-distribution pass@1 is
+**0.383** — clearly *below* the 0.900 of both the 0.88M and 6.5M models, and below the
+template baseline (0.808). This is not a sampling artifact (it held at 0.350 on a
+40-task sample and 0.383 on a 120-task sample).
+
+The likely explanation is training config, not a universal law: the 10M model used a
+deeper 10-layer / 288-wide config, trained for only 800 steps (same as the others),
+on the same narrow task. A deeper model at this tiny scale, under-trained, can be
+*harder* to fit to a simple task than a shallower one — an instance of "bigger isn't
+always better" at very small parameter counts. Worth isolating, but it does not change
+the headline result.
+
+## The composition result is robust
+
+At all three sizes — 0.88M, 6.5M, and 10.2M — **compositional pass@1 = 0.000**, and the
+baselines also collapse to 0.000, confirming the split is fair. So the negative result
+"scaling does not buy composition at ~1–10M params" is now supported by three points.
