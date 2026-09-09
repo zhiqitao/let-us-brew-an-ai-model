@@ -36,6 +36,7 @@ ORDER = [
     "ch23_what_small_models_can_actually_learn.md",
     "ch24_the_model_wasnt_the_point.md",
     "appendix_a_generator.md",
+    "appendix_b_failure_ledger.md",
 ]
 
 TITLE = """---
