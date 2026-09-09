@@ -11,6 +11,14 @@ actually learned is the hard part. That premise turned out to be more accurate t
 we had any right to expect. The model was built in an afternoon. Understanding what it
 had — and had not — learned took the rest of the book.
 
+That first line deserves to be unpacked, because it is the whole book in miniature.
+A decoder-only transformer that maps a handful of programming sentences to Python is
+an afternoon's work once the pieces are in place. But *knowing what that model
+actually did* — whether it learned, memorized, associated, or cheated — required a
+world, a teacher, a judge, rivals, and a battery of controlled experiments. The
+model was the easy part. The certainty about what it did was the hard part, and it is
+the part worth writing about.
+
 We built a laboratory, not just a model. Four artifacts: a **controlled world** (an
 AST-whitelisted Python sandbox), a **teacher** (a semantic dataset generator), a
 **judge** (an execution-based, mutation-tested evaluator), and the **student** (the
@@ -27,7 +35,8 @@ The experiments told a clean, coherent, honest story:
   the wording while keeping the computation identical, and it falls to **0.000** —
   below both baselines.
 - **And it cannot compose.** Even though it knows every primitive, it scores **0.000**
-  on operations that combine two things it knows.
+  on operations that combine two things it knows — at every model size we tested,
+  up to 29.3M.
 - **Neither capacity nor data fixes it at this scale.** A ~33× larger model (up to
   29.3M) and many more examples leave the composition boundary at 0.000.
 
@@ -52,6 +61,34 @@ the baselines that ask "could a simpler machine do this?", the four-level taxono
 that refuses to collapse everything into one number — those are the actual
 achievements here.
 
+It is worth lingering on why each of these matters, because together they form a
+discipline rather than a checklist. The sandbox's allowlist (not a blocklist) meant
+the model could never do something we did not intend, so a failure could always be
+attributed to the model rather than to an accident of environment. The judge's
+execution-based, semantic comparison meant a "correct" answer was objectively
+correct, not merely stylistically close. The mutation suite meant we doubted the
+judge before we trusted it. The baseline comparisons meant a number only had meaning
+relative to a simpler machine. And the four-level taxonomy meant we never overstated
+a result by collapsing different kinds of generalization into one score.
+
+These are the disciplines that make a claim about "what a model learned" worth
+trusting. They are the real product of this book.
+
+## The recurring habit
+
+There is a way of thinking that runs through everything here, and it is worth naming
+directly because it is what a careful investigation actually looks like. It is the
+habit of distrusting the easy answer — including our own.
+
+Every time we got a number, the next step was not to celebrate or to move on. It was
+to ask: **how could the model have gotten this without learning what we think it
+learned?** Could it have memorized? Retrieved? Exploited a template? Leaked the
+answer from our own data? Hit a bug in our evaluator? Each of those is a way a
+seemingly-impressive result can be hollow, and each one we then built a control to
+test. That constant, deliberate suspicion — aimed at our own apparatus as much as at
+the model — is the difference between "we ran an experiment" and "we know what the
+experiment means."
+
 ## What the reader takes away
 
 If we take one thing from this book, it is a habit, not a fact:
@@ -73,4 +110,6 @@ and we got an answer worth having.
 data. Challenge the conclusion. Repeat.** Only then say: "This is what the model
 learned."
 
-The model was not the point. The experiment was.
+The model was not the point. The experiment was. Because the world is full of models,
+but a disciplined way of finding out what they actually learned — that is rare, and
+that is what is worth keeping.

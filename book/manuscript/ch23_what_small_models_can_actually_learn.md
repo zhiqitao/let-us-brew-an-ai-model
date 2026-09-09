@@ -58,6 +58,34 @@ compositional engine.
 > non-compositional (unseen combinations → 0.000) — and neither more capacity
 > (up to 29.3M) nor more data (within what we tested) is close to fixing it.
 
+## The capacity grid, in full
+
+The sharpest negative result in the whole book is the model-size sweep, and it
+deserves its own table because it is the claim a reader would most want to test.
+We ran the composition experiment across a ~33× range of capacity, holding
+everything else constant.
+
+| Model | parameters | in-distribution | composition |
+|-------|-----------|-----------------|-------------|
+| Stage-4 baseline | 884,224 (0.88M) | 0.900 | **0.000** |
+| Scaling | 6,500,352 (6.5M) | 0.900 | **0.000** |
+| 10M point | 10,195,776 (10.2M) | 0.383 | **0.000** |
+| 30M point | 29,290,240 (29.3M) | 0.897 | **0.000** |
+
+Four sizes. Composition is **0.000 at all four**. That is not a coincidence and it is
+not a weak signal; it is the same number repeated across a 33× change in the one
+resource we might otherwise blame. If capacity were the binding constraint on
+composition, we would have expected at least a *drift* between 0.88M and 29.3M. There
+was none. The composition boundary is not a capacity ceiling in this regime.
+
+Two honest notes on the grid. First, the 10.2M point's in-distribution number (0.383)
+is an outlier — *below* the smaller models' 0.900 — which makes the point that
+in-distribution performance is **not monotonic** in capacity at this scale. Bigger is
+not strictly better even for the narrow task. Second, in-distribution scores do not
+predict the composition result at all: the models that reached 0.900 in-distribution
+scored 0.000 on composition, same as the one that only reached 0.383. Capacity that
+helps the shallow score does nothing for the deep one.
+
 ## What it's NOT, and why that matters
 
 This is **not** evidence that the model is "stupid" or that the approach "doesn't
@@ -69,6 +97,31 @@ from "capability": robustness to surface change, and composition.
 The value of measuring this precisely is that it tells us *where* to look next. It is
 not a shrug and a "small models are limited." It is a specific, falsifiable map: the
 boundary is on surface-robustness and composition, not on in-distribution learning.
+
+## What this means for the bigger picture
+
+There is a tendency, when reading results like these, to draw a bleak conclusion:
+"small models can't really learn, so this was a waste." That reading would be wrong
+on both halves.
+
+On the first half — small models *do* genuinely learn. The model reliably maps
+natural language to correct Python at ~90% in-distribution, and it does so by
+generalizing across instances, not by memorizing. That is real learning of a narrow
+kind, and it should not be discounted.
+
+On the second half — the effort was far from wasted. We now hold a precise,
+falsifiable boundary: on surface robustness (Level 3) and composition (Level 4), this
+model's capability stops, and the stop is structural, not a matter of scale. That is
+the kind of knowledge that changes what someone would try next. If a practitioner
+wants robust, compositional capability, the map says: do not just scale up, and do
+not just add more of the same data — instead change the *structure* of the data (more
+diversity, exposure to combinations) or the *inductive bias* of the model. Those are
+actionable directions, and the experiments tell us why the naive directions fail.
+
+So the honest takeaway is not "small models are inadequate." It is "small models
+learn narrow mappings well, and the path to broader capability runs through different
+kinds of data and different inductive structures — not merely more of what we already
+have." That is a useful, and slightly counterintuitive, answer.
 
 ## Preferring "what these experiments showed"
 

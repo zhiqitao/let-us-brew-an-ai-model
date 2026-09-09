@@ -8,6 +8,20 @@ where it breaks.
 We record each finding with an honest epistemic label — what is *proven* (measured),
 what is *supported*, what is *suggestive*, and what is *unknown*.
 
+## Why a map, and not a single score
+
+There is a strong temptation, at the end of an investigation, to reach for one number
+and say "that's the verdict." It would be satisfying and simple. But every experiment
+in this book has argued against exactly that. The model is good at some things and
+terrible at others, and those are both true at once. A single number would have to
+collapse them, and collapsing them would hide the most important thing: the *shape* of
+the boundary.
+
+So we draw a map instead. A map does not pretend to be one verdict; it shows
+*dimensions*. It answers, for each question we asked, what we found — and, crucially,
+what we did *not* find. That honesty about the unknown is what makes the map worth
+more than a headline.
+
 ## The four-level generalization map
 
 Recall the four levels from Chapter 2. Here is what we measured at each, on the ~0.9M
@@ -20,6 +34,12 @@ model:
 | **L3 Surf** | Does it survive superficial change? | New wording → 0.000; new identifiers → 0.350 | `[PROVEN]` no — surface-tied |
 | **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[PROVEN]` no |
 
+This is the map's spine. Read it vertically and it shows a steady decline in how much
+we can trust the model's "understanding" as we move from "did it see this before"
+(Level 1) to "can it put things together" (Level 4). The model passes the first two
+levels cleanly and fails the last two completely. That is the boundary we keep coming
+back to.
+
 ## The scaling map (what changes it)
 
 | Lever | Tested | Effect on composition |
@@ -27,6 +47,12 @@ model:
 | Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
 | Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64), not composition |
 | Training protocol | sequential vs replay | **big** — fixes continual retention (0.000→1.000) |
+
+The second half of the map is about levers, and it is where the surprising findings
+live. We tried three ways to move the composition boundary — more capacity, more data,
+and a different training procedure. Two of them did nothing to composition, and one of
+them was the decisive lever for a *different* problem (continual learning). This
+asymmetry is worth circling, because it tells us where effort does and does not pay.
 
 ## What's proven vs. what's unknown
 
@@ -66,3 +92,18 @@ mislead; it is a precise, honest picture of where capability exists, where it
 collapses, and what (and what doesn't) shift the boundary. It is the answer to the
 central question — and it is falsifiable, built from real measured runs, and honest
 about what remains unknown.
+
+The deeper value of the map is what it does to our confidence. Before drawing it, we
+knew "the model is limited." After drawing it, we know *precisely which limits are
+structural* (composition, surface-tiedness — not moved by scale or data) and *which
+are procedural* (continual forgetting — fixed entirely by how we train). That
+distinction between structural and procedural limits is the kind of knowledge that
+changes what a practitioner would try next. It is not the same as saying "small
+models are weak"; it is saying "here is exactly where the weakness lives, and here is
+what does and does not reach it."
+
+That precision, not a dramatic narrative, is the honest payoff of the whole brew. And
+it is why we are willing to state as an *unknown* the questions we did not answer,
+rather than fill the map with confident guesses. A map with a blank region is more
+useful than a map painted over with speculation, because the blank marks where the
+next investigation should go.

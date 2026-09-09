@@ -2425,6 +2425,23 @@ real cost in machine learning is the hidden one: what it takes to make a capabil
 actually *robust* rather than just *appearing* to work. That's where the expensive and
 surprising part lives.
 
+## The two kinds of cost
+
+There is a trap in how we usually talk about cost. We say "this model is 0.9M
+parameters" or "this took 3,000 examples" or "it trained in an hour." Those are real
+numbers, and they are *easy* to measure. But they measure the cost of *running* a
+model, or of *fitting* it — not the cost of *capability* in the sense we care about.
+
+What we actually care about is much harder to see, and this chapter is an argument
+that it is the only cost that matters:
+
+> **The real cost of a capability is what it takes to make it survive the changes the
+> world will throw at it — not what it takes to make it look right on the training set.**
+
+That distinction is the key to reading the results in this chapter. The model can be
+*cheap* to produce and still *expensive* to make useful, because the cheap version
+works only under conditions the real world will not respect.
+
 ## The cost matrix
 
 Each row is a capability or behavior from our experiments; the columns are the
@@ -2447,15 +2464,56 @@ cost of a capability is low. But that number is misleading: it measures only
 in-distribution correctness.
 
 **The real cost appears when we ask for generalization.** To make a single primitive
-robust to *surface* change (new identifiers, new wording), the experiments suggest the data would need to change substantially — diverse identifiers and wording — not
-and composition is not purchasable at this scale at all: it stayed
+robust to *surface* change (new identifiers, new wording), the experiments suggest
+the data would need to change substantially — diverse identifiers and wording — not
+just add capacity. And composition is not purchasable at this scale at all: it stayed
 0.000 at 0.88M, 6.5M, 10.2M, and 29.3M.
 
 **The cost matrix makes a dangerous pricing error visible.** If we only look at the
-"in-dist pass@1" column, we would conclude capability is nearly free and scale up naively.
-The generalization and composition columns reveal that the cheap number hides a much
-more expensive requirement — robust, compositional capability — which we did not
-achieve by scaling data or capacity within our tested range.
+"in-dist pass@1" column, we would conclude capability is nearly free and scale up
+naively. The generalization and composition columns reveal that the cheap number
+hides a much more expensive requirement — robust, compositional capability — which we
+did not achieve by scaling data or capacity within our tested range.
+
+## The price of each column, read honestly
+
+Let us read the matrix the way a person who has to pay for capability would read it,
+not the way a researcher who wants a good headline would read it.
+
+- **A single primitive "costs" about 1,400 examples and a few minutes.** That is the
+  cheap row, and it is genuinely cheap. But its surface-generalization column says
+  ✗ and its composition column says ✗. So we have bought a capability that works one
+  way, one time.
+- **New-identifier robustness** is the next row. It costs the *same* 1,400 examples,
+  and still fails (0.350 on new IDs). We cannot buy this with more of the same.
+- **Composition** is the row that tells the sharpest story: it is marked
+  "∞-needed" for data, meaning no amount in our range got us there. The parameter
+  column spans 0.9M–29.3M, and it made no difference.
+- **Continual learning** is the most interesting row for a practitioner, because it
+  is the one where the *cost changed at no cost*. Sequential training loses A (0.000
+  retention); replay buys A back at 1.000 with B acquisition unchanged at 0.889. So
+  here, one capability was obtained *for free* — no extra data, no extra compute,
+  just a different training order. Cost is not always toward "more expense"; the
+  right procedure can make a capability free.
+
+## The brewing experience: discovering the hidden cost
+
+The most uncomfortable thing we learned here was not a number; it was the realization
+that we had almost billed this the wrong way. Early in the project, the model looked
+cheap: tiny, fast to train, scoring 0.900. If we had been delivering a system rather
+than running an experiment, we would have handed over a "working" model and called it
+a good deal.
+
+Then we reworded a single prompt. The model collapsed to 0.000. The capability we
+thought we had bought was not really there — it only existed inside a narrow surface
+form. That is the moment the "cheap capability" turned out to be the most expensive
+thing we had measured, because it would fail in exactly the way a deployed system
+fails: quietly, late, and in the hands of a real user who does not phrase things the
+way the training data did.
+
+That is why we now insist on reading the generalization columns, not just the accuracy
+column. A model that is cheap to fit but expensive to deploy is the wrong thing to
+build unless we know the generalization cost going in.
 
 ## The honest framing
 
@@ -2470,6 +2528,12 @@ So the real answer to "what does each capability cost?" is: the easy-to-see cost
 making the capability actually generalize and compose — is where the true expense
 lies, and at this scale it is simply not purchasable with more of the same resource.
 
+And there is a bright spot in the matrix worth holding onto. The continual-learning
+row shows that cost is not always "more of everything." Sometimes, the same inputs,
+the same compute, and the same model buy a capability that was previously lost — for
+free — simply by choosing a better procedure. Cost, like capability, is often about
+*how* we do things, not *how much* we spend.
+
 
 \newpage
 
@@ -2483,6 +2547,20 @@ where it breaks.
 We record each finding with an honest epistemic label — what is *proven* (measured),
 what is *supported*, what is *suggestive*, and what is *unknown*.
 
+## Why a map, and not a single score
+
+There is a strong temptation, at the end of an investigation, to reach for one number
+and say "that's the verdict." It would be satisfying and simple. But every experiment
+in this book has argued against exactly that. The model is good at some things and
+terrible at others, and those are both true at once. A single number would have to
+collapse them, and collapsing them would hide the most important thing: the *shape* of
+the boundary.
+
+So we draw a map instead. A map does not pretend to be one verdict; it shows
+*dimensions*. It answers, for each question we asked, what we found — and, crucially,
+what we did *not* find. That honesty about the unknown is what makes the map worth
+more than a headline.
+
 ## The four-level generalization map
 
 Recall the four levels from Chapter 2. Here is what we measured at each, on the ~0.9M
@@ -2495,6 +2573,12 @@ model:
 | **L3 Surf** | Does it survive superficial change? | New wording → 0.000; new identifiers → 0.350 | `[PROVEN]` no — surface-tied |
 | **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[PROVEN]` no |
 
+This is the map's spine. Read it vertically and it shows a steady decline in how much
+we can trust the model's "understanding" as we move from "did it see this before"
+(Level 1) to "can it put things together" (Level 4). The model passes the first two
+levels cleanly and fails the last two completely. That is the boundary we keep coming
+back to.
+
 ## The scaling map (what changes it)
 
 | Lever | Tested | Effect on composition |
@@ -2502,6 +2586,12 @@ model:
 | Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
 | Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64), not composition |
 | Training protocol | sequential vs replay | **big** — fixes continual retention (0.000→1.000) |
+
+The second half of the map is about levers, and it is where the surprising findings
+live. We tried three ways to move the composition boundary — more capacity, more data,
+and a different training procedure. Two of them did nothing to composition, and one of
+them was the decisive lever for a *different* problem (continual learning). This
+asymmetry is worth circling, because it tells us where effort does and does not pay.
 
 ## What's proven vs. what's unknown
 
@@ -2541,6 +2631,21 @@ mislead; it is a precise, honest picture of where capability exists, where it
 collapses, and what (and what doesn't) shift the boundary. It is the answer to the
 central question — and it is falsifiable, built from real measured runs, and honest
 about what remains unknown.
+
+The deeper value of the map is what it does to our confidence. Before drawing it, we
+knew "the model is limited." After drawing it, we know *precisely which limits are
+structural* (composition, surface-tiedness — not moved by scale or data) and *which
+are procedural* (continual forgetting — fixed entirely by how we train). That
+distinction between structural and procedural limits is the kind of knowledge that
+changes what a practitioner would try next. It is not the same as saying "small
+models are weak"; it is saying "here is exactly where the weakness lives, and here is
+what does and does not reach it."
+
+That precision, not a dramatic narrative, is the honest payoff of the whole brew. And
+it is why we are willing to state as an *unknown* the questions we did not answer,
+rather than fill the map with confident guesses. A map with a blank region is more
+useful than a map painted over with speculation, because the blank marks where the
+next investigation should go.
 
 
 \newpage
@@ -2605,6 +2710,34 @@ compositional engine.
 > non-compositional (unseen combinations → 0.000) — and neither more capacity
 > (up to 29.3M) nor more data (within what we tested) is close to fixing it.
 
+## The capacity grid, in full
+
+The sharpest negative result in the whole book is the model-size sweep, and it
+deserves its own table because it is the claim a reader would most want to test.
+We ran the composition experiment across a ~33× range of capacity, holding
+everything else constant.
+
+| Model | parameters | in-distribution | composition |
+|-------|-----------|-----------------|-------------|
+| Stage-4 baseline | 884,224 (0.88M) | 0.900 | **0.000** |
+| Scaling | 6,500,352 (6.5M) | 0.900 | **0.000** |
+| 10M point | 10,195,776 (10.2M) | 0.383 | **0.000** |
+| 30M point | 29,290,240 (29.3M) | 0.897 | **0.000** |
+
+Four sizes. Composition is **0.000 at all four**. That is not a coincidence and it is
+not a weak signal; it is the same number repeated across a 33× change in the one
+resource we might otherwise blame. If capacity were the binding constraint on
+composition, we would have expected at least a *drift* between 0.88M and 29.3M. There
+was none. The composition boundary is not a capacity ceiling in this regime.
+
+Two honest notes on the grid. First, the 10.2M point's in-distribution number (0.383)
+is an outlier — *below* the smaller models' 0.900 — which makes the point that
+in-distribution performance is **not monotonic** in capacity at this scale. Bigger is
+not strictly better even for the narrow task. Second, in-distribution scores do not
+predict the composition result at all: the models that reached 0.900 in-distribution
+scored 0.000 on composition, same as the one that only reached 0.383. Capacity that
+helps the shallow score does nothing for the deep one.
+
 ## What it's NOT, and why that matters
 
 This is **not** evidence that the model is "stupid" or that the approach "doesn't
@@ -2616,6 +2749,31 @@ from "capability": robustness to surface change, and composition.
 The value of measuring this precisely is that it tells us *where* to look next. It is
 not a shrug and a "small models are limited." It is a specific, falsifiable map: the
 boundary is on surface-robustness and composition, not on in-distribution learning.
+
+## What this means for the bigger picture
+
+There is a tendency, when reading results like these, to draw a bleak conclusion:
+"small models can't really learn, so this was a waste." That reading would be wrong
+on both halves.
+
+On the first half — small models *do* genuinely learn. The model reliably maps
+natural language to correct Python at ~90% in-distribution, and it does so by
+generalizing across instances, not by memorizing. That is real learning of a narrow
+kind, and it should not be discounted.
+
+On the second half — the effort was far from wasted. We now hold a precise,
+falsifiable boundary: on surface robustness (Level 3) and composition (Level 4), this
+model's capability stops, and the stop is structural, not a matter of scale. That is
+the kind of knowledge that changes what someone would try next. If a practitioner
+wants robust, compositional capability, the map says: do not just scale up, and do
+not just add more of the same data — instead change the *structure* of the data (more
+diversity, exposure to combinations) or the *inductive bias* of the model. Those are
+actionable directions, and the experiments tell us why the naive directions fail.
+
+So the honest takeaway is not "small models are inadequate." It is "small models
+learn narrow mappings well, and the path to broader capability runs through different
+kinds of data and different inductive structures — not merely more of what we already
+have." That is a useful, and slightly counterintuitive, answer.
 
 ## Preferring "what these experiments showed"
 
@@ -2642,6 +2800,14 @@ actually learned is the hard part. That premise turned out to be more accurate t
 we had any right to expect. The model was built in an afternoon. Understanding what it
 had — and had not — learned took the rest of the book.
 
+That first line deserves to be unpacked, because it is the whole book in miniature.
+A decoder-only transformer that maps a handful of programming sentences to Python is
+an afternoon's work once the pieces are in place. But *knowing what that model
+actually did* — whether it learned, memorized, associated, or cheated — required a
+world, a teacher, a judge, rivals, and a battery of controlled experiments. The
+model was the easy part. The certainty about what it did was the hard part, and it is
+the part worth writing about.
+
 We built a laboratory, not just a model. Four artifacts: a **controlled world** (an
 AST-whitelisted Python sandbox), a **teacher** (a semantic dataset generator), a
 **judge** (an execution-based, mutation-tested evaluator), and the **student** (the
@@ -2658,7 +2824,8 @@ The experiments told a clean, coherent, honest story:
   the wording while keeping the computation identical, and it falls to **0.000** —
   below both baselines.
 - **And it cannot compose.** Even though it knows every primitive, it scores **0.000**
-  on operations that combine two things it knows.
+  on operations that combine two things it knows — at every model size we tested,
+  up to 29.3M.
 - **Neither capacity nor data fixes it at this scale.** A ~33× larger model (up to
   29.3M) and many more examples leave the composition boundary at 0.000.
 
@@ -2683,6 +2850,34 @@ the baselines that ask "could a simpler machine do this?", the four-level taxono
 that refuses to collapse everything into one number — those are the actual
 achievements here.
 
+It is worth lingering on why each of these matters, because together they form a
+discipline rather than a checklist. The sandbox's allowlist (not a blocklist) meant
+the model could never do something we did not intend, so a failure could always be
+attributed to the model rather than to an accident of environment. The judge's
+execution-based, semantic comparison meant a "correct" answer was objectively
+correct, not merely stylistically close. The mutation suite meant we doubted the
+judge before we trusted it. The baseline comparisons meant a number only had meaning
+relative to a simpler machine. And the four-level taxonomy meant we never overstated
+a result by collapsing different kinds of generalization into one score.
+
+These are the disciplines that make a claim about "what a model learned" worth
+trusting. They are the real product of this book.
+
+## The recurring habit
+
+There is a way of thinking that runs through everything here, and it is worth naming
+directly because it is what a careful investigation actually looks like. It is the
+habit of distrusting the easy answer — including our own.
+
+Every time we got a number, the next step was not to celebrate or to move on. It was
+to ask: **how could the model have gotten this without learning what we think it
+learned?** Could it have memorized? Retrieved? Exploited a template? Leaked the
+answer from our own data? Hit a bug in our evaluator? Each of those is a way a
+seemingly-impressive result can be hollow, and each one we then built a control to
+test. That constant, deliberate suspicion — aimed at our own apparatus as much as at
+the model — is the difference between "we ran an experiment" and "we know what the
+experiment means."
+
 ## What the reader takes away
 
 If we take one thing from this book, it is a habit, not a fact:
@@ -2704,7 +2899,9 @@ and we got an answer worth having.
 data. Challenge the conclusion. Repeat.** Only then say: "This is what the model
 learned."
 
-The model was not the point. The experiment was.
+The model was not the point. The experiment was. Because the world is full of models,
+but a disciplined way of finding out what they actually learned — that is rare, and
+that is what is worth keeping.
 
 
 \newpage
