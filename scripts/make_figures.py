@@ -23,15 +23,18 @@ def save(fig, name):
     print("wrote", p)
     return p
 
-# ---- 1. Model-size vs composition (measured) ----
+# ---- 1. Model-size vs composition (measured, 4 points) ----
 fig, ax = plt.subplots()
-sizes = [0.88, 6.5, 10.2]  # M params (10.2 from the running 10M experiment, keep placeholder until measured)
-in_dist = [0.900, 0.900, None]
-# only plot measured points so far
-ax.bar(["0.88M", "6.5M"], [0.900, 0.900], color="#4C72B0", label="in-distribution")
-ax.bar(["0.88M", "6.5M"], [0.000, 0.000], color="#C44E52", label="composition")
-ax.set_ylim(0, 1.05); ax.set_ylabel("pass@1")
-ax.set_title("Model size: in-distribution vs composition (measured)")
+labels = ["0.88M", "6.5M", "10.2M", "29.3M"]
+in_dist = [0.900, 0.900, 0.383, 0.897]
+comp    = [0.000, 0.000, 0.000, 0.000]
+x = np.arange(len(labels)); w = 0.38
+ax.bar(x-w/2, in_dist, w, color="#4C72B0", label="in-distribution")
+ax.bar(x+w/2, comp,    w, color="#C44E52", label="composition")
+for xi, v in zip(x-w/2, in_dist): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
+for xi, v in zip(x+w/2, comp):    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
+ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.05); ax.set_ylabel("pass@1")
+ax.set_title("Model size: in-distribution vs composition (measured, 4 points)")
 ax.legend(); ax.grid(axis="y", alpha=0.3)
 save(fig, "fig_model_size.png")
 
