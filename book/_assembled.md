@@ -1385,6 +1385,8 @@ in-distribution held-out primitives and (b) the held-out composite operations.
 That is a **~33×** increase in parameters from the smallest to the largest. On the
 thing we care about — composition — nothing changed at all.
 
+![Model size vs composition](figures/fig_model_size.png)
+
 ## The result
 
 Going from ~0.9M to 29.3M parameters:
@@ -1444,7 +1446,7 @@ composition outcome.
 ## The honest framing
 
 This is a *useful* negative result. It tells us where not to look (raw scaling in the
-1–7M regime) and points at where to look instead (structural data / inductive bias).
+~1–30M regime) and points at where to look instead (structural data / inductive bias).
 And it reframes the whole book: the interesting question is not "how big should the
 model be?" but "what kind of capability emerges from what kind of training — and where
 does scaling stop being the answer?"
@@ -3231,10 +3233,11 @@ wording-family holdouts before any surface test.
 
 ## 3. A bigger model did NOT fix composition
 
-**What happened.** We scaled the model 7.4× (0.88M → 6.5M) expecting the composition
-boundary to move. It did not: composition stayed at **0.000**.
+**What happened.** We scaled the model across a ~33× range (0.88M → 29.3M) expecting
+the composition boundary to move. It did not: composition stayed at **0.000** at all
+four sizes (0.88M, 6.5M, 10.2M, 29.3M).
 
-**What we learned.** At ~1–7M parameters, compositional generalization failure is
+**What we learned.** At ~1–30M parameters, compositional generalization failure is
 **not a capacity ceiling**. It is a structural/learning limit that scaling alone does
 not resolve. This is a genuine negative result that redirects the investigation.
 

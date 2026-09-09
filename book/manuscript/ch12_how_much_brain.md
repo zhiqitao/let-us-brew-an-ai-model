@@ -25,6 +25,8 @@ in-distribution held-out primitives and (b) the held-out composite operations.
 That is a **~33×** increase in parameters from the smallest to the largest. On the
 thing we care about — composition — nothing changed at all.
 
+![Model size vs composition](figures/fig_model_size.png)
+
 ## The result
 
 Going from ~0.9M to 29.3M parameters:
@@ -84,7 +86,7 @@ composition outcome.
 ## The honest framing
 
 This is a *useful* negative result. It tells us where not to look (raw scaling in the
-1–7M regime) and points at where to look instead (structural data / inductive bias).
+~1–30M regime) and points at where to look instead (structural data / inductive bias).
 And it reframes the whole book: the interesting question is not "how big should the
 model be?" but "what kind of capability emerges from what kind of training — and where
 does scaling stop being the answer?"
