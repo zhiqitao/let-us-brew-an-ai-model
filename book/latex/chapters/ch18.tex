@@ -1,0 +1,124 @@
+Our pilot model lived inside a deliberately small corner of Python --- a
+bit of arithmetic, a couple of comparisons, a few list operations, some
+basic if/else. That tiny corner is what let us measure capability
+cleanly: change one small thing at a time and watch what happens.
+
+But a capability map drawn on one tiny corner only tells us where the
+boundary is \emph{for that corner.} It would be a narrow conclusion if
+we claimed ``this model can do \texttt{a\ +\ b} and nothing else'' ---
+of course it could, we only taught it that. So the next question is the
+natural one: \textbf{what happens when we widen the world?} Does giving
+the model a richer language unlock more capability, or does it just give
+it more ways to tie itself to surface form?
+
+This is the chapter about \textbf{expanding the capability spec} --- the
+versioned whitelist from Chapter 4 that defines what Python the model is
+allowed to write.
+
+\section{Why the world is versioned}\label{why-the-world-is-versioned}
+
+The key mechanical fact we need here is that the capability spec is
+\textbf{versioned} (\texttt{python\_capability\_v0\_1}, \texttt{v0\_2},
+and so on). It is not a living, unwritten list of ``what the model can
+do.'' It is a recorded, frozen definition of ``what the model is allowed
+to do'' at a particular point.
+
+This matters enormously for the one-variable discipline. If we widen the
+allowed Python \emph{and} change the data \emph{and} retrain, we could
+not say which change caused any shift in behavior. But if we record the
+spec version alongside every result, we can point to exactly what grew
+--- ``the model was given list comprehensions at spec v0\_3'' --- and
+attribute any change to that. Versioning the world is what lets us make
+a causal claim about capability, rather than a correlational guess. It
+is the same reason we record the exact model configuration and dataset
+in every manifest.
+
+\section{How we widen the world}\label{how-we-widen-the-world}
+
+Expanding the world is a controlled act, not a free-for-all. We do not
+hand the model the entire Python standard library at once. We add
+constructs deliberately, one family at a time, and always with a reason.
+For example, we might add:
+
+\begin{itemize}
+\tightlist
+\item
+  a new built-in (say, a mathematical function we were keeping out),
+\item
+  a new control-flow construct (e.g.~\texttt{break}/\texttt{continue} in
+  loops, if they were missing),
+\item
+  a new data structure (e.g.~dictionaries, if we had been lists-only),
+\item
+  short-circuit boolean logic, or a new comparison form.
+\end{itemize}
+
+Each addition is a \emph{step up a ladder}, not a teardown of the wall.
+And each one changes the set of problems the model can even express. The
+pilot's corner was deliberately small partly so that the \emph{boundary}
+would be legible --- and partly so that, when we widen it later, we can
+see the effect of \emph{just that} widening.
+
+\section{A crucial reframing: syntax is not the hard
+part}\label{a-crucial-reframing-syntax-is-not-the-hard-part}
+
+Here is where the experiment teaches us something that changes how we
+think about the whole question. It is tempting to imagine that the
+model's limit is about \emph{syntax} --- that if we just teach it more
+Python, it will be more capable. Our results say otherwise, and it
+matters.
+
+Consider the composition result from Chapter 16. The model knew the
+syntax of both \texttt{abs} and \texttt{add}. It could produce
+\texttt{return\ a\ +\ b} and \texttt{return\ abs(x)} perfectly. The
+break came when it needed to \emph{combine} them into
+\texttt{return\ abs(a\ +\ b)}. There was no new syntax involved ---
+every token in \texttt{abs(a\ +\ b)} was already within the model's
+known vocabulary and its allowed subset. The model simply could not put
+two things it knew together.
+
+So the real dividing line in this book is \textbf{not ``how much Python
+the model is given.''} It is \textbf{``whether the model can compose the
+Python it already knows.''} Giving the model \emph{more} syntax would
+let it express more kinds of programs, but it would not give it the
+\emph{ability to combine} --- and that ability, not the vocabulary, is
+what separates a bag of reflexes from genuine capability.
+
+\section{Why we still widen the
+world}\label{why-we-still-widen-the-world}
+
+That said, widening the world remains the right thing to do, and for an
+honest reason: it lets us \emph{test whether the boundary moves}. The
+interesting scientific question is not ``can a tiny model learn any
+fixed corner?'' --- the answer is yes. The question is ``does the
+boundary of what it can do shift when we push the world's edges out?''
+If we widen the allowed Python and the model still cannot compose, that
+is stronger evidence that the limit is structural, not about the surface
+of the language. If the boundary does move, that is a genuine discovery.
+
+So this chapter is less about a single dramatic result and more about a
+discipline: a controlled, versioned, one-variable-at-a-time
+\emph{capacity ladder} that lets us watch exactly where the model starts
+to fall apart as we widen what it may do.
+
+\section{The ladder, as a discipline}\label{the-ladder-as-a-discipline}
+
+The discipline is: define one more capability, generate data for it,
+train, evaluate, audit, record --- \emph{then} move on. Never widen
+multiple things at once. The ladder is not a claim that the model will
+reach the top; it is a map of where the model \emph{does} stop.
+
+And a stopping point is itself a result. We found ours at composition:
+the model can do each rung's primitives but not combine them. That
+finding --- cheap and specific --- is worth more than a glossy claim of
+having ``reached Python Level 8.'' Knowing exactly where the model
+stops, and being able to say \emph{why}, is the entire value of this
+kind of careful, pessimistic, honest investigation.
+
+\section{The honest summary}\label{the-honest-summary}
+
+Giving the model more Python is not the same as giving it more
+capability. The pilot already revealed the real boundary: composition.
+Widening the world is worth doing --- but the purpose is to \emph{test
+where the boundary is and whether it moves}, not to assume that more
+syntax automatically means more understanding.

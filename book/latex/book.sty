@@ -1,0 +1,194 @@
+% ---- Let Us Brew an AI Model — professional book style (xelatex) ----
+% Adapted from the from-token-to-fleet book style (pmichaillat/latex-book
+% minimalist academic template) with xelatex/fontspec Unicode support.
+%
+% Brew-lab voice + professional editorial look.
+
+% xelatex + Unicode text fonts
+\usepackage{fontspec}
+
+% ---- Mathematics (\text, \mathrm, aligned display math) ----
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+
+% Text serif font (professional book face present on the system)
+\IfFontExistsTF{Linux Libertine O}{%
+  \setmainfont{Linux Libertine O}[Numbers=OldStyle]%
+}{%
+  \IfFontExistsTF{EB Garamond}{%
+    \setmainfont{EB Garamond}%
+  }{\setmainfont{Noto Serif}}%
+}
+
+% ---- Unicode symbol mapping ----
+% The table check/cross marks (✓/✗) may not resolve in the main font under
+% xelatex; map them explicitly so constraint tables render real glyphs.
+\usepackage{newunicodechar}
+\usepackage{pifont}
+\newunicodechar{✓}{\checkmark}
+\newunicodechar{✗}{\ding{55}}
+\newunicodechar{—}{\textemdash}
+\newunicodechar{–}{\textendash}
+
+% Monospaced font for code/inline-code
+\IfFontExistsTF{Source Code Pro}{%
+  \setmonofont{Source Code Pro}[Scale=0.85]%
+}{%
+  \IfFontExistsTF{Liberation Mono}{%
+    \setmonofont{Liberation Mono}[Scale=0.9]%
+  }{\setmonofont{Latin Modern Mono}[Scale=0.9]}%
+}
+
+% Code blocks: allow long lines to wrap (breaklines) instead of overflowing.
+% Pandoc emits plain \begin{verbatim} for code listings; reroute it to
+% fancyvrb's Verbatim with breaklines so long source-listing lines wrap.
+\usepackage{fancyvrb}
+% Force LaTeX's plain 'verbatim' environment to be fancyvrb's Verbatim with
+% wrapped long lines (fontsize=\small keeps listings compact).
+\renewenvironment{verbatim}{\Verbatim[breaklines=true, fontsize=\small]}{\endVerbatim}
+
+% Sans font for headings accent
+\IfFontExistsTF{Liberation Sans}{%
+  \setsansfont{Liberation Sans}%
+}{}
+
+% ---- Adjust page layout ----
+\usepackage[top=1in, left=1.2in, right=1.2in, bottom=1.2in, footskip=0.7in]{geometry}
+% Balanced margins (no reviewer gutter).
+
+% ---- Tables (pandoc needs longtable + array family) ----
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+
+% ---- pandoc generated-command compatibility macros ----
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\real}[1]{#1}
+\newenvironment{Shaded}{\begin{quote}\small\sloppy}{\end{quote}}
+\newenvironment{Highlighting}{}{}
+\newcommand{\HL}[1]{#1}
+\newcommand{\NormalTok}[1]{#1}\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{#1}\newcommand{\DecValTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}\newcommand{\FloatTok}[1]{#1}
+\newcommand{\ConstantTok}[1]{#1}\newcommand{\CharTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{#1}\newcommand{\StringTok}[1]{#1}
+\newcommand{\VerbatimChar}[1]{#1}
+\newcommand{\SpecialStringTok}[1]{#1}\newcommand{\ImportTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{#1}\newcommand{\VariableTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\OperatorTok}[1]{#1}\newcommand{\BuiltInTok}[1]{#1}\newcommand{\AttributeTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}\newcommand{\PreprocessorTok}[1]{#1}
+\newcommand{\InformationTok}[1]{#1}\newcommand{\DocumentationTok}[1]{#1}\newcommand{\WarningTok}[1]{#1}
+\newcommand{\AlertTok}[1]{#1}\newcommand{\ErrorTok}[1]{#1}\newcommand{\RegionMarkerTok}[1]{#1}\newcommand{\OtherTok}[1]{#1}
+\newcommand{\ChunkTok}[1]{#1}
+
+\usepackage{adjustbox}
+% Constrain pandoc figures to the text block as a CENTERED STANDALONE display
+% (not inline with surrounding text). A \\par before and after forces the image
+% onto its own block so a full-width figure never rides on the same line as
+% preceding text and overflows the right margin.
+\newcommand{\pandocbounded}[1]{%
+  \par\noindent\par\noindent\begin{center}\begin{adjustbox}{max width=\textwidth, keepaspectratio}#1\end{adjustbox}\end{center}\par}
+\def\maxwidth#1{\ifdim#1>\textwidth\textwidth\else#1\fi}
+
+% ---- Adjust spacing ----
+\usepackage[onehalfspacing]{setspace}
+\AtBeginDocument{\frenchspacing}
+
+% Allow paragraphs to stretch rather than overflow to the right margin.
+\emergencystretch=3em
+% Tighten inter-column padding in tables so wide tables fit the text block.
+\setlength{\tabcolsep}{4pt}
+% Let code blocks break long lines (mono) instead of overflowing.
+\setlength{\emergencystretch}{2em}
+
+% ---- Select color scheme ----
+\usepackage[x11names]{xcolor}
+% Brew-lab semantic palette: The World / The Teacher / The Judge / The Student.
+\definecolor{world}{RGB}{39,64,139}    % #27408B blue   (controlled environment)
+\definecolor{teacher}{RGB}{30,107,66}  % #1E6B42 green (the data generator)
+\definecolor{judge}{RGB}{192,57,43}    % #C0392B red    (the evaluator)
+\definecolor{student}{RGB}{230,126,34} % #E67E22 orange (the model)
+\definecolor{booklink}{RGB}{20,60,125} % muted professional blue (links)
+
+% ---- Format header and footer (NO date) ----
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhf{}
+\fancyhead[LE]{\small\itshape\nouppercase{\leftmark}}
+\fancyhead[RO]{\small\itshape\nouppercase{\leftmark}}
+\fancyhead[RE,LO]{\small\thepage}
+\fancyfoot{}
+\usepackage{emptypage}
+
+% ---- Format title page ----
+\newcommand*{\subtitle}[1]{%
+  \leavevmode\vfill
+  {\centering\itshape\large #1\par}
+  \vspace{2cm}
+}
+
+% ---- Format table of contents ----
+\usepackage{tocloft}
+\renewcommand{\contentsname}{Contents}
+\setcounter{tocdepth}{1}
+\renewcommand{\cftpartfont}{\bfseries}
+\renewcommand{\cftchapfont}{\normalfont\scshape}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\setlength{\cftbeforepartskip}{1em}
+\setlength{\cftbeforechapskip}{0.5em}
+\setlength{\cftchapnumwidth}{3em}
+\setlength{\cftsecnumwidth}{4em}
+
+% ---- Format headings ----
+\usepackage{titlesec}
+\titleformat{\part}[display]{\Huge\bfseries\centering}{\textsc{part}~\thepart.}{1.5cm}{}[]
+\titleformat{\chapter}[display]{\huge\bfseries}{\textsc{chapter}~\thechapter.}{1.5cm}{}[\vskip1.5cm]
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\bfseries}
+\titleformat*{\subsubsection}{\itshape}
+\titlelabel{\thetitle.\hspace{1em}}
+
+% ---- Figures and tables ----
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{multirow}
+\renewcommand{\floatpagefraction}{0}
+\makeatletter\g@addto@macro\@floatboxreset\centering\makeatother
+\renewcommand{\arraystretch}{1.2}
+\renewcommand{\tablename}{\textsc{table}}
+\renewcommand{\figurename}{\textsc{figure}}
+\usepackage{caption}
+\DeclareCaptionLabelSeparator{periodem}{.\hspace{1em}}
+\captionsetup{labelsep=periodem}
+\captionsetup[table]{position=top}
+
+% ---- Notes ----
+\NewDocumentCommand{\note}{o m}{%
+  \parbox{\linewidth}{\footnotesize\vspace*{10pt}%
+  \IfValueT{#1}{\textit{#1}.\hspace{1em}}%
+  #2}}
+
+% ---- Lists ----
+\usepackage{enumitem}
+\setlist[itemize, 1]{leftmargin=\parindent, topsep=0.5em, itemsep=0.4em, parsep=0pt}
+\setlist[enumerate, 1]{leftmargin=\parindent, topsep=0.5em, itemsep=0.4em, parsep=0pt}
+
+% ---- Highlight callout for the recurring "shortcut audit" / pull-quote ----
+% (used by the brew-lab editorial convention: a boxed epigraph-style result)
+\usepackage{tcolorbox}
+\newtcolorbox{brewcallout}{%
+  colback=white, colframe=booklink!55, boxrule=0.5pt, arc=2pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt, before skip=0.8em, after skip=0.8em}
+
+% ---- Hyperlinks (visible, clickable) ----
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[colorlinks=true, linkcolor=booklink, urlcolor=booklink, citecolor=booklink,
+  hypertexnames=false, pdfpagemode=UseNone, pdfdisplaydoctitle=true]{hyperref}
+\urlstyle{same}

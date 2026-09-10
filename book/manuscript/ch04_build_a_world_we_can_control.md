@@ -101,8 +101,8 @@ entirely. The book's every later claim rests on this.
 ## The pipeline
 
 ```
-source -> parse -> AST -> whitelist validation -> compile -> restricted execution
-        -> semantic comparison
+source -> parse -> AST -> whitelist validation -> compile
+        -> restricted execution -> semantic comparison
 ```
 
 Validation happens on the tree *before* execution, so disallowed code never runs.

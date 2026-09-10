@@ -10,7 +10,8 @@ The whole generator is this single function. Given an operation and a seed, it b
 the semantic intent and then generates everything else from it:
 
 ```python
-def make_task(operation, task_id, seed, id_set="letters", split="train", family=None):
+def make_task(operation, task_id, seed, id_set="letters", split="train",
+              family=None):
     rng = random.Random(seed)
     sem = make_semantics(operation, rng, id_set)     # the ground truth
     ref = generate_reference(sem, rng)               # the correct Python
@@ -44,7 +45,8 @@ IDENTIFIER_SETS = {
 def make_semantics(operation, rng, id_set="letters"):
     n = OPERATIONS[operation]                      # arity
     names = list(IDENTIFIER_SETS[id_set][:n])      # pick names from the set
-    arg_type = "list" if operation in ("list_sum", "list_len", "first_element") else "int"
+    arg_type = ("list" if operation in
+                ("list_sum", "list_len", "first_element") else "int")
     args = [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(n)]
     return {"operation": operation, "args": args,
             "input_types": [arg_type] * n, "output_type": arg_type}
@@ -58,7 +60,8 @@ The reference generator reads the semantics and emits the correct Python. A few 
 def generate_reference(sem):
     op = sem["operation"]; names = [a["name"] for a in sem["args"]]
     if op == "add":
-        return f"def solve({', '.join(names)}):\n    return {names[0]} + {names[1]}"
+        return (f"def solve({', '.join(names)}):\n"
+                f"    return {names[0]} + {names[1]}")
     if op == "list_sum":
         return (f"def solve({names[0]}):\n    total = 0\n"
                 f"    for x in {names[0]}:\n        total = total + x\n"
@@ -79,11 +82,13 @@ def _a(op, names, rng):   # family "a"
 
 def _b(op, names, rng):   # family "b"
     x, y = names[0], names[1]
-    return (f"Implement solve so that given {x} and {y} it returns their sum.")
+    return (f"Implement solve so that given {x} and {y} "
+            f"it returns their sum.")
 
 def _c(op, names, rng):   # family "c"
     x, y = names
-    return f"Define a function solve({x}, {y}) that returns {x} + {y}."
+    return (f"Define a function solve({x}, {y}) "
+            f"that returns {x} + {y}.")
 
 FAMILIES = {"add": [_a, _b, _c], "mul": [_a, _b, _c], ...}
 ```
@@ -99,7 +104,8 @@ expected value is computed by the operation itself — not copied from the refer
 def generate_hidden_tests(sem, rng=None, count=8):
     op = sem["operation"]; args = sem["args"]; tests = []
     def add(*vals, note="basic"):
-        tests.append({"args": list(vals), "expected": _expected(op, vals), "note": note})
+        tests.append({"args": list(vals),
+                      "expected": _expected(op, vals), "note": note})
     add(_rand(rng), _rand(rng), note="basic")     # ordinary
     add(0, _rand(rng), note="zero")               # zero
     add(-_rand(rng), -_rand(rng), note="negative")# negative

@@ -1,0 +1,192 @@
+A model that answers natural-language questions is easy to build and
+hard to evaluate. But there is one class of task where the evaluation is
+not a judgment call at all: \textbf{write a program.} We write a
+description, the model writes code, and a computer can tell us, with
+certainty, whether that code does what was asked. There are no opinions
+about the answer, no ambiguous grading rubric, no ``well, it's sort of
+correct.'' Either the program returns the right thing for every test, or
+it does not.
+
+That one observation is why this whole book rests on the
+\texttt{natural-language\ →\ Python\ program} task. It gives us
+something few machine-learning setups have: \emph{objective, executable,
+reproducible} evaluation. But the task alone is not enough. Before we
+can run any experiment, we need a world the model can live in --- a
+world that is safe, that is \emph{deterministic}, and that is small
+enough that we can reason about everything that happens inside it.
+
+\section{Why we need a world at all}\label{why-we-need-a-world-at-all}
+
+Imagine hiring someone to write code, but not fully trusting them. We
+would not hand them the keys to the server. We would give them a sandbox
+--- a walled-off room where they can work, but where the dangerous tools
+are simply not present.
+
+That is exactly what we do with the model. It writes Python, and we need
+to run that Python safely and deterministically, while deciding
+precisely what it is \emph{allowed} to do. The model could, in
+principle, write a program that reads files, connects to a network, or
+deletes things. It has no reason to --- but we are not relying on its
+good intentions. We are building a world where those actions are
+\emph{impossible}, not just discouraged.
+
+The deeper reason is that a controlled world makes the \emph{experiment}
+clean. If the model's program could do anything --- read a file, check
+the time, generate a random number --- then two runs of the same program
+could give different answers, and we could never attribute a failure to
+``the model didn't learn this'' versus ``the program did something
+nondeterministic.'' We want the world to be so constrained that
+\textbf{the only source of variability is the model itself.}
+
+\section{The principle: whitelist, not
+blocklist}\label{the-principle-whitelist-not-blocklist}
+
+The naive way to constrain a program is a blacklist: deny
+\texttt{import}, deny \texttt{eval}, deny \texttt{open}. This is the
+instinct most people reach for first. But a blacklist is fundamentally
+fragile --- there is always some construct we forgot. Python has an
+enormous surface area, and attackers (or, in our case, just curious
+models) find the gaps. Denying a hundred things is not safety; it is a
+constant game of catch-up.
+
+The robust way is the opposite: \textbf{an allowlist.} We parse the
+program into its abstract syntax tree --- the structured representation
+of the code, before it runs --- and walk through every node. If any node
+type is not \emph{explicitly permitted}, we \textbf{reject the entire
+program.} There is no ``mostly allowed.'' If the model emits even one
+disallowed construct, the whole thing is refused before it ever
+executes.
+
+Think of the difference between a list of banned words and a grammar. A
+banned-word list can be evaded by creative phrasing. A grammar says:
+these are the only forms that exist. Anything outside the grammar is not
+merely suspect; it is \emph{unparseable in our world.} That is the
+philosophy of the sandbox.
+
+This is the single most important design decision in the whole
+apparatus, and it deserves to be stated plainly: \textbf{the sandbox
+does not try to catch bad programs. It states upfront what is allowed,
+and everything else is refused.}
+
+\section{The capability spec}\label{the-capability-spec}
+
+For the pilot, we whitelist a deliberately small subset of Python ---
+small enough that we can hold it in our heads, large enough to express
+real programming:
+
+\begin{itemize}
+\tightlist
+\item
+  literals (integers, floats), variables, assignment, \texttt{return}
+\item
+  arithmetic: \texttt{+\ -\ *\ /\ //\ \%\ **}
+\item
+  comparisons, boolean operators
+\item
+  \texttt{if\ /\ elif\ /\ else}, \texttt{for}, \texttt{while},
+  \texttt{break}, \texttt{continue}, \texttt{pass}
+\item
+  lists, indexing, slicing
+\item
+  a small set of built-ins:
+  \texttt{abs,\ min,\ max,\ sum,\ len,\ range,\ int,\ float,\ round}
+\item
+  simple \texttt{def} functions
+\end{itemize}
+
+Everything else is rejected: imports, file I/O, network, subprocess,
+\texttt{eval}/\texttt{exec}, \texttt{class}, \texttt{try/except},
+arbitrary attribute access, comprehensions, lambdas. We do not include
+these because they are dangerous; we exclude them because they are not
+needed for the task we are testing, and because each one we add makes
+the world bigger and harder to reason about. A smaller world is a
+\emph{better} world for this book, because every construct that is
+allowed is one we must understand the model's relationship to.
+
+We also version this spec (\texttt{python\_capability\_v0\_1}) so that
+later, when we give the model \emph{more} Python (Chapter 18), we can
+point to exactly what grew. Versioning the world is what lets us claim,
+later, that a change in behavior was caused by a change in the world,
+and not by something else that drifted.
+
+\section{Resource and determinism
+policy}\label{resource-and-determinism-policy}
+
+Beyond what is allowed syntactically, we also control \emph{how} the
+program may run. This is the second half of making the world
+trustworthy:
+
+\begin{itemize}
+\tightlist
+\item
+  maximum AST depth and node count (a program can only be so complex),
+\item
+  maximum nesting,
+\item
+  a hard execution timeout (a program that loops forever is a failed
+  program),
+\item
+  recursion protection,
+\item
+  float-comparison tolerance (because \texttt{0.1\ +\ 0.2} is not
+  exactly \texttt{0.3}),
+\item
+  \textbf{no randomness, no time, no environment access.}
+\end{itemize}
+
+That last point is the quiet heart of the whole design. A program with
+the same input must always produce the same output. If it does not, the
+experiment is contaminated. We cannot tell whether a failure means ``the
+model didn't learn this'' or ``the program rolled the dice.'' By making
+the world deterministic, we eliminate that ambiguity entirely. The
+book's every later claim rests on this.
+
+\section{The pipeline}\label{the-pipeline}
+
+\begin{verbatim}
+source -> parse -> AST -> whitelist validation -> compile
+        -> restricted execution -> semantic comparison
+\end{verbatim}
+
+Validation happens on the tree \emph{before} execution, so disallowed
+code never runs. Execution uses a stripped set of globals that exposes
+only the allowed built-ins --- there is no \texttt{\_\_import\_\_}, no
+\texttt{open}, no \texttt{eval}. The program can only see the tools we
+chose to give it.
+
+\section{An honest caveat}\label{an-honest-caveat}
+
+It is important to be clear about what this sandbox is \emph{not}. It is
+a \textbf{teaching and evaluation} sandbox --- deliberately strict about
+the capability subset, but not a claim of production-grade adversarial
+isolation. We are not trying to secure a server against a hostile
+attacker; we are trying to run generated code and measure whether it
+does what we asked. An attacker with time and motivation could likely
+find ways around a small AST allowlist. We state this limitation plainly
+rather than overstating what the sandbox guarantees, because the book's
+credibility depends on honest boundaries, not on impressive-sounding
+claims.
+
+\section{Testing the world}\label{testing-the-world}
+
+The sandbox is the foundation of trust in every later result. If the
+sandbox leaked --- allowed something disallowed, or failed to be
+deterministic --- every score in the book would be suspect. So the very
+first thing we do is not run any experiment at all. We \textbf{test the
+world itself.}
+
+We build a conformance suite of 31 cases: programs that use each allowed
+construct and must pass, plus programs that use each disallowed
+construct (\texttt{import}, \texttt{eval}, \texttt{class}, \texttt{try},
+comprehensions, lambdas, arbitrary attribute access) and must all be
+rejected. A sandbox that only permits things is easy; a sandbox that
+also \emph{correctly refuses} everything outside its grammar is the real
+achievement --- and that is what we verify before we trust a single
+number it produces.
+
+This is the first instance of a discipline the book will return to again
+and again (and which we will see was worth it, painfully, in Chapter
+10): \textbf{before we use a tool to measure something, we verify that
+the tool measures what we think it does.} Here, the tool is the world,
+and we refuse to run a single experiment until it passes its own
+examination.

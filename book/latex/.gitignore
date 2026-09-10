@@ -1,0 +1,7 @@
+*.aux
+*.out
+book.tex
+book.pdf
+chapters/
+_md/
+figures/

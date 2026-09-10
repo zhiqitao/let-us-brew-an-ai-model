@@ -1,0 +1,171 @@
+The design requires that we do not sanitize the journey into a success
+story. This is the honest record of everything that went wrong, was
+surprising, or was a failed attempt --- because each of these taught us
+something, and several are as valuable as any success.
+
+Each entry: what happened, what we learned, and what we did about it.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{The evaluator reported the model at 0.000 --- but the model was
+fine}\label{the-evaluator-reported-the-model-at-0.000-but-the-model-was-fine}
+
+\textbf{What happened.} On the very first Stage-1 evaluation, the
+trained model scored a reported \textbf{0.000} (syntax failure on every
+problem). This looked like a total failure of the approach.
+
+\textbf{What we found.} The model was actually producing correct
+programs --- but our generation output appended null-byte padding, and
+Python's parser rejects null bytes. So the \textbf{judge} was scoring
+valid programs as syntax errors.
+
+\textbf{What we learned.} The most important lesson of the book,
+demonstrated on ourselves: \emph{never trust a number from a system we
+have not audited.} Fixing the judge revealed the model's true 0.897. If
+we'd taken 0.000 at face value, we'd have wrongly concluded the approach
+failed.
+
+\textbf{Action.} Fixed \texttt{generate\_code} to truncate at the first
+null byte; re-ran; got 0.897.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{The pilot wording leaked the answer (100\%
+predictability)}\label{the-pilot-wording-leaked-the-answer-100-predictability}
+
+\textbf{What happened.} The leakage audit trained a trivial TF-IDF
+classifier to predict the operation from the natural-language prompt. It
+succeeded \textbf{100\%} of the time.
+
+\textbf{What we learned.} Our first renderer's wording was so tied to
+the operation that a model ``succeeding'' might just be exploiting the
+phrasing, not learning the computation. This is \emph{why} the
+surface-generalization tests matter.
+
+\textbf{Action.} Recorded as finding-001; noted the pilot is fine for
+Stage 1 but must add wording-family holdouts before any surface test.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{A bigger model did NOT fix
+composition}\label{a-bigger-model-did-not-fix-composition}
+
+\textbf{What happened.} We scaled the model across a \textasciitilde33×
+range (0.88M → 29.3M) expecting the composition boundary to move. It did
+not: composition stayed at \textbf{0.000} at all four sizes (0.88M,
+6.5M, 10.2M, 29.3M).
+
+\textbf{What we learned.} At \textasciitilde1--30M parameters,
+compositional generalization failure is \textbf{not a capacity ceiling}.
+It is a structural/learning limit that scaling alone does not resolve.
+This is a genuine negative result that redirects the investigation.
+
+\textbf{Action.} Recorded in
+\texttt{docs/experiments/scaling\_composition.md}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Sequential training caused catastrophic forgetting (A →
+0.000)}\label{sequential-training-caused-catastrophic-forgetting-a-0.000}
+
+\textbf{What happened.} Teaching the model lists after arithmetic,
+sequentially, completely destroyed the arithmetic (A-retention
+\textbf{0.000}).
+
+\textbf{What we learned.} Catastrophic forgetting is real and severe
+here --- but it is a \textbf{procedure} problem, not a fate. Replay
+(interleaving A and B) retained A perfectly (1.000) with zero cost to
+learning B.
+
+\textbf{Action.} Recorded; the chapter states this clearly --- the
+protocol, not capacity, determines the outcome.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{The pilot task was ``too easy'' (retrieval solved
+it)}\label{the-pilot-task-was-too-easy-retrieval-solved-it}
+
+\textbf{What happened.} The retrieval baseline scored \textbf{1.000} on
+the pilot test set, and the model scored 0.897. So a non-learning lookup
+did better than the model.
+
+\textbf{What we learned.} The pilot task, as constructed, is
+retrieval-solvable --- so it does not yet test whether the model
+\emph{generalizes}, only whether it matches surface form. This is
+exactly the ``task too easy'' outcome the plan anticipated.
+
+\textbf{Action.} We did not hide it; we used it to justify harder splits
+(surface, then composition), which produced the real findings above.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{The human-written test set:
+0/16}\label{the-human-written-test-set-016}
+
+\textbf{What happened.} The trained model solved \textbf{0/16}
+naturally-phrased human prompts --- even simple ``add two numbers''
+phrased as a person would.
+
+\textbf{What we learned.} This is the external, real-world corroboration
+of the surface finding. The model learned a \emph{template}, not the
+\emph{task}. The moment a real user phrases a request differently, it
+fails.
+
+\textbf{Action.} Recorded as an external sanity check; it sharpens the
+book's honest conclusion.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{The free-model proofread returned degraded
+output}\label{the-free-model-proofread-returned-degraded-output}
+
+\textbf{What happened.} We dispatched the 85K-char draft to two free
+models for a proofread. One leaked its chain-of-thought and broke into
+noise; the other timed out. No usable independent review was collected.
+
+\textbf{What we learned.} Free endpoints are flaky for long documents,
+and we should not fabricate fixes from unusable output. We were honest
+about this rather than pretend a review happened.
+
+\textbf{Action.} Noted honestly; the book's line-edit stands on its own
+merit, not a fabricated review.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Transient SIGILL crashes during
+training}\label{transient-sigill-crashes-during-training}
+
+\textbf{What happened.} Long CPU training runs occasionally crashed with
+signal 11 (SIGILL) on the AVX-only Ivy Bridge CPU --- intermittently,
+one run succeeds and the next dies.
+
+\textbf{What we learned.} Hardware quirks are real and part of the brew.
+The fix is \texttt{TORCH\_DISABLE\_AVX2=1} plus a retry loop (and
+\texttt{OMP\_NUM\_THREADS=1} for larger models).
+
+\textbf{Action.} Wrapped all long runs in a retry loop; documented the
+workaround.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Parameter-math and naming mistakes (caught by
+testing)}\label{parameter-math-and-naming-mistakes-caught-by-testing}
+
+\textbf{What happened.} Early writing had a parameter-count
+mis-derivation (didn't sum to the true 8.94M/884K) and the human-test
+evaluator initially referenced a non-existent key.
+
+\textbf{What we learned.} Always verify arithmetic against the real
+build, and let the ``test the tester'' discipline catch even our own
+book's numbers.
+
+\textbf{Action.} Recomputed from the actual build; fixed the evaluator.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\emph{The point of this ledger is the opposite of marketing. Every entry
+above, in its own way, made the final understanding sharper --- and
+several of them --- the broken evaluator, the wording leak, the
+task-too-easy result, the 0/16 human test --- are among the most
+valuable findings in the book precisely because they forced us to be
+honest.}

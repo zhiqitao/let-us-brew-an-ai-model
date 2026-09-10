@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+"""md_to_latex.py -- convert the brew-book manuscript chapters to LaTeX.
+
+Workflow (mirrors the from-token-to-fleet render pipeline):
+  1. Copy all chapter figures into book/latex/figures/ (flat, dedup by name).
+  2. For each chapter, rewrite image paths to the flat figures/ dir, strip the
+     duplicate H1 title, and run pandoc to produce a per-chapter .tex.
+  3. Emit the master book.tex that does \\frontmatter (title/copyright/toc/
+     listoffigures) + \\mainmatter (8 acts as \\part) + \\appendix (A/B).
+"""
+import os, re, sys, glob, shutil, subprocess
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+LATEX = os.path.join(ROOT, "book", "latex")
+MANU = os.path.join(ROOT, "book", "manuscript")
+FIG = os.path.join(LATEX, "figures")
+CH = os.path.join(LATEX, "chapters")
+os.makedirs(FIG, exist_ok=True); os.makedirs(CH, exist_ok=True)
+
+# The 8-act structure (BOOK_DESIGN.md §9): (part_title, [chapter filenames]).
+ACTS = [
+    ("The Question", [
+        "ch01_let_us_brew.md", "ch02_what_does_it_mean_to_learn.md",
+        "ch03_give_the_model_one_job.md"]),
+    ("Build the Laboratory", [
+        "ch04_build_a_world_we_can_control.md", "ch05_build_the_teacher.md",
+        "ch06_build_the_judge.md", "ch07_build_the_rivals.md"]),
+    ("The First Brew", [
+        "ch08_the_smallest_brain.md", "ch09_the_first_brew.md",
+        "ch10_does_it_actually_work.md"]),
+    ("How Capability Scales", [
+        "ch11_how_much_data.md", "ch12_how_much_brain.md",
+        "ch13_same_data_more_diverse_data.md"]),
+    ("Catching the Model Cheating", [
+        "ch14_the_model_that_memorized_everything.md",
+        "ch15_new_words_same_problem.md", "ch16_same_pieces_new_combination.md",
+        "ch17_redteam_the_judge.md"]),
+    ("Give It More Python", [
+        "ch18_now_give_it_more_python.md", "ch19_the_capability_ladder_revisited.md"]),
+    ("Break It", [
+        "ch20_what_happens_when_we_teach_it_something_new.md",
+        "ch21_the_cost_of_capability.md"]),
+    ("What Did We Learn?", [
+        "ch22_the_capability_map.md", "ch23_what_small_models_can_actually_learn.md",
+        "ch24_the_model_wasnt_the_point.md", "ch25_conclusion.md"]),
+]
+APPENDIX = [
+    ("Appendix A — The Generator, Every Piece", "appendix_a_generator.md"),
+    ("Appendix B — The Failure Ledger", "appendix_b_failure_ledger.md"),
+]
+
+IMG_RE = re.compile(r"!\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]\(([^)]+)\)")
+TITLE_RE = re.compile(r"^#\s+(.+?)\s*$", re.M)
+ORD_RE = re.compile(r"^(#{2,3})\s+\d{1,2}\.\s+", re.M)
+
+
+def fix_colspec(tex_path):
+    """Rewrite pandoc's relative-width table colspecs into simple
+    p{<frac>\\linewidth} columns, scaled down so the full table (columns + the
+    inter-column \\tabcolsep padding) fits the text width.
+
+    Pandoc emits: `p{(\\linewidth - 12\\tabcolsep) * \\real{0.1237}}` per column.
+    The fractions sum to ~1.0 * \\linewidth, but each column also carries
+    2\\tabcolsep of padding — so N columns overflow by ~2N*\\tabcolsep. We extract
+    each fraction, scale it to leave room for that padding, and emit a simple
+    `p{<scaled>\\linewidth}` so xelatex lays the whole table out cleanly.
+    """
+    tex = open(tex_path, encoding="utf-8").read()
+
+    col_re = re.compile(
+        r"p\{\\(?:linewidth|textwidth)\s*-\s*\d+\\tabcolsep\)\s*\*\s*\\real\{([0-9.]+)\}\}")
+
+    def repl_run(match_fracs):
+        # replace a whole consecutive run of pandoc colspecs
+        return None
+
+    # Find a run of pandoc colspecs and scale each fraction.
+    run_re = re.compile(
+        r"(?:>\{\\raggedright\\arraybackslash\}p\{\(?\s*"
+        r"\\(?:linewidth|textwidth)\s*-\s*\d+\\tabcolsep\)\s*\*\s*"
+        r"\\real\{([0-9.]+)\}\}\s*)+")
+    pos = 0
+    out = []
+    while True:
+        m = run_re.search(tex, pos)
+        if not m:
+            out.append(tex[pos:])
+            break
+        fracs = [float(x) for x in re.findall(r"\\real\{([0-9.]+)\}", m.group(0))]
+        n = len(fracs)
+        # each column carries 2\\tabcolsep padding; scale columns so the full
+        # table fits the text block. (tabcolsep=4pt -> 8pt/col, ~1.8% each.)
+        scale = max(0.55, min(0.95, 1.0 - 2 * n * 0.010))
+        new_run = "".join(">{\\raggedright\\arraybackslash}p{%.4f\\linewidth}\n" % (f * scale)
+                          for f in fracs)
+        out.append(tex[pos:m.start()])
+        out.append(new_run)
+        pos = m.end()
+    new = "".join(out)
+    # Also normalize any already-simple p{<frac>\\linewidth} colspecs (in case a
+    # prior pass already converted them) so they still get the same padding-safe
+    # scale.
+    if new == tex:
+        simple_re = re.compile(r"(?:>\{\\raggedright\\arraybackslash\}p\{([0-9.]+)\\linewidth\}\s*)+")
+        pos = 0; out = []
+        while True:
+            m = simple_re.search(new, pos)
+            if not m:
+                out.append(new[pos:]); break
+            fracs = [float(x) for x in re.findall(r"p\{([0-9.]+)\\linewidth\}", m.group(0))]
+            scale = max(0.55, min(0.95, 1.0 - 2 * len(fracs) * 0.010))
+            new_run = "".join(">{\\raggedright\\arraybackslash}p{%.4f\\linewidth}\n" % (f * scale)
+                              for f in fracs)
+            out.append(new[pos:m.start()]); out.append(new_run); pos = m.end()
+        new = "".join(out)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
+def fix_figure_width(tex_path):
+    tex = open(tex_path, encoding="utf-8").read()
+    pat = re.compile(r"\\includegraphics\[((?:[^\[\]]|\[[^\]]*\])*)\]\{(figures/[^}]+)\}")
+    def repl(m):
+        if "width=" in m.group(1):
+            return m.group(0)
+        return "\\includegraphics[%s,width=\\maxwidth{\\textwidth},keepaspectratio]{%s}" % (m.group(1), m.group(2))
+    new = pat.sub(repl, tex)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
+def copy_figures():
+    """Copy all chapter figures into a flat dir; return {orig_rel: flat_name}.
+
+    Figures are referenced as `figures/<name>.png` relative to book/ (the assembled
+    manuscript tree), so resolve relative to book/ not book/manuscript/.
+    """
+    mapping = {}
+    figbase = os.path.join(os.path.dirname(LATEX), "figures")  # book/figures
+    for md in glob.glob(os.path.join(MANU, "*.md")) + glob.glob(os.path.join(MANU, "**", "*.md"), recursive=True):
+        txt = open(md, encoding="utf-8").read()
+        for m in IMG_RE.finditer(txt):
+            rel = m.group(2).split("#")[0]
+            if rel.startswith("http"):
+                continue
+            flat = os.path.basename(rel)
+            # flat source dir: book/figures
+            src = os.path.join(figbase, flat)
+            if not os.path.exists(src):
+                continue
+            shutil.copy(src, os.path.join(FIG, flat))
+            mapping[rel] = flat
+    return mapping
+
+
+def chapter_title(fn):
+    txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
+    m = TITLE_RE.search(txt)
+    title = m.group(1).strip() if m else os.path.basename(fn)
+    # strip a leading manual "N. " prefix if present so LaTeX owns numbering
+    title = re.sub(r"^\d{1,2}\.\s*", "", title)
+    return title
+
+
+def convert_chapter(fn, mapping, outbase):
+    txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
+    # strip the H1 chapter title (book.tex supplies \chapter{title})
+    txt = re.sub(TITLE_RE, "", txt, count=1)
+    txt = ORD_RE.sub(r"\1 ", txt)
+    def rep(m):
+        alt = m.group(1); rel = m.group(2).split("#")[0]
+        flat = mapping.get(rel, rel)
+        return "![%s](figures/%s)" % (alt, flat)
+    txt = IMG_RE.sub(rep, txt)
+    md_path = os.path.join(LATEX, "_md", outbase + ".md")
+    os.makedirs(os.path.dirname(md_path), exist_ok=True)
+    open(md_path, "w", encoding="utf-8").write(txt)
+    out = os.path.join(CH, outbase + ".tex")
+    cmd = ["pandoc", md_path, "-f", "markdown+pipe_tables+fenced_code_blocks-yaml_metadata_block",
+           "-t", "latex", "--top-level-division=chapter", "-o", out]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print("pandoc fail %s: %s" % (outbase, r.stderr[-300:]))
+    fix_colspec(out); fix_figure_width(out)
+    return out
+
+
+def main():
+    mapping = copy_figures()
+    print("figures copied:", len(mapping))
+
+    chapters_out = []      # (label, title, tex_path)
+    build_lines = []
+    num = 0
+    for part_title, fns in ACTS:
+        build_lines.append("\\part{%s}" % part_title)
+        for fn in fns:
+            p = os.path.join(MANU, fn)
+            if not os.path.exists(p):
+                print("[skip]", fn); continue
+            num += 1
+            title = chapter_title(fn)
+            base = "ch%02d" % num
+            tex = convert_chapter(fn, mapping, base)
+            build_lines.append("\\chapter{%s}" % title)
+            build_lines.append("\\label{chap:%d}" % num)
+            build_lines.append("\\input{chapters/%s}" % base)
+            chapters_out.append((num, title, tex))
+
+    build_lines.append("\\appendix")
+    ap = 0
+    for atitle, fn in APPENDIX:
+        p = os.path.join(MANU, fn)
+        if not os.path.exists(p):
+            print("[skip]", fn); continue
+        ap += 1
+        base = "app%c" % (chr(64 + ap))   # appA, appB
+        tex = convert_chapter(fn, mapping, base)
+        build_lines.append("\\chapter{%s}" % atitle)
+        build_lines.append("\\input{chapters/%s}" % base)
+
+    # Emit book.tex with frontmatter (title/copyright/toc/figures) + mainmatter.
+    book = render_book_tex(build_lines)
+    open(os.path.join(LATEX, "book.tex"), "w", encoding="utf-8").write(book)
+    print("wrote book.tex; chapters:", len(chapters_out), "appendices:", ap)
+
+
+def render_book_tex(build_lines):
+    body = "\n".join(build_lines)
+    return f"""% Auto-generated by book/latex/md_to_latex.py — do not edit by hand
+\\documentclass[letterpaper,11pt,openany]{{book}}
+\\usepackage{{book}}
+\\begin{{document}}
+
+\\begin{{titlepage}}
+\\thispagestyle{{empty}}
+\\centering
+\\vspace*{{3cm}}
+{{\\Huge\\bfseries Let Us Brew an AI Model\\par}}
+\\vspace{{1.5cm}}
+{{\\Large\\itshape What Tiny Language Models Can Actually Learn When Given One Job\\par}}
+\\vspace{{0.8cm}}
+{{\\normalsize Version 20260909\\par}}
+\\vfill
+{{\\large Zhiqi Research\\par}}
+\\vspace{{0.8cm}}
+{{\\small\\itshape Building a small language model is relatively easy. Determining what it actually learned is the hard part.\\par}}
+\\vfill
+\\end{{titlepage}}
+
+\\begin{{titlepage}}
+\\thispagestyle{{empty}}
+{{\\centering\\MakeUppercase{{Copyright \\textcopyright{{}} 2026 Zhiqi Research}}\\\\[2pt] All rights reserved.\\par}}
+\\vspace{{1.2cm}}
+\\noindent\\textbf{{License.}} This work --- the book text, diagrams, figures, and build scripts --- is distributed under a \\emph{{source-available}} license. The model, code, and every measured result are described honestly, including the negative findings.
+
+\\noindent\\footnotesize The work is provided ``as is'', without warranty of any kind.
+\\vfill
+\\end{{titlepage}}
+
+\\frontmatter
+
+\\chapter{{Preface}}
+{preface_extract()}
+
+\\clearpage
+\\tableofcontents
+
+\\clearpage
+\\listoffigures
+
+\\mainmatter
+
+{body}
+
+\\backmatter
+
+\\end{{document}}
+"""
+
+
+def preface_extract():
+    # A short generated preface from the design doc's core thesis.
+    return r"""This book is a controlled empirical investigation into what a small language model can actually learn when it is given exactly one narrowly defined, objectively testable job.
+
+The task: read a natural-language programming request and produce a Python program, which is then executed against hidden tests.
+
+Along the way we build a laboratory: a controlled world (a sandbox), a teacher (a semantic data generator), a judge (an execution-based evaluator), and rivals (simple baselines). The model is the instrument. The experiment is the subject. And the honest territory includes the moments the model falls flat — and the moment we discovered that our own measuring stick was broken, not the model."""
+
+
+if __name__ == "__main__":
+    main()

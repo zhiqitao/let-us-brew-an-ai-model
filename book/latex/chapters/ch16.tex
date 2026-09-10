@@ -1,0 +1,201 @@
+Everything so far warned us. The model knows \texttt{abs} and
+\texttt{add} individually. Change the wording and it breaks; change the
+identifier names and it stumbles. But the pieces are there. So the
+question this chapter asks is the sharpest one of the whole book:
+
+\begin{quote}
+If the model knows how to \emph{add} and how to take an \emph{absolute
+value}, can it do the thing the two of them make together --- compute
+the absolute value of a sum?
+\end{quote}
+
+This is \textbf{compositional generalization}: taking knowledge the
+model already has and applying it to a structure it never saw during
+training. It is arguably the deepest question in machine learning,
+because it separates ``the model memorized something'' from ``the model
+\emph{understands} something.'' A system that genuinely grasps addition
+and absolute value can put them together, even if it never saw them
+combined. A system that merely memorized the word ``sum'' mapped to a
+\texttt{+} cannot.
+
+\section{The setup: design the test to be
+unfair-but-fair}\label{the-setup-design-the-test-to-be-unfair-but-fair}
+
+The hard part of any composition experiment is building a test that is
+genuinely impossible to cheat. Here is how we do it.
+
+We train the model exactly as before, on \textbf{primitive} operations
+only: \texttt{add}, \texttt{sub}, \texttt{mul}, \texttt{abs}, and the
+rest. We never show it a composite operation.
+
+Then we build a set of \textbf{composite} operations that are \emph{made
+from} the primitives: \texttt{abs\_add} (absolute value of a sum),
+\texttt{sub\_abs} (absolute difference), \texttt{sum\_of\_abs} (sum of
+absolute values), \texttt{max\_add}, \texttt{double\_first},
+\texttt{len\_minus\_one}. These are not new primitive functions; they
+are combinations of the ones the model already knows. To solve
+\texttt{abs\_add}, a model \emph{must} perform an addition and then take
+an absolute value --- two pieces it demonstrably knows.
+
+The key design decision is that these composites were \textbf{never
+shown during training} (the teacher holds them out, exactly as it holds
+out test tasks). So the test is: can the model reach into its bag of
+known primitive behaviors and compose them in a combination it has never
+seen? If it cannot, we have found its compositional boundary. If it can,
+we have found something remarkable.
+
+To make the test fair, we also show what \emph{both} baselines do. The
+retrieval baseline has nothing to compose --- it can only find the
+closest primitive example and copy it. The template baseline has no rule
+for \texttt{abs\_add} either, because the teacher never gave it one. So
+if \emph{everything} fails, we have a fair statement: composition cannot
+be achieved by the easy shortcuts, and the model too cannot do it.
+
+\section{What we measured}\label{what-we-measured}
+
+Here is the result, and it is unambiguous:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{0.1624\linewidth}
+>{\raggedright\arraybackslash}p{0.1894\linewidth}
+>{\raggedright\arraybackslash}p{0.2706\linewidth}
+>{\raggedright\arraybackslash}p{0.2976\linewidth}
+@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Test
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MODEL
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+TEMPLATE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+RETRIEVAL
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+In-distribution (primitives) & 0.900 & 0.800 & 1.000 \\
+\textbf{Compositional (unseen combos)} & \textbf{0.000} & \textbf{0.000}
+& \textbf{0.000} \\
+\end{longtable}
+
+Let us read this carefully, because the meaning is subtle.
+
+On the primitive operations it saw, the model scores 0.900 --- good. But
+on the composite operations, it scores \textbf{0.000}. Not 0.1, not
+``sometimes,'' not ``close.'' Zero. The model never produced a correct
+program for any composite operation, even though every composite is a
+combination of primitives it individually knows.
+
+And here is the crucial fairness check: the baselines fail too. The
+retrieval baseline gets 0.000 because it has nothing to retrieve ---
+there is no composite example in its memory. The template baseline gets
+0.000 because no template rule covers a composite. So this is not a case
+where the model is merely \emph{worse} than an easy shortcut. This is a
+case where the easy shortcuts also collapse, which means the only way to
+succeed is to \emph{genuinely compose} --- and the model cannot.
+
+\section{What this really means}\label{what-this-really-means}
+
+This is the cleanest negative result in the book, and it is the book's
+central finding. Let us unpack it.
+
+The model knows \texttt{abs} at 0.900 and \texttt{add} at 0.900. But
+\texttt{add} the absolute values: 0.000. It is as if the model has two
+perfectly good rooms --- one with an ``add'' skill, one with an ``abs''
+skill --- but no door between them. It cannot take the output of one and
+feed it into the other, even though that is the simplest possible
+combination.
+
+This is the deep meaning of ``surface-tied'' that we began to glimpse in
+Chapter 15. It is not merely that the model is sensitive to wording. It
+is that the model's knowledge is \textbf{flat and associative}, not
+\textbf{structured and compositional}. It learned that the token
+sequence for ``sum'' predicts the token sequence for \texttt{+}. It did
+not learn a general \emph{operation} that can be an argument to another
+general operation. The knowledge is a set of reflexes, not a toolbox
+with reusable parts.
+
+This distinction is why we built the four-level generalization taxonomy
+in the first place and why we refused to collapse everything into one
+number. If we had only reported ``the model scores 0.900 on this task,''
+we would have given a genuinely misleading picture. The model is
+excellent at what it was shown --- and utterly unable to combine what it
+was shown into anything new. Both statements are true, and both must be
+reported.
+
+\section{The puzzling asymmetry (and why it's a finding, not a
+bug)}\label{the-puzzling-asymmetry-and-why-its-a-finding-not-a-bug}
+
+One thing will strike us: the model scores 0.900 in-distribution but
+0.000 on composition. Why would a model that is ``good'' fail so
+completely on something so similar?
+
+The answer is that the two numbers measure \emph{different} kinds of
+capability, which is precisely the point of the taxonomy. The 0.900
+measures \textbf{distributional generalization} --- new examples of the
+\emph{same} operation. The 0.000 measures \textbf{structural
+generalization} --- new \emph{constructions} combining known operations.
+These are different abilities, and a model can be high on one and zero
+on the other. That asymmetry is not a contradiction; it is the shape of
+the truth we are mapping.
+
+\section{Why we don't call it a ``failure of one thing'' without
+checking the other
+two}\label{why-we-dont-call-it-a-failure-of-one-thing-without-checking-the-other-two}
+
+A careful reader will ask: is composition genuinely impossible for this
+model, or did we simply make the test too hard? The baselines answer
+this. If the test were simply ``too hard'' in some absolute sense, the
+retrieval and template baselines would not necessarily fail --- but they
+are the \emph{easy} methods, and they fail too. So the test is not too
+hard for an easy method; it is unsolvable by any method except genuine
+composition, and the model has no composition. This is a fair,
+controlled comparison, which is exactly what our one-variable discipline
+demands.
+
+\section{The shortcut audit}\label{the-shortcut-audit}
+
+Before we trust ``0.000,'' we ask how the model might have \emph{faked}
+a success.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Suspected shortcut: memorizing a composite example.} Ruled out
+  --- no composite operation was ever shown during training, so there is
+  nothing to memorize.
+\item
+  \textbf{Suspected shortcut: retrieving a near-identical primitive and
+  patching it.} Ruled out --- the retrieval baseline, which does exactly
+  this, scores 0.000.
+\item
+  \textbf{Suspected shortcut: a rule that ``just works'' on composites.}
+  Ruled out --- the template baseline, which has rule-based generation,
+  scores 0.000.
+\item
+  \textbf{Suspected shortcut: the judge being too strict or too loose.}
+  This is the one we genuinely have to hold onto as a question, and it
+  is why the judge is mutation-tested (Chapter 17). If the judge were
+  rejecting correct composite programs, we might be misreading a real
+  success as a failure.
+\end{enumerate}
+
+\section{The honest framing}\label{the-honest-framing}
+
+This is a \emph{useful}, \emph{clean} negative result --- and in
+science, a decisive negative is often more informative than a vague
+positive. We now know something sharp about tiny models: \textbf{at
+\textasciitilde1M parameters, they do not compose.} They learn reflexes,
+not structure. This is not a statement about ``intelligence'' or about
+``what models will eventually do.'' It is a precise, reproducible
+measurement of where this model's capability stops.
+
+And it sets up the rest of the book in a way that is far more
+interesting than if the model had composed successfully. Because now the
+question becomes: \emph{what would it take to give a tiny model this
+ability?} More capacity? More data? Different data with more structure?
+That is what the next chapters investigate --- and the answer is one of
+the most genuinely surprising things the book finds.

@@ -1,0 +1,163 @@
+Chapter 5 describes the teacher conceptually. This appendix shows the
+actual source, so we can see --- and reproduce --- exactly how the data
+was made. All of this lives in \texttt{src/data\_generator/} and
+\texttt{src/program\_generator/}, \texttt{src/nl\_renderer/},
+\texttt{src/test\_generator/} in the companion repository.
+
+\section{The one line that ties it
+together}\label{the-one-line-that-ties-it-together}
+
+The whole generator is this single function. Given an operation and a
+seed, it builds the semantic intent and then generates everything else
+from it:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ make\_task(operation, task\_id, seed, id\_set}\OperatorTok{=}\StringTok{"letters"}\NormalTok{, split}\OperatorTok{=}\StringTok{"train"}\NormalTok{,}
+\NormalTok{              family}\OperatorTok{=}\VariableTok{None}\NormalTok{):}
+\NormalTok{    rng }\OperatorTok{=}\NormalTok{ random.Random(seed)}
+\NormalTok{    sem }\OperatorTok{=}\NormalTok{ make\_semantics(operation, rng, id\_set)     }\CommentTok{\# the ground truth}
+\NormalTok{    ref }\OperatorTok{=}\NormalTok{ generate\_reference(sem, rng)               }\CommentTok{\# the correct Python}
+\NormalTok{    prompt, fam\_name }\OperatorTok{=}\NormalTok{ render\_nl(sem, family}\OperatorTok{=}\NormalTok{family, rng}\OperatorTok{=}\NormalTok{rng)  }\CommentTok{\# the English}
+\NormalTok{    tests }\OperatorTok{=}\NormalTok{ generate\_hidden\_tests(sem, rng}\OperatorTok{=}\NormalTok{rng)      }\CommentTok{\# the hidden tests}
+    \ControlFlowTok{return}\NormalTok{ \{}
+        \StringTok{"task\_id"}\NormalTok{: task\_id,}
+        \StringTok{"semantics"}\NormalTok{: sem,}
+        \StringTok{"reference\_code"}\NormalTok{: ref,}
+        \StringTok{"nl"}\NormalTok{: \{}\StringTok{"prompt"}\NormalTok{: prompt, }\StringTok{"template\_family"}\NormalTok{: fam\_name\},}
+        \StringTok{"hidden\_tests"}\NormalTok{: tests,}
+        \StringTok{"metadata"}\NormalTok{: \{}\StringTok{"seed"}\NormalTok{: seed, }\StringTok{"identifier\_set"}\NormalTok{: id\_set,}
+                     \StringTok{"paraphrase\_family"}\NormalTok{: fam\_name\},}
+        \StringTok{"spec\_version"}\NormalTok{: }\StringTok{"python\_capability\_v0\_1"}\NormalTok{,}
+        \StringTok{"dataset\_version"}\NormalTok{: }\StringTok{"v0\_1"}\NormalTok{,}
+        \StringTok{"split"}\NormalTok{: split,}
+\NormalTok{    \}}
+\end{Highlighting}
+\end{Shaded}
+
+That's the whole architecture in ten lines. Everything below is one of
+the four building blocks it calls.
+
+\section{The semantics}\label{the-semantics}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{IDENTIFIER\_SETS }\OperatorTok{=}\NormalTok{ \{}
+    \StringTok{"letters"}\NormalTok{: [}\StringTok{"a"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{],}
+    \StringTok{"words"}\NormalTok{:   [}\StringTok{"left"}\NormalTok{, }\StringTok{"right"}\NormalTok{, }\StringTok{"first"}\NormalTok{, }\StringTok{"second"}\NormalTok{, }\StringTok{"value"}\NormalTok{, }\StringTok{"numbers"}\NormalTok{, }\StringTok{"items"}\NormalTok{],}
+\NormalTok{\}}
+
+\KeywordTok{def}\NormalTok{ make\_semantics(operation, rng, id\_set}\OperatorTok{=}\StringTok{"letters"}\NormalTok{):}
+\NormalTok{    n }\OperatorTok{=}\NormalTok{ OPERATIONS[operation]                      }\CommentTok{\# arity}
+\NormalTok{    names }\OperatorTok{=} \BuiltInTok{list}\NormalTok{(IDENTIFIER\_SETS[id\_set][:n])      }\CommentTok{\# pick names from the set}
+\NormalTok{    arg\_type }\OperatorTok{=}\NormalTok{ (}\StringTok{"list"} \ControlFlowTok{if}\NormalTok{ operation }\KeywordTok{in}
+\NormalTok{                (}\StringTok{"list\_sum"}\NormalTok{, }\StringTok{"list\_len"}\NormalTok{, }\StringTok{"first\_element"}\NormalTok{) }\ControlFlowTok{else} \StringTok{"int"}\NormalTok{)}
+\NormalTok{    args }\OperatorTok{=}\NormalTok{ [\{}\StringTok{"name"}\NormalTok{: names[i], }\StringTok{"type"}\NormalTok{: arg\_type, }\StringTok{"role"}\NormalTok{: }\StringTok{"operand"}\NormalTok{\} }\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(n)]}
+    \ControlFlowTok{return}\NormalTok{ \{}\StringTok{"operation"}\NormalTok{: operation, }\StringTok{"args"}\NormalTok{: args,}
+            \StringTok{"input\_types"}\NormalTok{: [arg\_type] }\OperatorTok{*}\NormalTok{ n, }\StringTok{"output\_type"}\NormalTok{: arg\_type\}}
+\end{Highlighting}
+\end{Shaded}
+
+\section{The reference program}\label{the-reference-program}
+
+The reference generator reads the semantics and emits the correct
+Python. A few cases:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ generate\_reference(sem):}
+\NormalTok{    op }\OperatorTok{=}\NormalTok{ sem[}\StringTok{"operation"}\NormalTok{]}\OperatorTok{;}\NormalTok{ names }\OperatorTok{=}\NormalTok{ [a[}\StringTok{"name"}\NormalTok{] }\ControlFlowTok{for}\NormalTok{ a }\KeywordTok{in}\NormalTok{ sem[}\StringTok{"args"}\NormalTok{]]}
+    \ControlFlowTok{if}\NormalTok{ op }\OperatorTok{==} \StringTok{"add"}\NormalTok{:}
+        \ControlFlowTok{return}\NormalTok{ (}\SpecialStringTok{f"def solve(}\SpecialCharTok{\{}\StringTok{\textquotesingle{}, \textquotesingle{}}\SpecialCharTok{.}\NormalTok{join(names)}\SpecialCharTok{\}}\SpecialStringTok{):}\CharTok{\textbackslash{}n}\SpecialStringTok{"}
+                \SpecialStringTok{f"    return }\SpecialCharTok{\{}\NormalTok{names[}\DecValTok{0}\NormalTok{]}\SpecialCharTok{\}}\SpecialStringTok{ + }\SpecialCharTok{\{}\NormalTok{names[}\DecValTok{1}\NormalTok{]}\SpecialCharTok{\}}\SpecialStringTok{"}\NormalTok{)}
+    \ControlFlowTok{if}\NormalTok{ op }\OperatorTok{==} \StringTok{"list\_sum"}\NormalTok{:}
+        \ControlFlowTok{return}\NormalTok{ (}\SpecialStringTok{f"def solve(}\SpecialCharTok{\{}\NormalTok{names[}\DecValTok{0}\NormalTok{]}\SpecialCharTok{\}}\SpecialStringTok{):}\CharTok{\textbackslash{}n}\SpecialStringTok{    total = 0}\CharTok{\textbackslash{}n}\SpecialStringTok{"}
+                \SpecialStringTok{f"    for x in }\SpecialCharTok{\{}\NormalTok{names[}\DecValTok{0}\NormalTok{]}\SpecialCharTok{\}}\SpecialStringTok{:}\CharTok{\textbackslash{}n}\SpecialStringTok{        total = total + x}\CharTok{\textbackslash{}n}\SpecialStringTok{"}
+                \SpecialStringTok{f"    return total"}\NormalTok{)}
+    \CommentTok{\# ... and so on for every operation, in the same style.}
+\end{Highlighting}
+\end{Shaded}
+
+\section{The natural-language
+renderer}\label{the-natural-language-renderer}
+
+The renderer phrases the same semantics several ways. Each
+\textbf{template family} is a function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ \_a(op, names, rng):   }\CommentTok{\# family "a"}
+\NormalTok{    x, y }\OperatorTok{=}\NormalTok{ names[}\DecValTok{0}\NormalTok{], names[}\DecValTok{1}\NormalTok{]}
+    \ControlFlowTok{return}\NormalTok{ (}\SpecialStringTok{f"Write a function that takes two numbers, }\SpecialCharTok{\{}\NormalTok{x}\SpecialCharTok{\}}\SpecialStringTok{ and }\SpecialCharTok{\{}\NormalTok{y}\SpecialCharTok{\}}\SpecialStringTok{, "}
+            \SpecialStringTok{f"and returns the sum of them."}\NormalTok{)}
+
+\KeywordTok{def}\NormalTok{ \_b(op, names, rng):   }\CommentTok{\# family "b"}
+\NormalTok{    x, y }\OperatorTok{=}\NormalTok{ names[}\DecValTok{0}\NormalTok{], names[}\DecValTok{1}\NormalTok{]}
+    \ControlFlowTok{return}\NormalTok{ (}\SpecialStringTok{f"Implement solve so that given }\SpecialCharTok{\{}\NormalTok{x}\SpecialCharTok{\}}\SpecialStringTok{ and }\SpecialCharTok{\{}\NormalTok{y}\SpecialCharTok{\}}\SpecialStringTok{ "}
+            \SpecialStringTok{f"it returns their sum."}\NormalTok{)}
+
+\KeywordTok{def}\NormalTok{ \_c(op, names, rng):   }\CommentTok{\# family "c"}
+\NormalTok{    x, y }\OperatorTok{=}\NormalTok{ names}
+    \ControlFlowTok{return}\NormalTok{ (}\SpecialStringTok{f"Define a function solve(}\SpecialCharTok{\{}\NormalTok{x}\SpecialCharTok{\}}\SpecialStringTok{, }\SpecialCharTok{\{}\NormalTok{y}\SpecialCharTok{\}}\SpecialStringTok{) "}
+            \SpecialStringTok{f"that returns }\SpecialCharTok{\{}\NormalTok{x}\SpecialCharTok{\}}\SpecialStringTok{ + }\SpecialCharTok{\{}\NormalTok{y}\SpecialCharTok{\}}\SpecialStringTok{."}\NormalTok{)}
+
+\NormalTok{FAMILIES }\OperatorTok{=}\NormalTok{ \{}\StringTok{"add"}\NormalTok{: [\_a, \_b, \_c], }\StringTok{"mul"}\NormalTok{: [\_a, \_b, \_c], ...\}}
+\end{Highlighting}
+\end{Shaded}
+
+The semantics is fixed; only the wording changes. That is the entire
+point.
+
+\section{The hidden tests}\label{the-hidden-tests}
+
+Tests are generated from the semantics, with deliberate edge-case
+coverage. The expected value is computed by the operation itself --- not
+copied from the reference:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ generate\_hidden\_tests(sem, rng}\OperatorTok{=}\VariableTok{None}\NormalTok{, count}\OperatorTok{=}\DecValTok{8}\NormalTok{):}
+\NormalTok{    op }\OperatorTok{=}\NormalTok{ sem[}\StringTok{"operation"}\NormalTok{]}\OperatorTok{;}\NormalTok{ args }\OperatorTok{=}\NormalTok{ sem[}\StringTok{"args"}\NormalTok{]}\OperatorTok{;}\NormalTok{ tests }\OperatorTok{=}\NormalTok{ []}
+    \KeywordTok{def}\NormalTok{ add(}\OperatorTok{*}\NormalTok{vals, note}\OperatorTok{=}\StringTok{"basic"}\NormalTok{):}
+\NormalTok{        tests.append(\{}\StringTok{"args"}\NormalTok{: }\BuiltInTok{list}\NormalTok{(vals),}
+                      \StringTok{"expected"}\NormalTok{: \_expected(op, vals), }\StringTok{"note"}\NormalTok{: note\})}
+\NormalTok{    add(\_rand(rng), \_rand(rng), note}\OperatorTok{=}\StringTok{"basic"}\NormalTok{)     }\CommentTok{\# ordinary}
+\NormalTok{    add(}\DecValTok{0}\NormalTok{, \_rand(rng), note}\OperatorTok{=}\StringTok{"zero"}\NormalTok{)               }\CommentTok{\# zero}
+\NormalTok{    add(}\OperatorTok{{-}}\NormalTok{\_rand(rng), }\OperatorTok{{-}}\NormalTok{\_rand(rng), note}\OperatorTok{=}\StringTok{"negative"}\NormalTok{)}\CommentTok{\# negative}
+\NormalTok{    add(\_rand(rng, }\DecValTok{900}\NormalTok{, }\DecValTok{1000}\NormalTok{), \_rand(rng), note}\OperatorTok{=}\StringTok{"large"}\NormalTok{)  }\CommentTok{\# large}
+    \CommentTok{\# ... edge cases for the specific operation}
+    \ControlFlowTok{return}\NormalTok{ tests[:count]}
+\end{Highlighting}
+\end{Shaded}
+
+\section{The leakage audit}\label{the-leakage-audit}
+
+Finally, the generator is checked. The audit trains a trivial classifier
+to see whether the wording leaks the operation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vec }\OperatorTok{=}\NormalTok{ TfidfVectorizer()}
+\NormalTok{X }\OperatorTok{=}\NormalTok{ vec.fit\_transform([t[}\StringTok{"nl"}\NormalTok{][}\StringTok{"prompt"}\NormalTok{] }\ControlFlowTok{for}\NormalTok{ t }\KeywordTok{in}\NormalTok{ tasks])}
+\NormalTok{clf }\OperatorTok{=}\NormalTok{ LogisticRegression(max\_iter}\OperatorTok{=}\DecValTok{1000}\NormalTok{)}
+\NormalTok{scores }\OperatorTok{=}\NormalTok{ cross\_val\_score(clf, X, y, cv}\OperatorTok{=}\DecValTok{5}\NormalTok{)}
+\BuiltInTok{print}\NormalTok{(}\SpecialStringTok{f"classifier predicts operation: }\SpecialCharTok{\{}\NormalTok{scores}\SpecialCharTok{.}\NormalTok{mean()}\SpecialCharTok{:.3f\}}\SpecialStringTok{"}\NormalTok{)   }\CommentTok{\# \textgreater{}0.9 means LEAK}
+\end{Highlighting}
+\end{Shaded}
+
+When we ran this on the first pilot renderer, it printed \textbf{1.000}
+--- a 100\% leak --- and that finding drove the later expansion of the
+paraphrase families.
+
+\section{How to run it}\label{how-to-run-it}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ scripts/generate\_data.py }\AttributeTok{{-}{-}n{-}per{-}op}\NormalTok{ 200   }\CommentTok{\# writes pilot\_train/val/test + manifest}
+\ExtensionTok{python}\NormalTok{ scripts/audit.py                          }\CommentTok{\# runs the leakage audit}
+\end{Highlighting}
+\end{Shaded}
+
+That's the teacher. It's not magic --- it's a controlled generator,
+audited for fairness, that makes the entire experimental program
+possible.
