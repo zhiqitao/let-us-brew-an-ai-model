@@ -261,3 +261,62 @@ the sandbox on the way out, the validator on the way in. A model that
 ``only does its one job'' is confined by its wiring, not by itself. That
 is worth stating plainly, because it is the mistake people make when
 they imagine a well-behaved model as one that simply chooses to behave.
+
+\subsection{How this maps to production
+systems}\label{how-this-maps-to-production-systems}
+
+Our two gates are not an esoteric lab device; they are the same two
+ideas that real systems use, under different names. It is worth mapping
+them, so the book's abstract apparatus connects to what people actually
+deploy.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{0.2300\linewidth}
+>{\raggedright\arraybackslash}p{0.2300\linewidth}
+>{\raggedright\arraybackslash}p{0.2300\linewidth}
+>{\raggedright\arraybackslash}p{0.2300\linewidth}
+@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Our gate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Production analogue
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+How it works
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Soft or hard?
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Gate B} (input) & \textbf{Input classifier / guardrail} & A
+separate model or ruleset scores the incoming prompt and blocks
+disallowed categories \emph{before} the main model sees it (e.g.~Llama
+Guard, NeMo guardrails). & \textbf{Hard} --- a different mechanism in
+front, not the model deciding \\
+\textbf{Gate B} (input) & \textbf{Structured-input schema} & The API
+declares the request's allowed shape (JSON schema); a request outside it
+is invalid by construction. & \textbf{Hard} --- rejected at the
+boundary \\
+\textbf{Gate B} (input) & \textbf{Function/tool signatures} & The model
+can only call registered functions with typed signatures; off-scope
+actions simply aren't callable. & \textbf{Hard} \\
+\textbf{Gate A} (output) & \textbf{Constrained decoding / JSON mode} &
+The decoder only ever emits tokens that keep the output inside the
+declared structure, so the model physically cannot produce an
+unparseable or off-schema completion. & \textbf{Hard} --- enforced by
+the decoder, not the model \\
+\textbf{Gate A} (output) & \textbf{Output filter / sandbox} & A post-hoc
+check (or a walled-off execution environment) rejects or neutralizes
+anything that slipped through. & \textbf{Hard} \\
+\end{longtable}
+
+The thread running through the right-hand column is the book's point:
+every reliable enforcement mechanism is \textbf{hard and external}, and
+none of them is ``the model chose to behave.'' Even a frontier model
+that appears to refuse is doing so because RLHF shaped it to \emph{tend}
+toward refusal --- which is a soft, jailbreakable behavior, not a bound.
+The dependable version of ``it only does what it was designed for'' is
+the wiring we build around it, exactly as our sandbox and our validator
+are.
