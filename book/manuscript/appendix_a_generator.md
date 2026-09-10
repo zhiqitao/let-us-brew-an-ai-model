@@ -4,7 +4,7 @@ Chapter 5 describes the teacher conceptually. This appendix shows the actual sou
 `src/data_generator/` and `src/program_generator/`, `src/nl_renderer/`,
 `src/test_generator/` in the companion repository.
 
-A note on what you are reading: this is a **condensed, annotated excerpt** of the
+A note on what follows: this is a **condensed, annotated excerpt** of the
 real generator, not a complete runnable file. Where a section repeats in the same
 style for every operation, we mark it with an ellipsis (`...`). A few helpers that
 would be defined elsewhere in the source — the `OPERATIONS` table, `_rand`, and

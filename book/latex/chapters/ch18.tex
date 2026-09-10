@@ -68,10 +68,10 @@ model's limit is about \emph{syntax} --- that if we just teach it more
 Python, it will be more capable. Our results say otherwise, and it
 matters.
 
-Consider the composition result from Chapter 16. The model knew the
-syntax of both \texttt{abs} and \texttt{add}. It could produce
-\texttt{return\ a\ +\ b} and \texttt{return\ abs(x)} perfectly. The
-break came when it needed to \emph{combine} them into
+The composition result from Chapter 16 is the clearest example. The
+model knew the syntax of both \texttt{abs} and \texttt{add}. It could
+produce \texttt{return\ a\ +\ b} and \texttt{return\ abs(x)} perfectly.
+The break came when it needed to \emph{combine} them into
 \texttt{return\ abs(a\ +\ b)}. There was no new syntax involved ---
 every token in \texttt{abs(a\ +\ b)} was already within the model's
 known vocabulary and its allowed subset. The model simply could not put

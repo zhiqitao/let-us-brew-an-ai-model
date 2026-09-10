@@ -10,7 +10,7 @@ tendency of a model, after training on task B, to lose what it learned on task A
 want to know whether that happens to our small model, and, crucially, whether the
 *way* we train determines it.
 
-Think of it like learning a new language. Study French for a year, then stop
+It is like learning a new language. Study French for a year, then stop
 and study Spanish exclusively — how much French is left? A lot depends on whether
 French keeps being practiced while Spanish is learned — which is exactly what this
 experiment tests. And it is a question almost every learning system faces: a deployed

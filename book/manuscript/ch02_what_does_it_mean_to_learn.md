@@ -46,7 +46,7 @@ what? and could a dumber mechanism explain the result?
 
 ## The four levels of generalization
 
-This is the book's organizing idea. Think of it as a ladder of how much we should
+This is the book's organizing idea. It is a ladder of how much we should
 trust a result — from "probably just remembered" to "genuinely combined."
 
 **Level 1 — Memorization.** The model reproduces something it saw in training: an exact

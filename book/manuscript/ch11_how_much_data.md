@@ -4,7 +4,7 @@ The most common question people ask about any model is also the one they answer 
 quickly: *how much data does it need?* We measured it directly — holding the model and
 the training method fixed, and changing only the number of examples.
 
-Think of it like studying for a test. Read one page and we fail. Read a bit more
+It is like studying for a test. Read one page and we fail. Read a bit more
 and we still fail. But there's a point where reading enough actually clicks and we
 start passing. Where's that point for a model? That's what this experiment finds.
 

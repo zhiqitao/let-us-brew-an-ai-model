@@ -5,7 +5,7 @@ showed how we test it (mutation testing) and that it caught a bug. This chapter 
 aggressive version: we stop politely checking the judge and start deliberately trying
 to *break* it — the way a determined detractor (or a suspicious reader) would.
 
-Think of it as hiring a devil's advocate whose only job is to find a flaw in the conclusion. We want to know how confident we can be in any number our judge produces —
+It is like hiring a devil's advocate whose only job is to find a flaw in the conclusion. We want to know how confident we can be in any number our judge produces —
 and the only way to find out is to attack it.
 
 There is a reason to be particularly aggressive here, and it goes to the heart of the

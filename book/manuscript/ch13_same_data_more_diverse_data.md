@@ -5,7 +5,7 @@ what *kind* of data. Specifically, is it better to have lots of examples of a fe
 things, or fewer examples spread across more variety?
 
 The easy answer is to treat "more data" as one lever. It isn't. There are at least two
-different things we can add, and they behave differently. Think of it like teaching a
+different things we can add, and they behave differently. It is like teaching a
 kid shapes. Show them a hundred triangles and they'll recognize triangles. Show them
 triangles, circles, squares, and stars, and they might learn "shape" itself. Same
 number of examples, very different kind of learning.
