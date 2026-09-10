@@ -36,6 +36,15 @@ returns the correct result for every test, or it does not.
 
 \section{The four-stage pipeline}\label{the-four-stage-pipeline}
 
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={The judge},width=\maxwidth{\textwidth},keepaspectratio]{figures/fig_judge.png}}
+\caption{The judge}
+\end{figure}
+
+The judge is a funnel: a program clears it only by passing every stage,
+and the first failure sends it to zero.
+
 We score a candidate program through four stages; a later stage only
 matters if the earlier ones pass. Each stage is a filter, and each
 exists for a specific reason.

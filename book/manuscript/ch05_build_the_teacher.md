@@ -14,6 +14,11 @@ way we build it, and it's the single most important design decision in the whole
 
 ## Semantic-first: start with the meaning, not a template
 
+![The teacher](figures/fig_teacher.png)
+
+One semantic record is the single source of truth: the program, the task, and the
+tests all derive from it, so they cannot drift apart.
+
 The naive way to generate data is to write a template and fill in a few blanks:
 
 ```

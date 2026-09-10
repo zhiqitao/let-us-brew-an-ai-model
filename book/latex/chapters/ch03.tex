@@ -15,6 +15,16 @@ The model receives a \textbf{natural-language specification} of a
 programming task and must produce a \textbf{Python program} that solves
 it. That program is then executed against hidden tests.
 
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={The one job},width=\maxwidth{\textwidth},keepaspectratio]{figures/fig_task.png}}
+\caption{The one job}
+\end{figure}
+
+The contract is simple: a natural-language specification in, a program
+out, and a set of hidden tests to grade it against. Everything else
+follows from it.
+
 Concretely, the model sees something like:
 
 \begin{quote}

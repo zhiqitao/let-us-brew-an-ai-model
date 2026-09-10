@@ -46,6 +46,11 @@ what? and could a dumber mechanism explain the result?
 
 ## The four levels of generalization
 
+![The capability ladder](figures/fig_ladder.png)
+
+The ladder makes the four questions explicit. Each rung asks us to trust a result
+a little more; we never collapse them into a single number.
+
 This is the book's organizing idea. It is a ladder of how much we should
 trust a result — from "probably just remembered" to "genuinely combined."
 

@@ -28,6 +28,11 @@ instrument, so that the experiment — not the gadgetry — is the subject.
 
 ## What it is
 
+![The smallest brain](figures/fig_brain.png)
+
+The smallest brain is a tiny decoder-only transformer: tokens in, embed, attend
+through the layers, and predict the next token.
+
 The student is a deliberately simple, transparent **decoder-only transformer**. The
 goal is not novelty; the goal is that we can understand exactly what it is doing. A
 20-layer exotic architecture would be a black box; a clean, standard transformer is

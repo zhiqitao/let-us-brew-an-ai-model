@@ -24,6 +24,11 @@ more than a headline.
 
 ## The four-level generalization map
 
+![The capability map](figures/fig_capability_map.png)
+
+The map puts the measured grid on two axes: the breadth of tasks and the depth
+of generalization. The narrow job is well-learned; the broader ground is not.
+
 Recall the four levels from Chapter 2. Here is what we measured at each, on the ~0.9M
 model:
 

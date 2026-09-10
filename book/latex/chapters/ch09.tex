@@ -41,6 +41,15 @@ embedding tables, which are the least interesting part; we never want a
 \section{The training process, step by
 step}\label{the-training-process-step-by-step}
 
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={The brew loop},width=\maxwidth{\textwidth},keepaspectratio]{figures/fig_brew.png}}
+\caption{The brew loop}
+\end{figure}
+
+Every experiment is one pass around this loop: generate, train, measure,
+and let what we measured shape what we generate next.
+
 Training a small transformer is not a single action; it is a loop
 repeated 1,500 times. At each step:
 

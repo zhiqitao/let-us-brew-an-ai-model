@@ -33,6 +33,15 @@ not the gadgetry --- is the subject.
 
 \section{What it is}\label{what-it-is}
 
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={The smallest brain},width=\maxwidth{\textwidth},keepaspectratio]{figures/fig_brain.png}}
+\caption{The smallest brain}
+\end{figure}
+
+The smallest brain is a tiny decoder-only transformer: tokens in, embed,
+attend through the layers, and predict the next token.
+
 The student is a deliberately simple, transparent \textbf{decoder-only
 transformer}. The goal is not novelty; the goal is that we can
 understand exactly what it is doing. A 20-layer exotic architecture

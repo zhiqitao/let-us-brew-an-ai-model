@@ -156,6 +156,18 @@ chose to give it.
 
 \section{An honest caveat}\label{an-honest-caveat}
 
+\subsection{The whole apparatus, in one
+picture}\label{the-whole-apparatus-in-one-picture}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={The whole apparatus},width=\maxwidth{\textwidth},keepaspectratio]{figures/fig_apparatus.png}}
+\caption{The whole apparatus}
+\end{figure}
+
+Here is the full loop: the teacher creates the dataset, the student
+reads it, the judge grades the result, and the world encloses it all.
+
 It is important to be clear about what this sandbox is \emph{not}. It is
 a \textbf{teaching and evaluation} sandbox --- deliberately strict about
 the capability subset, but not a claim of production-grade adversarial
@@ -192,6 +204,15 @@ and we refuse to run a single experiment until it passes its own
 examination.
 
 \section{Two gates, not one}\label{two-gates-not-one}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={The two gates},width=\maxwidth{\textwidth},keepaspectratio]{figures/fig_two_gates.png}}
+\caption{The two gates}
+\end{figure}
+
+Neither gate lives inside the model. Gate B sits on the way in, Gate A
+on the way out.
 
 Everything above describes what the model is \emph{allowed to produce}.
 But there is a second, quieter question: what is the model \emph{ever

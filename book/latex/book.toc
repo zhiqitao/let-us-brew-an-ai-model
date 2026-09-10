@@ -8,193 +8,194 @@
 \contentsline {section}{\numberline {2.1}A simple way to think about it}{4}{section.8}%
 \contentsline {section}{\numberline {2.2}What ``learned'' means here}{4}{section.11}%
 \contentsline {section}{\numberline {2.3}The four levels of generalization}{5}{section.17}%
-\contentsline {section}{\numberline {2.4}The recurring question: ``how did it cheat?''}{5}{section.18}%
-\contentsline {chapter}{\numberline {3}Give the Model One Job}{7}{chapter.19}%
-\contentsline {section}{\numberline {3.1}The task}{7}{section.20}%
-\contentsline {section}{\numberline {3.2}The task schema}{7}{section.21}%
-\contentsline {section}{\numberline {3.3}The pure-function constraint}{8}{section.22}%
-\contentsline {section}{\numberline {3.4}Hidden tests}{8}{section.23}%
-\contentsline {section}{\numberline {3.5}The success criterion}{8}{section.24}%
-\contentsline {section}{\numberline {3.6}Why this specific task}{8}{section.25}%
-\contentsline {part}{II\hspace {1em}Build the Laboratory}{10}{part.26}%
-\contentsline {chapter}{\numberline {4}Build a World We Can Control}{11}{chapter.27}%
-\contentsline {section}{\numberline {4.1}Why we need a world at all}{11}{section.28}%
-\contentsline {section}{\numberline {4.2}The principle: whitelist, not blocklist}{12}{section.29}%
-\contentsline {section}{\numberline {4.3}The capability spec}{12}{section.30}%
-\contentsline {section}{\numberline {4.4}Resource and determinism policy}{13}{section.31}%
-\contentsline {section}{\numberline {4.5}The pipeline}{13}{section.32}%
-\contentsline {section}{\numberline {4.6}An honest caveat}{13}{section.33}%
-\contentsline {section}{\numberline {4.7}Testing the world}{14}{section.34}%
-\contentsline {section}{\numberline {4.8}Two gates, not one}{14}{section.35}%
-\contentsline {subsection}{\numberline {4.8.1}How this maps to production systems}{15}{subsection.36}%
-\contentsline {chapter}{\numberline {5}Build the Teacher}{17}{chapter.37}%
-\contentsline {section}{\numberline {5.1}Semantic-first: start with the meaning, not a template}{17}{section.38}%
-\contentsline {section}{\numberline {5.2}What a ``semantic record'' looks like}{18}{section.39}%
-\contentsline {section}{\numberline {5.3}The four sub-generators}{18}{section.43}%
-\contentsline {section}{\numberline {5.4}Why the tests come from the meaning, not the code}{19}{section.44}%
-\contentsline {section}{\numberline {5.5}Maximizing controlled diversity}{19}{section.45}%
-\contentsline {section}{\numberline {5.6}Avoiding accidental correlation}{19}{section.46}%
-\contentsline {section}{\numberline {5.7}The leakage audit}{20}{section.47}%
-\contentsline {section}{\numberline {5.8}The takeaway}{20}{section.48}%
-\contentsline {chapter}{\numberline {6}Build the Judge}{21}{chapter.49}%
-\contentsline {section}{\numberline {6.1}Why an execution-based judge}{21}{section.50}%
-\contentsline {section}{\numberline {6.2}The four-stage pipeline}{22}{section.51}%
-\contentsline {section}{\numberline {6.3}Semantic comparison: don't trust string equality}{22}{section.56}%
-\contentsline {section}{\numberline {6.4}Mutation testing: red-teaming the judge}{23}{section.57}%
-\contentsline {section}{\numberline {6.5}We caught our own judge being wrong}{23}{section.58}%
-\contentsline {section}{\numberline {6.6}The honest summary}{23}{section.59}%
-\contentsline {chapter}{\numberline {7}Build the Rivals}{25}{chapter.60}%
-\contentsline {section}{\numberline {7.1}The principle}{25}{section.61}%
-\contentsline {section}{\numberline {7.2}Rival 1 --- the template / rule system}{26}{section.62}%
-\contentsline {section}{\numberline {7.3}Rival 2 --- retrieval}{26}{section.63}%
-\contentsline {section}{\numberline {7.4}Why these two matter}{26}{section.64}%
-\contentsline {section}{\numberline {7.5}The lesson}{27}{section.65}%
-\contentsline {part}{III\hspace {1em}The First Brew}{28}{part.66}%
-\contentsline {chapter}{\numberline {8}The Smallest Brain}{29}{chapter.67}%
-\contentsline {section}{\numberline {8.1}Why the simplest possible model}{29}{section.68}%
-\contentsline {section}{\numberline {8.2}What it is}{30}{section.69}%
-\contentsline {section}{\numberline {8.3}The honest parameter count}{30}{section.70}%
-\contentsline {section}{\numberline {8.4}The architecture smoke test}{30}{section.71}%
-\contentsline {section}{\numberline {8.5}Why it's small}{31}{section.72}%
-\contentsline {section}{\numberline {8.6}The configuration is a starting point, not a fact}{31}{section.73}%
-\contentsline {chapter}{\numberline {9}The First Brew}{32}{chapter.74}%
-\contentsline {section}{\numberline {9.1}The data}{32}{section.75}%
-\contentsline {section}{\numberline {9.2}The model}{32}{section.76}%
-\contentsline {section}{\numberline {9.3}The training process, step by step}{33}{section.77}%
-\contentsline {section}{\numberline {9.4}What the training process felt like (the brewing experience)}{34}{section.82}%
-\contentsline {section}{\numberline {9.5}The honest caveat}{34}{section.83}%
-\contentsline {section}{\numberline {9.6}Why the details of the training process matter}{34}{section.84}%
-\contentsline {section}{\numberline {9.7}What this chapter establishes}{35}{section.85}%
-\contentsline {chapter}{\numberline {10}Does It Actually Work?}{36}{chapter.86}%
-\contentsline {section}{\numberline {10.1}The setup}{36}{section.87}%
-\contentsline {section}{\numberline {10.2}What we measured: pass@1}{36}{section.88}%
-\contentsline {section}{\numberline {10.3}The moment that broke us (and the evaluator, not the model)}{37}{section.89}%
-\contentsline {section}{\numberline {10.4}The shortcut audit}{38}{section.90}%
-\contentsline {section}{\numberline {10.5}The honest summary}{38}{section.93}%
-\contentsline {part}{IV\hspace {1em}How Capability Scales}{40}{part.94}%
-\contentsline {chapter}{\numberline {11}How Much Data?}{41}{chapter.95}%
-\contentsline {section}{\numberline {11.1}The setup}{41}{section.96}%
-\contentsline {section}{\numberline {11.2}The result}{42}{section.97}%
-\contentsline {section}{\numberline {11.3}What it tells us}{43}{section.98}%
-\contentsline {section}{\numberline {11.4}The motif, restated}{43}{section.100}%
-\contentsline {section}{\numberline {11.5}The brewing experience}{43}{section.101}%
-\contentsline {section}{\numberline {11.6}The honest caveat}{44}{section.102}%
-\contentsline {section}{\numberline {11.7}The practical answer}{44}{section.103}%
-\contentsline {chapter}{\numberline {12}How Much Brain?}{45}{chapter.104}%
-\contentsline {section}{\numberline {12.1}The setup}{45}{section.105}%
-\contentsline {section}{\numberline {12.2}The result}{47}{section.107}%
-\contentsline {section}{\numberline {12.3}What this means}{47}{section.108}%
-\contentsline {section}{\numberline {12.4}The audit: is this a fair comparison?}{47}{section.109}%
-\contentsline {section}{\numberline {12.5}The honest side-finding: bigger was \emph {worse} at the 10M point}{47}{section.110}%
-\contentsline {section}{\numberline {12.6}The honest framing}{48}{section.111}%
-\contentsline {chapter}{\numberline {13}Same Data, More Diverse Data}{49}{chapter.112}%
-\contentsline {section}{\numberline {13.1}What our experiments hinted}{49}{section.113}%
-\contentsline {section}{\numberline {13.2}The direct test: same count, different diversity}{51}{section.115}%
-\contentsline {section}{\numberline {13.3}The measured result}{51}{section.116}%
-\contentsline {section}{\numberline {13.4}What this really means}{52}{section.117}%
-\contentsline {section}{\numberline {13.5}The honest caveat}{52}{section.118}%
-\contentsline {section}{\numberline {13.6}The lesson}{52}{section.119}%
-\contentsline {part}{V\hspace {1em}Catching the Model Cheating}{53}{part.120}%
-\contentsline {chapter}{\numberline {14}The Model That Memorized Everything}{54}{chapter.121}%
-\contentsline {section}{\numberline {14.1}The challenge of detecting memorization}{54}{section.122}%
-\contentsline {section}{\numberline {14.2}Three tests}{55}{section.123}%
-\contentsline {section}{\numberline {14.3}The result}{55}{section.124}%
-\contentsline {section}{\numberline {14.4}What this tells us --- a nuanced answer}{55}{section.125}%
-\contentsline {section}{\numberline {14.5}The shortcut audit, and the honest boundary}{56}{section.126}%
-\contentsline {section}{\numberline {14.6}The lesson}{56}{section.127}%
-\contentsline {chapter}{\numberline {15}New Words, Same Problem}{57}{chapter.128}%
-\contentsline {section}{\numberline {15.1}The design: change what shouldn't matter}{57}{section.129}%
-\contentsline {section}{\numberline {15.2}The setup}{58}{section.130}%
-\contentsline {section}{\numberline {15.3}The result}{58}{section.131}%
-\contentsline {section}{\numberline {15.4}The damning comparison}{58}{section.132}%
-\contentsline {section}{\numberline {15.5}The brewing experience}{59}{section.133}%
-\contentsline {section}{\numberline {15.6}The shortcut audit}{60}{section.134}%
-\contentsline {section}{\numberline {15.7}The honest takeaway}{60}{section.137}%
-\contentsline {chapter}{\numberline {16}Same Pieces, New Combination}{61}{chapter.138}%
-\contentsline {section}{\numberline {16.1}The setup: design the test to be unfair-but-fair}{61}{section.139}%
-\contentsline {section}{\numberline {16.2}What we measured}{62}{section.140}%
-\contentsline {section}{\numberline {16.3}What this really means}{62}{section.141}%
-\contentsline {section}{\numberline {16.4}The puzzling asymmetry (and why it's a finding, not a bug)}{63}{section.142}%
-\contentsline {section}{\numberline {16.5}Why we don't call it a ``failure of one thing'' without checking the other two}{63}{section.143}%
-\contentsline {section}{\numberline {16.6}The shortcut audit}{63}{section.144}%
-\contentsline {section}{\numberline {16.7}The honest framing}{64}{section.149}%
-\contentsline {chapter}{\numberline {17}Red-Team the Judge}{65}{chapter.150}%
-\contentsline {section}{\numberline {17.1}The attack surface}{65}{section.151}%
-\contentsline {section}{\numberline {17.2}What we found}{66}{section.152}%
-\contentsline {section}{\numberline {17.3}The honest framing}{66}{section.153}%
-\contentsline {part}{VI\hspace {1em}Give It More Python}{68}{part.154}%
-\contentsline {chapter}{\numberline {18}Now Give It More Python}{69}{chapter.155}%
-\contentsline {section}{\numberline {18.1}Why the world is versioned}{69}{section.156}%
-\contentsline {section}{\numberline {18.2}How we widen the world}{70}{section.157}%
-\contentsline {section}{\numberline {18.3}A crucial reframing: syntax is not the hard part}{70}{section.158}%
-\contentsline {section}{\numberline {18.4}Why we still widen the world}{70}{section.159}%
-\contentsline {section}{\numberline {18.5}The ladder, as a discipline}{71}{section.160}%
-\contentsline {section}{\numberline {18.6}The honest summary}{71}{section.161}%
-\contentsline {chapter}{\numberline {19}The Capability Ladder Revisited}{72}{chapter.162}%
-\contentsline {section}{\numberline {19.1}The ladder, with the measured results}{72}{section.163}%
-\contentsline {section}{\numberline {19.2}Where capability appears, holds, and breaks}{73}{section.164}%
-\contentsline {section}{\numberline {19.3}The model-size and data-size boundaries}{73}{section.165}%
-\contentsline {section}{\numberline {19.4}The failure map}{73}{section.166}%
-\contentsline {section}{\numberline {19.5}What the ladder finally tells us}{73}{section.167}%
-\contentsline {part}{VII\hspace {1em}Break It}{75}{part.168}%
-\contentsline {chapter}{\numberline {20}What Happens When We Teach It Something New?}{76}{chapter.169}%
-\contentsline {section}{\numberline {20.1}The setup}{76}{section.170}%
-\contentsline {section}{\numberline {20.2}The result}{77}{section.171}%
-\contentsline {section}{\numberline {20.3}Why this result is so striking}{78}{section.173}%
-\contentsline {section}{\numberline {20.4}Reframing a common assumption}{78}{section.174}%
-\contentsline {section}{\numberline {20.5}The shortcut audit}{79}{section.175}%
-\contentsline {section}{\numberline {20.6}The honest summary}{79}{section.177}%
-\contentsline {chapter}{\numberline {21}The Cost of Capability}{80}{chapter.178}%
-\contentsline {section}{\numberline {21.1}The two kinds of cost}{80}{section.179}%
-\contentsline {section}{\numberline {21.2}The cost matrix}{81}{section.180}%
-\contentsline {section}{\numberline {21.3}What the costs tell us}{81}{section.181}%
-\contentsline {section}{\numberline {21.4}The price of each column, read honestly}{82}{section.182}%
-\contentsline {section}{\numberline {21.5}The brewing experience: discovering the hidden cost}{82}{section.183}%
-\contentsline {section}{\numberline {21.6}The honest framing}{83}{section.184}%
-\contentsline {part}{VIII\hspace {1em}What Did We Learn?}{84}{part.185}%
-\contentsline {chapter}{\numberline {22}The Capability Map}{85}{chapter.186}%
-\contentsline {section}{\numberline {22.1}Why a map, and not a single score}{85}{section.187}%
-\contentsline {section}{\numberline {22.2}The four-level generalization map}{85}{section.188}%
-\contentsline {section}{\numberline {22.3}The scaling map (what changes it)}{86}{section.189}%
-\contentsline {section}{\numberline {22.4}What's proven vs.~what's unknown}{87}{section.190}%
-\contentsline {section}{\numberline {22.5}The boundary, in one line}{87}{section.191}%
-\contentsline {section}{\numberline {22.6}Why the map is the deliverable}{87}{section.192}%
-\contentsline {chapter}{\numberline {23}What Small Models Can Actually Learn}{89}{chapter.193}%
-\contentsline {section}{\numberline {23.1}What the model can do}{89}{section.194}%
-\contentsline {section}{\numberline {23.2}What the model cannot do}{89}{section.195}%
-\contentsline {section}{\numberline {23.3}The two axes of the boundary}{90}{section.196}%
-\contentsline {section}{\numberline {23.4}The capacity grid, in full}{90}{section.197}%
-\contentsline {section}{\numberline {23.5}What it's NOT, and why that matters}{91}{section.198}%
-\contentsline {section}{\numberline {23.6}What this means for the bigger picture}{91}{section.199}%
-\contentsline {section}{\numberline {23.7}Preferring ``what these experiments showed''}{92}{section.200}%
-\contentsline {chapter}{\numberline {24}The Model Wasn't the Point}{93}{chapter.201}%
-\contentsline {section}{\numberline {24.1}Where the journey started}{93}{section.202}%
-\contentsline {section}{\numberline {24.2}What the laboratory produced}{93}{section.203}%
-\contentsline {section}{\numberline {24.3}The deeper achievement}{94}{section.204}%
-\contentsline {section}{\numberline {24.4}The recurring habit}{95}{section.205}%
-\contentsline {section}{\numberline {24.5}What the reader takes away}{95}{section.206}%
-\contentsline {chapter}{\numberline {25}Conclusion and Where This Brew Leads}{96}{chapter.207}%
-\contentsline {section}{\numberline {25.1}What the experiment established}{96}{section.208}%
-\contentsline {section}{\numberline {25.2}The four-point grid (measured)}{97}{section.211}%
-\contentsline {section}{\numberline {25.3}The methodology findings}{97}{section.212}%
-\contentsline {section}{\numberline {25.4}The brewing experience, distilled}{98}{section.213}%
-\contentsline {section}{\numberline {25.5}Where this brew leads}{98}{section.214}%
-\contentsline {section}{\numberline {25.6}The honest ending}{99}{section.220}%
-\contentsline {chapter}{\numberline {A}Appendix A — The Generator, Every Piece}{100}{appendix.221}%
-\contentsline {section}{\numberline {A.1}The one line that ties it together}{100}{section.222}%
-\contentsline {section}{\numberline {A.2}The semantics}{101}{section.223}%
-\contentsline {section}{\numberline {A.3}The reference program}{101}{section.224}%
-\contentsline {section}{\numberline {A.4}The natural-language renderer}{101}{section.225}%
-\contentsline {section}{\numberline {A.5}The hidden tests}{101}{section.226}%
-\contentsline {section}{\numberline {A.6}The leakage audit}{102}{section.227}%
-\contentsline {section}{\numberline {A.7}How to run it}{102}{section.228}%
-\contentsline {chapter}{\numberline {B}Appendix B — The Failure Ledger}{103}{appendix.229}%
-\contentsline {section}{\numberline {B.1}The evaluator reported the model at 0.000 --- but the model was fine}{103}{section.230}%
-\contentsline {section}{\numberline {B.2}The pilot wording leaked the answer (100\% predictability)}{103}{section.231}%
-\contentsline {section}{\numberline {B.3}A bigger model did NOT fix composition}{104}{section.232}%
-\contentsline {section}{\numberline {B.4}Sequential training caused catastrophic forgetting (A → 0.000)}{104}{section.233}%
-\contentsline {section}{\numberline {B.5}The pilot task was ``too easy'' (retrieval solved it)}{104}{section.234}%
-\contentsline {section}{\numberline {B.6}The human-written test set: 0/16}{105}{section.235}%
-\contentsline {section}{\numberline {B.7}The free-model proofread returned degraded output}{105}{section.236}%
-\contentsline {section}{\numberline {B.8}Transient SIGILL crashes during training}{105}{section.237}%
-\contentsline {section}{\numberline {B.9}Parameter-math and naming mistakes (caught by testing)}{105}{section.238}%
+\contentsline {section}{\numberline {2.4}The recurring question: ``how did it cheat?''}{6}{section.19}%
+\contentsline {chapter}{\numberline {3}Give the Model One Job}{7}{chapter.20}%
+\contentsline {section}{\numberline {3.1}The task}{7}{section.21}%
+\contentsline {section}{\numberline {3.2}The task schema}{9}{section.23}%
+\contentsline {section}{\numberline {3.3}The pure-function constraint}{9}{section.24}%
+\contentsline {section}{\numberline {3.4}Hidden tests}{9}{section.25}%
+\contentsline {section}{\numberline {3.5}The success criterion}{9}{section.26}%
+\contentsline {section}{\numberline {3.6}Why this specific task}{10}{section.27}%
+\contentsline {part}{II\hspace {1em}Build the Laboratory}{11}{part.28}%
+\contentsline {chapter}{\numberline {4}Build a World We Can Control}{12}{chapter.29}%
+\contentsline {section}{\numberline {4.1}Why we need a world at all}{12}{section.30}%
+\contentsline {section}{\numberline {4.2}The principle: whitelist, not blocklist}{13}{section.31}%
+\contentsline {section}{\numberline {4.3}The capability spec}{13}{section.32}%
+\contentsline {section}{\numberline {4.4}Resource and determinism policy}{14}{section.33}%
+\contentsline {section}{\numberline {4.5}The pipeline}{14}{section.34}%
+\contentsline {section}{\numberline {4.6}An honest caveat}{14}{section.35}%
+\contentsline {subsection}{\numberline {4.6.1}The whole apparatus, in one picture}{14}{subsection.36}%
+\contentsline {section}{\numberline {4.7}Testing the world}{16}{section.38}%
+\contentsline {section}{\numberline {4.8}Two gates, not one}{16}{section.39}%
+\contentsline {subsection}{\numberline {4.8.1}How this maps to production systems}{18}{subsection.41}%
+\contentsline {chapter}{\numberline {5}Build the Teacher}{21}{chapter.42}%
+\contentsline {section}{\numberline {5.1}Semantic-first: start with the meaning, not a template}{21}{section.43}%
+\contentsline {section}{\numberline {5.2}What a ``semantic record'' looks like}{23}{section.45}%
+\contentsline {section}{\numberline {5.3}The four sub-generators}{23}{section.49}%
+\contentsline {section}{\numberline {5.4}Why the tests come from the meaning, not the code}{24}{section.50}%
+\contentsline {section}{\numberline {5.5}Maximizing controlled diversity}{24}{section.51}%
+\contentsline {section}{\numberline {5.6}Avoiding accidental correlation}{24}{section.52}%
+\contentsline {section}{\numberline {5.7}The leakage audit}{25}{section.53}%
+\contentsline {section}{\numberline {5.8}The takeaway}{25}{section.54}%
+\contentsline {chapter}{\numberline {6}Build the Judge}{26}{chapter.55}%
+\contentsline {section}{\numberline {6.1}Why an execution-based judge}{26}{section.56}%
+\contentsline {section}{\numberline {6.2}The four-stage pipeline}{27}{section.57}%
+\contentsline {section}{\numberline {6.3}Semantic comparison: don't trust string equality}{28}{section.63}%
+\contentsline {section}{\numberline {6.4}Mutation testing: red-teaming the judge}{28}{section.64}%
+\contentsline {section}{\numberline {6.5}We caught our own judge being wrong}{29}{section.65}%
+\contentsline {section}{\numberline {6.6}The honest summary}{29}{section.66}%
+\contentsline {chapter}{\numberline {7}Build the Rivals}{30}{chapter.67}%
+\contentsline {section}{\numberline {7.1}The principle}{30}{section.68}%
+\contentsline {section}{\numberline {7.2}Rival 1 --- the template / rule system}{32}{section.70}%
+\contentsline {section}{\numberline {7.3}Rival 2 --- retrieval}{32}{section.71}%
+\contentsline {section}{\numberline {7.4}Why these two matter}{32}{section.72}%
+\contentsline {section}{\numberline {7.5}The lesson}{33}{section.73}%
+\contentsline {part}{III\hspace {1em}The First Brew}{34}{part.74}%
+\contentsline {chapter}{\numberline {8}The Smallest Brain}{35}{chapter.75}%
+\contentsline {section}{\numberline {8.1}Why the simplest possible model}{35}{section.76}%
+\contentsline {section}{\numberline {8.2}What it is}{37}{section.77}%
+\contentsline {section}{\numberline {8.3}The honest parameter count}{37}{section.79}%
+\contentsline {section}{\numberline {8.4}The architecture smoke test}{38}{section.80}%
+\contentsline {section}{\numberline {8.5}Why it's small}{38}{section.81}%
+\contentsline {section}{\numberline {8.6}The configuration is a starting point, not a fact}{38}{section.82}%
+\contentsline {chapter}{\numberline {9}The First Brew}{39}{chapter.83}%
+\contentsline {section}{\numberline {9.1}The data}{39}{section.84}%
+\contentsline {section}{\numberline {9.2}The model}{39}{section.85}%
+\contentsline {section}{\numberline {9.3}The training process, step by step}{40}{section.86}%
+\contentsline {section}{\numberline {9.4}What the training process felt like (the brewing experience)}{41}{section.92}%
+\contentsline {section}{\numberline {9.5}The honest caveat}{42}{section.93}%
+\contentsline {section}{\numberline {9.6}Why the details of the training process matter}{42}{section.94}%
+\contentsline {section}{\numberline {9.7}What this chapter establishes}{42}{section.95}%
+\contentsline {chapter}{\numberline {10}Does It Actually Work?}{43}{chapter.96}%
+\contentsline {section}{\numberline {10.1}The setup}{43}{section.97}%
+\contentsline {section}{\numberline {10.2}What we measured: pass@1}{43}{section.98}%
+\contentsline {section}{\numberline {10.3}The moment that broke us (and the evaluator, not the model)}{44}{section.99}%
+\contentsline {section}{\numberline {10.4}The shortcut audit}{45}{section.100}%
+\contentsline {section}{\numberline {10.5}The honest summary}{45}{section.103}%
+\contentsline {part}{IV\hspace {1em}How Capability Scales}{47}{part.104}%
+\contentsline {chapter}{\numberline {11}How Much Data?}{48}{chapter.105}%
+\contentsline {section}{\numberline {11.1}The setup}{48}{section.106}%
+\contentsline {section}{\numberline {11.2}The result}{49}{section.107}%
+\contentsline {section}{\numberline {11.3}What it tells us}{50}{section.108}%
+\contentsline {section}{\numberline {11.4}The motif, restated}{50}{section.110}%
+\contentsline {section}{\numberline {11.5}The brewing experience}{50}{section.111}%
+\contentsline {section}{\numberline {11.6}The honest caveat}{51}{section.112}%
+\contentsline {section}{\numberline {11.7}The practical answer}{51}{section.113}%
+\contentsline {chapter}{\numberline {12}How Much Brain?}{52}{chapter.114}%
+\contentsline {section}{\numberline {12.1}The setup}{52}{section.115}%
+\contentsline {section}{\numberline {12.2}The result}{54}{section.117}%
+\contentsline {section}{\numberline {12.3}What this means}{54}{section.118}%
+\contentsline {section}{\numberline {12.4}The audit: is this a fair comparison?}{54}{section.119}%
+\contentsline {section}{\numberline {12.5}The honest side-finding: bigger was \emph {worse} at the 10M point}{54}{section.120}%
+\contentsline {section}{\numberline {12.6}The honest framing}{55}{section.121}%
+\contentsline {chapter}{\numberline {13}Same Data, More Diverse Data}{56}{chapter.122}%
+\contentsline {section}{\numberline {13.1}What our experiments hinted}{56}{section.123}%
+\contentsline {section}{\numberline {13.2}The direct test: same count, different diversity}{58}{section.125}%
+\contentsline {section}{\numberline {13.3}The measured result}{58}{section.126}%
+\contentsline {section}{\numberline {13.4}What this really means}{59}{section.127}%
+\contentsline {section}{\numberline {13.5}The honest caveat}{59}{section.128}%
+\contentsline {section}{\numberline {13.6}The lesson}{59}{section.129}%
+\contentsline {part}{V\hspace {1em}Catching the Model Cheating}{60}{part.130}%
+\contentsline {chapter}{\numberline {14}The Model That Memorized Everything}{61}{chapter.131}%
+\contentsline {section}{\numberline {14.1}The challenge of detecting memorization}{61}{section.132}%
+\contentsline {section}{\numberline {14.2}Three tests}{62}{section.133}%
+\contentsline {section}{\numberline {14.3}The result}{62}{section.134}%
+\contentsline {section}{\numberline {14.4}What this tells us --- a nuanced answer}{62}{section.135}%
+\contentsline {section}{\numberline {14.5}The shortcut audit, and the honest boundary}{63}{section.136}%
+\contentsline {section}{\numberline {14.6}The lesson}{63}{section.137}%
+\contentsline {chapter}{\numberline {15}New Words, Same Problem}{64}{chapter.138}%
+\contentsline {section}{\numberline {15.1}The design: change what shouldn't matter}{64}{section.139}%
+\contentsline {section}{\numberline {15.2}The setup}{65}{section.140}%
+\contentsline {section}{\numberline {15.3}The result}{65}{section.141}%
+\contentsline {section}{\numberline {15.4}The damning comparison}{65}{section.142}%
+\contentsline {section}{\numberline {15.5}The brewing experience}{66}{section.143}%
+\contentsline {section}{\numberline {15.6}The shortcut audit}{67}{section.144}%
+\contentsline {section}{\numberline {15.7}The honest takeaway}{67}{section.147}%
+\contentsline {chapter}{\numberline {16}Same Pieces, New Combination}{68}{chapter.148}%
+\contentsline {section}{\numberline {16.1}The setup: design the test to be unfair-but-fair}{68}{section.149}%
+\contentsline {section}{\numberline {16.2}What we measured}{69}{section.150}%
+\contentsline {section}{\numberline {16.3}What this really means}{69}{section.151}%
+\contentsline {section}{\numberline {16.4}The puzzling asymmetry (and why it's a finding, not a bug)}{70}{section.152}%
+\contentsline {section}{\numberline {16.5}Why we don't call it a ``failure of one thing'' without checking the other two}{70}{section.153}%
+\contentsline {section}{\numberline {16.6}The shortcut audit}{70}{section.154}%
+\contentsline {section}{\numberline {16.7}The honest framing}{71}{section.159}%
+\contentsline {chapter}{\numberline {17}Red-Team the Judge}{72}{chapter.160}%
+\contentsline {section}{\numberline {17.1}The attack surface}{72}{section.161}%
+\contentsline {section}{\numberline {17.2}What we found}{73}{section.162}%
+\contentsline {section}{\numberline {17.3}The honest framing}{73}{section.163}%
+\contentsline {part}{VI\hspace {1em}Give It More Python}{75}{part.164}%
+\contentsline {chapter}{\numberline {18}Now Give It More Python}{76}{chapter.165}%
+\contentsline {section}{\numberline {18.1}Why the world is versioned}{76}{section.166}%
+\contentsline {section}{\numberline {18.2}How we widen the world}{77}{section.167}%
+\contentsline {section}{\numberline {18.3}A crucial reframing: syntax is not the hard part}{77}{section.168}%
+\contentsline {section}{\numberline {18.4}Why we still widen the world}{77}{section.169}%
+\contentsline {section}{\numberline {18.5}The ladder, as a discipline}{78}{section.170}%
+\contentsline {section}{\numberline {18.6}The honest summary}{78}{section.171}%
+\contentsline {chapter}{\numberline {19}The Capability Ladder Revisited}{79}{chapter.172}%
+\contentsline {section}{\numberline {19.1}The ladder, with the measured results}{79}{section.173}%
+\contentsline {section}{\numberline {19.2}Where capability appears, holds, and breaks}{80}{section.174}%
+\contentsline {section}{\numberline {19.3}The model-size and data-size boundaries}{80}{section.175}%
+\contentsline {section}{\numberline {19.4}The failure map}{80}{section.176}%
+\contentsline {section}{\numberline {19.5}What the ladder finally tells us}{80}{section.177}%
+\contentsline {part}{VII\hspace {1em}Break It}{82}{part.178}%
+\contentsline {chapter}{\numberline {20}What Happens When We Teach It Something New?}{83}{chapter.179}%
+\contentsline {section}{\numberline {20.1}The setup}{83}{section.180}%
+\contentsline {section}{\numberline {20.2}The result}{84}{section.181}%
+\contentsline {section}{\numberline {20.3}Why this result is so striking}{85}{section.183}%
+\contentsline {section}{\numberline {20.4}Reframing a common assumption}{85}{section.184}%
+\contentsline {section}{\numberline {20.5}The shortcut audit}{86}{section.185}%
+\contentsline {section}{\numberline {20.6}The honest summary}{86}{section.187}%
+\contentsline {chapter}{\numberline {21}The Cost of Capability}{87}{chapter.188}%
+\contentsline {section}{\numberline {21.1}The two kinds of cost}{87}{section.189}%
+\contentsline {section}{\numberline {21.2}The cost matrix}{88}{section.190}%
+\contentsline {section}{\numberline {21.3}What the costs tell us}{88}{section.191}%
+\contentsline {section}{\numberline {21.4}The price of each column, read honestly}{89}{section.192}%
+\contentsline {section}{\numberline {21.5}The brewing experience: discovering the hidden cost}{89}{section.193}%
+\contentsline {section}{\numberline {21.6}The honest framing}{90}{section.194}%
+\contentsline {part}{VIII\hspace {1em}What Did We Learn?}{91}{part.195}%
+\contentsline {chapter}{\numberline {22}The Capability Map}{92}{chapter.196}%
+\contentsline {section}{\numberline {22.1}Why a map, and not a single score}{92}{section.197}%
+\contentsline {section}{\numberline {22.2}The four-level generalization map}{92}{section.198}%
+\contentsline {section}{\numberline {22.3}The scaling map (what changes it)}{94}{section.200}%
+\contentsline {section}{\numberline {22.4}What's proven vs.~what's unknown}{95}{section.201}%
+\contentsline {section}{\numberline {22.5}The boundary, in one line}{95}{section.202}%
+\contentsline {section}{\numberline {22.6}Why the map is the deliverable}{95}{section.203}%
+\contentsline {chapter}{\numberline {23}What Small Models Can Actually Learn}{97}{chapter.204}%
+\contentsline {section}{\numberline {23.1}What the model can do}{97}{section.205}%
+\contentsline {section}{\numberline {23.2}What the model cannot do}{97}{section.206}%
+\contentsline {section}{\numberline {23.3}The two axes of the boundary}{98}{section.207}%
+\contentsline {section}{\numberline {23.4}The capacity grid, in full}{98}{section.208}%
+\contentsline {section}{\numberline {23.5}What it's NOT, and why that matters}{99}{section.209}%
+\contentsline {section}{\numberline {23.6}What this means for the bigger picture}{99}{section.210}%
+\contentsline {section}{\numberline {23.7}Preferring ``what these experiments showed''}{100}{section.211}%
+\contentsline {chapter}{\numberline {24}The Model Wasn't the Point}{101}{chapter.212}%
+\contentsline {section}{\numberline {24.1}Where the journey started}{101}{section.213}%
+\contentsline {section}{\numberline {24.2}What the laboratory produced}{101}{section.214}%
+\contentsline {section}{\numberline {24.3}The deeper achievement}{102}{section.215}%
+\contentsline {section}{\numberline {24.4}The recurring habit}{103}{section.216}%
+\contentsline {section}{\numberline {24.5}What the reader takes away}{103}{section.217}%
+\contentsline {chapter}{\numberline {25}Conclusion and Where This Brew Leads}{104}{chapter.218}%
+\contentsline {section}{\numberline {25.1}What the experiment established}{104}{section.219}%
+\contentsline {section}{\numberline {25.2}The four-point grid (measured)}{105}{section.222}%
+\contentsline {section}{\numberline {25.3}The methodology findings}{105}{section.223}%
+\contentsline {section}{\numberline {25.4}The brewing experience, distilled}{106}{section.224}%
+\contentsline {section}{\numberline {25.5}Where this brew leads}{106}{section.225}%
+\contentsline {section}{\numberline {25.6}The honest ending}{107}{section.231}%
+\contentsline {chapter}{\numberline {A}Appendix A — The Generator, Every Piece}{108}{appendix.232}%
+\contentsline {section}{\numberline {A.1}The one line that ties it together}{108}{section.233}%
+\contentsline {section}{\numberline {A.2}The semantics}{109}{section.234}%
+\contentsline {section}{\numberline {A.3}The reference program}{109}{section.235}%
+\contentsline {section}{\numberline {A.4}The natural-language renderer}{109}{section.236}%
+\contentsline {section}{\numberline {A.5}The hidden tests}{109}{section.237}%
+\contentsline {section}{\numberline {A.6}The leakage audit}{110}{section.238}%
+\contentsline {section}{\numberline {A.7}How to run it}{110}{section.239}%
+\contentsline {chapter}{\numberline {B}Appendix B — The Failure Ledger}{111}{appendix.240}%
+\contentsline {section}{\numberline {B.1}The evaluator reported the model at 0.000 --- but the model was fine}{111}{section.241}%
+\contentsline {section}{\numberline {B.2}The pilot wording leaked the answer (100\% predictability)}{111}{section.242}%
+\contentsline {section}{\numberline {B.3}A bigger model did NOT fix composition}{112}{section.243}%
+\contentsline {section}{\numberline {B.4}Sequential training caused catastrophic forgetting (A → 0.000)}{112}{section.244}%
+\contentsline {section}{\numberline {B.5}The pilot task was ``too easy'' (retrieval solved it)}{112}{section.245}%
+\contentsline {section}{\numberline {B.6}The human-written test set: 0/16}{113}{section.246}%
+\contentsline {section}{\numberline {B.7}The free-model proofread returned degraded output}{113}{section.247}%
+\contentsline {section}{\numberline {B.8}Transient SIGILL crashes during training}{113}{section.248}%
+\contentsline {section}{\numberline {B.9}Parameter-math and naming mistakes (caught by testing)}{113}{section.249}%

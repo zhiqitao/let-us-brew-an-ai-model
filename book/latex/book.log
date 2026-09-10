@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.8.30)  10 SEP 2026 06:25
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.8.30)  10 SEP 2026 07:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1323,22 +1323,28 @@ Chapter 1.
 Chapter 2.
 (./chapters/ch02.tex [4
 
-] [5]) [6]
-Chapter 3.
-(./chapters/ch03.tex [7
-
 ]
+File: figures/fig_ladder.png Graphic file (type bmp)
+<figures/fig_ladder.png>
+ [5]) [6]
+Chapter 3.
+(./chapters/ch03.tex
+File: figures/fig_task.png Graphic file (type bmp)
+<figures/fig_task.png>
+ [7
+
+] [8]
 LaTeX Font Info:    Font shape `TU/LiberationMono(0)/m/n' will be
-(Font)              scaled to size 9.85492pt on input line 60.
+(Font)              scaled to size 9.85492pt on input line 70.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LiberationMono' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [8]) [9] [10
+ [9]) [10] [11
 
 ]
 Chapter 4.
-(./chapters/ch04.tex [11
+(./chapters/ch04.tex [12
 
 ]
 Underfull \hbox (badness 2744) in paragraph at lines 97--105
@@ -1355,48 +1361,76 @@ Underfull \hbox (badness 1292) in paragraph at lines 97--105
 bitrary attribute access, comprehensions, lambdas. We do not include these
  []
 
-[12] [13] [14]
-ignored error: Infinite glue shrinkage found in box being split [15]) [16]
+[13]
+File: figures/fig_apparatus.png Graphic file (type bmp)
+<figures/fig_apparatus.png>
+ [14] [15]
+File: figures/fig_two_gates.png Graphic file (type bmp)
+<figures/fig_two_gates.png>
+ [16] [17] [18])
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [19]
+[20]
 Chapter 5.
-(./chapters/ch05.tex [17
+(./chapters/ch05.tex
+File: figures/fig_teacher.png Graphic file (type bmp)
+<figures/fig_teacher.png>
+ [21
+
+] [22]
+LaTeX Font Info:    Font shape `TU/LiberationMono(0)/b/n' will be
+(Font)              scaled to size 9.85492pt on input line 103.
+ [23] [24]) [25]
+Chapter 6.
+(./chapters/ch06.tex [26
 
 ]
-LaTeX Font Info:    Font shape `TU/LiberationMono(0)/b/n' will be
-(Font)              scaled to size 9.85492pt on input line 94.
- [18] [19]) [20]
-Chapter 6.
-(./chapters/ch06.tex [21
-
-] [22] [23]) [24]
+File: figures/fig_judge.png Graphic file (type bmp)
+<figures/fig_judge.png>
+ [27] [28]) [29]
 Chapter 7.
-(./chapters/ch07.tex [25
+(./chapters/ch07.tex
+File: figures/fig_rivals.png Graphic file (type bmp)
+<figures/fig_rivals.png>
+ [30
 
-] [26]) [27] [28
+] [31] [32]) [33] [34
 
 ]
 Chapter 8.
 (./chapters/ch08.tex
+File: figures/fig_brain.png Graphic file (type bmp)
+<figures/fig_brain.png>
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [29
+ [35
 
 ]
-[30]) [31]
+[36]
+Underfull \vbox (badness 1237) has occurred while \output is active []
+
+ [37])
+[38]
 Chapter 9.
-(./chapters/ch09.tex [32
+(./chapters/ch09.tex [39
 
-] [33] [34]) [35]
+]
+File: figures/fig_brew.png Graphic file (type bmp)
+<figures/fig_brew.png>
+ [40] [41]) [42]
 Chapter 10.
-(./chapters/ch10.tex [36
+(./chapters/ch10.tex [43
 
-] [37] [38]) [39] [40
+] [44] [45]) [46] [47
 
 ]
 Chapter 11.
 (./chapters/ch11.tex
 Underfull \vbox (badness 3965) has occurred while \output is active []
 
- [41
+ [48
 
 ]
 File: figures/fig_data_scaling.png Graphic file (type bmp)
@@ -1404,50 +1438,50 @@ File: figures/fig_data_scaling.png Graphic file (type bmp)
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [42]
+ [49]
 Underfull \vbox (badness 1043) has occurred while \output is active []
 
- [43])
-[44]
+ [50])
+[51]
 Chapter 12.
 (./chapters/ch12.tex
 File: figures/fig_model_size.png Graphic file (type bmp)
 <figures/fig_model_size.png>
- [45
+ [52
 
-] [46] [47]) [48]
+] [53] [54]) [55]
 Chapter 13.
 (./chapters/ch13.tex
 File: figures/fig_diversity.png Graphic file (type bmp)
 <figures/fig_diversity.png>
- [49
+ [56
 
-] [50] [51]) [52] [53
+] [57] [58]) [59] [60
 
 ]
 Chapter 14.
 (./chapters/ch14.tex
 Underfull \vbox (badness 1342) has occurred while \output is active []
 
- [54
+ [61
 
 ]
-[55]) [56]
+[62]) [63]
 Chapter 15.
-(./chapters/ch15.tex [57
+(./chapters/ch15.tex [64
 
 ]
 File: figures/fig_surface.png Graphic file (type bmp)
 <figures/fig_surface.png>
- [58] [59]) [60]
+ [65] [66]) [67]
 Chapter 16.
-(./chapters/ch16.tex [61
+(./chapters/ch16.tex [68
 
-] [62] [63]) [64]
+] [69] [70]) [71]
 Chapter 17.
-(./chapters/ch17.tex [65
+(./chapters/ch17.tex [72
 
-] [66]) [67] [68
+] [73]) [74] [75
 
 ]
 Chapter 18.
@@ -1462,10 +1496,10 @@ inuxLibertineO(0)/m/n/10.95 ,
 
 Underfull \vbox (badness 1067) has occurred while \output is active []
 
- [69
+ [76
 
 ]
-[70]) [71]
+[77]) [78]
 Chapter 19.
 (./chapters/ch19.tex
 Missing character: There is no ✅ (U+2705) in font Linux Libertine O/OT:script=l
@@ -1478,18 +1512,18 @@ Missing character: There is no ✅ (U+2705) in font Linux Libertine O/OT:script=
 atn;language=dflt;+onum;mapping=tex-text;!
 Missing character: There is no ❌ (U+274C) in font Linux Libertine O/OT:script=l
 atn;language=dflt;+onum;mapping=tex-text;!
-[72
+[79
 
-] [73]) [74] [75
+] [80]) [81] [82
 
 ]
 Chapter 20.
-(./chapters/ch20.tex [76
+(./chapters/ch20.tex [83
 
 ]
 File: figures/fig_continual.png Graphic file (type bmp)
 <figures/fig_continual.png>
- [77] [78]) [79]
+ [84] [85]) [86]
 Chapter 21.
 (./chapters/ch21.tex
 Overfull \hbox (3.10268pt too wide) in paragraph at lines 55--56
@@ -1514,26 +1548,29 @@ Overfull \hbox (9.32228pt too wide) in paragraph at lines 73--73
 
 Underfull \vbox (badness 1472) has occurred while \output is active []
 
- [80
+ [87
 
 ]
-[81]
+[88]
 Underfull \vbox (badness 4036) has occurred while \output is active []
 
- [82])
-[83] [84
+ [89])
+[90] [91
 
 ]
 Chapter 22.
-(./chapters/ch22.tex [85
+(./chapters/ch22.tex
+File: figures/fig_capability_map.png Graphic file (type bmp)
+<figures/fig_capability_map.png>
+ [92
 
-]
+] [93]
 Underfull \vbox (badness 1527) has occurred while \output is active []
 
- [86])
-[87] [88]
+ [94])
+[95] [96]
 Chapter 23.
-(./chapters/ch23.tex [89
+(./chapters/ch23.tex [97
 
 ]
 Underfull \hbox (badness 2229) in paragraph at lines 64--69
@@ -1547,17 +1584,17 @@ Underfull \hbox (badness 1062) in paragraph at lines 64--69
 and neither more capacity (up
  []
 
-[90] [91]) [92]
+[98] [99]) [100]
 Chapter 24.
-(./chapters/ch24.tex [93
+(./chapters/ch24.tex [101
 
-] [94]) [95]
+] [102]) [103]
 Chapter 25.
-(./chapters/ch25.tex [96
+(./chapters/ch25.tex [104
 
-] [97] [98]) [99]
+] [105] [106]) [107]
 Appendix A.
-(./chapters/appA.tex [100
+(./chapters/appA.tex [108
 
 ]
 Underfull \hbox (badness 2189) in paragraph at lines 77--89
@@ -1581,18 +1618,18 @@ Underfull \hbox (badness 1838) in paragraph at lines 131--144
 =”negative”)\TU/LinuxLibertineO(0)/m/it/10 # negative
  []
 
-[101]) [102]
+[109]) [110]
 Appendix B.
-(./chapters/appB.tex [103
+(./chapters/appB.tex [111
 
-] [104]
+] [112]
 Overfull \hbox (19.02174pt too wide) in paragraph at lines 142--145
 []\TU/LinuxLibertineO(0)/b/n/10.95 What we learned. \TU/LinuxLibertineO(0)/m/n/
 10.95 Hardware quirks are real and part of the brew. The fix is \TU/LiberationM
 ono(0)/m/n/10.95 TORCH_DISABLE_AVX2=1
  []
 
-) [105] [106]
+) [113] [114]
 
 Package caption Warning: Unused \captionsetup[table] on input line 170.
 See the caption package documentation for explanation.
@@ -1607,15 +1644,15 @@ L3 programming layer <2026-01-19>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `book.out' has not changed.
-(rerunfilecheck)             Checksum: 399AD94390F651ACB8383C95B804788F;39628.
+(rerunfilecheck)             Checksum: 1DD6FC011008D0CF688620D9E0FC8168;39645.
  ) 
 Here is how much of TeX's memory you used:
- 32283 strings out of 468173
- 656156 string characters out of 5435520
- 1163548 words of memory out of 5000000
- 60366 multiletter control sequences out of 15000+600000
+ 32374 strings out of 468173
+ 658655 string characters out of 5435520
+ 1162639 words of memory out of 5000000
+ 60447 multiletter control sequences out of 15000+600000
  636291 words of font info for 126 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 113i,13n,131p,1001b,608s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 113i,13n,131p,1001b,627s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on book.pdf (118 pages).
+Output written on book.pdf (126 pages).
