@@ -246,7 +246,7 @@ def render_book_tex(build_lines):
 \\vspace{{0.8cm}}
 {{\\normalsize Version 20260909\\par}}
 \\vfill
-{{\\large Zhiqi Research\\par}}
+{{\\large Zhiqi Tao\\par}}
 \\vspace{{0.8cm}}
 {{\\small\\itshape Building a small language model is relatively easy. Determining what it actually learned is the hard part.\\par}}
 \\vfill
@@ -254,9 +254,11 @@ def render_book_tex(build_lines):
 
 \\begin{{titlepage}}
 \\thispagestyle{{empty}}
-{{\\centering\\MakeUppercase{{Copyright \\textcopyright{{}} 2026 Zhiqi Research}}\\\\[2pt] All rights reserved.\\par}}
+{{\\centering\\MakeUppercase{{Copyright \\textcopyright{{}} 2026 Zhiqi Tao}}\\\\[2pt] All rights reserved.\\par}}
 \\vspace{{1.2cm}}
-\\noindent\\textbf{{License.}} This work --- the book text, diagrams, figures, and build scripts --- is distributed under a \\emph{{source-available}} license. The model, code, and every measured result are described honestly, including the negative findings.
+\\noindent\\textbf{{License.}} This work --- the book text, diagrams, figures, source files, and build scripts --- is licensed under a \\emph{{custom source-available}} license: free for personal use, study, and non-commercial redistribution with attribution, but \\textbf{{commercial use or publication requires prior written approval from the author}}. It is not an open-source license. For permission, contact Zhiqi Tao (zhiqi.tao@gmail.com).
+
+\\noindent\\footnotesize In short: \\emph{{read, study, and share it freely; do not sell it or republish it as a product without the authorisation from the author.}}
 
 \\noindent\\footnotesize The work is provided ``as is'', without warranty of any kind.
 \\vfill

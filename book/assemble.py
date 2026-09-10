@@ -43,7 +43,7 @@ ORDER = [
 TITLE = """---
 title: "Let us brew an AI Model"
 subtitle: "What tiny language models can actually learn when given one job"
-author: "Zhiqi Research"
+author: "Zhiqi Tao"
 ---
 
 """
