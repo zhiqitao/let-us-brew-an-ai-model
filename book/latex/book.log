@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.8.30)  9 SEP 2026 17:58
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.8.30)  9 SEP 2026 19:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1559,7 +1559,7 @@ Appendix A.
 (./chapters/appA.tex [98
 
 ]
-Underfull \hbox (badness 2189) in paragraph at lines 67--79
+Underfull \hbox (badness 2189) in paragraph at lines 77--89
 []\TU/LinuxLibertineO(0)/m/n/10 [] \TU/LinuxLibertineO(0)/b/n/10 def \TU/LinuxL
 ibertineO(0)/m/n/10 generate_reference(sem):  op = sem[”operation”]; names = [a
 [”name”] \TU/LinuxLibertineO(0)/b/n/10 for \TU/LinuxLibertineO(0)/m/n/10 a \TU/
@@ -1567,14 +1567,14 @@ LinuxLibertineO(0)/b/n/10 in
  []
 
 
-Underfull \hbox (badness 1939) in paragraph at lines 118--131
+Underfull \hbox (badness 1939) in paragraph at lines 131--144
 []\TU/LinuxLibertineO(0)/m/n/10 [] \TU/LinuxLibertineO(0)/b/n/10 def \TU/LinuxL
 ibertineO(0)/m/n/10 generate_hidden_tests(sem, rng=None, count=8):  op = sem[”o
 peration”]; args =
  []
 
 
-Underfull \hbox (badness 1838) in paragraph at lines 118--131
+Underfull \hbox (badness 1838) in paragraph at lines 131--144
 \TU/LinuxLibertineO(0)/m/n/10 _rand(rng), note=”zero”) \TU/LinuxLibertineO(0)/m
 /it/10 # zero  \TU/LinuxLibertineO(0)/m/n/10 add(-_rand(rng), -_rand(rng), note
 =”negative”)\TU/LinuxLibertineO(0)/m/it/10 # negative

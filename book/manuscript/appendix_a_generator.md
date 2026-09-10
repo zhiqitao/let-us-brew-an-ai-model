@@ -4,6 +4,14 @@ Chapter 5 describes the teacher conceptually. This appendix shows the actual sou
 `src/data_generator/` and `src/program_generator/`, `src/nl_renderer/`,
 `src/test_generator/` in the companion repository.
 
+A note on what you are reading: this is a **condensed, annotated excerpt** of the
+real generator, not a complete runnable file. Where a section repeats in the same
+style for every operation, we mark it with an ellipsis (`...`). A few helpers that
+would be defined elsewhere in the source — the `OPERATIONS` table, `_rand`, and
+`_expected` — are used here as-is; the point is to show the *shape* of each part and
+how the semantic record flows through it, not to provide every line that would appear
+in a standalone module. The full, runnable source is in the repository.
+
 ## The one line that ties it together
 
 The whole generator is this single function. Given an operation and a seed, it builds
@@ -78,18 +86,21 @@ function:
 def _a(op, names, rng):   # family "a"
     x, y = names[0], names[1]
     return (f"Write a function that takes two numbers, {x} and {y}, "
-            f"and returns the sum of them.")
+            f"and returns their {_op_noun(op)}.")
 
 def _b(op, names, rng):   # family "b"
     x, y = names[0], names[1]
     return (f"Implement solve so that given {x} and {y} "
-            f"it returns their sum.")
+            f"it returns their {_op_noun(op)}.")
 
 def _c(op, names, rng):   # family "c"
     x, y = names
     return (f"Define a function solve({x}, {y}) "
-            f"that returns {x} + {y}.")
+            f"that returns {x} {_op_sym(op)} {y}.")
 
+# Each operation has its own set of families; _op_noun/_op_sym map an operation
+# to the right word ("sum", "product", ...) and symbol ("+", "*", ...), so the
+# same families work for every operation, not just addition.
 FAMILIES = {"add": [_a, _b, _c], "mul": [_a, _b, _c], ...}
 ```
 

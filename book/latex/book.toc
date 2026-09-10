@@ -180,7 +180,7 @@
 \contentsline {section}{\numberline {25.6}The honest ending}{97}{section.218}%
 \contentsline {chapter}{\numberline {A}Appendix A — The Generator, Every Piece}{98}{appendix.219}%
 \contentsline {section}{\numberline {A.1}The one line that ties it together}{98}{section.220}%
-\contentsline {section}{\numberline {A.2}The semantics}{98}{section.221}%
+\contentsline {section}{\numberline {A.2}The semantics}{99}{section.221}%
 \contentsline {section}{\numberline {A.3}The reference program}{99}{section.222}%
 \contentsline {section}{\numberline {A.4}The natural-language renderer}{99}{section.223}%
 \contentsline {section}{\numberline {A.5}The hidden tests}{99}{section.224}%

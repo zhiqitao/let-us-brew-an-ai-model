@@ -128,7 +128,7 @@ on the AVX-only Ivy Bridge CPU — intermittently, one run succeeds and the next
 ## 9. Parameter-math and naming mistakes (caught by testing)
 
 **What happened.** Early writing had a parameter-count mis-derivation (didn't sum to
-the true 8.94M/884K) and the human-test evaluator initially referenced a non-existent
+the true 884K/884,224) and the human-test evaluator initially referenced a non-existent
 key.
 
 **What we learned.** Always verify arithmetic against the real build, and let the
