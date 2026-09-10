@@ -139,3 +139,59 @@ This is the first instance of a discipline the book will return to again and aga
 (and which we will see was worth it, painfully, in Chapter 10): **before we use a tool to measure something, we verify that the tool measures what we think it does.** Here, the
 tool is the world, and we refuse to run a single experiment until it passes its own
 examination.
+
+## Two gates, not one
+
+Everything above describes what the model is *allowed to produce*. But there is a
+second, quieter question: what is the model *ever asked* to do? These are not the same
+thing, and the difference is worth making sharp, because it is the difference between
+"the model cannot escape" and "the model was never put in the position to."
+
+A language model has no notion of refusal. It is not a system that decides whether a
+request is in scope; it is a next-token predictor. Hand it a request outside its
+designed job and it does not politely decline — it simply keeps predicting tokens and
+produces whatever the weights trend toward, often a confident near-program or
+garbage. So "it only does its one job" can never be a property of the model's own
+intent. It has to be a property of the wiring around it.
+
+That gives us **two independent gates**, and this chapter (so far) has really only
+built one of them:
+
+**Gate A — the output gate (the sandbox).** Already described above: the AST allowlist
+rejects any generated program that uses a construct outside the whitelist, before it
+runs. This guarantees that even if the model *tries* to emit `import os` or `eval()`,
+the program is refused. Gate A is airtight on what the model *produces*.
+
+**Gate B — the input gate (the request validator).** This is the gate we build for the
+other half. It sits *in front of* the model and decides, from the incoming
+natural-language request alone, whether that request is one the model was designed
+for. If not, the request is declined before the model is ever consulted.
+
+Gate B works on the same principle as the sandbox: a **recognizer, not a rejector of
+the exceptions**. It holds the set of designed template-family shapes (the exact
+phrase skeletons the teacher renders) and the designed operation vocabulary. A request
+is in scope only if it fits one of those shapes *and* names a known operation —
+otherwise it is refused. Just as the sandbox says "these are the only forms of program
+that exist," Gate B says "these are the only forms of request that exist."
+
+Why do we need both? Because each covers a failure the other cannot:
+
+- **Gate A alone** would let the model be *asked* for anything — including a task it
+  was never trained for — and only then catch the malformed result. The model would
+  churn, and our whole experiment would trust that an out-of-scope query produced a
+  rejected program rather than a plausible-looking-but-wrong one.
+- **Gate B alone** would let the model *produce* anything within an in-scope request,
+  including a program that escapes its world, because nothing would constrain the
+  output.
+
+Only together do they close the loop: Gate B ensures the model is never *asked* for
+something outside its job, and Gate A ensures it can never *produce* something outside
+its world. That is the only way to make "this model does exactly one thing" a true
+statement, rather than an optimistic description.
+
+There is a deep parallel here with the book's central thesis. The model is the
+instrument; the experiment is the subject. In the same way, the *boundaries* are never
+the model — they are always the apparatus: the sandbox on the way out, the validator
+on the way in. A model that "only does its one job" is confined by its wiring, not
+by itself. That is worth stating plainly, because it is the mistake people make when
+they imagine a well-behaved model as one that simply chooses to behave.
