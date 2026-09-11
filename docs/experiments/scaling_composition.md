@@ -14,6 +14,14 @@ composition. Tokenizer and data identical.
 | **10M point** | 10,195,776 (10.2M) | **0.383** | **0.000** |
 | **30M point** | 29,290,240 (29.3M) | **0.897** | **0.000** |
 
+All four checkpoints are preserved on disk under `artifacts/checkpoints/`:
+`stage1.pt` (0.88M pilot), `stage3_surface.pt` (0.88M surface),
+`stage4_6p5m.pt` (6.5M), `stage4_10m.pt` (10.2M), `stage4_30m_backup.pt` (29.3M).
+The 6.5M and 10.2M models were retrained (CPU, `TORCH_DISABLE_AVX2=1`,
+`OMP_NUM_THREADS=1`) with the same configs and seeds so the grid is now
+live-sweepable (see `scripts/sweep_models.py`). Fresh 6.5M retrain re-measured
+in-dist **0.897** / composition **0.000**.
+
 ## Interpretation — a clean negative result
 
 - **More capacity does not buy composition at this scale.** Going from ~0.9M to 6.5M

@@ -39,6 +39,8 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--comp-per-op", type=int, default=40)
+    ap.add_argument("--out", default=None, help="checkpoint path (default stage4_composition.pt)")
+    ap.add_argument("--tag", default="", help="suffix for the manifest filename")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
 
@@ -83,7 +85,7 @@ def main():
     losses = train_fn(m, ds, steps=args.steps, bs=args.bs, lr=args.lr)
     print(f"trained in {time.time()-t0:.1f}s; final loss {losses[-1]:.4f}")
 
-    ckpt = os.path.join(ROOT, "artifacts", "checkpoints", "stage4_composition.pt")
+    ckpt = args.out or os.path.join(ROOT, "artifacts", "checkpoints", "stage4_composition.pt")
     os.makedirs(os.path.dirname(ckpt), exist_ok=True)
     torch.save(m.state_dict(), ckpt)
     print("saved model ->", ckpt)
@@ -111,7 +113,7 @@ def main():
         "dataset_version": "v0_1",
         "spec_version": "python_capability_v0_1",
     }
-    mp = os.path.join(ROOT, "artifacts", "manifests", "stage4_composition.json")
+    mp = os.path.join(ROOT, "artifacts", "manifests", f"stage4_composition{args.tag}.json")
     os.makedirs(os.path.dirname(mp), exist_ok=True)
     with open(mp, "w") as f:
         json.dump(manifest, f, indent=2)

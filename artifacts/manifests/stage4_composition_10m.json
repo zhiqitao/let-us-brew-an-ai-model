@@ -1,0 +1,65 @@
+{
+  "experiment_id": "stage4_composition_seed0",
+  "status": "MEASURED",
+  "config": {
+    "steps": 800,
+    "n_embd": 288,
+    "n_layer": 10,
+    "n_head": 8,
+    "bs": 16,
+    "lr": 0.001,
+    "seed": 0,
+    "comp_per_op": 40,
+    "out": "artifacts/checkpoints/stage4_10m.pt",
+    "tag": "_10m"
+  },
+  "model_params": {
+    "embedding": 120672,
+    "non_embedding": 10075104,
+    "total": 10195776
+  },
+  "tokenizer_vocab": 291,
+  "final_train_loss": 0.0503,
+  "in_distribution": [
+    {
+      "label": "MODEL",
+      "syntax_rate": 0.7866666666666666,
+      "executable_rate": 0.7833333333333333,
+      "pass_at_1": 0.7733333333333333
+    },
+    {
+      "label": "TEMPLATE",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.9,
+      "pass_at_1": 0.8
+    },
+    {
+      "label": "RETRIEVAL",
+      "syntax_rate": 1.0,
+      "executable_rate": 1.0,
+      "pass_at_1": 1.0
+    }
+  ],
+  "compositional": [
+    {
+      "label": "MODEL",
+      "syntax_rate": 0.0,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0
+    },
+    {
+      "label": "TEMPLATE",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.5,
+      "pass_at_1": 0.0
+    },
+    {
+      "label": "RETRIEVAL",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.5,
+      "pass_at_1": 0.0
+    }
+  ],
+  "dataset_version": "v0_1",
+  "spec_version": "python_capability_v0_1"
+}
