@@ -24,9 +24,11 @@ def save(fig, name):
     return p
 
 # ---- 1. Model-size vs composition (measured, 4 points) ----
+# 10.2M uses the clean-retrain value (0.773); the original 0.383 was a SIGILL
+# training-run artifact (see docs/experiments/scaling_composition.md).
 fig, ax = plt.subplots()
 labels = ["0.88M", "6.5M", "10.2M", "29.3M"]
-in_dist = [0.900, 0.900, 0.383, 0.897]
+in_dist = [0.900, 0.897, 0.773, 0.897]
 comp    = [0.000, 0.000, 0.000, 0.000]
 x = np.arange(len(labels)); w = 0.38
 ax.bar(x-w/2, in_dist, w, color="#4C72B0", label="in-distribution")
@@ -76,5 +78,40 @@ ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.05); ax.set_ylabe
 ax.set_title("Continual learning: sequential forgets A, replay retains (measured)")
 ax.legend(); ax.grid(axis="y", alpha=0.3)
 save(fig, "fig_continual.png")
+
+# ---- 6. Live behavior sweep: pass/fail across all 5 trained models ----
+# From scripts/sweep_models.py (measured): every model solves both in-distribution
+# cases and fails reword / compose / out-of-scope. Green=PASS, red=FAIL.
+fig, ax = plt.subplots(figsize=(8.2, 4.6))
+models = ["0.88M\npilot", "0.88M\nsurface", "6.5M", "10.2M", "29.3M\n(30M)"]
+cases = ["in-dist\nsum", "in-dist\nproduct", "reworded", "compose", "out-of-scope"]
+# PASS=1 FAIL=0, from the measured sweep (identical pattern across all sizes)
+data = np.array([
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+])
+cmap = matplotlib.colors.ListedColormap(["#C44E52", "#55A868"])
+bounds = [-0.5, 0.5, 1.5]
+norm = matplotlib.colors.BoundaryNorm(bounds, cmap.N)
+im = ax.imshow(data, cmap=cmap, norm=norm, aspect="auto")
+ax.set_xticks(np.arange(len(cases))); ax.set_xticklabels(cases, fontsize=8)
+ax.set_yticks(np.arange(len(models))); ax.set_yticklabels(models, fontsize=8)
+for i in range(len(models)):
+    for j in range(len(cases)):
+        out = " \u2713" if data[i, j] else " \u2717"
+        fc = "white" if data[i, j] else "white"
+        ax.text(j, i, out, ha="center", va="center", color="white", fontsize=11, fontweight="bold")
+ax.set_title("Live behavior: every trained model solves the task, and none survives\na reword, a new combination, or an out-of-scope request (measured, all 5)")
+ax.set_ylabel("model (params)")
+# legend
+import matplotlib.patches as mpatches
+ax.legend(handles=[mpatches.Patch(color="#55A868", label="pass (correct program)"),
+                   mpatches.Patch(color="#C44E52", label="fail (no valid program)")],
+          loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=2, fontsize=8)
+fig.tight_layout()
+save(fig, "fig_live_sweep.png")
 
 print("\nall figures written to", FIG)

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.8.30)  10 SEP 2026 07:29
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.8.30)  11 SEP 2026 13:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1447,41 +1447,43 @@ Chapter 12.
 (./chapters/ch12.tex
 File: figures/fig_model_size.png Graphic file (type bmp)
 <figures/fig_model_size.png>
+File: figures/fig_live_sweep.png Graphic file (type bmp)
+<figures/fig_live_sweep.png>
  [52
 
-] [53] [54]) [55]
+] [53] [54] [55]) [56]
 Chapter 13.
 (./chapters/ch13.tex
 File: figures/fig_diversity.png Graphic file (type bmp)
 <figures/fig_diversity.png>
- [56
+ [57
 
-] [57] [58]) [59] [60
+] [58] [59]) [60] [61
 
 ]
 Chapter 14.
 (./chapters/ch14.tex
 Underfull \vbox (badness 1342) has occurred while \output is active []
 
- [61
+ [62
 
 ]
-[62]) [63]
+[63]) [64]
 Chapter 15.
-(./chapters/ch15.tex [64
+(./chapters/ch15.tex [65
 
 ]
 File: figures/fig_surface.png Graphic file (type bmp)
 <figures/fig_surface.png>
- [65] [66]) [67]
+ [66] [67]) [68]
 Chapter 16.
-(./chapters/ch16.tex [68
+(./chapters/ch16.tex [69
 
-] [69] [70]) [71]
+] [70] [71]) [72]
 Chapter 17.
-(./chapters/ch17.tex [72
+(./chapters/ch17.tex [73
 
-] [73]) [74] [75
+] [74]) [75] [76
 
 ]
 Chapter 18.
@@ -1496,10 +1498,10 @@ inuxLibertineO(0)/m/n/10.95 ,
 
 Underfull \vbox (badness 1067) has occurred while \output is active []
 
- [76
+ [77
 
 ]
-[77]) [78]
+[78]) [79]
 Chapter 19.
 (./chapters/ch19.tex
 Missing character: There is no ✅ (U+2705) in font Linux Libertine O/OT:script=l
@@ -1512,18 +1514,18 @@ Missing character: There is no ✅ (U+2705) in font Linux Libertine O/OT:script=
 atn;language=dflt;+onum;mapping=tex-text;!
 Missing character: There is no ❌ (U+274C) in font Linux Libertine O/OT:script=l
 atn;language=dflt;+onum;mapping=tex-text;!
-[79
+[80
 
-] [80]) [81] [82
+] [81]) [82] [83
 
 ]
 Chapter 20.
-(./chapters/ch20.tex [83
+(./chapters/ch20.tex [84
 
 ]
 File: figures/fig_continual.png Graphic file (type bmp)
 <figures/fig_continual.png>
- [84] [85]) [86]
+ [85] [86]) [87]
 Chapter 21.
 (./chapters/ch21.tex
 Overfull \hbox (3.10268pt too wide) in paragraph at lines 55--56
@@ -1548,29 +1550,29 @@ Overfull \hbox (9.32228pt too wide) in paragraph at lines 73--73
 
 Underfull \vbox (badness 1472) has occurred while \output is active []
 
- [87
+ [88
 
 ]
-[88]
+[89]
 Underfull \vbox (badness 4036) has occurred while \output is active []
 
- [89])
-[90] [91
+ [90])
+[91] [92
 
 ]
 Chapter 22.
 (./chapters/ch22.tex
 File: figures/fig_capability_map.png Graphic file (type bmp)
 <figures/fig_capability_map.png>
- [92
+ [93
 
-] [93]
+] [94]
 Underfull \vbox (badness 1527) has occurred while \output is active []
 
- [94])
-[95] [96]
+ [95])
+[96] [97]
 Chapter 23.
-(./chapters/ch23.tex [97
+(./chapters/ch23.tex [98
 
 ]
 Underfull \hbox (badness 2229) in paragraph at lines 64--69
@@ -1584,17 +1586,17 @@ Underfull \hbox (badness 1062) in paragraph at lines 64--69
 and neither more capacity (up
  []
 
-[98] [99]) [100]
+[99] [100]) [101]
 Chapter 24.
-(./chapters/ch24.tex [101
+(./chapters/ch24.tex [102
 
-] [102]) [103]
+] [103]) [104]
 Chapter 25.
-(./chapters/ch25.tex [104
+(./chapters/ch25.tex [105
 
-] [105] [106]) [107]
+] [106] [107]) [108]
 Appendix A.
-(./chapters/appA.tex [108
+(./chapters/appA.tex [109
 
 ]
 Underfull \hbox (badness 2189) in paragraph at lines 77--89
@@ -1618,18 +1620,18 @@ Underfull \hbox (badness 1838) in paragraph at lines 131--144
 =”negative”)\TU/LinuxLibertineO(0)/m/it/10 # negative
  []
 
-[109]) [110]
+[110]) [111]
 Appendix B.
-(./chapters/appB.tex [111
+(./chapters/appB.tex [112
 
-] [112]
+] [113]
 Overfull \hbox (19.02174pt too wide) in paragraph at lines 142--145
 []\TU/LinuxLibertineO(0)/b/n/10.95 What we learned. \TU/LinuxLibertineO(0)/m/n/
 10.95 Hardware quirks are real and part of the brew. The fix is \TU/LiberationM
 ono(0)/m/n/10.95 TORCH_DISABLE_AVX2=1
  []
 
-) [113] [114]
+) [114] [115]
 
 Package caption Warning: Unused \captionsetup[table] on input line 170.
 See the caption package documentation for explanation.
@@ -1644,15 +1646,15 @@ L3 programming layer <2026-01-19>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `book.out' has not changed.
-(rerunfilecheck)             Checksum: 1DD6FC011008D0CF688620D9E0FC8168;39645.
+(rerunfilecheck)             Checksum: E01AC887FEA0423C4CD47BB28419BFA8;39716.
  ) 
 Here is how much of TeX's memory you used:
- 32377 strings out of 468173
- 658797 string characters out of 5435520
- 1162639 words of memory out of 5000000
- 60449 multiletter control sequences out of 15000+600000
- 636299 words of font info for 127 fonts, out of 8000000 for 9000
+ 32383 strings out of 468173
+ 658926 string characters out of 5435520
+ 1162660 words of memory out of 5000000
+ 60455 multiletter control sequences out of 15000+600000
+ 636291 words of font info for 126 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  113i,13n,131p,1001b,627s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on book.pdf (126 pages).
+Output written on book.pdf (127 pages).

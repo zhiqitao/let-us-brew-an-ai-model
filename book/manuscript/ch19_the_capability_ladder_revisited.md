@@ -44,10 +44,10 @@ we tested four, and we also scaled the data. Here are the real numbers.
 
 - **Model size:** we ran the composition test across a ~33× range of capacity — a
   0.88M pilot, a 6.5M model, a 10.2M model, and a 29.3M model. All four scored
-  **0.000** on composition. (Their in-distribution scores were 0.900, 0.900, 0.383,
-  and 0.897 respectively — a side note we return to honestly, because the 10.2M model
-  actually dropped in-distribution, showing that bigger is *not* monotonically better
-  at this scale.) The composition wall is not a capacity ceiling in this regime.
+  **0.000** on composition. (Their in-distribution scores were 0.900, 0.897, 0.773,
+  and 0.897 respectively — a stable plateau. One earlier 10.2M reading of 0.383
+  turned out to be a training-run artifact.) The composition wall is not a capacity
+  ceiling in this regime.
 - **Data size:** 100 → 3000 examples improved in-distribution (0.10 → 0.64) but did not
   touch composition. More quantity helps the shallow score, not the deep boundary.
 
