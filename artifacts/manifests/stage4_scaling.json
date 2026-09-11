@@ -1,7 +1,7 @@
 {
   "config": {
-    "ckpt": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/checkpoints/stage4_composition.pt",
-    "tok": "artifacts/tokenizer/comp_tok.json",
+    "ckpt": "artifacts/checkpoints/stage4_10m.pt",
+    "tok": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/tokenizer/comp_tok.json",
     "n_embd": 288,
     "n_layer": 10,
     "n_head": 8,
@@ -12,9 +12,9 @@
   "in_distribution": [
     {
       "label": "MODEL",
-      "syntax_rate": 0.45,
-      "executable_rate": 0.45,
-      "pass_at_1": 0.38333333333333336
+      "syntax_rate": 0.7916666666666666,
+      "executable_rate": 0.7916666666666666,
+      "pass_at_1": 0.775
     },
     {
       "label": "TEMPLATE",
