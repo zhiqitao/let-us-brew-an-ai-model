@@ -16,6 +16,13 @@ experiments/*/output/
 
 # Book build outputs
 book/*.pdf
+book/latex/*.aux
+book/latex/*.log
+book/latex/*.out
+book/latex/*.toc
+book/latex/*.lof
+book/latex/_md/
+book/latex/chapters/
 
 # OS / editor
 .DS_Store

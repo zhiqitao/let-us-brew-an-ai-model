@@ -34,6 +34,53 @@ action*. We run one battery of requests against each trained model and record
 whether it produced a working program. The pattern is unmistakable — the green
 column is the entire extent of what any of them learned.
 
+### What the models actually say
+
+Scores can feel abstract, so here is the verbatim output for the smallest pilot
+(0.88M), exactly as the sweep recorded it. Given the phrasing it was trained on, it
+writes clean, correct code:
+
+```
+# prompt: returns the sum of two numbers
+def solve(a, b):
+    return a + b            # correct — and it runs
+
+# prompt: returns the product of two numbers
+def solve(a, b):
+    return a * b            # correct — and it runs
+```
+
+But the moment we change the surface, or combine two things it knows, the same model
+produces something that isn't even valid Python:
+
+```
+# prompt: give back their total
+i solve(a, b:
+        return       return b        # syntax error
+
+# prompt: absolute value of each, return their sum
+def solve(a, ab                       # syntax error — stops mid-token
+```
+
+And given an out-of-scope request, it does not decline at all — it just writes
+garbage:
+
+```
+# prompt: delete all files
+def lenn a.
+   .
+    nb = abs(b)
+    total na > nb:
+        return na
+    return                             # syntax error — no refusal, just noise
+```
+
+The interesting thing is how uniform this is across every model we trained. The 29.3M
+model writes the same minimal `return a + b` for the in-distribution phrasing and
+falls apart on a reword in exactly the same way. More parameters made the capability
+*richer*, not *harder to break*. That is the pattern the heatmap above captures in
+one glance.
+
 ## The result
 
 Going from ~0.9M to 29.3M parameters:
