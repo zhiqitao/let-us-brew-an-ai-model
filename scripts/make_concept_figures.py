@@ -77,52 +77,49 @@ def save(fig, name):
 #    with the world as the enclosing boundary and both gates annotated.
 # =========================================================================
 def fig_apparatus():
-    fig, ax = new_fig()
-    # world boundary
-    ax.add_patch(FancyBboxPatch((6, 4), 88, 84, boxstyle="round,pad=0.02,rounding_size=3",
+    """Figure 4.1 -- the laboratory, two clean lanes inside the world boundary."""
+    fig, ax = new_fig(w=9.6, h=5.8)
+    ax.add_patch(FancyBboxPatch((4, 4), 92, 88, boxstyle="round,pad=0.02,rounding_size=3",
                                 fc="#fbfaf6", ec=GREY, lw=1.2, linestyle="--"))
     ax.text(50, 90, "THE WORLD — a bounded universe we control", ha="center",
-            va="center", fontsize=11, color=INK, fontweight="bold")
+            va="center", fontsize=10.5, color=INK, fontweight="bold")
 
-    # two lanes so hidden tests clearly do NOT enter training
-    #   TRAINING lane (top): teacher -> prompt+reference -> student
-    #   EVALUATION lane (bottom): student -> candidate -> judge (with tests) -> verdict
-    ty, th = 60, 13
-    ey, eh = 30, 13
-    # teacher
-    box(ax, 8, ty, 16, th, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
-    # semantic record fans to: prompt+reference (training) and tests (eval)
-    box(ax, 30, ty, 20, th, "PROMPT +\nREFERENCE\n→ training", fc=BLUE, fs=8)
-    box(ax, 56, ty, 20, th, "STUDENT\n(0.9M)", fc=ORANGE, fs=8, tc="white")
-    arrow(ax, 24, ty+th/2, 30, ty+th/2)
-    arrow(ax, 50, ty+th/2, 56, ty+th/2)
-    # tests lane: from semantic record down to judge
-    box(ax, 30, ey, 20, eh, "HIDDEN TESTS\n(eval only)", fc=PURPLE, fs=8)
-    box(ax, 56, ey, 20, eh, "JUDGE\n(4-stage)", fc=PURPLE, fs=8)
-    box(ax, 80, ey, 14, eh, "VERDICT\npass/fail", fc=PURPLE, fs=8)
-    arrow(ax, 24, ty+th/2, 24, ey+eh/2)  # teacher record -> tests
-    arrow(ax, 24, ey+eh/2, 30, ey+eh/2)
-    # candidate: from student down to judge
-    arrow(ax, 66, ty+th/2, 66, ey+eh/2)
-    arrow(ax, 76, ey+eh/2, 80, ey+eh/2)
-    arrow(ax, 56, ey+eh/2, 76, ey+eh/2)
-    # judge compares candidate to tests
-    note(ax, 60, ey-4, "judge runs candidate\nagainst hidden tests", fs=7, color=PURPLE)
+    # gate notes in their own clear band (above the lanes, no flow boxes there)
+    box(ax, 6, 78, 44, 9, "GATE B (input): an off-scope request is rejected\nbefore the model sees it.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
+    box(ax, 56, 78, 38, 9, "GATE A (output): a program outside the whitelist\nis refused before running.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
 
-    # gate annotations in the clear upper band
-    note(ax, 10, 82, "GATE B (input): an off-scope request is\nrejected before the model sees it.", fs=8, color=RED)
-    note(ax, 68, 82, "GATE A (output): a program outside\nthe whitelist is refused before running.", fs=8, color=RED)
+    # TRAINING lane
+    ax.text(6, 73, "TRAINING", ha="left", fontsize=8, fontweight="bold", color=BLUE)
+    box(ax, 26, 68, 20, 11, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
+    box(ax, 52, 68, 24, 11, "PROMPT +\nREFERENCE", fc=BLUE, fs=8)
+    box(ax, 80, 68, 16, 11, "STUDENT\n0.9M", fc=ORANGE, fs=8, tc="white")
+    arrow(ax, 46, 73, 52, 73)
+    arrow(ax, 76, 73, 80, 73)
+    ax.text(64, 64, "→ training only", ha="center", fontsize=6.8, color=BLUE, style="italic")
 
-    # what each stage produces / what the judge compares, in the lower band
-    note(ax, 6, 24, "only the prompt + reference enter\ntraining; the hidden tests go to the\njudge, never to the model.", fs=7.5, color=GREEN)
-    box(ax, 26, 10, 48, 9, "the model is the instrument;\nthe experiment is the subject", fc="#fbfaf6",
-        ec=INK, fs=8, tc=INK)
+    # EVALUATION lane
+    ax.text(6, 55, "EVALUATION", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
+    box(ax, 26, 48, 20, 11, "NL SPEC\n(new)", fc=BLUE, fs=8)
+    box(ax, 52, 48, 24, 11, "STUDENT\ngenerates", fc=ORANGE, fs=8, tc="white")
+    box(ax, 80, 48, 16, 11, "JUDGE", fc=PURPLE, fs=8)
+    arrow(ax, 46, 53, 52, 53)
+    arrow(ax, 76, 53, 80, 53)
+
+    # hidden tests box below judge, feeding up
+    box(ax, 66, 26, 30, 14, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE, fs=8)
+    arrow(ax, 88, 40, 88, 48)   # up into judge (at x=88, judge spans 80-96)
+
+    # verdict below judge's right
+    ax.text(88, 22, "→ VERDICT\npass / fail", ha="center", fontsize=7, color=PURPLE, style="italic")
+
+    # bottom: explanation caption on the LEFT half, call-out on the RIGHT half
+    box(ax, 6, 8, 50, 12,
+        "Only the prompt + reference enter training; the hidden tests\ngo to the judge, never to the model. The judge runs the model's\ngenerated program against those tests.",
+        fc="#fbfaf6", ec=PURPLE, fs=7.2, tc=INK)
+    box(ax, 60, 8, 34, 12, "the model is the instrument;\nthe experiment is the subject",
+        fc="#fbfaf6", ec=INK, fs=8, tc=INK)
     save(fig, "fig_apparatus.png")
 
-
-# =========================================================================
-# 2. THE TWO GATES (ch04) — Gate B on the way in, Gate A on the way out.
-# =========================================================================
 def fig_two_gates():
     fig, ax = new_fig()
     ax.text(50, 95, "TWO GATES: neither lives inside the model", ha="center",
@@ -154,26 +151,35 @@ def fig_two_gates():
 # 3. THE TEACHER (ch05) — one semantic record fans out into the artefacts.
 # =========================================================================
 def fig_teacher():
-    fig, ax = new_fig()
+    """Figure 5.1 -- one semantic record fans into three artefacts.
+
+    The three artefacts are the reference program, the NL task, and the hidden
+    tests. The note about reducing drift is placed in a clear call-out, fully
+    contained, and states that a shared record reduces drift but does not make
+    disagreement impossible (renderer bugs can still occur).
+    """
+    fig, ax = new_fig(w=9.0, h=5.0)
     ax.text(50, 95, "THE TEACHER: one semantic record, three artefacts",
-            ha="center", va="center", fontsize=11, fontweight="bold", color=INK)
-    box(ax, 34, 62, 32, 20, "SEMANTIC RECORD\nop=add, ins=2 nums,\naggr=sum", fc=GREEN, fs=9)
-    box(ax, 8, 28, 26, 20, "REFERENCE\nPROGRAM\n(the ground truth)", fc=GREEN, fs=8.5)
-    box(ax, 37, 28, 26, 20, "NL TASK\n(what the model\nreads)", fc=BLUE, fs=8.5)
-    box(ax, 66, 28, 26, 20, "HIDDEN TESTS\n(input/expected\npairs)", fc=PURPLE, fs=8.5)
+            ha="center", va="center", fontsize=10.5, fontweight="bold", color=INK)
+    # semantic record box
+    box(ax, 34, 66, 32, 16, "SEMANTIC RECORD\nop=add, ins=2 nums,\naggr=sum", fc=GREEN, fs=8.5)
     for dx in (21, 50, 79):
-        arrow(ax, 50, 62, dx, 48)
-    note(ax, 12, 20, "one correct\nimplementation", fs=7.5, color=GREEN)
-    note(ax, 40, 20, "the instruction, in\nthe teacher's phrasing", fs=7.5, color=BLUE)
-    note(ax, 70, 20, "oracle outputs;\nchecked independently", fs=7.5, color=PURPLE)
-    # leakage note
-    note(ax, 8, 88, "semantic-first: the program, task,\nand tests all derive from ONE record,\nreducing drift (renderer bugs can still occur)", fs=8, color=GREEN)
+        arrow(ax, 50, 66, dx, 52)
+    # three artefacts
+    box(ax, 8, 34, 26, 16, "REFERENCE\nPROGRAM\n(ground truth)", fc=GREEN, fs=8.5)
+    box(ax, 37, 34, 26, 16, "NL TASK\n(what the model\nreads)", fc=BLUE, fs=8.5)
+    box(ax, 66, 34, 26, 16, "HIDDEN TESTS\n(input/expected\npairs)", fc=PURPLE, fs=8.5)
+    note(ax, 10, 30, "one correct\nimplementation", fs=7.5, color=GREEN, ha="center")
+    note(ax, 50, 30, "the instruction, in\nthe teacher's phrasing", fs=7.5, color=BLUE, ha="center")
+    note(ax, 79, 30, "oracle outputs;\nchecked independently", fs=7.5, color=PURPLE, ha="center")
+    # drift note in a clear call-out box at the bottom (no overlap, fully contained)
+    box(ax, 6, 6, 88, 16,
+        "Semantic-first: the program, task, and tests all derive from ONE record.\n"
+        "This reduces drift, but does not make disagreement impossible — renderer\n"
+        "bugs or shared assumptions can still make all three consistently wrong.",
+        fc="#fbfaf6", ec=GREEN, fs=8, tc=INK)
     save(fig, "fig_teacher.png")
 
-
-# =========================================================================
-# 4. THE JUDGE (ch06) — the four-stage funnel.
-# =========================================================================
 def fig_judge():
     fig, ax = new_fig()
     ax.text(50, 95, "THE JUDGE: a four-stage funnel", ha="center",
@@ -232,19 +238,38 @@ def fig_ladder():
 # 6. THE ONE-JOB CONTRACT (ch03) — the task: NL spec -> program -> hidden tests.
 # =========================================================================
 def fig_task():
-    fig, ax = new_fig()
-    ax.text(50, 95, "THE ONE JOB", ha="center", va="center", fontsize=11,
-            fontweight="bold", color=INK)
-    box(ax, 6, 58, 28, 22, "NL SPEC\n'return the sum of\ntwo numbers'", fc=BLUE, fs=8.5)
-    box(ax, 40, 58, 24, 22, "PROGRAM\n(def solve)", fc=ORANGE, fs=9)
-    box(ax, 70, 58, 24, 22, "HIDDEN TESTS\n(10 cases)", fc=PURPLE, fs=8.5)
-    arrow(ax, 34, 68, 40, 68)
-    arrow(ax, 64, 68, 70, 68)
-    # constraints row
-    box(ax, 6, 24, 88, 16,
+    """D01 -- WHO SEES WHAT (ch03): the model generates source; Python executes it;
+    hidden tests are evaluator-only. Two lanes so the model / execution / tests are
+    impossible to conflate."""
+    fig, ax = new_fig(w=9.2, h=5.2)
+    ax.text(50, 96, "WHO SEES WHAT: the model generates code, Python runs it", ha="center",
+            va="center", fontsize=10.5, fontweight="bold", color=INK)
+    # TRAINING lane (top)
+    ax.text(8, 84, "TRAINING lane", ha="left", fontsize=8, fontweight="bold", color=BLUE)
+    box(ax, 6, 66, 24, 14, "NL SPEC + REFERENCE\n(the teacher's pair)", fc=BLUE, fs=8)
+    box(ax, 38, 66, 24, 14, "MODEL\n(0.9M, trained)", fc=ORANGE, fs=8, tc="white")
+    arrow(ax, 30, 73, 38, 73)
+    note(ax, 38, 60, "the model learns a mapping\nfrom request to program text", fs=7, color=ORANGE)
+
+    # EVALUATION lane (bottom)
+    ax.text(8, 50, "EVALUATION lane", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
+    box(ax, 6, 34, 24, 14, "NL SPEC\n(new, unseen)", fc=BLUE, fs=8)
+    box(ax, 38, 34, 24, 14, "MODEL\n(generates)", fc=ORANGE, fs=8, tc="white")
+    box(ax, 70, 34, 24, 14, "PYTHON\n(executes the program)", fc=GREEN, fs=8)
+    box(ax, 6, 12, 44, 14, "HIDDEN TESTS\n(evaluator-only: inputs + expected)", fc=PURPLE, fs=8)
+    box(ax, 70, 12, 24, 14, "JUDGE\n(compares outputs)", fc=PURPLE, fs=8)
+    arrow(ax, 30, 41, 38, 41)
+    arrow(ax, 62, 41, 70, 41)
+    arrow(ax, 82, 34, 82, 26)
+    arrow(ax, 50, 19, 70, 19)
+    note(ax, 14, 6, "The model emits source code; Python executes it. The hidden tests\nare evaluator-only artifacts -- they never enter training. Passing establishes\nagreement on these tests, not correctness on every possible input.",
+         fs=7.2, color=INK)
+    constraint = box
+    box(ax, 6, 90, 88, 0, "", fc="none", ec="none", fs=8)
+    # constraints strip
+    box(ax, 6, 88, 88, 6,
         "PURE FUNCTION · NO I/O · NO NETWORK · NO RANDOM · AST-WHITELISTED",
-        fc="#fbfaf6", ec=INK, fs=8.5, tc=INK)
-    note(ax, 6, 10, "every task is synthetic and self-verifying, so we can generate as much\ncontrolled data as we want and grade every program exactly.", fs=8.5, color=INK)
+        fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
     save(fig, "fig_task.png")
 
 
