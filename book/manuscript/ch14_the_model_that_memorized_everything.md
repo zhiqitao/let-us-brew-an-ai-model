@@ -28,6 +28,19 @@ apart by looking at training performance at all. The only thing that separates t
 behavior on *new* inputs — things the model never saw. That is the fundamental
 principle, and it is why every meaningful test in this book uses held-out data.
 
+But "new" is not one thing. Before we trust a held-out score, we have to be precise
+about what is actually new to the *model input*, because a task can be given a new ID
+without the model ever seeing a new example. The table below separates the three
+things that all get loosely called "a new task."
+
+![One task, three meanings of new](figures/fig_three_meanings.png)
+
+Only a change to the model's input (a new prompt, or a new target structure) counts as
+a genuinely new example for the model. A new task ID that merely changes the hidden
+tests is new to the *evaluator*, not to the model. So when we say "the model never saw
+this," we mean the model-visible prompt was new — and where that is not verified, we
+flag it rather than assume it.
+
 ## Three tests
 
 We use three complementary probes on the trained pilot model.

@@ -440,6 +440,48 @@ def fig_continual_timelines():
     save(fig, "fig_continual_timelines.png")
 
 
+def fig_three_meanings():
+    """D08 -- ONE TASK, THREE MEANINGS OF 'NEW' (ch2 / ch9 box).
+
+    Three cases that all get loosely called 'a new task' but differ in what is
+    actually new to the MODEL INPUT: (1) new task ID, same prompt+program, only the
+    hidden tests change; (2) genuinely new prompt, same target program; (3) an unseen
+    program structure (composition). Only #2/#3 are new to the model input; #1 is new
+    only to the evaluator.
+    """
+    fig, ax = new_fig(w=9.4, h=5.4)
+    ax.text(50, 96, "ONE TASK, THREE MEANINGS OF 'NEW'", ha="center", va="center",
+            fontsize=10.5, fontweight="bold", color=INK)
+    ax.text(50, 90, "What is actually new to the MODEL INPUT?  (green = new to model; grey = not)",
+            ha="center", va="center", fontsize=8, color=INK)
+    rows = [
+        ("1. New task ID,\nsame prompt + program", "same", "same", "different", "grey",
+         "only the evaluator's hidden tests change\n-- NOT a new example for the model"),
+        ("2. New prompt,\nsame target program", "different", "same", "same", "green",
+         "a new surface, same computation\n-- genuinely a new model input"),
+        ("3. Unseen\nprogram structure", "different", "different", "different", "green",
+         "composing pieces never combined\n-- new input AND new target structure"),
+    ]
+    headers = ["case", "prompt", "target program", "hidden tests", "new to model?"]
+    cols = ["case", "prompt", "target\nprogram", "hidden\ntests", "new to\nmodel input?"]
+    colx = [3, 25, 43, 61, 80]
+    for c, h in zip(colx, cols):
+        ax.text(c+7, 82, h, ha="center", fontsize=7.5, fontweight="bold", color=INK)
+    for r, (lab, pr, prog, test, kind, cap) in enumerate(rows):
+        y = 72 - r*22
+        box(ax, 3, y, 18, 12, lab, fc="#eef1f5", fs=7, tc=INK)
+        ax.text(31, y+6, pr, ha="center", fontsize=7, color=INK)
+        ax.text(49, y+6, prog, ha="center", fontsize=7, color=INK)
+        ax.text(67, y+6, test, ha="center", fontsize=7, color=INK)
+        fc = "#e0f0e4" if kind == "green" else "#dddddd"
+        ax.text(87, y+6, "YES" if kind=="green" else "NO", ha="center", fontsize=7,
+                fontweight="bold", color="#2b8a3e" if kind=="green" else "#888888")
+        ax.text(50, y-6, cap, ha="center", fontsize=6.8, color=INK, style="italic")
+    note(ax, 3, 4, "A 'new task ID' that only changes the hidden tests is NOT a new model input.\n"
+          "Report prompt/program novelty, not just task-ID counts.", fs=7.2, color=INK)
+    save(fig, "fig_three_meanings.png")
+
+
 def fig_same_ops():
     """D03 -- SAME OPERATORS, DIFFERENT PROGRAMS (ch16).
 
@@ -550,4 +592,5 @@ if __name__ == "__main__":
     fig_capability_map()
     fig_same_ops()
     fig_coverage()
+    fig_three_meanings()
     fig_continual_timelines()
