@@ -182,3 +182,32 @@ the natural next step.
 We did not benchmark against these in this book (the task and scale are far smaller),
 so we make no claim of competing with them — only of building a small, well-controlled
 instance and reporting it honestly.
+
+## Three short exercises
+
+If you want to check that you have the book's discipline, try these. Answers are in the
+back of this chapter.
+
+**1. Coverage or generalization?** You train a model on three wording families and
+evaluate it on a fourth that it has never seen. It scores 0.900. Is that a coverage
+result or a generalization result? What if instead you evaluated it on a *rephrasing
+within one of the three families it saw* — is *that* same interpretation?
+
+**2. Distinguish two programs.** For the two functions `abs(a + b)` and `abs(a) + abs(b)`,
+find one input where they give the same answer and one where they differ. Why does a
+single passing test not distinguish them, and what kind of test does?
+
+**3. What does a zero establish?** A model scores 0.000 on a held-out composition split.
+Write down what this does and does *not* establish — name at least two other causes of a
+zero that the result does not rule out, and one thing you could run to distinguish them.
+
+*(Answers: 1. The first is generalization to an excluded family; the second is coverage
+of a surface within the training family — only the first speaks to a never-seen family,
+and the book keeps them apart. 2. For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
+they give `1` and `5`. One test can be satisfied by both programs, so a distinguishing
+test must use a signed input where the two differ. 3. The zero shows that, under this
+decoding/evaluation procedure, no program passed every hidden test. It does not
+identify the cause (instruction interpretation, syntax generation, length handling,
+coverage, optimization, or a particular held-out operation), is not proof of a general
+capacity limit, and is not proof that the model "cannot compose" — a per-stage failure
+report or an all-composites control would narrow which cause holds.)*
