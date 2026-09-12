@@ -271,9 +271,9 @@ def render_book_tex(build_lines):
 \\thispagestyle{{empty}}
 {{\\centering\\MakeUppercase{{Copyright \\textcopyright{{}} 2026 Zhiqi Tao}}\\\\[2pt] All rights reserved.\\par}}
 \\vspace{{1.2cm}}
-\\noindent\\textbf{{License.}} This work --- the book text, diagrams, figures, source files, and build scripts --- is licensed under a \\emph{{custom source-available}} license: free for personal use, study, and non-commercial redistribution with attribution, but \\textbf{{commercial use or publication requires prior written approval from the author}}. It is not an open-source license. For permission, contact Zhiqi Tao (zhiqi.tao@gmail.com).
+\\noindent\\textbf{{License.}} This work is licensed under a \\emph{{custom source-available}} license. The \\textbf{{book text, diagrams, and figures}} may be freely read, studied, shared, and redistributed non-commercially with attribution; \\textbf{{commercial republication or sale of the book text requires prior written approval from the author}}. The \\textbf{{code examples and the companion repository}} are provided for you to build on: you may use, adapt, and reuse the code in your own projects, including commercial ones, with attribution, and the book is not an open-source text. For permission, contact Zhiqi Tao (zhiqi.tao@gmail.com).
 
-\\noindent\\footnotesize In short: \\emph{{read, study, and share it freely; do not sell it or republish it as a product without the authorisation from the author.}}
+\\noindent\\footnotesize In short: \\emph{{read, study, and share the book text freely (non-commercially); do not sell or republish the text as a product without the author's authorisation. The code examples may be adapted and reused in your own work.}}
 
 \\noindent\\footnotesize The work is provided ``as is'', without warranty of any kind.
 \\vfill
