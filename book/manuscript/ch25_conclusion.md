@@ -101,13 +101,13 @@ method. And a book about science should show that loop, not hide it.
 The honest map points at specific next experiments, not vague "more data / bigger
 model":
 
-1. **Does *systematic* compositional exposure unlock composition?** We tested the naive
-   version — feeding a few composites during training — and it did **not** unlock
-   composition on unseen ones (the model memorized the seen combinations at 0.667 but
-   stayed at 0.000 on held-out ones). So the open question is narrower: would exposing
-   the model to *many* primitives paired in *many* combinations (i.e. structural
-   diversity of compositions, per Chapter 13's diversity lever) teach a general
-   compose-operator, or is composition a hard structure limit?
+1. **Does *structural* diversity of combinations unlock composition?** We tested two
+   things and both failed: (a) feeding a few composites during training (held-out still
+   0.000), and (b) diversifying the *surface* of the composite exposure (many phrasings
+   × id-sets; held-out still 0.000). So the remaining open question is diversity of the
+   *inner structure* — exposing the model to many *different* primitive pairings, not
+   just different phrasings of the same few — to see whether that teaches a general
+   compose-operator. That is the one lever we haven't isolated.
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
    measured 0.773 (a stable plateau, not the earlier 0.383 artifact). A proper
    training-duration and config sweep at 10M would confirm the plateau is robust

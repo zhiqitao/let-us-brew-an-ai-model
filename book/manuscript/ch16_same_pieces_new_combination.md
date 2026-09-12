@@ -153,10 +153,21 @@ memorized `abs_add` as if it were *just another primitive*, not as a *compositio
 
 This closes off the naive fix ("just add composites to the data"). Composition here is
 not a matter of having seen a combination — it is a structural limit on how the model
-learns. The one lever that *did* teach a transferable distinction elsewhere in this
-book (diversity, in Chapter 13) suggests the next question is whether *systematic*
-exposure — many primitives paired in many combinations — could teach the general
-compose-operator. That is now the open experiment, not something we've measured.
+learns.
+
+One step further: since diversity was the lever that *did* fix surface robustness
+(Chapter 13), we tested whether *diversifying* the composite exposure unlocks
+composition. We diversified the surface of the exposed combinations (the same five
+composite operations rendered across many phrasings and identifier-sets) and held out
+one composite operation entirely. The result again was a flat **0.000** on the
+held-out operation, whether the exposure was minimally or highly diverse.
+
+So the diversity lever does **not** transfer to composition. Surface diversity
+diversifies the *outer form* of a combination; composition needs something else. This
+points at the one remaining hypothesis: it may be diversity of the *inner structure* —
+not different phrasings of the same five pairings, but many *different* primitive
+pairings — that could teach the general compose-operator. That is the open question
+now, and it is a genuinely different axis from the one we tested.
 
 ## The honest framing
 

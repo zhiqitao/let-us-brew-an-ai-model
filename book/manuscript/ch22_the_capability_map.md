@@ -78,12 +78,15 @@ measurements in one configuration, not proofs that hold everywhere.*
   easy"; the composition split is not (all baselines 0.000).
 
 **Supported / suggestive / open:**
-- The composition failure is now **tested, not simply suggestive**: exposure to a few
-  composites during training (Chapter 16) does **not** unlock composition on unseen
-  ones — the model memorizes the seen combinations (0.667) but still scores 0.000 on
-  held-out ones. So it is not a "just show it combinations" fix.
-- Whether composition needs more **systematic/structural** exposure (many primitives
-  paired in many combinations, per the diversity lever) is the next open experiment.
+- The composition failure is now **tested twice, not simply suggestive**: (a) exposure
+  to a few composites during training does **not** unlock composition on unseen ones
+  (the model memorizes the seen combinations at 0.667 but stays at 0.000 on held-out
+  ones); and (b) diversifying the *surface* of the composite exposure (many phrasings ×
+  id-sets) also leaves the held-out composite at **0.000**. So it is neither a "just
+  show it combinations" fix nor a "diversify the phrasing" fix (Chapter 16).
+- The one lever we have **not** isolated is diversity of the *inner structure* — many
+  *different* primitive pairings rather than different phrasings of the same few. That
+  is the remaining open experiment.
 - Whether the composition wall is truly structural or simply sits above our ~30M
   ceiling is **untested** — we stop where the CPU lab becomes impractical.
 

@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1500" width="6in" height="9in">
+  <defs>
+    <linearGradient id="brew" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D9932F"/>
+      <stop offset="1" stop-color="#A85B18"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E4F0EC"/>
+      <stop offset="0.5" stop-color="#D3E7E1"/>
+      <stop offset="1" stop-color="#C2DCD5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ground -->
+  <rect width="1000" height="1500" fill="#F5F2E9"/>
+
+  <!-- title -->
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="800" fill="#141414">
+    <text x="90" y="180" font-size="88">LET US</text>
+    <text x="90" y="272" font-size="88">BREW AN</text>
+    <text x="90" y="364" font-size="88">AI MODEL</text>
+  </g>
+  <rect x="90" y="400" width="330" height="7" fill="#1E7A6F"/>
+
+  <!-- subtitle -->
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#6E6E68" font-size="34">
+    <text x="90" y="470">What Tiny Language Models</text>
+    <text x="90" y="515">Can Actually Learn</text>
+    <text x="90" y="560">When Given One Job</text>
+  </g>
+
+  <!-- steam + code glyphs -->
+  <g fill="none" stroke="#B9B09E" stroke-width="6" stroke-linecap="round">
+    <path d="M628,616 C628,575 600,570 600,532 C600,500 630,498 630,470 C630,448 612,446 612,428"/>
+    <path d="M662,616 C662,580 692,574 692,538 C692,506 664,504 664,476 C664,452 686,450 686,430"/>
+    <path d="M700,500 C716,498 722,486 713,477 C706,470 695,475 698,486"/>
+  </g>
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="800" fill="#23272A">
+    <text x="560" y="452" font-size="42">def</text>
+    <text x="686" y="406" font-size="46">{ }</text>
+    <text x="744" y="456" font-size="34">+</text>
+    <text x="700" y="556" font-size="38">0</text>
+  </g>
+
+  <!-- french press -->
+  <ellipse cx="560" cy="1318" rx="195" ry="16" fill="#E5E0D0"/>
+  <!-- knob + lid -->
+  <rect x="540" y="576" width="40" height="34" rx="9" fill="#14544E"/>
+  <rect x="552" y="606" width="16" height="20" fill="#14544E"/>
+  <rect x="386" y="622" width="348" height="34" rx="10" fill="#14544E"/>
+  <!-- spout -->
+  <path d="M400,656 L352,676 L400,706 Z" fill="url(#glass)" stroke="#7FB5AC" stroke-width="5"/>
+  <!-- handle -->
+  <path d="M720,770 C806,770 806,1050 720,1050" fill="none" stroke="#14544E" stroke-width="36" stroke-linecap="round"/>
+  <!-- glass body -->
+  <rect x="400" y="654" width="320" height="648" rx="26" fill="url(#glass)" stroke="#7FB5AC" stroke-width="6"/>
+  <!-- brew -->
+  <path d="M412,930 h296 v344 q0,16 -16,16 h-264 q-16,0 -16,-16 Z" fill="url(#brew)"/>
+  <!-- glass highlight -->
+  <rect x="420" y="676" width="24" height="596" rx="12" fill="#FFFFFF" opacity="0.35"/>
+  <!-- plunger rod -->
+  <rect x="556" y="656" width="8" height="134" fill="#9AA39F"/>
+
+  <!-- transformer stack -->
+  <g stroke="#E8B54A" stroke-width="2.5" fill="#E8B54A">
+    <!-- tier 1: attention -->
+    <rect x="470" y="790" width="180" height="80" fill="#176B62" stroke="none"/>
+    <path d="M492,846 C520,806 600,806 628,846" fill="none"/>
+    <circle cx="492" cy="846" r="6" stroke="none"/>
+    <circle cx="628" cy="846" r="6" stroke="none"/>
+    <circle cx="560" cy="818" r="5" stroke="none"/>
+    <rect x="450" y="870" width="220" height="16" fill="#E0A33C" stroke="none"/>
+    <!-- tier 2 -->
+    <rect x="470" y="886" width="180" height="90" fill="#176B62" stroke="none"/>
+    <g stroke="#E8B54A">
+      <line x1="495" y1="906" x2="560" y2="931"/><line x1="495" y1="906" x2="625" y2="906"/>
+      <line x1="625" y1="906" x2="560" y2="931"/><line x1="560" y1="931" x2="495" y2="956"/>
+      <line x1="560" y1="931" x2="625" y2="956"/><line x1="495" y1="956" x2="625" y2="956"/>
+    </g>
+    <circle cx="495" cy="906" r="6" stroke="none"/><circle cx="625" cy="906" r="6" stroke="none"/>
+    <circle cx="560" cy="931" r="6" stroke="none"/><circle cx="495" cy="956" r="6" stroke="none"/>
+    <circle cx="625" cy="956" r="6" stroke="none"/>
+    <rect x="450" y="976" width="220" height="16" fill="#E0A33C" stroke="none"/>
+    <!-- tier 3 -->
+    <rect x="470" y="992" width="180" height="90" fill="#176B62" stroke="none"/>
+    <g stroke="#E8B54A">
+      <line x1="495" y1="1012" x2="560" y2="1037"/><line x1="625" y1="1012" x2="560" y2="1037"/>
+      <line x1="495" y1="1012" x2="625" y2="1062"/><line x1="625" y1="1012" x2="495" y2="1062"/>
+      <line x1="560" y1="1037" x2="495" y2="1062"/><line x1="560" y1="1037" x2="625" y2="1062"/>
+    </g>
+    <circle cx="495" cy="1012" r="6" stroke="none"/><circle cx="625" cy="1012" r="6" stroke="none"/>
+    <circle cx="560" cy="1037" r="6" stroke="none"/><circle cx="495" cy="1062" r="6" stroke="none"/>
+    <circle cx="625" cy="1062" r="6" stroke="none"/>
+    <rect x="450" y="1082" width="220" height="16" fill="#E0A33C" stroke="none"/>
+    <!-- filter plate -->
+    <rect x="460" y="1150" width="200" height="30" rx="6" fill="#14544E" stroke="none"/>
+    <g fill="#E8B54A" stroke="none">
+      <rect x="482" y="1158" width="7" height="14"/><rect x="512" y="1158" width="7" height="14"/>
+      <rect x="542" y="1158" width="7" height="14"/><rect x="572" y="1158" width="7" height="14"/>
+      <rect x="602" y="1158" width="7" height="14"/><rect x="632" y="1158" width="7" height="14"/>
+    </g>
+  </g>
+
+  <!-- author -->
+  <text x="90" y="1424" font-family="Helvetica, Arial, sans-serif" font-weight="800"
+        font-size="40" letter-spacing="2" fill="#141414">ZHIQI TAO</text>
+
+  <!-- version stamp -->
+  <rect x="756" y="1382" width="158" height="46" fill="none" stroke="#141414" stroke-width="3"/>
+  <text x="835" y="1414" font-family="Courier, monospace" font-weight="700"
+        font-size="26" text-anchor="middle" fill="#141414">v20261001</text>
+</svg>

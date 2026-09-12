@@ -154,6 +154,13 @@ def copy_figures():
                 continue
             shutil.copy(src, os.path.join(FIG, flat))
             mapping[rel] = flat
+    # front cover: not referenced in any chapter, copy explicitly
+    # use the PDF (Inkscape render) -- xelatex embeds PDFs natively, but the
+    # inkscape PNG is misread as "type bmp" and renders blank.
+    for ext in ("fig_cover.pdf", "fig_cover.png"):
+        cs = os.path.join(figbase, ext)
+        if os.path.exists(cs):
+            shutil.copy(cs, os.path.join(FIG, ext))
     return mapping
 
 
@@ -239,12 +246,18 @@ def render_book_tex(build_lines):
 \\begin{{titlepage}}
 \\thispagestyle{{empty}}
 \\centering
+\\includegraphics[height=0.98\\textheight,keepaspectratio]{{figures/fig_cover.pdf}}
+\\end{{titlepage}}
+
+\\begin{{titlepage}}
+\\thispagestyle{{empty}}
+\\centering
 \\vspace*{{3cm}}
 {{\\Huge\\bfseries Let Us Brew an AI Model\\par}}
 \\vspace{{1.5cm}}
 {{\\Large\\itshape What Tiny Language Models Can Actually Learn When Given One Job\\par}}
 \\vspace{{0.8cm}}
-{{\\normalsize Version 20260909\\par}}
+{{\\normalsize Version 20261001\\par}}
 \\vfill
 {{\\large Zhiqi Tao\\par}}
 \\vspace{{0.8cm}}
