@@ -214,29 +214,25 @@ def fig_judge():
 # 5. THE CAPABILITY LADDER (ch02) — four levels of trust.
 # =========================================================================
 def fig_ladder():
-    fig, ax = new_fig()
-    ax.text(50, 95, "THE CAPABILITY LADDER", ha="center", va="center",
-            fontsize=11, fontweight="bold", color=INK)
-    ax.text(50, 89, "four levels of how much we should trust a result", ha="center",
-            va="center", fontsize=9, color=INK, style="italic")
+    """Figure 2.1 -- four DISTINCT questions about a result, not an ordered trust ladder."""
+    fig, ax = new_fig(w=9.0, h=5.2)
+    ax.text(50, 95, "THE FOUR EVALUATION QUESTIONS", ha="center", va="center",
+            fontsize=10.5, fontweight="bold", color=INK)
+    ax.text(50, 89, "four distinct questions -- they are not a ladder, and passing one\ndoes not establish the next.", ha="center", va="center", fontsize=8, color=INK)
     levels = [
-        (16, "LEVEL 1\nMemorization\n'probably just\nremembering'", RED),
-        (34, "LEVEL 2\nSame task,\nnew examples", ORANGE),
-        (52, "LEVEL 3\nSame problem,\ndifferent surface", GREEN),
-        (70, "LEVEL 4\nNew combination\n'genuinely\ncombined'", BLUE),
+        (64, "Q1  MEMORIZATION\nCould it just be remembering\na stored answer?", "bar1", "#c44e52"),
+        (46, "Q2  NEW INSTANCES\nDoes it work on new examples\nof the same task?", "bar2", "#dd8452"),
+        (28, "Q3  SURFACE CHANGE\nDoes it survive a change of\nwording or identifiers?", "bar3", "#55a868"),
+        (10, "Q4  NEW COMBINATION\nCan it combine things it knows\nin a way it never saw?", "bar4", "#4c72b0"),
     ]
-    for y, lab, c in levels:
-        box(ax, 14, y, 72, 15, lab, fc=c, fs=8.2)
-    # ascending arrow to the RIGHT of the ladder, clear of the boxes
-    arrow(ax, 90, 16, 90, 84, color=INK)
-    ax.text(93, 50, "more trust", fontsize=8, rotation=90, va="center", color=INK)
-    note(ax, 14, 4, "we never mash these into one number: 90% on familiar + 0% on\nreworded is NOT generalization — it memorized the phrasing.", fs=8.5, color=RED)
+    for y, lab, _k, c in levels:
+        box(ax, 6, y, 88, 14, lab, fc=c, fs=8.5)
+    # side tag: the order is a checklist, not an ascent of trust
+    note(ax, 6, 5, "Report these separately. Success on one does not establish success on another:\n"
+          "a model can pass Q2 but fail Q3 and Q4, and a passing Q4 still says nothing about Q1.",
+         fs=7.5, color=INK)
     save(fig, "fig_ladder.png")
 
-
-# =========================================================================
-# 6. THE ONE-JOB CONTRACT (ch03) — the task: NL spec -> program -> hidden tests.
-# =========================================================================
 def fig_task():
     """D01 -- WHO SEES WHAT (ch03): the model generates source; Python executes it;
     hidden tests are evaluator-only. Two lanes so the model / execution / tests are
