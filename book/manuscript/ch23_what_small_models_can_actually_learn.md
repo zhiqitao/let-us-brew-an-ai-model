@@ -32,11 +32,12 @@ in the computation.
 
 **It cannot compose what it knows.** Train on `add`, `sub`, `abs`, `max`, `list_sum`
 as separate primitives; test on `abs_add` (abs then add) and `sum_of_abs` (abs over a
-list sum) — operations that combine two things it knows perfectly. The model scores
+list sum) — operations that combine two things it knows. The model scores
 **0.000**. It did not learn "I know abs and I know add, therefore I can do
-abs+abs." This is Level-4 structural failure. And crucially, the baseline systems
-*also* scored 0.000 — so the test is fair, and the only way to solve it would be
-genuine composition, which the model lacks.
+abs+abs." This is a Level-4 failure under these schedules. The baseline systems
+(which we designed to be easy) *also* scored 0.000 — a useful cross-check that the
+failure is not unique to the learned model, though it is a measured negative, not a
+proof that no method or shortcut could ever solve it.
 
 ## The two axes of the boundary
 

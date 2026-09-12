@@ -49,8 +49,11 @@ boundary. If it can, we have found something remarkable.
 To make the test fair, we also show what *both* baselines do. The retrieval baseline
 has nothing to compose — it can only find the closest primitive example and copy it.
 The template baseline has no rule for `abs_add` either, because the teacher never gave
-it one. So if *everything* fails, we have a fair statement: composition cannot be
-achieved by the easy shortcuts, and the model too cannot do it.
+it one. So if *everything* fails, the failure is at least not unique to the learned
+model: the easy shortcuts also cannot do it (without this negative signal, a model-only
+failure could just mean the task was inherently beyond any of our methods). This is a
+useful cross-check, though it is a measured negative, not a proof that no shortcut
+exists.
 
 ## What we measured
 
@@ -135,12 +138,15 @@ asymmetry is not a contradiction; it is the shape of the truth we are mapping.
 ## Why we don't call it a "failure of one thing" without checking the other two
 
 A careful reader will ask: is composition genuinely impossible for this model, or did
-we simply make the test too hard? The baselines answer this. If the test were simply
+we simply make the test too hard? The baselines help here. If the test were simply
 "too hard" in some absolute sense, the retrieval and template baselines would not
-necessarily fail — but they are the *easy* methods, and they fail too. So the test is
-not too hard for an easy method; it is unsolvable by any method except genuine
-composition, and the model has no composition. This is a fair, controlled comparison,
-which is exactly what our one-variable discipline demands.
+necessarily fail — but they are the *easy* methods, and they fail too. That does not
+prove the test is "fair" in an absolute sense or rule out every shortcut; it is a
+useful negative signal that the failure is not merely because an easy method happens to
+stumble. It makes the result a measured negative, not a proof that no method could
+succeed or that the boundary is structural. What we can say: within this apparatus and
+these baselines, no method we tried — learned, retrieval, or template — produced a
+composite program, which is the result we report.
 
 ## The shortcut audit
 

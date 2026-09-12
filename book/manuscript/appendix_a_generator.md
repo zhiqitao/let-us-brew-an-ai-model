@@ -139,11 +139,18 @@ vec = TfidfVectorizer()
 X = vec.fit_transform([t["nl"]["prompt"] for t in tasks])
 clf = LogisticRegression(max_iter=1000)
 scores = cross_val_score(clf, X, y, cv=5)
-print(f"classifier predicts operation: {scores.mean():.3f}")   # >0.9 means LEAK
+print(f"classifier predicts operation: {scores.mean():.3f}")   # high = strong overlap; see note below
 ```
 
-When we ran this on the first pilot renderer, it printed **1.000** — a 100% leak —
-and that finding drove the later expansion of the paraphrase families.
+When we ran this on the first pilot renderer, it printed **1.000** — the wording
+perfectly predicted the operation. It is important to read this correctly: much of that
+is **task signal, not leakage**. The prompt must name the operation ("sum", "absolute
+value"), so a classifier can trivially recover it from the wording; that is the task
+being solvable as stated, not a defect. The audit's real purpose is to catch the
+*opposite* problem — where some *other* accidental cue (a duplicated example, a leaked
+hidden-test value, an identifier that reveals the answer) is what drives the score. So
+we treat a high score as a flag to inspect *which* words drive it, not as proof of
+leakage by itself.
 
 ## How to run it
 

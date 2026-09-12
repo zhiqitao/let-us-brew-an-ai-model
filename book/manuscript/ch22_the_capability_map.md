@@ -98,8 +98,10 @@ measurements in one configuration, not proofs that hold everywhere.*
 - Whether a fundamentally different inductive bias (not scale) helps.
 
 *(The composition-exposure question — whether feeding a few composites during training
-unlocks composition — has been tested and settled: it does **not**. The model
-memorized the seen combinations but still scored 0.000 on held-out ones.)*
+unlocks composition — we tested in both a naive-exposure and a diversity form; in both
+it did **not**: the model memorized the seen combinations but scored 0.000 on held-out
+ones. We report this as a measured result under those two schedules, not as proof that
+no exposure schedule could unlock composition.)*
 
 ## The boundary, in one line
 

@@ -31,17 +31,22 @@ approach failed.
 
 ---
 
-## 2. The pilot wording leaked the answer (100% predictability)
+## 2. The pilot wording was so predictive of the answer we had to look again
 
 **What happened.** The leakage audit trained a trivial TF-IDF classifier to predict the
 operation from the natural-language prompt. It succeeded **100%** of the time.
 
-**What we learned.** Our first renderer's wording was so tied to the operation that a
-model "succeeding" might just be exploiting the phrasing, not learning the computation.
-This is *why* the surface-generalization tests matter.
+**What we learned.** At first we recorded this as "the wording leaks the answer," but on
+reflection most of it is **task signal, not leakage**: the request is supposed to name
+the operation ("sum", "absolute value"), so a classifier recovering it from the wording
+is the request doing its job. What it does tell us is that a model "succeeding" might
+just be exploiting that phrasing rather than learning the computation — which is *why*
+the surface-generalization tests matter. We therefore treat the 100% score as a flag to
+inspect *which* words drive it (operation words vs. an accidental cue), not as proof of
+contamination.
 
-**Action.** Recorded as finding-001; noted the pilot is fine for Stage 1 but must add
-wording-family holdouts before any surface test.
+**Action.** Recorded as finding-001 (with the interpretation corrected above); noted the
+pilot is fine for Stage 1 but must add wording-family holdouts before any surface test.
 
 ---
 
