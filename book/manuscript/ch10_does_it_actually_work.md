@@ -21,6 +21,65 @@ generated program by executing it against that task's hidden tests. This is the
 moment of truth for the whole apparatus: everything we built — the world, the
 teacher, the judge, the rivals — converges on this measurement.
 
+## One task, end to end
+
+The cleanest way to see what the judge does is to follow one task from prompt to
+verdict. Here is a real run against the pilot model.
+
+**The request.** "Implement solve so that given a and b it returns their sum."
+
+**The reference program** (the teacher's ground truth):
+
+```
+def solve(a, b):
+    return a + b
+```
+
+**What the model actually produced** (greedy decoding, this checkpoint):
+
+```
+def solve(a, b):
+    return a + b
+```
+
+**The hidden tests** (input/expected pairs) that the judge then runs:
+
+| inputs | expected |
+|--------|----------|
+| (87, -98) | -11 |
+| (0, -24) | -24 |
+| (-6, 0) | -6 |
+
+The judge runs the model's program on each pair, compares the output with the
+semantic comparator, and reports **pass@1**. This task passes.
+
+Now the informative contrast: a task the model *had not seen*. The teacher's
+composite `abs_add` asks for the sum of the absolute values of two numbers
+(`abs(a) + abs(b)`). The model, which knows both `abs` and `add` individually, was
+fed:
+
+> "Write a function that takes two numbers a and b, takes the absolute value of each,
+> and returns their sum."
+
+and produced:
+
+```
+def solve(a, ab
+```
+
+— a truncated, unusable fragment. Greedy decode stopped mid-token. On a genuinely
+reworded surface ("Return the value obtained by adding together two numbers, denoted
+p and q."), it produced:
+
+```
+def  a solve(a, b
+```
+
+again truncated. These two live examples carry the book's whole point: on a familiar
+surface the model writes correct code, and on an unseen surface or a new combination
+it collapses to a fragment. Nothing about the failure required the hidden tests to be
+"unfair" — the judge simply ran programs that were not complete.
+
 ## What we measured: pass@1
 
 Here is the headline result, reported as **problem-level hidden-test pass@1 under

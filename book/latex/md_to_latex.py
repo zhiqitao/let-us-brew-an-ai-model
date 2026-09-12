@@ -48,6 +48,7 @@ APPENDIX = [
     ("The Generator, Every Piece", "appendix_a_generator.md"),
     ("The Failure Ledger", "appendix_b_failure_ledger.md"),
     ("The Experiment Registry", "appendix_c_experiment_registry.md"),
+    ("Glossary", "appendix_d_glossary.md"),
 ]
 
 IMG_RE = re.compile(r"!\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]\(([^)]+)\)")
