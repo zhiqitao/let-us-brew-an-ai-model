@@ -71,12 +71,18 @@ One honest note on the term "replay." This design interleaves A and B **from the
 while replaying A." Both answers are legitimate, but they are different questions. The
 sequential condition is a true continual-learning setup (does learning B destroy A? —
 yes, 0.000). The interleaved condition is a joint-training control (if both are seen
-together, is there a forgetting problem at all? — no, 1.000). What this establishes is
-that **the forgetting seen under sequential training disappears when the model is
-trained jointly on both.** It does not demonstrate that a replay *buffer* salvages an
-already-trained first model — a stronger test would start from one A-trained checkpoint
-and compare B-only vs B-plus-A-replay continuation from there. Also, "zero cost" means
-**zero behavioral cost on B** (both reached 0.889), not zero compute, storage, or
+together, is there a forgetting problem at all? — no, 1.000). The timelines below make
+the three designs explicit; note that the third (a true replay-after-A-first) was **not**
+run — it is a separate experiment, not the one labeled "replay" in this chapter.
+
+![Sequential vs joint vs replay](figures/fig_continual_timelines.png)
+
+What this establishes is that **the forgetting seen under sequential training disappears
+when the model is trained jointly on both.** It does not demonstrate that a replay
+*buffer* salvages an already-trained first model — a stronger test would start from one
+A-trained checkpoint and compare B-only vs B-plus-A-replay continuation from there.
+Also, "zero cost" means **zero behavioral cost on B** (both reached 0.889), not zero
+compute, storage, or
 data-retention cost — the joint model is trained on more distinct examples and takes
 longer.
 

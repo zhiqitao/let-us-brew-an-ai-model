@@ -373,6 +373,43 @@ def fig_capability_map():
     save(fig, "fig_capability_map.png")
 
 
+def fig_continual_timelines():
+    """D05 -- SEQUENTIAL, JOINT, AND REPLAY ARE DIFFERENT EXPERIMENTS (ch20).
+
+    Three horizontal timelines. Solid outline = measured regime; dashed = a true
+    replay-after-A-first design, which we did NOT run. Shows that the book's
+    'replay/mixed' condition is actually JOINT training.
+    """
+    fig, ax = new_fig(w=9.2, h=5.2)
+    ax.text(50, 96, "SEQUENTIAL VS JOINT VS REPLAY: three different designs", ha="center",
+            va="center", fontsize=10, fontweight="bold", color=INK)
+    labels = ["1. Sequential  (measured)", "2. Joint  (measured, called 'replay' in ch20)", "3. True replay-after-A  (not run)"]
+    for row, (lab, style) in enumerate(zip(labels, ["solid", "solid", "dashed"])):
+        y = 78 - row*24
+        ax.text(2, y+4, lab, ha="left", fontsize=8, color=INK)
+        # timeline bar
+        ax.add_patch(FancyBboxPatch((30, y), 62, 6, boxstyle="round,pad=0.02,rounding_size=1",
+                                    fc="#eef1f5", ec=INK, lw=1.0, linestyle="--" if style=="dashed" else "-"))
+        # A and B segments
+        seg = (30, 30, 30)  # x start widths for A, B
+        if row == 0:   # sequential: full A then full B
+            ax.add_patch(FancyBboxPatch((30, y+1), 31, 4, fc=BLUE, ec=BLUE, lw=0.5))
+            ax.add_patch(FancyBboxPatch((61, y+1), 31, 4, fc=GREEN, ec=GREEN, lw=0.5))
+            ax.text(45.5, y+3, "A", ha="center", va="center", fontsize=7, color="white")
+            ax.text(76.5, y+3, "B", ha="center", va="center", fontsize=7, color="white")
+        elif row == 1: # joint: A and B interleaved
+            ax.add_patch(FancyBboxPatch((30, y+1), 62, 4, fc=GREY, ec=GREY, lw=0.5))
+            ax.text(61, y+3, "A and B interleaved together from the start", ha="center", va="center", fontsize=6.5, color=INK)
+        else:          # true replay (not run)
+            ax.add_patch(FancyBboxPatch((30, y+1), 31, 4, fc=BLUE, ec=BLUE, lw=0.5))
+            ax.add_patch(FancyBboxPatch((44, y+1), 48, 4, fc=GREEN, ec=GREEN, lw=0.5))
+            ax.text(45.5, y+3, "A", ha="center", va="center", fontsize=7, color="white")
+            ax.text(68, y+3, "B (+ A replay)", ha="center", va="center", fontsize=6, color="white")
+    note(ax, 2, 6, "The book's ch20 'replay/mixed' condition interleaves A and B from the start --- that is JOINT training (row 2), not replay-after-A-first (row 3). Solid rows were measured; the dashed row is a design we did not run.",
+         fs=7.2, color=INK)
+    save(fig, "fig_continual_timelines.png")
+
+
 def fig_same_ops():
     """D03 -- SAME OPERATORS, DIFFERENT PROGRAMS (ch16).
 
@@ -483,3 +520,4 @@ if __name__ == "__main__":
     fig_capability_map()
     fig_same_ops()
     fig_coverage()
+    fig_continual_timelines()
