@@ -79,32 +79,44 @@ def save(fig, name):
 def fig_apparatus():
     fig, ax = new_fig()
     # world boundary
-    ax.add_patch(FancyBboxPatch((6, 8), 88, 80, boxstyle="round,pad=0.02,rounding_size=3",
+    ax.add_patch(FancyBboxPatch((6, 4), 88, 84, boxstyle="round,pad=0.02,rounding_size=3",
                                 fc="#fbfaf6", ec=GREY, lw=1.2, linestyle="--"))
     ax.text(50, 90, "THE WORLD — a bounded universe we control", ha="center",
             va="center", fontsize=11, color=INK, fontweight="bold")
 
-    # one clean horizontal chain of five stages
-    xs = [11, 31, 51, 71, 88]
-    w = 15
-    y, h = 50, 16
-    box(ax, xs[0], y, w, h, "TEACHER\n(semantic\ngenerator)", fc=GREEN, fs=8.5)
-    box(ax, xs[1], y, w, h, "DATASET\n(task + program\n+ tests)", fc=BLUE, fs=8.5)
-    box(ax, xs[2], y, w, h, "STUDENT\n(0.9M model)", fc=ORANGE, fs=8.5, tc="white")
-    box(ax, xs[3], y, w, h, "JUDGE\n(4-stage)", fc=PURPLE, fs=8.5)
-    box(ax, xs[4], y, w - 4, h, "VERDICT\npass/fail", fc=PURPLE, fs=8.5)
-    for i in range(4):
-        arrow(ax, xs[i] + w, y + h / 2, xs[i + 1], y + h / 2)
+    # two lanes so hidden tests clearly do NOT enter training
+    #   TRAINING lane (top): teacher -> prompt+reference -> student
+    #   EVALUATION lane (bottom): student -> candidate -> judge (with tests) -> verdict
+    ty, th = 60, 13
+    ey, eh = 30, 13
+    # teacher
+    box(ax, 8, ty, 16, th, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
+    # semantic record fans to: prompt+reference (training) and tests (eval)
+    box(ax, 30, ty, 20, th, "PROMPT +\nREFERENCE\n→ training", fc=BLUE, fs=8)
+    box(ax, 56, ty, 20, th, "STUDENT\n(0.9M)", fc=ORANGE, fs=8, tc="white")
+    arrow(ax, 24, ty+th/2, 30, ty+th/2)
+    arrow(ax, 50, ty+th/2, 56, ty+th/2)
+    # tests lane: from semantic record down to judge
+    box(ax, 30, ey, 20, eh, "HIDDEN TESTS\n(eval only)", fc=PURPLE, fs=8)
+    box(ax, 56, ey, 20, eh, "JUDGE\n(4-stage)", fc=PURPLE, fs=8)
+    box(ax, 80, ey, 14, eh, "VERDICT\npass/fail", fc=PURPLE, fs=8)
+    arrow(ax, 24, ty+th/2, 24, ey+eh/2)  # teacher record -> tests
+    arrow(ax, 24, ey+eh/2, 30, ey+eh/2)
+    # candidate: from student down to judge
+    arrow(ax, 66, ty+th/2, 66, ey+eh/2)
+    arrow(ax, 76, ey+eh/2, 80, ey+eh/2)
+    arrow(ax, 56, ey+eh/2, 76, ey+eh/2)
+    # judge compares candidate to tests
+    note(ax, 60, ey-4, "judge runs candidate\nagainst hidden tests", fs=7, color=PURPLE)
 
     # gate annotations in the clear upper band
-    note(ax, 10, 76, "GATE B (input): an off-scope request is\nrejected before the model sees it.", fs=8, color=RED)
-    note(ax, 70, 76, "GATE A (output): a program outside\nthe whitelist is refused before running.", fs=8, color=RED)
+    note(ax, 10, 82, "GATE B (input): an off-scope request is\nrejected before the model sees it.", fs=8, color=RED)
+    note(ax, 68, 82, "GATE A (output): a program outside\nthe whitelist is refused before running.", fs=8, color=RED)
 
     # what each stage produces / what the judge compares, in the lower band
-    note(ax, 8, 42, "one semantic record fans out into the\nprogram, the NL task, and the hidden tests.", fs=8, color=GREEN)
-    note(ax, 52, 42, "the judge compares the model's program\nagainst the reference on hidden tests.", fs=8, color=PURPLE)
-    box(ax, 26, 8, 48, 12, "the model is the instrument;\nthe experiment is the subject", fc="#fbfaf6",
-        ec=INK, fs=8.5, tc=INK)
+    note(ax, 6, 24, "only the prompt + reference enter\ntraining; the hidden tests go to the\njudge, never to the model.", fs=7.5, color=GREEN)
+    box(ax, 26, 10, 48, 9, "the model is the instrument;\nthe experiment is the subject", fc="#fbfaf6",
+        ec=INK, fs=8, tc=INK)
     save(fig, "fig_apparatus.png")
 
 
@@ -121,17 +133,20 @@ def fig_two_gates():
     box(ax, 30, 44, 16, 16, "GATE B\ninput\nvalidator", fc=RED, fs=8.5)
     box(ax, 52, 44, 18, 16, "MODEL", fc=ORANGE, fs=10, bold=True)
     box(ax, 76, 44, 16, 16, "GATE A\noutput\nsandbox", fc=RED, fs=8.5)
-    box(ax, 3, 12, 24, 14, "REJECTED\nbefore the model\nis consulted", fc="#f6dede", ec=RED, fs=8, tc=RED)
 
     arrow(ax, 24, 52, 30, 52, color=INK)
     arrow(ax, 46, 52, 52, 52, color=INK)
     arrow(ax, 70, 52, 76, 52, color=INK)
-    note(ax, 33, 66, "is this request one of the\ndesigned tasks?", fs=8, color=RED)
-    note(ax, 77, 66, "is this program inside\nthe whitelist?", fs=8, color=RED)
-    arrow(ax, 13, 44, 13, 26, color=RED, ls="--")
-    arrow(ax, 8, 18, 8, 22, color=RED)
-    note(ax, 28, 20, "off-scope → decline\n(never reaches the model)", fs=7.5, color=RED)
-    note(ax, 72, 20, "disallowed construct →\nprogram refused before running", fs=7.5, color=RED)
+    # rejection branches at GATE B (not at the request), and the accepted path
+    # continues through the gates. Gate A rejection branches at Gate A.
+    arrow(ax, 38, 44, 38, 30, color=RED)          # Gate B rejection drops down
+    arrow(ax, 84, 44, 84, 30, color=RED)          # Gate A rejection drops down
+    box(ax, 28, 12, 20, 14, "REJECTED at Gate B\n(before the model\nis consulted)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
+    box(ax, 74, 12, 20, 14, "REJECTED at Gate A\n(program refused\nbefore running)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
+    note(ax, 28, 70, "is this request one of the\ndesigned tasks? (yes/no)", fs=8, color=RED)
+    note(ax, 74, 70, "is this program inside\nthe whitelist? (yes/no)", fs=8, color=RED)
+    note(ax, 50, 30, "off-scope request → declined\nbefore it reaches the model", fs=7, color=RED)
+    note(ax, 50, 22, "disallowed construct → program\nrefused before it runs", fs=7, color=RED)
     save(fig, "fig_two_gates.png")
 
 
