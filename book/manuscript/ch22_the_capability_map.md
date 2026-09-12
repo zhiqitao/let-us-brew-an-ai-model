@@ -32,12 +32,12 @@ of generalization. The narrow job is well-learned; the broader ground is not.
 Recall the four levels from Chapter 2. Here is what we measured at each, on the ~0.9M
 model:
 
-| Level | The question | Measured result | Status |
+| Level | The question | Measured result | Status (in this setup) |
 |-------|--------------|-----------------|--------|
-| **L1 Mem** | Can it be explained by remembering? | Held-out 59/60; canary → general program | `[PROVEN]` it generalizes primitives, doesn't parrot |
-| **L2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[PROVEN]` yes |
-| **L3 Surf** | Does it survive superficial change? | New wording → 0.000; new identifiers → 0.350 | `[PROVEN]` no — surface-tied |
-| **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[PROVEN]` no |
+| **L1 Mem** | Can it be explained by remembering? | Held-out 59/60; canary → general program | `[MEASURED]` it generalizes primitives, doesn't parrot |
+| **L2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here |
+| **L3 Surf** | Does it survive superficial change? | New wording → 0.000; new identifiers → 0.350 | `[MEASURED]` no — surface-tied, here |
+| **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
 
 This is the map's spine. Read it vertically and it shows a steady decline in how much
 we can trust the model's "understanding" as we move from "did it see this before"
@@ -59,9 +59,14 @@ and a different training procedure. Two of them did nothing to composition, and 
 them was the decisive lever for a *different* problem (continual learning). This
 asymmetry is worth circling, because it tells us where effort does and does not pay.
 
-## What's proven vs. what's unknown
+## What's measured vs. what's unknown
 
-**Proven (measured, this setup):**
+*Every result here is tied to this specific setup — one synthetic task, one
+architecture family, one training configuration, capped at ~30M parameters. We say
+"here" and "in this regime" deliberately, because these are well-controlled
+measurements in one configuration, not proofs that hold everywhere.*
+
+**Measured (this setup):**
 - The model learns single operations to ~90% in-distribution and generalizes them
   across instances (L1/L2).
 - It is surface-tied: new wording → 0.000, new identifiers → 0.350 (L3).
@@ -72,16 +77,23 @@ asymmetry is worth circling, because it tells us where effort does and does not 
 - The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too
   easy"; the composition split is not (all baselines 0.000).
 
-**Supported / suggestive:**
-- The composition failure is likely *structural-data* (exposure to combinations),
-  not capacity — but we did not test feeding the model compositions directly, so this
-  is suggestive.
+**Supported / suggestive / open:**
+- The composition failure is now **tested, not simply suggestive**: exposure to a few
+  composites during training (Chapter 16) does **not** unlock composition on unseen
+  ones — the model memorizes the seen combinations (0.667) but still scores 0.000 on
+  held-out ones. So it is not a "just show it combinations" fix.
+- Whether composition needs more **systematic/structural** exposure (many primitives
+  paired in many combinations, per the diversity lever) is the next open experiment.
+- Whether the composition wall is truly structural or simply sits above our ~30M
+  ceiling is **untested** — we stop where the CPU lab becomes impractical.
 
 **Unknown (did not test):**
-- Whether feeding composites during training unlocks composition.
 - Whether behavior on 3+ capabilities or post-continual composition holds.
-- Human-written task transfer (recommended external sanity check, not yet run).
 - Whether a fundamentally different inductive bias (not scale) helps.
+
+*(The composition-exposure question — whether feeding a few composites during training
+unlocks composition — is addressed directly by the experiment now running; the result
+will settle it one way or the other.)*
 
 ## The boundary, in one line
 

@@ -1,0 +1,91 @@
+{
+  "experiment_id": "composition_exposure_pilot",
+  "status": "MEASURED",
+  "config": {
+    "steps": 1500,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "seed": 0,
+    "n_per_op": 200,
+    "comp_n": 40,
+    "out": "artifacts/checkpoints/stage4_exposure.pt",
+    "tag": "_pilot"
+  },
+  "exposed_ops": [
+    "abs_add",
+    "sub_abs",
+    "sum_of_abs"
+  ],
+  "held_out_ops": [
+    "max_add",
+    "double_first",
+    "len_minus_one"
+  ],
+  "model_params": {
+    "embedding": 53632,
+    "non_embedding": 830592,
+    "total": 884224
+  },
+  "final_train_loss": 0.0187,
+  "in_distribution": [
+    {
+      "label": "MODEL",
+      "syntax_rate": 1.0,
+      "executable_rate": 1.0,
+      "pass_at_1": 1.0
+    },
+    {
+      "label": "TEMPLATE",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.9,
+      "pass_at_1": 0.8
+    },
+    {
+      "label": "RETRIEVAL",
+      "syntax_rate": 1.0,
+      "executable_rate": 1.0,
+      "pass_at_1": 1.0
+    }
+  ],
+  "exposed_composites": [
+    {
+      "label": "MODEL",
+      "syntax_rate": 0.8,
+      "executable_rate": 0.6666666666666666,
+      "pass_at_1": 0.6666666666666666
+    },
+    {
+      "label": "TEMPLATE",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.6666666666666666,
+      "pass_at_1": 0.0
+    },
+    {
+      "label": "RETRIEVAL",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.6666666666666666,
+      "pass_at_1": 0.0
+    }
+  ],
+  "held_out_composites": [
+    {
+      "label": "MODEL",
+      "syntax_rate": 0.0,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0
+    },
+    {
+      "label": "TEMPLATE",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.3333333333333333,
+      "pass_at_1": 0.0
+    },
+    {
+      "label": "RETRIEVAL",
+      "syntax_rate": 1.0,
+      "executable_rate": 0.3333333333333333,
+      "pass_at_1": 0.0
+    }
+  ]
+}

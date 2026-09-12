@@ -126,6 +126,38 @@ Before we trust "0.000," we ask how the model might have *faked* a success.
    mutation-tested (Chapter 17). If the judge were rejecting correct composite
    programs, we might be misreading a real success as a failure.
 
+## The natural follow-up: show it some combinations
+
+The book's own central question is the one we had not yet asked: *if we show the
+model a few combinations during training, does it learn to compose on new ones?* This
+is the experiment we finally ran, and the answer is decisive.
+
+We split the six composite operations: the model was trained on **three** of them
+(`abs_add`, `sub_abs`, `sum_of_abs`) alongside the primitives, and tested on the
+**other three** it never saw (`max_add`, `double_first`, `len_minus_one`).
+
+| Split | pass@1 |
+|-------|--------|
+| In-distribution (held-out primitives) | 1.000 |
+| Exposed composites (seen in training) | **0.667** |
+| **Held-out composites (never seen)** | **0.000** |
+
+The model learns the *specific* composites it was shown — 0.667 on the exposed ones.
+But it still scores a flat **0.000** on the combinations it never saw, even though it
+uses primitives it knows perfectly (in-distribution 1.000).
+
+That is the answer: **exposure does not unlock composition.** Seeing *some*
+combinations does not teach a general "combine two operations" skill. The model
+memorized `abs_add` as if it were *just another primitive*, not as a *composition* of
+`abs` and `add`. It learned the instance, not the operation.
+
+This closes off the naive fix ("just add composites to the data"). Composition here is
+not a matter of having seen a combination — it is a structural limit on how the model
+learns. The one lever that *did* teach a transferable distinction elsewhere in this
+book (diversity, in Chapter 13) suggests the next question is whether *systematic*
+exposure — many primitives paired in many combinations — could teach the general
+compose-operator. That is now the open experiment, not something we've measured.
+
 ## The honest framing
 
 This is a *useful*, *clean* negative result — and in science, a decisive negative is
