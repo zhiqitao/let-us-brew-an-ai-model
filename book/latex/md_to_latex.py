@@ -435,7 +435,7 @@ the result as the successes.
 \\noindent\\footnotesize\\textbf{{Companion repository and errata.}} The code,
 scripts, configurations, and checkpoints that reproduce every experiment in this
 book live in the companion repository under the release tag \\texttt{{v20261001}}
-(commit \\texttt{{67edcae}}). As of this edition the repository is not yet
+(an annotated release tag on the release commit). As of this edition the repository is not yet
 published at a public URL; the reproduction quick start and the exact release
 identifiers are in Appendix C. An online errata address will be listed here once the
 repository is public; until then, report issues to zhiqi.tao@gmail.com.
