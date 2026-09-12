@@ -131,10 +131,11 @@ they answer different questions:
 | What 1.000 / 0.000 means | coverage of surfaces *within* the training family | generalization to a wording family *excluded* from training |
 | Valid conclusion | high diversity covers more surface | narrow training fails on a genuinely unseen family |
 
-The Chapter 15 result is a genuine held-out-family test (a dedup audit confirms the
-held-out wording family does not appear in training). The Chapter 13 result is a
-coverage demonstration. Only Chapter 15 speaks to generalization to a *never-seen*
-wording; Chapter 13 shows diversity widens the covered surface.
+The Chapter 15 result is a genuine held-out-family test (the novelty audit in Appendix C
+reports train × held-out-wording prompt overlap of **0**, so the held-out wording family
+never appears in training). The Chapter 13 result is a coverage demonstration. Only
+Chapter 15 speaks to generalization to a *never-seen* wording; Chapter 13 shows diversity
+widens the covered surface.
 
 ![Coverage is not a held-out family test](figures/fig_coverage.png)
 
@@ -145,9 +146,9 @@ held-out-family test would train on some families and test on one that is never 
 ## The honest caveat
 
 It is worth noting that this experiment measured *surface* diversity. It showed that
-varying phrasing and identifiers makes the model robust to surface change (the Level-3
+varying phrasing and identifiers makes the model robust to surface change (the Question-3
 boundary). It does **not** show that diversity fixes *compositional* generalization
-(the Level-4 boundary) — that is a separate, harder question. Whether the same lever
+(the Question-4 boundary) — that is a separate, harder question. Whether the same lever
 helps a model combine two things it knows is the most natural next experiment, and it
 is called out in the conclusion.
 

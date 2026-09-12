@@ -39,7 +39,6 @@ ACTS = [
         "ch20_what_happens_when_we_teach_it_something_new.md",
         "ch21_the_cost_of_capability.md"]),
     ("What Did We Learn?", [
-        "ch19_the_capability_ladder_revisited.md",
         "ch22_the_capability_map.md", "ch25_conclusion.md"]),
 ]
 APPENDIX = [
@@ -307,6 +306,21 @@ def chapter_title(fn):
     title = re.sub(r"^\d{1,2}\.\s*", "", title)
     return title
 
+# Short forms for the running head (\\chapter[short]{long}). Long titles otherwise
+# crowd the header line and hyphenate mid-word when wrapped.
+SHORT_TITLES = {
+    "What Happens When We Teach It Something New?": "Teaching It Something New",
+    "The Model Wasn't the Point: A Conclusion": "The Model Wasn't the Point",
+    "The Model That Memorized Everything": "The Model That Memorized",
+    "The Capability Ladder Revisited": "The Capability Ladder Revisited",
+    "Same Pieces, New Combination": "Same Pieces, New Combination",
+    "Same Data, More Diverse Data": "Same Data, More Diverse Data",
+    "Build a World We Can Control": "Build a World We Can Control",
+    "What Does It Mean to Learn?": "What Does It Mean to Learn?",
+    "The Generator, Every Piece": "The Generator",
+    "The Experiment Registry": "The Experiment Registry",
+}
+
 def convert_chapter(fn, mapping, outbase):
     txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
     # strip the H1 chapter title (book.tex supplies \chapter{title})
@@ -344,9 +358,10 @@ def main():
                 print("[skip]", fn); continue
             num += 1
             title = chapter_title(fn)
+            short = SHORT_TITLES.get(title, title)
             base = "ch%02d" % num
             tex = convert_chapter(fn, mapping, base)
-            build_lines.append("\\chapter{%s}" % title)
+            build_lines.append("\\chapter[%s]{%s}" % (short, title))
             build_lines.append("\\label{chap:%d}" % num)
             build_lines.append("\\input{chapters/%s}" % base)
             chapters_out.append((num, title, tex))
@@ -419,15 +434,17 @@ the result as the successes.
 \\vspace{{0.8cm}}
 \\noindent\\footnotesize\\textbf{{Companion repository and errata.}} The code,
 scripts, configurations, and checkpoints that reproduce every experiment in this
-book live in the companion repository (see Appendix C for the quick start and the
-release tag). An online errata page will be maintained for any corrections
-discovered after publication; report issues to zhiqi.tao@gmail.com.
+book live in the companion repository under the release tag \\texttt{{v20261001}}
+(commit \\texttt{{eeb1c54}}). As of this edition the repository is not yet
+published at a public URL; the reproduction quick start and the exact release
+identifiers are in Appendix C. An online errata address will be listed here once the
+repository is public; until then, report issues to zhiqi.tao@gmail.com.
 \\vfill
 \\end{{titlepage}}
 
 \\frontmatter
 
-\\chapter{{Preface}}
+\\chapter*{{Preface}}
 {preface_extract()}
 
 \\clearpage

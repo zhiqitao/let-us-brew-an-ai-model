@@ -126,24 +126,33 @@ def fig_two_gates():
             va="center", fontsize=11, fontweight="bold", color=INK)
 
     # incoming request
-    box(ax, 4, 44, 20, 16, "REQUEST\n(natural language)", fc=BLUE, fs=9)
-    box(ax, 30, 44, 16, 16, "GATE B\ninput\nvalidator", fc=RED, fs=8.5)
-    box(ax, 52, 44, 18, 16, "MODEL", fc=ORANGE, fs=10, bold=True)
-    box(ax, 76, 44, 16, 16, "GATE A\noutput\nsandbox", fc=RED, fs=8.5)
+    box(ax, 2, 44, 18, 16, "REQUEST\n(natural language)", fc=BLUE, fs=8)
+    box(ax, 26, 44, 16, 16, "GATE B\ninput\nvalidator", fc=RED, fs=8.5)
+    box(ax, 48, 44, 18, 16, "MODEL", fc=ORANGE, fs=10, bold=True)
+    box(ax, 72, 44, 16, 16, "GATE A\noutput\nsandbox", fc=RED, fs=8.5)
+    box(ax, 92, 44, 8, 16, "PYTHON\nexecutes", fc=GREEN, fs=7)
 
-    arrow(ax, 24, 52, 30, 52, color=INK)
-    arrow(ax, 46, 52, 52, 52, color=INK)
-    arrow(ax, 70, 52, 76, 52, color=INK)
+    arrow(ax, 20, 52, 26, 52, color=INK)
+    arrow(ax, 42, 52, 48, 52, color=INK)
+    arrow(ax, 66, 52, 72, 52, color=INK)
+    arrow(ax, 88, 52, 92, 52, color=GREEN)
+    # yes/no labels at each gate decision point
+    ax.text(23, 49, "no", ha="center", fontsize=7, color=RED, style="italic")
+    ax.text(23, 55, "yes", ha="center", fontsize=7, color=GREEN, style="italic")
+    ax.text(69, 49, "no", ha="center", fontsize=7, color=RED, style="italic")
+    ax.text(69, 55, "yes", ha="center", fontsize=7, color=GREEN, style="italic")
     # rejection branches at GATE B (not at the request), and the accepted path
     # continues through the gates. Gate A rejection branches at Gate A.
-    arrow(ax, 38, 44, 38, 30, color=RED)          # Gate B rejection drops down
-    arrow(ax, 84, 44, 84, 30, color=RED)          # Gate A rejection drops down
-    box(ax, 28, 12, 20, 14, "REJECTED at Gate B\n(before the model\nis consulted)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
-    box(ax, 74, 12, 20, 14, "REJECTED at Gate A\n(program refused\nbefore running)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
-    note(ax, 28, 70, "is this request one of the\ndesigned tasks? (yes/no)", fs=8, color=RED)
-    note(ax, 74, 70, "is this program inside\nthe whitelist? (yes/no)", fs=8, color=RED)
-    note(ax, 50, 30, "off-scope request → declined\nbefore it reaches the model", fs=7, color=RED)
-    note(ax, 50, 22, "disallowed construct → program\nrefused before it runs", fs=7, color=RED)
+    arrow(ax, 34, 44, 34, 30, color=RED)          # Gate B rejection drops down
+    arrow(ax, 80, 44, 80, 30, color=RED)          # Gate A rejection drops down
+    box(ax, 24, 12, 20, 14, "REJECTED at Gate B\n(before the model\nis consulted)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
+    box(ax, 70, 12, 20, 14, "REJECTED at Gate A\n(program refused\nbefore running)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
+    note(ax, 26, 70, "is this request one of the\ndesigned tasks? (yes/no)", fs=8, color=RED)
+    note(ax, 72, 70, "is this program inside\nthe whitelist? (yes/no)", fs=8, color=RED)
+    note(ax, 30, 15, "off-scope request → declined\nbefore it reaches the model", fs=7, color=RED)
+    note(ax, 76, 15, "disallowed construct → program\nrefused before it runs", fs=7, color=RED)
+    note(ax, 10, 84, "Gate A prevents the program being\naccepted/executed, not the model\nfrom emitting text; Gate B was NOT\nin the reported surface/human tests.",
+         fs=7, color=INK)
     save(fig, "fig_two_gates.png")
 
 
@@ -190,12 +199,20 @@ def fig_judge():
         (30, "3. EXECUTION\nruns cleanly?", PURPLE),
         (10, "4. SEMANTIC\nmatches expected?", ORANGE),
     ]
-    # put the stage column on the LEFT half, explicit YES/NO branches on the right.
+    # fail reasons tied to each stage (so the four NO boxes differ)
+    fails = {
+        70: "not Python\n(parse fail)",
+        50: "outside\nwhitelist",
+        30: "crashes /\ntimes out",
+        10: "wrong\noutput",
+    }
+    # put the stage column on the LEFT half, explicit NO branches on the right.
     for y, lab, c in stages:
         box(ax, 20, y, 38, 14, lab, fc=c, fs=8.5)
         # "NO -> reject" branch off the right of every stage
         arrow(ax, 58, y + 7, 66, y + 7, color=RED)
-        box(ax, 68, y + 2, 24, 10, "NO\n→ rejected\n(score 0)", fc="#f6dede", ec=RED, fs=7, tc=RED)
+        box(ax, 68, y + 2, 24, 10, "NO\n→ %s\n(score 0)" % fails[y],
+            fc="#f6dede", ec=RED, fs=6.5, tc=RED)
         # "YES" tag between stages (except after the last)
         if y > 10:
             ax.text(39, y - 1.5, "yes", ha="center", fontsize=6.5, color=GREEN, style="italic")
@@ -203,8 +220,11 @@ def fig_judge():
     for i in range(3):
         y = 70 - (i * 20)
         arrow(ax, 39, y + 4, 39, y - 2)
+    # final success endpoint after the semantic stage
+    arrow(ax, 20, 10, 20, 5, color=GREEN)
+    box(ax, 66, 1, 26, 10, "ALL FOUR PASS\n→ correct\n(score 1)", fc="#dff0e3", ec=GREEN, fs=7, tc=GREEN)
     note(ax, 74, 90, "any 'no' → whole program\nrejected, then zero", fs=8, color=RED)
-    box(ax, 30, 2, 46, 7,
+    box(ax, 18, 1, 42, 7,
         "Only a program that clears all four gets credit.\nOne number would hide which stage failed.",
         fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
     save(fig, "fig_judge.png")
@@ -229,7 +249,9 @@ def fig_ladder():
         box(ax, 6, y, 88, 14, lab, fc=c, fs=8.5)
     # side tag: the order is a checklist, not an ascent of trust
     note(ax, 6, 5, "Report these separately. Success on one does not establish success on another:\n"
-          "a model can pass Q2 but fail Q3 and Q4, and a passing Q4 still says nothing about Q1.",
+          "a model can pass Q2 but fail Q3 and Q4, and a Q4 success alone does not rule out\n"
+          "every memorization explanation (a well-audited novel-structure success constrains\n"
+          "some, but not all, of them).",
          fs=7.5, color=INK)
     save(fig, "fig_ladder.png")
 
@@ -249,16 +271,21 @@ def fig_task():
 
     # EVALUATION lane (bottom)
     ax.text(8, 50, "EVALUATION lane", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
-    box(ax, 6, 34, 24, 14, "NL SPEC\n(new, unseen)", fc=BLUE, fs=8)
+    box(ax, 6, 34, 24, 14, "NL SPEC\n(same prompts, new task IDs)", fc=BLUE, fs=7.5)
     box(ax, 38, 34, 24, 14, "MODEL\n(generates)", fc=ORANGE, fs=8, tc="white")
     box(ax, 70, 34, 24, 14, "PYTHON\n(executes the program)", fc=GREEN, fs=8)
-    box(ax, 6, 12, 44, 14, "HIDDEN TESTS\n(evaluator-only: inputs + expected)", fc=PURPLE, fs=8)
+    box(ax, 6, 12, 34, 14, "HIDDEN TESTS\n(inputs + expected)", fc=PURPLE, fs=7.5)
+    box(ax, 42, 12, 22, 14, "TEST INPUTS →\nPYTHON", fc="#e0f0e4", ec=GREEN, fs=7)
     box(ax, 70, 12, 24, 14, "JUDGE\n(compares outputs)", fc=PURPLE, fs=8)
+    # trained checkpoint transfer (training MODEL -> eval MODEL)
+    arrow(ax, 50, 66, 50, 49, color=ORANGE, lw=1.4)
+    ax.text(52, 58, "trained checkpoint", ha="left", fontsize=7, color=ORANGE, style="italic")
     arrow(ax, 30, 41, 38, 41)
     arrow(ax, 62, 41, 70, 41)
-    arrow(ax, 82, 34, 82, 26)
-    arrow(ax, 50, 19, 70, 19)
-    note(ax, 14, 6, "The model emits source code; Python executes it. The hidden tests\nare evaluator-only artifacts -- they never enter training. Passing establishes\nagreement on these tests, not correctness on every possible input.",
+    # test inputs feed execution; expected values feed comparison
+    arrow(ax, 53, 26, 53, 20, color=GREEN)
+    arrow(ax, 40, 26, 40, 20, color=PURPLE)
+    note(ax, 10, 6, "The pilot's 'held-out' test reuses the SAME prompt strings (new task IDs = new input values).\nTest inputs go to Python execution; expected values go to the judge's comparison.\nThe hidden tests are evaluator-only -- they never enter training. Passing establishes\nagreement on these tests, not correctness on every possible input.",
          fs=7.2, color=INK)
     constraint = box
     box(ax, 6, 90, 88, 0, "", fc="none", ec="none", fs=8)
@@ -307,10 +334,16 @@ def fig_brain():
     autoref = "p(t+1)"  # autoregressive feedback label
     ax.text(50, 88, "autoregressive: each predicted token is fed back as the next input",
             ha="center", fontsize=7.5, color=INK, style="italic")
+    # autoregressive feedback loop (dashed, above the boxes, output -> back to input)
+    arrow(ax, 90, 80, 90, 92, color=GREY, lw=1.1, style="-|>", ls="--")
+    arrow(ax, 90, 92, 12, 92, color=GREY, lw=1.1, ls="--")
+    arrow(ax, 12, 92, 12, 80, color=GREY, lw=1.1, style="-|>", ls="--")
+    ax.text(51, 95, "the output token is fed back as the next input",
+            ha="center", fontsize=7, color=GREY, style="italic")
     # key dimensions notes
     note(ax, 4, 60, "parameters: 884,224 total (53,632 embedding\n+ 830,592 non-embedding). 4 layers × 4 heads, \nn_embd=128, block_size=128.", fs=7.2, color=INK)
     note(ax, 4, 30, "small enough to train on one CPU core,\nbut with real (causal) self-attention.", fs=7.5, color=INK)
-    box(ax, 58, 30, 40, 22, "everything is measured: the same\narchitecture, just wider / deeper\n(6.5M, 10.2M, 29.3M).\n\nThe generated program is written by the\noutput head; a separate AST allowlist\ngates what is allowed to run.",
+    box(ax, 56, 26, 42, 24, "everything is measured: the same\narchitecture, just wider / deeper\n(6.5M, 10.2M, 29.3M).\n\nThe generated program is written by the\noutput head; a separate AST allowlist\ngates what is allowed to run.",
         fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
     box(ax, 4, 6, 94, 14, "This is the instrument. The experiment is the subject — the book is about what\nthe model learns, not about how big it is.",
         fc="#fbfaf6", ec=INK, fs=8.5, tc=INK)
@@ -413,7 +446,7 @@ def fig_continual_timelines():
     fig, ax = new_fig(w=9.2, h=5.2)
     ax.text(50, 96, "SEQUENTIAL VS JOINT VS REPLAY: three different designs", ha="center",
             va="center", fontsize=10, fontweight="bold", color=INK)
-    labels = ["1. Sequential  (measured)", "2. Joint  (measured, called 'replay' in ch20)", "3. True replay-after-A  (not run)"]
+    labels = ["1. Sequential  (measured)", "2. Joint  (measured; A and B interleaved)", "3. True replay-after-A  (not run)"]
     for row, (lab, style) in enumerate(zip(labels, ["solid", "solid", "dashed"])):
         y = 78 - row*24
         ax.text(2, y+4, lab, ha="left", fontsize=8, color=INK)
@@ -429,13 +462,13 @@ def fig_continual_timelines():
             ax.text(76.5, y+3, "B", ha="center", va="center", fontsize=7, color="white")
         elif row == 1: # joint: A and B interleaved
             ax.add_patch(FancyBboxPatch((30, y+1), 62, 4, fc=GREY, ec=GREY, lw=0.5))
-            ax.text(61, y+3, "A and B interleaved together from the start", ha="center", va="center", fontsize=6.5, color=INK)
+            ax.text(61, y+3, "A + B (interleaved)", ha="center", va="center", fontsize=6.5, color=INK)
         else:          # true replay (not run)
             ax.add_patch(FancyBboxPatch((30, y+1), 31, 4, fc=BLUE, ec=BLUE, lw=0.5))
-            ax.add_patch(FancyBboxPatch((44, y+1), 48, 4, fc=GREEN, ec=GREEN, lw=0.5))
+            ax.add_patch(FancyBboxPatch((61, y+1), 31, 4, fc=GREEN, ec=GREEN, lw=0.5))
             ax.text(45.5, y+3, "A", ha="center", va="center", fontsize=7, color="white")
-            ax.text(68, y+3, "B (+ A replay)", ha="center", va="center", fontsize=6, color="white")
-    note(ax, 2, 6, "The book's ch20 'replay/mixed' condition interleaves A and B from the start --- that is JOINT training (row 2), not replay-after-A-first (row 3). Solid rows were measured; the dashed row is a design we did not run.",
+            ax.text(76.5, y+3, "B (+ replay of A)", ha="center", va="center", fontsize=6, color="white")
+    note(ax, 2, 6, "The book's 'replay/mixed' condition interleaves A and B from the start --- that is JOINT training (row 2), not replay-after-A-first (row 3). Solid rows were measured; the dashed row is a design we did not run. (Rows are schematic, not to scale.)",
          fs=7.2, color=INK)
     save(fig, "fig_continual_timelines.png")
 
@@ -499,7 +532,8 @@ def fig_same_ops():
     ax.text(25, 66, "absolute value of the sum", ha="center", fontsize=7.5, color=INK)
     # tree: sum node -> abs
     box(ax, 19, 46, 12, 8, "a + b", fc=BLUE, fs=8)
-    ax.text(25, 38, "a = -3, b = 2  →  a+b = -1", ha="center", fontsize=7.5, color=INK)
+    ax.text(9, 38, "a = -3, b = 2\n→ a+b = -1", ha="center", fontsize=7.5,
+            color=INK, va="center")
     box(ax, 19, 26, 12, 8, "abs(-1)", fc=BLUE, fs=8)
     ax.text(25, 18, "= 1", ha="center", fontsize=9, fontweight="bold", color=BLUE)
     arrow(ax, 25, 46, 25, 34)
@@ -544,6 +578,7 @@ def fig_coverage():
     # family set axis
     ax.add_patch(FancyBboxPatch((6, 30), 34, 6, boxstyle="round,pad=0.02,rounding_size=1",
                                 fc="#eef1f5", ec=GREY, lw=0.8))
+    ax.text(23, 33, "the training family set", ha="center", fontsize=6.2, color=GREY, va="center")
     # model trained on all families
     for i, fam in enumerate(["fam A", "fam B", "fam C"]):
         x = 8 + i*10
@@ -561,9 +596,9 @@ def fig_coverage():
             ha="center", fontsize=7.2, color=INK)
 
     # proposed holdout panel (right, dashed)
-    ax.text(74, 86, "what a true holdout needs  (proposed, not measured)", ha="center",
+    ax.text(74, 92, "what a true holdout needs  (proposed, not measured)", ha="center",
             fontsize=7.6, fontweight="bold", color=PURPLE)
-    ax.add_patch(FancyBboxPatch((58, 24), 32, 62, boxstyle="round,pad=0.02,rounding_size=2",
+    ax.add_patch(FancyBboxPatch((58, 20), 32, 64, boxstyle="round,pad=0.02,rounding_size=2",
                                 fc="#fbfaf6", ec=PURPLE, lw=1.0, linestyle="--"))
     for i, fam in enumerate(["fam A", "fam B", "fam C", "fam D"]):
         fc = "#cfe0f5" if i < 3 else "#f6dede"
@@ -589,7 +624,7 @@ if __name__ == "__main__":
     fig_rivals()
     fig_brain()
     fig_brew()
-    fig_capability_map()
+# fig_capability_map() replaced by native checkpoint-keyed tables (R3-02)
     fig_same_ops()
     fig_coverage()
     fig_three_meanings()

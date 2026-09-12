@@ -37,7 +37,7 @@ measurable costs — data, parameters, training steps, and — decisively — th
 | New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | — |
 | Composition (abs_add, sum_of_abs) | not achieved within tested budgets | 0.9M–29.3M | 1500 | varied by run (exposed) / **0.000** on held-out | ✗ | ✗ (0.000) |
 | Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | — | ✗ (A forgotten) |
-| Continual: A+B (replay) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | — | ✗ |
+| Continual: A+B (joint) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | — | ✗ |
 
 \*The "exposed" cell is the score on combinations *shown* during training, which varied
 across the exposure and diversity runs (0.550–1.000). The held-out composite — the real
@@ -76,14 +76,18 @@ not the way a researcher who wants a good headline would read it.
 - **New-identifier robustness** is the next row. It costs the *same* 1,400 examples,
   and still fails (0.350 on new IDs). We cannot buy this with more of the same.
 - **Composition** is the row that tells the sharpest story: it is marked
-  "∞-needed" for data, meaning no amount in our range got us there. The parameter
-  column spans 0.9M–29.3M, and it made no difference.
+  "not achieved within tested budgets" for data, and the budget commentary at the
+  bottom spells out that we simply do not know how much data would be needed — it was
+  not achieved in any range we tried. The parameter column spans 0.9M–29.3M, and it
+  made no difference in the runs we ran.
 - **Continual learning** is the most interesting row for a practitioner, because it
   is the one where the *cost changed at no cost*. Sequential training loses A (0.000
-  retention); replay buys A back at 1.000 with B acquisition unchanged at 0.889. So
-  here, one capability was obtained *for free* — no extra data, no extra compute,
-  just a different training order. Cost is not always toward "more expense"; the
-  right procedure can make a capability free.
+  final A accuracy); fitting on A and B jointly keeps A at 1.000 with B acquisition
+  unchanged at 0.889. That is, one capability came back with no extra data or compute —
+  just a different training schedule. (We note the actual resource budgets are not
+  fully quantified, and the true replay-after-A-first design was not run; see Chapter
+  18.) Cost is not always toward "more expense"; the right procedure can make a
+  capability cheap.
 
 ## The brewing experience: discovering the hidden cost
 

@@ -17,7 +17,7 @@ in a standalone module. The full, runnable source is in the repository.
 The whole generator is this single function. Given an operation and a seed, it builds
 the semantic intent and then generates everything else from it:
 
-```python
+```
 def make_task(operation, task_id, seed, id_set="letters", split="train",
               family=None):
     rng = random.Random(seed)
@@ -44,7 +44,7 @@ building blocks it calls.
 
 ## 1. The semantics
 
-```python
+```
 IDENTIFIER_SETS = {
     "letters": ["a", "b", "c", "x", "y"],
     "words":   ["left", "right", "first", "second", "value", "numbers", "items"],
@@ -64,11 +64,19 @@ def make_semantics(operation, rng, id_set="letters"):
             "input_types": [arg_type] * n, "output_type": output_type}
 ```
 
+*This is the pilot's condensed type-dispatch excerpt, so it marks only the three
+pilot list-operations as list-input. It is **not** the full dictionary* — the composite
+list operations (`sum_of_abs`, `double_first`, `len_minus_one`) also take a list but are
+built by the composition path, not this `make_semantics` branch (which is called for
+`OPERATIONS` only). For the complete per-operation input types see the operation
+dictionary in Appendix C, which lists every operation's arity, input type, and
+`class`.
+
 ## 2. The reference program
 
 The reference generator reads the semantics and emits the correct Python. A few cases:
 
-```python
+```
 def generate_reference(sem, rng=None):
     op = sem["operation"]; names = [a["name"] for a in sem["args"]]
     if op == "add":
@@ -86,7 +94,7 @@ def generate_reference(sem, rng=None):
 The renderer phrases the same semantics several ways. Each **template family** is a
 function:
 
-```python
+```
 def _a(op, names, rng):   # family "a"
     x, y = names[0], names[1]
     return (f"Write a function that takes two numbers, {x} and {y}, "
@@ -115,7 +123,7 @@ The semantics is fixed; only the wording changes. That is the entire point.
 Tests are generated from the semantics, with deliberate edge-case coverage. The
 expected value is computed by the operation itself — not copied from the reference:
 
-```python
+```
 def generate_hidden_tests(sem, rng=None, count=8):
     op = sem["operation"]; args = sem["args"]; tests = []
     def add(*vals, note="basic"):
@@ -134,7 +142,7 @@ def generate_hidden_tests(sem, rng=None, count=8):
 Finally, the generator is checked. The audit trains a trivial classifier to see
 whether the wording leaks the operation:
 
-```python
+```
 vec = TfidfVectorizer()
 X = vec.fit_transform([t["nl"]["prompt"] for t in tasks])
 clf = LogisticRegression(max_iter=1000)
@@ -154,7 +162,7 @@ leakage by itself.
 
 ## How to run it
 
-```bash
+```
 python scripts/generate_data.py --n-per-op 200   # writes pilot_train/val/test + manifest
 python scripts/audit.py                          # runs the leakage audit
 ```

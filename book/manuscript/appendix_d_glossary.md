@@ -4,6 +4,19 @@ Short definitions of the terms used in this book. Where a term has a standard
 meaning that we follow, we say so; where we use it in a deliberately narrow way, we
 flag it.
 
+> **A note on the word "learned."** The book uses "the model learned X" in more than one
+> sense, and we want to be explicit about which each claim uses. Sometimes it means the
+> model's *optimization fitted the training data* (its loss fell). Sometimes it means *a
+> new prompt mapped to a correct program* (an evaluation success). Sometimes it means *an
+> abstract arithmetic fact is represented internally* (a mechanism claim). Sometimes it
+> means *a novel program structure was generated* (a compositional claim). So when the
+> book says "learned," the honest question is always: measured which behavior? We
+> therefore do **not** treat "learner vs. parrot" as a binary — a model can be a genuine
+> learner of the narrow surface task (its in-distribution score is real) and still not be
+> a compositional reasoner. Each claim in the book is scoped to the specific measured
+> behavior (and carries a `[MEASURED]` / `[DERIVED]` label), not to a general
+> "the model is intelligent" assertion.
+
 - **AST (Abstract Syntax Tree).** A tree representation of a program's structure,
   stripped of formatting. The sandbox builds an AST of the generated program and
   checks that it uses only allowed constructs.
@@ -32,7 +45,16 @@ flag it.
   the training inputs. Surface change (new wording) is a mild case.
 
 - **Greedy decoding.** Choosing, at each step, the single most likely next token, with
-  no sampling. The book reports greedy pass@1.
+  no sampling.
+
+- **Sampled decoding (what the book's numbers use).** The evaluation calls
+  `model.generate` with no temperature override, so it uses the model's default
+  **temperature-0.8 multinomial sampling** — a single stochastic sample per prompt,
+  not greedy/argmax. Because it is one sample per prompt (not a distribution over many),
+  we report it as **single-sample execution accuracy / sampled pass@1**, and we do not
+  attach error bars for sampling variability: with one sample per prompt there is no
+  within-run estimate of that variability. The worked examples are the same
+  single-sample output.
 
 - **Hidden tests.** Input/expected-output pairs used to grade a generated program. In
   this book they are evaluator-only artifacts: they never enter training.
@@ -61,8 +83,14 @@ flag it.
   opposed to its underlying meaning.
 
 - **Train/val/test split.** The division of a dataset into the examples used to train,
-  to monitor training, and to evaluate (held out). In this book the splits are
-  semantically disjoint by operation or wording family.
+  to monitor training, and to evaluate (held out). In this book the definition of
+  "held out" varies by split: the **pilot** split reuses the same 21 prompt strings in
+  train/val/test (the test records differ only in hidden-test *input values*), while the
+  **surface** and **composition** splits keep a genuinely new prompt wording or
+  operation family out of training (train × holdout prompt overlap is 0, per the
+  novelty audit in Appendix C). So "held out" in this book is not a single thing: each
+  split's novelty axis (new prompt vs. new input values vs. new operation) is stated
+  explicitly where it matters.
 
 - **Validator / Gate B.** The software layer that sits in front of the model and
   declines any incoming request that is not in the designed scope, before the model

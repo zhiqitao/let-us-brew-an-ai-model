@@ -26,19 +26,68 @@ So we draw a map instead. A map does not pretend to be one verdict; it shows
 what we did *not* find. That honesty about the unknown is what makes the map worth more
 than a headline.
 
-## The four-level generalization map
+## The four-question generalization map
 
-![The capability map](figures/fig_capability_map.png)
+Recall the four questions from Chapter 2. Here is what we measured for each, on the
+~0.9M model. (This is a checklist of *questions*, not a ranking — answering Question 2
+does not require answering Question 1, and so on.)
 
-Recall the four levels from Chapter 2. Here is what we measured at each, on the ~0.9M
-model:
-
-| Level | The question | Measured result | Status (in this setup) |
+| Question | What it asks | Measured result | Status (in this setup) |
 |-------|--------------|-----------------|--------|
-| **L1 Mem** | Can it be explained by remembering? | Held-out 59/60; canary → general program | `[MEASURED]` it generalizes primitives, doesn't parrot |
-| **L2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here |
-| **L3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
-| **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
+| **Q1 Mem** | Could it be explained by remembering? | Held-out 59/60; canary → general program | `[MEASURED]` it generalizes primitives, doesn't parrot |
+| **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here |
+| **Q3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
+| **Q4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
+
+### The evidence, keyed by checkpoint
+
+The table above groups results by *question*. But each number belongs to a specific
+**checkpoint** (a saved model) and a specific **evaluation split**, and it is important
+not to let one row mix scores from different models. Here is the same evidence laid out
+run by run, so every cell traces to the checkpoint the registry names. A dash (`—`)
+means that evaluation was **not run for that checkpoint**; `NT` means the evaluation is
+not applicable to that run; `0.000` is a measured zero.
+
+**Panel 1 — code-generation evaluations, by checkpoint**
+
+| Checkpoint | params | familiar prompt | new identifiers | excluded wording | covered alternate surface | held-out composite |
+|---|---|---|---|---|---|---|
+| `stage1.pt` (Stage 1 pilot) | 0.88M | 0.897 | — | — | — | 0.000 |
+| `stage3_surface.pt` (Stage 3) | 0.88M | 0.900 | 0.350 | 0.000 | — | — |
+| high-diversity (same count) | 0.88M | 1.000 | — | NT | 1.000 | — |
+| `stage4_6p5m.pt` | 6.5M | 0.897 | — | — | — | 0.000 |
+| `stage4_10m.pt` | 10.2M | 0.773 | — | — | — | 0.000 |
+| `stage4_composition.pt` | 29.3M | 0.897 | — | — | — | 0.000 |
+
+Key: the surface-row scores (new identifiers 0.350, excluded wording 0.000) come from the
+**Stage-3 checkpoint**, not the Stage-1 pilot. The composition score for `stage1.pt` is a
+separate re-evaluation of the pilot on the composition split (which is why the registry
+lists a "Stage-4 composition baseline" row that points at `stage1.pt`). The high-diversity
+row's 1.000 is **coverage** of surfaces in its training family, not transfer to an
+excluded wording family.
+
+**Panel 2 — composition-intervention and continual-learning runs**
+
+These conditions are not "one bigger model"; they test whether *training content* or
+*schedule* changes the boundary, so they belong in their own panel.
+
+| Condition | params | in-dist | exposed composites | held-out composite |
+|---|---|---|---|---|
+| composition-exposure (stage4_exposure) | 0.88M | 1.000 | 0.667 | 0.000 |
+| composition-diversity (minimal) | 0.88M | 1.000 | 0.592 | 0.000 |
+| composition-diversity (high) | 0.88M | 1.000 | 0.550 | 0.000 |
+
+**Panel 3 — sequential vs. joint training**
+
+| Protocol | final A accuracy | final B accuracy | true replay-after-A |
+|---|---|---|---|
+| Sequential (A then B) | 0.000 | 0.889 | NT (not run) |
+| Joint (A+B from start) | 1.000 | 0.889 | — |
+
+Note the "sequential" A figure is a **final task accuracy**, not "retention relative to a
+pre-B checkpoint" — there was no A-only checkpoint to retain against. A true
+replay-after-A-first continuation (which *would* measure retention relative to an
+A-trained checkpoint) was **not** run.
 
 Read the map vertically and it shows a steady decline in how much we can trust the
 model's "understanding" as we move from "did it see this before" (Level 1) to "can it
@@ -49,27 +98,26 @@ the last two completely.
 
 **It can learn individual operations well.** On in-distribution primitives — `add`,
 `sub`, `mul`, `max`, `abs`, `list_sum` — the ~0.9M model solves ~90% of held-out
-problems under greedy decoding. It beats a hand-written template rule system (0.900
+problems under the evaluation's default temperature-0.8 sampled decoding. It beats a hand-written template rule system (0.900
 vs 0.800). This is real, measurable capability on a narrow task.
 
 **It generalizes across instances, not just examples.** It passed 59/60 held-out
 prompts and, on a *canary* it had never seen, produced the *general* program rather
 than a memorized literal. So for a single operation, the model is a learner, not a
-parrot. That is Level-2 distributional generalization, achieved.
+parrot. That is Question-2 distributional generalization, achieved.
 
 ## What the model cannot do
 
 **It cannot survive changes to the surface form.** Change the variable names from
 `a,b` to `left,right` (identical computation) and performance falls to 0.350. Rephrase
 the instruction with a wording family the model never saw (identical computation) and
-performance falls to **0.000** — below *both* baselines. This is Level-3 failure: the
+performance falls to **0.000** — below *both* baselines. This is Question-3 failure: the
 model's capability is **anchored to the phrasing**, not grounded in the computation.
 
 **It cannot compose what it knows.** Train on `add`, `sub`, `abs`, `max`, `list_sum`
-as separate primitives; test on `abs_add` (abs then add) and `sum_of_abs` (abs over a
-list sum) — operations that combine two things it knows. The model scores **0.000**. It
+as separate primitives; test on `abs_add` (sum of two absolute values) and `sum_of_abs` — operations that combine two things it knows. The model scores **0.000**. It
 did not learn "I know abs and I know add, therefore I can do abs+abs." This is a
-Level-4 failure under these schedules. The baseline systems (which we designed to be
+Question-4 failure under these schedules. The baseline systems (which we designed to be
 easy) *also* scored 0.000 — a useful cross-check that the failure is not unique to the
 learned model, though it is a measured negative, not a proof that no method or shortcut
 could ever solve it.
@@ -92,13 +140,15 @@ lacked a compositional engine here.
 | Lever | Tested | Effect on composition |
 |-------|--------|-----------------------|
 | Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
-| Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64), not composition |
-| Training protocol | sequential vs joint | **big** — fixes continual retention (0.000→1.000) |
+| Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64); **composition not tested** in this run (we did not evaluate the scaled models on the composite split) |
+| Training protocol | sequential vs joint | **big** — fixes continual retention (0.000→1.000); a *different* lever, not a composition lever |
 
 The second half of the map is about levers, and it is where the surprising findings
-live. We tried three ways to move the composition boundary — more capacity, more data,
-and a different training procedure. Two of them did nothing to composition, and one of
-them was the decisive lever for a *different* problem (continual learning). This
+live. We tried three ways to move the boundary — more capacity, more data, and a
+different training procedure. More capacity did nothing to composition (0.000 at all
+four sizes); more data was only evaluated on the in-distribution task (composition was
+not tested in the scaling run); and a different training procedure was the decisive
+lever for a *different* problem (continual learning), not for composition. This
 asymmetry is worth circling, because it tells us where effort does and does not pay.
 
 ## The capacity grid, in full
@@ -136,13 +186,13 @@ nothing for the deep one.
 
 **Measured (this setup):**
 - The model learns single operations to ~90% in-distribution and generalizes them
-  across instances (L1/L2).
+  across instances (Q1/Q2).
 - The *narrowly-trained* model is surface-tied: new wording → 0.000, new identifiers →
-  0.350 (L3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
+  0.350 (Q3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
   tested surface — though, as the caveat notes, that is strongest as a coverage
   statement, not proof of generalization to a wholly unseen wording family.
 - It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
-  0.88M→29.3M) nor more data changes this (L4).
+  0.88M→29.3M) nor more data changes this (Q4).
 - Continual learning is a procedure problem: sequential forgets (A → 0.000), joint
   retains (A → 1.000) with no acquisition cost.
 - The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too
@@ -206,6 +256,28 @@ mislead; it is a precise, honest picture of where capability exists, where it co
 and what (and what doesn't) shift the boundary. It is the answer to the central
 question — and it is falsifiable, built from real measured runs, and honest about what
 remains unknown.
+
+### A syntax/capability inventory (kept distinct)
+
+The four questions above are about *generalization*. Separately, the task family can be
+viewed as a ladder of Python syntax/capability (from arithmetic to composition), and it is
+worth recording which rungs we actually *isolated* versus which we did not. This is a
+*syntax* inventory, distinct from the four generalization questions, and we keep it
+separate so it is not read as another trust ladder:
+
+| Rung | Capability | Was it isolated? |
+|------|-----------|------------------|
+| 1 | arithmetic | ✅ measured, ~0.90 in-distribution |
+| 2–3 | variables, conditionals | ✅ variables measured (~0.90); conditionals appear inside the reference for `max_of`/`min_of`/`abs` but were **not isolated** as a standalone task |
+| 4–5 | lists, indexing | partially — `list_sum`/`list_len` measured; indexing appears in `first_element`/`double_first` but was **not isolated** |
+| 6 | loops | **not isolated** (no standalone loop operation in the primitives; loops appear only inside `list_sum`'s reference) |
+| 7 | **composition** | ❌ **0.000** — the wall |
+| 8 | simple functions | not isolated (the task is always "write one `solve` function") |
+
+The honest reading is narrow: we measured individual operations well, and composition
+fully; the intermediate rungs (conditionals, indexing, loops as independent skills) were
+**not** isolated, so we do not claim about them either way. What we can say is that the
+model climbs the rungs we isolated reliably and stops at composition.
 
 The deeper value of the map is what it does to our confidence. Before drawing it, we
 knew "the model is limited." After drawing it, we know more precisely which limits we

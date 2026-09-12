@@ -57,18 +57,18 @@ This is the book's organizing idea. It is four distinct questions about a result
 from "could this just be remembering?" to "can it combine things it never saw
 combined?" and they must be reported separately.
 
-**Level 1 — Memorization.** The model reproduces something it saw in training: an exact
+**Question 1 — Memorization.** The model reproduces something it saw in training: an exact
 example, an exact constant, a familiar phrase, a near-duplicate. *Question: could this
 just be remembering?*
 
-**Level 2 — Same task, new examples.** The model works on a new instance of the same
+**Question 2 — Same task, new examples.** The model works on a new instance of the same
 kind of problem. *Question: does it work on problems it hasn't seen before?*
 
-**Level 3 — Same problem, different surface.** The computation is identical, but the
+**Question 3 — Same problem, different surface.** The computation is identical, but the
 *outer layer* changes: new numbers, new variable names, reworded instruction,
 harmless distractors. *Question: does it survive changes that shouldn't matter?*
 
-**Level 4 — New combination.** The model must combine pieces it knows into something
+**Question 4 — New combination.** The model must combine pieces it knows into something
 that never appeared in training. It learned A, B, and C separately — can it do A
 *sandwiched inside* B, or A followed by C? *Question: can it put things together, or
 only repeat what it already saw?*

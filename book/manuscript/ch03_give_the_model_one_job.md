@@ -25,7 +25,7 @@ Concretely, the model sees something like:
 
 and must produce:
 
-```python
+```
 def solve(a, b):
     return a + b
 ```
@@ -44,7 +44,7 @@ and "how we test it."
 
 The semantic core captures the operation and its arguments:
 
-```json
+```
 {
   "operation": "add",
   "args": [{"name": "a", "type": "int"}, {"name": "b", "type": "int"}],
@@ -74,12 +74,24 @@ program's *logic* — computed from the semantics, not copied from the solution 
 that a model that merely memorizes the reference still can't predict the exact test
 suite.
 
+It is worth being precise about what "independently" buys us and what it does not. The
+tests are produced by a *separate generator* from the program, which means they are an
+independent oracle guard: if the program-generator and the test-generator shared a bug,
+the tests could pass a wrong program (a correlated-implementation-error problem). Because
+the tests are a separate path over the same `semantics`, the oracle is decoupled from the
+program generator, so a single mistake in either does not silently become a false
+pass. But both ultimately derive from the same operation definition, so this is a *control
+for correlated implementation bugs*, **not** a proof that the model "understands" the
+operation — understanding is a different question (and the surface/composition chapters
+answer it separately).
+
 ## The success criterion
 
 For a single problem, the success criterion is:
 
 > **Problem-level hidden-test pass@1** — did the one program the model produced pass
-> *every* hidden test for that problem, under deterministic/greedy decoding?
+> *every* hidden test for that problem, under the evaluation's default
+> temperature-0.8 sampled decoding?
 
 This is deliberately strict. A program that passes 7 of 8 hidden tests *fails* the
 problem. That strictness is what keeps the measurement honest: we are not measuring

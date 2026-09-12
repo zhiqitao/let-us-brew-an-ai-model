@@ -16,9 +16,15 @@ trained model is tiny — **884,224 parameters** (0.88M), of which 53,632 are th
 embedding and 830,592 are the actual computation. It saw 1,500 gradient steps on a
 batch of 16, reaching a training loss of **0.0208**.
 
-We then asked it to solve 300 **held-out** test tasks it never saw, and scored each
-generated program by executing it against that task's hidden tests. This is the
-moment of truth for the whole apparatus: everything we built — the world, the
+We then asked it to solve 300 **held-out** test tasks, and scored each generated
+program by executing it against that task's hidden tests. The novelty here needs a
+precise statement: these test records reuse the **same 21 prompt strings** the model saw
+in training, but each carries a **new task ID with fresh hidden-test input values**. So
+"held out" here means new *instances* of a seen prompt — the model had to produce, for a
+prompt it already knows, a program that passes input values it has never seen. It is not a
+test of a brand-new request (for that, see Chapter 15's human-written prompts and the
+surface/composition holdouts, whose prompts genuinely never appear in training). This is
+the moment of truth for the whole apparatus: everything we built — the world, the
 teacher, the judge, the rivals — converges on this measurement.
 
 ## One task, end to end
@@ -35,14 +41,16 @@ def solve(a, b):
     return a + b
 ```
 
-**What the model actually produced** (greedy decoding, this checkpoint):
+**What the model actually produced** (temperature-0.8 sampled decoding, this checkpoint — the same single sample used for the reported score):
 
 ```
 def solve(a, b):
     return a + b
 ```
 
-**The hidden tests** (input/expected pairs) that the judge then runs:
+**The hidden tests** (input/expected pairs) that the judge then runs. This task's suite
+has **eight** cases; here is an **excerpt** of three (a basic, a zero, and a negative
+case). The judge runs all eight and this task **passes — all 8/8**.
 
 | inputs | expected |
 |--------|----------|
@@ -67,7 +75,13 @@ and produced:
 def solve(a, ab
 ```
 
-— a truncated, unusable fragment. Greedy decode stopped mid-token. On a genuinely
+— a truncated, unusable fragment. The generation stopped early. We did not preserve the
+raw token sequence, so we cannot state the precise stop reason from the record (it could
+be the `max_new` limit, an EOS/PAD tie-out, the NUL-byte extraction boundary, or simply
+an unlucky sampled end). What is clear is that it is a **partial lexical fragment**, not
+a complete program — and because a termination/extraction defect already changed the
+pilot score once, we flag these fragments as a *generation-limit/termination* effect, not
+as direct evidence of a pure capability limit. On a genuinely
 reworded surface ("Return the value obtained by adding together two numbers, denoted
 p and q."), it produced:
 
@@ -78,13 +92,15 @@ def  a solve(a, b
 again truncated. These two live examples carry the book's whole point: on a familiar
 surface the model writes correct code, and on an unseen surface or a new combination
 it collapses to a fragment. Nothing about the failure required the hidden tests to be
-"unfair" — the judge simply ran programs that were not complete.
+"unfair" — the invalid fragments were **rejected at parsing** by the judge, before any
+execution or comparison, because they do not parse as complete Python programs.
 
 ## What we measured: pass@1
 
-Here is the headline result, reported as **problem-level hidden-test pass@1 under
-greedy decoding** — that is, for each problem, did the single program the model
-produced pass *every* hidden test?
+Here is the headline result, reported as **problem-level hidden-test pass@1 under the
+evaluation's default temperature-0.8 sampling** — that is, for each problem, did the
+*single sample* the model produced pass *every* hidden test? (This is sample pass@1, one
+sample per prompt, not a distribution over many samples.)
 
 | Candidate | syntax | executable | **pass@1** |
 |-----------|--------|-----------|------------|
@@ -170,8 +186,8 @@ there without learning.
    retrieval ceiling. It does not rule out the model partially relying on surface
    similarity.
    **What remains unresolved:** whether the model's own success is grounded in the
-   *computation* or in the *surface form*. To answer that, we need the Level-3
-   (surface-change) and Level-4 (composition) experiments, which we run next.
+   *computation* or in the *surface form*. To answer that, we need the Question-3
+   (surface-change) and Question-4 (composition) experiments, which we run next.
 
 2. **Suspected shortcut: exact memorization.**
    **Why it could explain it:** the model saw 1,400 examples; maybe it memorized them.

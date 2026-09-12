@@ -119,14 +119,32 @@ provide. We therefore report raw counts and do not attach invented error bars.
 
 ## The practical answer
 
-For a single narrow operation on a ~0.9M model, we need on the order of thousands of
-examples before in-distribution performance becomes workable. Below that, the model
-memorizes its tiny set and gains nothing on unseen problems. And — anticipating the
-rest of the book — even at 3000 examples the model is still surface-fragile and
-non-compositional, because those limits come from the *kind* of data and the model's
-inductive structure, not from the sheer *amount*.
+Four points, each read honestly.
 
-The practical takeaway is thus a two-part answer. To get even the *narrow* score up, thousands of examples are needed. But the narrow score is not the hard-won prize. The
+First, these four points support a **trend under these budgets**, not a demonstrated
+sharp threshold: 0.100 at 100 examples → 0.098 at 300 → 0.300 at 1000 → 0.641 at 3000.
+We only ran each count once, so we cannot pin an exact inflection. Four points describe
+"performance improves as example count grows in the range we tried," not "there is a
+knee at 3000."
+
+Second, the number is for a **multi-operation dataset**, not a per-operation
+requirement. The run trains on all ten primitive operations mixed together (the pool is
+built per-operation and then concatenated). So "the model reached 0.641" is the aggregate
+over the whole 3000-record, multi-operation pool — it does **not** mean every individual
+operation needed 3000 examples, nor that one operation on its own requires 3000. The
+1,400-record pilot is likewise the whole task family, not 1,400 per primitive.
+
+Third, the comparison is against a *common* held-out set within the run (one
+`pool_test` reused at every size), which is the right thing for isolating the effect of
+training count. It is a different set from the pilot's 300-case test, so these scores are
+not directly comparable to the pilot's 0.897.
+
+Fourth — and anticipating the rest of the book — even at 3000 examples the model is still
+surface-fragile and non-compositional, because those limits come from the *kind* of data
+and the model's inductive structure, not from the sheer *amount*.
+
+The practical takeaway is thus a two-part answer. To get even the *narrow* score up, more
+examples help *in the range we tried*. But the narrow score is not the hard-won prize. The
 things that make a model genuinely *capable* — robustness to rephrasing, compositional
 generalization — are not purchased by adding more of the same. That is the deeper
 finding, and it is the subject of the next two chapters.

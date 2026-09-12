@@ -111,8 +111,11 @@ This matters more than it might seem. At tiny scale, the ratio of vocabulary to
 computation is high, which means a naive "M parameters" figure can be dominated by
 the embedding lookups rather than the computation that must actually reason about the
 program. Separating the two lets us and the reader
-see the *actual* computation the model brings to bear — the part that must do the
-learning. It is a small discipline, but it keeps the conversation honest.
+see the *actual* computation the model brings to bear — the attention and MLP
+parameters that do most of the sequence modeling. (To be clear, the embeddings *are*
+trainable and do store learned structure, as the spec box shows; this is about
+weighting which part matters when we talk about "capacity," not about claiming the
+embeddings are frozen.) It is a small discipline, but it keeps the conversation honest.
 
 ## The architecture smoke test
 

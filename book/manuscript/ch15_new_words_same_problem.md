@@ -147,8 +147,11 @@ To push the point as far as it goes, we wrote 16 natural-language requests the w
 *person* would actually say them — informally, varied, no templates — covering the
 pilot's primitives and its composites, and kept strictly separate from the synthetic
 training distribution. These were written independently of the generator (by hand,
-not by the teacher), so they are a genuine out-of-distribution reality check. The full
-set:
+not by the teacher), so they are a genuine out-of-distribution reality check. We label
+each by whether it asks for a **primitive** operation (1–10) or a **composite** one
+(11–16). The full set:
+
+**Primitive requests (1–10):**
 
 1. "Take two numbers and give me back their total."
 2. "Add these two values together."
@@ -160,6 +163,9 @@ set:
 8. "Sum up every number in this list."
 9. "How many items are in this list?"
 10. "What's the first element of this list?"
+
+**Composite requests (11–16):**
+
 11. "Return the larger of the two, but as a positive number."
 12. "Add the absolute values of both numbers."
 13. "Give me the distance between these two numbers."
@@ -167,14 +173,28 @@ set:
 15. "Double the first item in the list."
 16. "Return one less than the length of the list."
 
-Against the pilot checkpoint, the model solved **0 of 16**. Even the simplest ones
+Against the pilot checkpoint, the model solved **0 of 16**. Breaking it out, it solved
+**0 of 10 primitive** requests and **0 of 6 composite** requests. Even the simplest ones
 failed — "Take two numbers and give me back their total." produced malformed code;
 "Tell me which of these two is the bigger one." produced `def solve(a): return a a a
 + a - b`. None produced a valid program.
 
+One of these needs an explicit caveat because it is genuinely **ambiguous** on its own.
+Request 11, "Return the larger of the two, but as a positive number," could mean
+`abs(max(a,b))` (the larger value, made positive) **or** `max(abs(a),abs(b))` (which is
+the larger of the two absolute values). For inputs `-5` and `2`, the first gives `2` and
+the second gives `5` — a real difference. We intended request 11 to mean
+`max(abs(a),abs(b))` (i.e. `cond_abs_max`, the operation it maps to), and we scored it
+that way, but a reader could legitimately read it either way. So we flag it rather than
+treat request 11 as a crisp test. (For the record, the ambiguity does not change the
+outcome — the model produced nothing valid — but it matters for interpreting *why*, and
+it is exactly the kind of wording an external evaluator would trip on.)
+
 This is the surface-tiedness finding (the reworded 0.000 above) reproduced on
 *hand-written, out-of-distribution* phrasing. A caveat worth stating: 16 convenience
 prompts is a useful sanity check, not a statistically representative estimate of
-real-world performance, and the model was never trained on composites, so those
-failing is expected and separate. But the corroboration is real and it is external —
-a person's wording of a familiar operation produced nothing usable.
+real-world performance. We also note that hand-writing a prompt independently of the
+generator is **not** the same as having an *independent external evaluator* who also
+scores it — so the human set is a sanity check on phrasing, not a second, independent
+implementation of the judge. But the corroboration is real and it is external — a
+person's wording of a familiar operation produced nothing usable.

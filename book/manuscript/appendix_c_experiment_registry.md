@@ -22,31 +22,52 @@ tests. This table is the ground truth. All operations take either `int` inputs o
 **list of ints**, and every one returns an `int` scalar. There are no list-returning
 operations in the task family.
 
-| ID | arity | input | reference implementation | phrase |
-|----|-------|-------|--------------------------|--------|
-| `add` | 2 | int, int | `a + b` | sum of two numbers |
-| `sub` | 2 | int, int | `a - b` | difference of two numbers |
-| `mul` | 2 | int, int | `a * b` | product of two numbers |
-| `max_of` | 2 | int, int | `max(a,b)` | maximum of two numbers |
-| `min_of` | 2 | int, int | `min(a,b)` | minimum of two numbers |
-| `abs_of` | 1 | int | `abs(a)` | absolute value |
-| `list_sum` | 1 | list[int] | `sum(xs)` | sum of a list |
-| `list_len` | 1 | list[int] | `len(xs)` | length of a list |
-| `first_element` | 1 | list[int] | `xs[0]` | first element |
-| `cond_abs_max` | 2 | int, int | `max(abs(a),abs(b))` | abs of the larger magnitude |
-| `abs_add` | 2 | int, int | `abs(a) + abs(b)` | sum of two absolute values |
-| `sub_abs` | 2 | int, int | `abs(a - b)` | absolute difference |
-| `sum_of_abs` | 1 | list[int] | `sum(abs(x) for x in xs)` | sum of absolute values of a list |
-| `max_add` | 2 | int, int | `max(a+b, a-b)` | larger of sum or difference |
-| `double_first` | 1 | list[int] | `2 * xs[0]` | twice the first element |
-| `len_minus_one` | 1 | list[int] | `len(xs) - 1` | one less than the length |
+The **class** column tells you how the generator treats it. "Primitive" means an
+atomic entry in the generator's operation tables (part of the training pool);
+"Composite" means one of the six held-out composites. See the note after the table —
+the classification is *operational*, not purely structural, because `cond_abs_max`
+is structurally a composition even though it is listed as a primitive.
+
+| ID | class | arity | input | mathematical behavior | sandbox reference (loop form) |
+|----|-------|-------|-------|------------------------|-------------------------------|
+| `add` | primitive | 2 | int, int | `a + b` | `return a + b` |
+| `sub` | primitive | 2 | int, int | `a - b` | `return a - b` |
+| `mul` | primitive | 2 | int, int | `a * b` | `return a * b` |
+| `max_of` | primitive | 2 | int, int | `max(a,b)` | `if a > b: return a; return b` |
+| `min_of` | primitive | 2 | int, int | `min(a,b)` | `if a < b: return a; return b` |
+| `abs_of` | primitive | 1 | int | `abs(a)` | `if a < 0: return -a; return a` |
+| `list_sum` | primitive | 1 | list[int] | `sum(xs)` | loop accumulating `total` |
+| `list_len` | primitive | 1 | list[int] | `len(xs)` | `return len(xs)` |
+| `first_element` | primitive | 1 | list[int] | `xs[0]` | `return xs[0]` |
+| `cond_abs_max` | primitive | 2 | int, int | `max(abs(a),abs(b))` | `if abs(a) > abs(b): return abs(a); return abs(b)` |
+| `abs_add` | **composite** | 2 | int, int | `abs(a) + abs(b)` | `return abs(a) + abs(b)` |
+| `sub_abs` | **composite** | 2 | int, int | `abs(a - b)` | `return abs(a - b)` |
+| `sum_of_abs` | **composite** | 1 | list[int] | sum of elementwise absolute values | loop accumulating `total` with sign |
+| `max_add` | **composite** | 2 | int, int | `max(a+b, a-b)` | `if (a+b) > (a-b): return a+b; return a-b` |
+| `double_first` | **composite** | 1 | list[int] | `2 * xs[0]` | `return 2 * xs[0]` |
+| `len_minus_one` | **composite** | 1 | list[int] | `len(xs) - 1` | `return len(xs) - 1` |
+
+**About the "mathematical behavior" column.** The shorthand like `sum(abs(x) for x in xs)`
+describes the *mathematics* the operation computes — it is **not** the sandbox source.
+The sandbox restricts the language, so the actual reference is written as a plain loop
+(the column on the right). We use the two forms deliberately: the left tells a reader
+what the operation *means*, the right shows the program the judge actually references (and
+validates oracle acceptance against). Do not assume the generator-expression form is what
+runs; it is not.
+
+**Preconditions.** `first_element` and `double_first` require a **non-empty list** (they
+index `xs[0]`), so the test generator never feeds them an empty list. `sum_of_abs`,
+`list_sum`, and `len_minus_one` are fine with an empty list — `len([]) - 1 = -1`, and the
+sums are `0` (or `0` for the absolute-value sum). `len_minus_one` on an empty list gives
+`-1`, which is a legal int.
 
 **Note on `abs_add` versus `abs(a+b)`:** `abs_add` computes `abs(a) + abs(b)` — the sum
 of two absolute values — *not* the absolute value of the sum, `abs(a + b)`. These are
 different functions (for `a=-3, b=2` they give `5` and `1`). The book refers to
 `abs_add` as the sum of absolute values throughout. `sum_of_abs` is the list analogue:
 it takes a **list** and sums the absolute values of its elements, so it must not be
-confused with `abs_add` (which takes two ints).
+confused with `abs_add` (which takes two ints). It is the sum of elementwise absolute
+values, **not** the absolute value of the list sum.
 
 ## Registry
 
@@ -70,15 +91,22 @@ confused with `abs_add` (which takes two ints).
 The model-size sweep is often summarized as "same training protocol, only size
 changed." That is **not strictly true**. The 6.5M run trained for **1000** steps
 while the 10.2M and 29.3M runs trained for **800** steps. The larger models also
-have a larger context budget (larger `block_size`-scaled embeddings) and a larger
-tokenizer-independent parameterization. We did **not** hold every training
-hyperparameter constant across the size grid. So the size comparison is *not* a
-single-variable, size-only experiment — training-budget and width/layer counts vary
-alongside size. We state the caveat here rather than imply a strictly-controlled
-sweep: what we can claim is that *composition stayed at 0.000 at every size under
-the schedules we ran and evaluated*. We cannot claim a clean size-isolate from the
-in-distribution differences (0.897 / 0.773 / 0.897), which may reflect the differing
-training budgets as much as the differing sizes.
+have *wider* positional embeddings (larger `n_embd`), which makes each position vector
+richer — but it does **not** extend the context window: every run uses a `block_size`
+of **128** tokens (the larger models just have 128 × 448 / 128 × 288 etc. embedding
+tables, i.e. wider vectors, not more positions). And the tokenizers differ: the
+composition tokenizer was fit on reference programs that include the composite
+definitions, so it is a different token mapping from the pilot tokenizer. We did
+**not** hold every training hyperparameter constant across the size grid. So the size
+comparison is *not* a single-variable, size-only experiment — training-budget and
+width/layer counts vary alongside size. We state the caveat here rather than imply a
+strictly-controlled sweep: what we can claim is that *composition stayed at 0.000 at
+every size under the schedules we ran and evaluated*. We cannot claim a clean
+size-isolate from the in-distribution differences (0.897 / 0.773 / 0.897), which may
+reflect the differing training budgets as much as the differing sizes. Note also that
+equal vocabulary sizes (291) do **not** imply equal token-ID mappings — the two
+tokenizers assign IDs differently, so a checkpoint must be evaluated with the
+tokenizer it was trained with.
 
 ## The composition baseline: where the 0.88M number lives
 
@@ -96,8 +124,12 @@ training runs.
 - **pass@1 denominators.** The pilot used 300 held-out test prompts (1400 train /
   300 val / 300 test). Stage 4 used 300 held-out primitives for in-distribution and
   240 composite tasks (6 ops × 40) for composition; the judge then scores each. The
-  data-scaling rows use their own held-out split per size. Exact successes/totals
-  are recorded in each manifest.
+  data-scaling rows **share a single common held-out test set** (one `pool_test`,
+  60 records per op, generated once and reused across every size), so the training-size
+  comparison in that run is against the *same* held-out set. (It is a different set
+  from the pilot's 300-case test, so the data-scaling scores are not directly
+  comparable to the pilot's 0.897.) Exact successes/totals are recorded in each
+  manifest.
 - **Unique model-visible prompts ≠ task IDs.** In the teacher, a task-ID seed changes
   the *hidden-test inputs*, so a new task ID can change the test values while the
   prompt and reference program stay identical. A reported "held-out" prompt therefore
@@ -106,13 +138,60 @@ training runs.
   matters; see the deduplication audit note below.
 - **Tokenizer.** Tokenizers are trained on the combined train prompts + reference
   programs to a vocabulary of 291. The pilot tokenizer (`pilot_tok`) and the
-  composition tokenizer (`comp_tok`) differ by a couple of tokens because the
-  composition tokenizer was trained over composite reference programs too. A model
-  must be evaluated with the tokenizer it was trained on; mixing tokenizers changes
-  the embedding alignment. The registry entry's manifest records which tokenizer was
+  composition tokenizer (`comp_tok`) differ because the composition tokenizer was
+  trained over composite reference programs too. We want to be explicit about what
+  this does and does not mean: fitting a tokenizer on composite *reference text* is
+  **exposure at the preprocessing stage** — the tokenizer saw the tokens/characters in
+  composite programs — but it is **not** the same as supervised training on composites
+  (the model never sees a prompt → composite-program pair as a supervised example
+  during training). Still, it means the unqualified statement "composite programs were
+  never used anywhere in training/preprocessing" would be false, so we avoid it. It
+  also means tokenizer/checkpoint pairing is essential: a model must be evaluated with
+  the tokenizer it was trained on, and equal vocabulary sizes (291) do **not** imply
+  equal token-ID mappings. The registry entry's manifest records which tokenizer was
   used.
 - **Training loop.** Fixed step count (no early stopping from validation loss); the
   reported loss is the final *training* loss, not a held-out measure.
+
+## The novelty audit (what was actually "new" in each held-out set)
+
+Because a task ID can change only the hidden-test *inputs* while the prompt string stays
+the same, we audited every split for what was actually new to the model. Here is what
+we found, measured on the real dataset files under `artifacts/datasets/`.
+
+**Pilot (Stage 1, `pilot_train/val/test.jsonl`).** All three splits share the **same 21
+unique prompt strings** and the **same 21 (prompt, program) pairs**; the 10 canonical
+reference programs are identical across splits. The train set has 1,400 records, val and
+test 300 each. **Prompt overlap between train and test is 21/21** (i.e. every test prompt
+also appears in training), and each test record is a new *task ID* that only changes the
+hidden-test input values. So the pilot's reported in-distribution result (0.897) is **not
+a test of new prompts** — it is a test of whether the model, given a prompt it saw in
+training, produces a program that passes *new input values*. That is a meaningful but
+narrower thing than generalization to a new request. We flag this explicitly, because
+"held-out" in the pilot means "new instances of a seen prompt," not "a never-seen
+request."
+
+For a truly new *prompt* — one not in training — see the **human-written test set** in
+Chapter 15 (16 prompts, all new, **0/16** correct), and the surface / composition
+holdouts below.
+
+**Stage 3 surface (`stage3_surface` experiment).** Audited in
+`artifacts/manifests/dedup_audit.json`: train 110 records / 11 unique prompts; in-dist
+100 / 10; held-out-wording 100 / 10. **Train × held-out-wording prompt overlap = 0** and
+pair overlap = 0, i.e. the held-out wording family never appears in training. This is a
+genuine new-*prompt* holdout. (10 records are audited per op in this reproduction; the
+full run used larger per-op counts and the real dataset files.)
+
+**Composition (Stage 4).** Audited: train (primitives) 100 / 21 unique prompts;
+composite holdout 60 / 6 unique prompts. **Train × composite prompt overlap = 0**, so the
+holdout composite prompts never appear in the primitive-training set.
+
+**What this audit does *not* show.** It does not by itself verify the *59/60* memorization
+probe (which is a separate task-ID-level probe on the pilot), and it does not separate
+tokenizer-fit exposure from training-example overlap — the tokenizer was fit on composite
+reference text as noted above. A clean excluded-family audit for Stage 3 does not
+automatically validate the pilot's 300 held-out examples or the 59/60 probe, because those
+are different splits.
 
 ## What is NOT tested (explicitly)
 
@@ -134,41 +213,61 @@ training runs.
   question) is not tested — the CPU lab becomes impractical beyond that.
 - **A true replay-after-A-first** continual-learning design (vs the joint-training
   control we ran) is not tested; see the Chapter 18 caveat.
-- **Mutation-testing acceptance** and a *surviving* mutant report showing the judge
-  caught an error — a gap the book should close (see Chapter 17) before claiming the
-  judge's reliability is demonstrated.
+- **Mutation-testing beyond the boundary-tie case.** We ran a mutation suite and
+  published its report: 35 mutants, 29 killed, 6 survivors, all six verified equivalent
+  (strict→non-strict tie-breaks) over the integer domain, with all 16 reference controls
+  accepted (see Chapter 17). What is **not** tested is whether the judge accepts an
+  *alternative-but-correct* program that differs from the reference in some other way
+  (not a mutation of it) — that is a distinct question beyond a mutation report.
 
 ## Reproducibility & the companion repository
 
 Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.py`,
 `run_composition_exposure.py`, `run_composition_diversity.py`, `run_surface.py`,
-`run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`). The
-recommended release tag is `v20261001`. Here is a concrete quick start:
+`run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`).
 
-1. **Clone the companion repository** (see the front matter for the URL) and check out
-   the `v20261001` tag.
-2. **Create an environment.** The runs were done on Python 3.11.16 with PyTorch
-   2.14.0+cpu (CPU build) and no GPU. A `requirements.txt` at the repo root pins the
-   versions.
-3. **Set the environment variable** `TORCH_DISABLE_AVX2=1` on this CPU lab (to avoid a
-   SIGILL on the Ivy Bridge AVX-only silicon).
+**Publication status: honest disclosure.** As of this writing the companion repository
+has an immutable release tag **`v20261001`** (commit `eeb1c54`) created for this book, but
+the repository is **not yet published at a public URL**. We therefore cannot yet give a
+reader a working link, and we do not want to pretend otherwise. When it is published, the
+release tag and commit above are the identifiers to use; until then the reproduction path
+is a promise of the intended state, not a live, clickable step. (When it is public, the
+repository URL and an errata page address will be added here and on the copyright page.)
+
+This means an *external* reader cannot fully reproduce the pilot **right now** — that is a
+real limitation of the current draft, and we label it as such rather than claim it is
+reproducible today. What follows is the exact path, so that once the repository is
+published the steps are verbatim.
+
+**The quick start (once the repository is available):**
+
+1. **Clone the companion repository** and check out the `v20261001` tag.
+2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). A
+   `requirements.txt` at the repo root pins the versions.
+3. **Prepare the tokenizer.** The tokenizer is trained and saved to
+   `artifacts/tokenizer/` (e.g. `pilot_tok.json`) before training; the run scripts expect
+   it to already exist. This is a real prerequisite that is easy to miss.
 4. **Run a pilot:** `python scripts/train.py --steps 1500 --n-embd 128 --n-layer 4
-   --n-head 4 --bs 16 --seed 0` then `python scripts/eval_ckpt.py`. This trains and
-   evaluates the 0.88M pilot and writes its manifest.
+   --n-head 4 --bs 16 --seed 0` then `python scripts/eval_ckpt.py`. `eval_ckpt.py` loads
+   the saved checkpoint by default (the `stage1.pt`/`stage1.json` artifacts produced by
+   training); verify the default path matches your checkout.
 5. **Expected artifacts:** the run's manifest (e.g. `stage1.json`) and checkpoint
    (`stage1.pt`) under `artifacts/manifests/` and `artifacts/checkpoints/`.
 
-**Runtime.** Roughly 5-10 minutes per 1500-step pilot training on a single-core CPU;
-larger models (6.5M-29.3M) take substantially longer (minutes to low tens of minutes
-each). These are hardware-specific and will differ on your machine; the [MEASURED]
-numbers in the book are the ones from *our* runs.
+**Runtime.** These are *our* hardware-specific times, not a promise for yours: roughly
+5-10 minutes per 1500-step pilot training on a single-core CPU; larger models
+(6.5M-29.3M) take substantially longer (minutes to low tens of minutes each). The
+[MEASURED] numbers in the book are the ones from our runs.
 
-**Verified commands.** The commands above and the evaluator used to produce the pass@1
-results are the ones that ran for this book; the scripts are deterministic given the
-same seed and configuration (the run scripts fix the seed and hyperparameters in the
-registry).
+**A note on the CPU workaround.** On the AVX-only Ivy Bridge lab we set
+`TORCH_DISABLE_AVX2=1` (plus `OMP_NUM_THREADS=1` for larger models). As Appendix B.8
+notes, we report this as a *workaround we used*, not a confirmed root-cause fix: the
+crashes were intermittent, a successful retry does not prove the variable is what fixed
+them, and we did not independently verify that the installed torch build reads it. Treat
+it as a hardware-specific workaround for *this* lab, **separate** from the universal
+installation steps above — on other machines you may not need it at all.
 
-**A production note on the free-endpoint side.** We do not rely on any external
-service for the results in this book; everything was trained and evaluated locally on
-the CPU lab described above, so the numbers do not depend on a hosted endpoint staying
-up or behaving.
+**A production note on the free-endpoint side.** We do not rely on any external service
+for the results in this book; everything was trained and evaluated locally on the CPU lab
+described above, so the numbers do not depend on a hosted endpoint staying up or
+behaving.

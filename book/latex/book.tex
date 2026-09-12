@@ -47,15 +47,17 @@ the result as the successes.
 \vspace{0.8cm}
 \noindent\footnotesize\textbf{Companion repository and errata.} The code,
 scripts, configurations, and checkpoints that reproduce every experiment in this
-book live in the companion repository (see Appendix C for the quick start and the
-release tag). An online errata page will be maintained for any corrections
-discovered after publication; report issues to zhiqi.tao@gmail.com.
+book live in the companion repository under the release tag \texttt{v20261001}
+(commit \texttt{eeb1c54}). As of this edition the repository is not yet
+published at a public URL; the reproduction quick start and the exact release
+identifiers are in Appendix C. An online errata address will be listed here once the
+repository is public; until then, report issues to zhiqi.tao@gmail.com.
 \vfill
 \end{titlepage}
 
 \frontmatter
 
-\chapter{Preface}
+\chapter*{Preface}
 This book is a controlled empirical investigation into what a small language model can actually learn when it is given exactly one narrowly defined, objectively testable job.
 
 The task: read a natural-language programming request and produce a Python program, which is then executed against hidden tests.
@@ -89,78 +91,75 @@ The honest payoff is not ``small models are inadequate. It is a precise map of w
 \mainmatter
 
 \part{The Question}
-\chapter{Let Us Brew an AI Model}
+\chapter[Let Us Brew an AI Model]{Let Us Brew an AI Model}
 \label{chap:1}
 \input{chapters/ch01}
-\chapter{What Does It Mean to Learn?}
+\chapter[What Does It Mean to Learn?]{What Does It Mean to Learn?}
 \label{chap:2}
 \input{chapters/ch02}
-\chapter{Give the Model One Job}
+\chapter[Give the Model One Job]{Give the Model One Job}
 \label{chap:3}
 \input{chapters/ch03}
 \part{Build the Laboratory}
-\chapter{Build a World We Can Control}
+\chapter[Build a World We Can Control]{Build a World We Can Control}
 \label{chap:4}
 \input{chapters/ch04}
-\chapter{Build the Teacher}
+\chapter[Build the Teacher]{Build the Teacher}
 \label{chap:5}
 \input{chapters/ch05}
-\chapter{Build the Judge}
+\chapter[Build the Judge]{Build the Judge}
 \label{chap:6}
 \input{chapters/ch06}
-\chapter{Build the Rivals}
+\chapter[Build the Rivals]{Build the Rivals}
 \label{chap:7}
 \input{chapters/ch07}
 \part{The First Brew}
-\chapter{The Smallest Brain}
+\chapter[The Smallest Brain]{The Smallest Brain}
 \label{chap:8}
 \input{chapters/ch08}
-\chapter{The First Brew}
+\chapter[The First Brew]{The First Brew}
 \label{chap:9}
 \input{chapters/ch09}
-\chapter{Does It Actually Work?}
+\chapter[Does It Actually Work?]{Does It Actually Work?}
 \label{chap:10}
 \input{chapters/ch10}
 \part{How Capability Scales}
-\chapter{How Much Data?}
+\chapter[How Much Data?]{How Much Data?}
 \label{chap:11}
 \input{chapters/ch11}
-\chapter{How Much Brain?}
+\chapter[How Much Brain?]{How Much Brain?}
 \label{chap:12}
 \input{chapters/ch12}
-\chapter{Same Data, More Diverse Data}
+\chapter[Same Data, More Diverse Data]{Same Data, More Diverse Data}
 \label{chap:13}
 \input{chapters/ch13}
 \part{Catching the Model Cheating}
-\chapter{The Model That Memorized Everything}
+\chapter[The Model That Memorized]{The Model That Memorized Everything}
 \label{chap:14}
 \input{chapters/ch14}
-\chapter{New Words, Same Problem}
+\chapter[New Words, Same Problem]{New Words, Same Problem}
 \label{chap:15}
 \input{chapters/ch15}
-\chapter{Same Pieces, New Combination}
+\chapter[Same Pieces, New Combination]{Same Pieces, New Combination}
 \label{chap:16}
 \input{chapters/ch16}
-\chapter{Red-Team the Judge}
+\chapter[Red-Team the Judge]{Red-Team the Judge}
 \label{chap:17}
 \input{chapters/ch17}
 \part{Break It}
-\chapter{What Happens When We Teach It Something New?}
+\chapter[Teaching It Something New]{What Happens When We Teach It Something New?}
 \label{chap:18}
 \input{chapters/ch18}
-\chapter{The Cost of Capability}
+\chapter[The Cost of Capability]{The Cost of Capability}
 \label{chap:19}
 \input{chapters/ch19}
 \part{What Did We Learn?}
-\chapter{The Capability Ladder Revisited}
+\chapter[The Capability Map]{The Capability Map}
 \label{chap:20}
 \input{chapters/ch20}
-\chapter{The Capability Map}
+\chapter[The Model Wasn't the Point]{The Model Wasn't the Point: A Conclusion}
 \label{chap:21}
 \input{chapters/ch21}
-\chapter{The Model Wasn't the Point: A Conclusion}
-\label{chap:22}
-\input{chapters/ch22}
 \appendix
 \chapter{The Generator, Every Piece}
 \input{chapters/appA}

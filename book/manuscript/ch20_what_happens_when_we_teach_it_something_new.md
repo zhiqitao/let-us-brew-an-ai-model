@@ -135,11 +135,11 @@ to always measure *both* the new and the old.
 1. **Suspected shortcut: the 0.000 A-retention is an artifact of how we score A.**
    **Why it could explain it:** maybe the A test is too hard, or the model just needs
    more steps.
-   **Control:** replay mode, identical A test — A-retention 1.000.
-   **What it rules out:** a broken A test. The same test that scores 0.000 in
-   sequential scores 1.000 in replay.
+   **Control:** joint (A+B interleaved) training, identical A test — A-retention 1.000.
+   **What it rules out:** a broken A test. The same test that scores 0.000 under
+   sequential training scores 1.000 under joint training.
    **What remains:** whether this holds for three or more capabilities, and whether
-   replay-adds support *composition* of A and B after the fact.
+   joint training lets the model *compose* A and B after the fact.
 
 ## The honest summary
 

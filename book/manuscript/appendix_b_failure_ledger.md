@@ -72,7 +72,7 @@ genuine negative result that redirects the investigation.
 destroyed the arithmetic (A-retention **0.000**).
 
 **What we learned.** Catastrophic forgetting is real and severe here — but it is a
-**procedure** problem, not a fate. Replay (interleaving A and B) retained A perfectly
+**procedure** problem, not a fate. Joint training (A and B interleaved) retained A perfectly
 (1.000) with zero cost to learning B.
 
 **Action.** Recorded; the chapter states this clearly — the protocol, not capacity,
@@ -159,21 +159,39 @@ key.
 
 Many of the failures above are reported as a single "0.000" pass@1 number. That is
 honest but blunt: it does not tell a reader *why* a run failed. A candidate program
-can fail at several distinct points — it never parses, it parses but the judge
-rejects it, or it passes the judge but is the wrong kind of program.
+can fail at several distinct points — it never parses, it parses but is outside the
+capability whitelist, it parses and is in-scope but crashes at runtime, or it runs but
+returns the wrong output.
 
-For each of the four judge stages we would like to record not just pass/fail but
-**failure-stage counts**: how many candidates fell over at the parse of the reference,
-at the numerical comparison, at the comparison of the mutation count, or at the
-pass/fail of every hidden test. That lets a reader see whether a 0.000 is a
-*syntax collapse* (the model emits garbage) or a *semantic near-miss* (the model
-emits a coherent program that is just wrong).
+The judge has four stages, and they are these (from
+`specs/evaluation_protocol_v0_1.md`): **syntax parse** (does it parse as Python?),
+**AST / capability validation** (is it within the sandbox whitelist?), **execution**
+(does it run without error under the resource policy?), and **semantic comparison**
+(does its output match the expected values?). It would be useful to record **per-stage
+failure counts** — how many candidates fell over at each of these four points — so a
+reader can see whether a 0.000 is a *syntax collapse* (the model emits garbage) or a
+*semantic near-miss* (the model emits a coherent, in-scope program that is just wrong).
 
-> We did **not** collect these per-stage counts for the experiments in this book —
-> the evaluator recorded only the final verdict, not the intermediate stage at which
-> each candidate stopped. Adding stage-level accounting is straightforward (the four
-> judge stages already exist as functions, so we would count candidates at each one)
-> and we leave the data and the figure as proposed work, not as a measured result.
+Here is precisely what we did and did not record. The *aggregate* stage rates **are**
+available: the running evaluator (`src/eval/evaluator_runner.py`) accumulates, per run,
+`syntax_rate` (fraction that parse), `executable_rate` (fraction that run without error),
+and `pass_at_1`. So for each reported run we do know, in aggregate, how many candidates
+parsed and how many executed — and the pilot table in Chapter 10 shows these (0.897
+pass@1, with the syntax/executable rates alongside). The *NUL* narrative in the failure
+ledger is exactly such a case: the intermediate syntax score is what exposed the
+truncation problem.
+
+What we did **not** record is the **per-candidate first-failure stage** — i.e. for each
+individual rejected candidate, we did not log the specific stage at which it stopped
+first (its syntax flag may be false *and* its execution flag false, but we did not
+capture which stage caused the rejection in a per-example record). So we have aggregate
+stage rates but not a per-candidate stage-resolved audit trail.
+
+> We did **not** collect per-candidate stage-resolved counts for the experiments in this
+> book — the evaluator recorded aggregate stage rates plus the final verdict per
+> candidate, not the first failure stage for each one individually. Adding that is
+> straightforward (the four judge stages already exist as functions) and we leave the
+> per-candidate stage accounting as proposed work, not as a measured result.
 
 ---
 

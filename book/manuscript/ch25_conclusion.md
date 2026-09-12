@@ -37,8 +37,20 @@ memorized literal. So this is genuine learning of the narrow task, not parroting
    *template*, not the *task*.
 
 2. **It cannot compose what it knows.** Train on `abs` and `add` separately, then ask
-   for `abs_add` — it scores **0.000**. And the baselines also collapse to 0.000, so
-   the split is fair: only genuine composition solves it, and the model has none.
+   for `abs_add` — it scores **0.000**. The baselines also collapse to 0.000, so the
+   failure is a *measured negative*: no method we tried — learned, retrieval, or
+   template — produced a composite program. (This is a strong negative signal, not a
+   proof that no cleverer method could; see the shortcut audit in Chapter 16.)
+
+**One limit was moveable — by changing the data, not its quantity.** Diversity of
+surface phrasing is the one lever in the book that changed the surface outcome: a
+narrowly-trained model dropped to **0.000** on the surface test, but a model trained on
+the *same count* spread across many phrasings and both identifier-sets scored **1.000**
+on the covered surfaces. That result is explicitly a **coverage** improvement, not a
+proven transfer to a never-seen wording family (which the book could not establish from
+that design). So the picture is more than "small models are fragile": *content diversity*
+widens what a small model handles, while neither more capacity nor more data touched its
+compositional limit.
 
 **The scaling conclusion is our sharpest negative result.** Composition stays at
 **0.000** across model sizes from 0.88M to 29.3M, under the training schedules we ran.
@@ -67,7 +79,7 @@ The model was the instrument. The experiment was the subject. The things that ma
 work — the sandbox that rejects anything not explicitly allowed, the judge that executes
 code and compares semantics rather than strings, the mutation suite that red-teams the
 judge, the leakage audit, the baselines that ask "could a simpler machine do this?", the
-four-level taxonomy that refuses to collapse everything into one number — those are the
+four-question taxonomy that refuses to collapse everything into one number — those are the
 actual achievements here.
 
 Each of these forms a discipline rather than a checklist. The sandbox's allowlist (not a
@@ -76,7 +88,7 @@ could always be attributed to the model rather than to an accident of environmen
 judge's execution-based, semantic comparison meant a "correct" answer was objectively
 correct, not merely stylistically close. The mutation suite meant we doubted the judge
 before we trusted it. The baseline comparisons meant a number only had meaning relative
-to a simpler machine. And the four-level taxonomy meant we never overstated a result by
+to a simpler machine. And the four-question taxonomy meant we never overstated a result by
 collapsing different kinds of generalization into one score.
 
 ## The recurring habit
@@ -146,10 +158,15 @@ The honest map points at specific next experiments, not vague "more data / bigge
 One planned direction is **widening the capability spec** — giving the model more Python
 (loops, indexing, richer structures) and re-measuring. We did **not** run a full sweep of
 "add more Python and re-measure" in this book. What we did measure is that the
-composition failure was not a syntax problem: the model had the syntax and still could
-not compose. The versioned, step-by-step widening framework (the capability spec's
-`v0_1`, `v0_2`, …) is how we would test new capability, and we state it as a proposal
-for the future rather than a completed result.
+composition failure is not explained by a simple missing-token deficit: the model wrote
+valid programs for the primitive operations, whose tokens it clearly knew. But that does
+**not** prove the model has full *nested* syntax competence — the observed failures were
+malformed fragments, and knowing the tokens for `def`/`return` is not the same as
+producing correctly nested compound expressions. So we treat "not a syntax problem" as a
+plausible-but-unestablished reading, and leave the mechanism open. The versioned,
+step-by-step widening framework (the capability spec's `v0_1`, `v0_2`, …) is how we would
+test new capability, and we state it as a proposal for the future rather than a completed
+result.
 
 ## The honest ending
 
@@ -198,11 +215,37 @@ make no claim of competing with them.
 
 ## Reading further
 
-- For compositional generalization benchmarks: SCAN, COGS (among others).
-- For execution-based code evaluation: the pass@k / HumanEval literature.
-- For shortcut learning and spurious correlation: the shortcut-learning literature.
-- For continual learning and rehearsal: the catastrophic-forgetting literature.
-- For mutation testing of test suites: the software-testing literature.
+These are the published works the book's questions relate to. Every entry is a
+real, verifiable paper — not a generic pointer to "the literature." One line each on
+why it matters for the questions here.
+
+- **Compositional generalization.** Lake & Baroni, *Generalization without Systematicity:
+  On the Compositional Skills of Sequence-to-Sequence Recurrent Networks*, ICML 2018.
+  Introduced the **SCAN** benchmark, which probes exactly the "new combination of known
+  pieces" question (the book's Question 4) and found seq2seq models largely fail it.
+- Kim & Linzen, *COGS: A Compositional Generalization Challenge based on Semantic
+  Interpretation*, EMNLP 2020. A harder test of compositional generalization for NL
+  (question answering over a small language), which pushed systems toward much lower
+  accuracy than their in-distribution scores implied — the same in-distribution vs.
+  compositional gap the book measures.
+- **Execution-based code evaluation.** Chen, Tworek, Jun, Yuan, et al., *Evaluating Large
+  Language Models Trained on Code*, arXiv:2107.03374, 2021 (HumanEval / Codex). The
+  pass@k formulation the book adapts to problem-level pass@1, and the insight that
+  *executing* a program against tests is a sharper evaluation than comparing text.
+- **Shortcut learning and spurious correlation.** Geirhos, Jacobsen, Michaelis, Zemel,
+  Brendel, Bethge, & Wichmann, *Shortcut Learning in Deep Neural Networks*, Nature
+  Machine Intelligence 2020. The conceptual framework for asking "did the model learn
+  the task, or a shortcut to it?" — the question the book's surface test (Question 3)
+  and lexical diagnostic address directly.
+- **Continual learning and catastrophic forgetting.** McCloskey & Cohen, *Catastrophic
+  Interference in Connectionist Networks*, Cognitive Science 1989 (the original
+  forgetting result); and Kirkpatrick et al., *Overcoming Catastrophic Forgetting in
+  Neural Networks*, PNAS 2017 (elastic weight consolidation, a rehearsal-free
+  alternative). These frame the book's sequential vs. joint training result.
+- **Mutation testing of test suites.** Jia & Harman, *An Analysis and Survey of the
+  Development of Mutation Testing*, IEEE TSE 2011. The practice of seeding faults to
+  measure a test suite's ability to catch them — the basis of the book's judge
+  red-teaming in Chapter 17.
 
 ## Three short exercises
 

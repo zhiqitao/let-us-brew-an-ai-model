@@ -59,7 +59,7 @@ itself tested.)
 The meaning is captured in a small, structured object. It is not English and not code;
 it is the *idea* underneath both. For an addition task it looks like this:
 
-```json
+```
 {
   "operation": "add",
   "args": [{"name": "a", "type": "int", "role": "operand"},
@@ -148,7 +148,7 @@ If those correlations exist, a model (or a trivial classifier) can solve the tas
 without learning the computation. The generator is built to break them, and then — this
 is the crucial part — we **check that it actually did**.
 
-## The leakage audit
+## The lexical diagnostic (was: the leakage audit)
 
 Before trusting any dataset, we ask: *can a trivial classifier predict the answer from
 the surface alone?* The method is deliberately crude: train a TF-IDF + logistic

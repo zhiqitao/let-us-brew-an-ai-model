@@ -10,10 +10,16 @@ bigger" changes almost nothing about composition.
 
 ## The setup
 
-We hold everything constant except model size. Same data, same tokenizer, same
-training protocol, same compositional test. We train **four** models on the same
-primitive-only training set across a ~33× range of capacity, and test each on (a)
-in-distribution held-out primitives and (b) the held-out composite operations.
+We train **four** models on the same primitive-only training set across a ~33× range of
+capacity, and test each on (a) in-distribution held-out primitives (new instances of the
+training prompts, per the novelty audit in Appendix C) and (b) the held-out composite
+operations. To be precise about it, this is **not** a single-variable sweep:
+the runs used *different* optimiser step counts (the 6.5M run used 1000 steps, the 10.2M
+and 29.3M runs used 800; see Appendix C) and the tokenizer training corpus differed
+between the pilot/composition tokenizers. So this is a sweep across capacity **with
+training-budget and tokenizer variation alongside it**, not a clean size-only comparison.
+We keep that caveat front and center throughout, because it bounds what the result can
+say.
 
 | Model | parameters | in-distribution | composition |
 |-------|-----------|-----------------|-------------|
@@ -63,7 +69,7 @@ i solve(a, b:
         return       return b        # syntax error
 
 # prompt: absolute value of each, return their sum
-def solve(a, ab                       # syntax error — stops mid-token
+def solve(a, ab                       # syntax error — generation ended early, partial token
 ```
 
 And given an out-of-scope request, it does not decline at all — it just writes

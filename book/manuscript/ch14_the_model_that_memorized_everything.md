@@ -81,11 +81,15 @@ Second, emitting the general program does not rule out a learned *classifier* th
 picks among a small set of stored programs (the retrieval baseline shows such a
 store can already solve the pilot). A memorized-then-selected correct general program
 would also pass unseen inputs, so a passing program is not by itself decisive evidence
-against program memorization. What the combination of results (held-out 59/60, while a
-TF-IDF nearest-neighbour retriever is a much weaker comparator on reworded inputs than
-the neural model) supports is a modest claim: for simple primitives, the model forms a
-general program-generating rule. It does not support the stronger claim that the model
-"performs arithmetic" or "understands addition."
+against program memorization. Still, the comparator caveat cuts the other way too, and
+we want to state the direction correctly: on the reworded surface the neural model scores
+**0.000** while the retrieval baseline scores **0.125** — so on that particular
+evaluation the retriever is the *stronger* of the two, not the weaker. The modest claim
+that does survive is: for simple *familiar* primitives (the pilot's in-distribution
+split, new instances of seen prompts), the model forms a general program-generating rule.
+It does not support the stronger claim that the model "performs arithmetic" or
+"understands addition," nor does it support treating the neural model as more robust to
+rewording than a retriever.
 
 ## The result
 

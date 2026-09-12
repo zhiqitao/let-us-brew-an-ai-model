@@ -53,18 +53,43 @@ result, across all 16 operations, is honest and **partial**:
   judge for every operation. This rules out the failure mode of a
   reject-everything evaluator — it genuinely distinguishes correct programs from most
   broken ones.
-- **But the suite has blind spots.** 6 of 35 mutants survived. The weakest operations
-  were `max_of`, `min_of`, and `cond_abs_max`, which caught only half their mutants.
-  So the hidden tests are **not** edge-case-complete.
+- **Six mutants survived**: `max_of` (`>`→`>=`), `min_of` (`<`→`<=`), `abs_of`
+  (`<`→`<=`), `cond_abs_max` (`>`→`>=`), `sum_of_abs` (`<`→`<=`), and `max_add`
+  (`>`→`>=`).
 
 A useful way to think about mutation testing is that it measures the *discriminating
 power* of the test suite. A suite that passes for a correct program and fails for an
 incorrect one is a good suite. A suite that passes for both is not testing anything.
-The mutation score tells us, concretely, how much of that "should be caught" space our
-tests actually cover — and here it says we cover about 83% of the deliberate error
-classes we generated, with real gaps. (One caveat: some surviving mutants may be
-*semantically equivalent*, e.g. swapping the operands of integer `+`. We did not build
-an equivalence check, so we report "survived" plainly rather than guess.)
+
+### Classifying the six survivors
+
+At first glance six survivors look like six test-suite defects. But every one of them is
+the same kind of change: a **strict comparison flipped to a non-strict one** (`>`→`>=` or
+`<`→`<=`) in a function that returns a max/min/absolute-value. Over the integer domain
+these are **semantically equivalent** to the reference — `a >= b` returns the same value
+as `a > b` when `a == b` (both return that value), and `x <= 0` returns the same as
+`x < 0` when `x == 0` because `-0 == 0`. We built a small equivalence check and confirmed
+it: **all six survivors returned identical values to their reference across every
+integer input we enumerated.** So they are *not* six missed defects; they are six
+tie-breaking equivalences.
+
+This is the important nuance the reviewer's phrase captures: *a surviving **equivalent**
+mutant is not a missed error.* The mutation score therefore does **not** mean "the test
+suite has six confirmed defects." It means:
+
+> The evaluator rejected 29 of 35 generated mutants and accepted all 16 reference
+> controls. The six survivors are all strict→non-strict tie-breaking mutations that are
+> equivalent to the reference over the integer domain, so they do not quantify test-suite
+> defects. They do show the tests do not *distinguish* a `>` from a `>=` at a tie — but
+> since the two behave identically here, that is not a correctness gap.
+
+So the honest conclusion is: the **raw rejection score** (0.829) is a measure of how
+many deliberately-broken variants were caught, and the **non-equivalent mutation score**
+is effectively **29/35 with 0 genuine misses** after equivalence review. We report both
+separately, and we do not claim the suite is "not edge-case-complete" as if that were six
+confirmed bugs. (The reference controls rule out reject-everything behavior on those 16
+correct programs; they do not prove the tests catch every possible false-negative for
+*other* alternative correct programs.)
 
 And the judge's honesty was validated the hard way: it reported the model at 0.000 on
 our very first evaluation, and that was a *judge bug*, not a model failure. Once we
@@ -81,14 +106,14 @@ section above is the actual data.)
 
 Suppose the task is to compute `a + b`, and the reference is:
 
-```python
+```
 def solve(a, b):
     return a + b
 ```
 
 Now consider a mutant that flips the operator to subtraction:
 
-```python
+```
 def solve(a, b):
     return a - b
 ```
@@ -108,11 +133,17 @@ Red-teaming the judge is not a formality; it is the difference between "we ran a
 number" and "we know the number means something." The specific lessons:
 
 - **Strengthen tests until wrong programs fail.** The mutation score is the measure,
-  and ours is 0.829 — good, not complete. There are blind spots to close (max_of,
-  min_of, cond_abs_max).
+  and ours is 0.829 — the raw rejection rate. After equivalence review the six survivors
+  are all strict→non-strict tie-breaks that behave identically on the integer domain,
+  so there are **no confirmed genuine misses** among the mutants we generated. What the
+  score *does* reflect is that the tests discriminate most, but not all, deliberate
+  error classes we chose to generate.
 - **Trust the judge less than the tests.** The judge is a pipeline; the *hidden tests*
-  are what actually catch errors. We do not claim they are edge-case-complete — the
-  measured mutation report shows they are not.
+  are what actually catch errors. We do not claim the tests distinguish every
+  conceivable wrong program — the reference controls only prove they accept all 16
+  correct programs and catch the other 29 non-equivalent mutants. An *alternative*
+  correct program that differs from the reference in some unseen way is a different
+  question we did not test.
 - **Attack our own instrument deliberately.** The adversarial habit — "how could this
   number be wrong?" — is what keeps the whole experiment honest.
 

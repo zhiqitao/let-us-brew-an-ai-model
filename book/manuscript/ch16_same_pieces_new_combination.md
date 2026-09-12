@@ -31,7 +31,26 @@ different programs and distinguishing tests; calling one by the other's name wou
 change the oracle.
 
 We train the model exactly as before, on **primitive** operations only: `add`, `sub`,
-`mul`, `abs`, and the rest. We never show it a composite operation.
+`mul`, `abs`, and the rest. We never show it a held-out composite operation.
+
+A necessary clarification before we go further, because it affects how strong the claim
+can be. We define "primitive" **operationally**: an operation entry in the generator's
+tables that the training set treats as an atomic task. By that definition the six
+composites (`abs_add` and the rest) were indeed held out of training, so the model never
+saw a prompt→composite-program pair as a supervised example.
+
+But one operation in the *primitive* pool — `cond_abs_max`, which returns
+`max(abs(a), abs(b))` — is **structurally** a composition of `abs` and `max`, even though
+the generator lists it as a primitive. This matters for how we read the result: it means
+the training pool was *not purely structurally primitive* — it already contained one
+operation that combines two others. So we should **not** say "the model was never shown
+*both* abs and max being used together" (it was, via `cond_abs_max`), and we should not
+claim a clean structurally-atomic primitive-only training set. What we **can** say is
+narrower and specific: the model was never shown any of the **six named
+held-out composite operations** (`abs_add`, `sub_abs`, `sum_of_abs`, `max_add`,
+`double_first`, `len_minus_one`) as a task, and it failed on all of them. We flag this
+as a caveat because "primitive-only" is only true as an operational bookkeeping label,
+not as a statement that no training operation combined two behaviors.
 
 Then we build a set of **composite** operations that are *made from* the primitives:
 `abs_add` (the absolute value of each input, then their sum), `sub_abs` (absolute difference), `sum_of_abs`
@@ -100,10 +119,15 @@ failure under this setup, not a proof that composition is impossible.
 This is the cleanest negative result in the book, and it is the book's central
 finding. Let us unpack it.
 
-The model knows `abs` at 0.900 and `add` at 0.900. But `add` the absolute values:
-0.000. It is as if the model has two perfectly good rooms — one with an "add" skill,
-one with an "abs" skill — but no door between them. It cannot take the output of one
-and feed it into the other, even though that is the simplest possible combination.
+The model scores **0.900 in aggregate** on the primitive operations it saw, and **0.000**
+on the composites it never saw. To unpack: on the primitives the aggregate is high, but
+we did not publish a per-operation breakdown, so we do not say "it *knows* `abs` at 0.900
+and `add` at 0.900" as individual facts — we say the *family* of primitives is largely
+solved in aggregate. Yet the composites — which combine those same primitives — score
+0.000. It is as if the model has access to two perfectly good operations, but the
+compositions that must chain them together go nowhere. It cannot take the output of one
+primitive and feed it into another in the simplest combination we asked, even though every
+piece of that combination is in the family it largely solved.
 
 This is the deep meaning of "surface-tied" that we began to glimpse in Chapter 15.
 It is not merely that the model is sensitive to wording. It is that, in this task and
@@ -115,7 +139,7 @@ way the composition test requires. We say "behaves as if" deliberately: this is 
 observation about what the model produces under our evaluations, not a claim about
 its internal representation.
 
-This distinction is why we built the four-level generalization taxonomy in the first
+This distinction is why we built the four-question generalization taxonomy in the first
 place and why we refused to collapse everything into one number. If we had only
 reported "the model scores 0.900 on this task," we would have given a genuinely
 misleading picture. The model is excellent at what it was shown — and utterly unable
@@ -152,12 +176,23 @@ composite program, which is the result we report.
 
 Before we trust "0.000," we ask how the model might have *faked* a success.
 
-1. **Suspected shortcut: memorizing a composite example.** Ruled out — no composite
-   operation was ever shown during training, so there is nothing to memorize.
+1. **Suspected shortcut: memorizing a composite example.** Narrowed — no held-out
+   composite *task* (a prompt→composite-program supervised pair) was shown during
+   training, so there was no exact composite example to memorize for a specific
+   composite prompt. (We note one caveat: the composition *tokenizer* was fit on
+   composite reference text, so composite tokens appear in preprocessing; and one
+   "primitive," `cond_abs_max`, is structurally a composition. Neither means the model
+   was trained on held-out composite tasks, but we avoid the blanket claim that
+   composite programs "never appeared anywhere.")
 2. **Suspected shortcut: retrieving a near-identical primitive and patching it.**
-   Ruled out — the retrieval baseline, which does exactly this, scores 0.000.
-3. **Suspected shortcut: a rule that "just works" on composites.** Ruled out — the
-   template baseline, which has rule-based generation, scores 0.000.
+   Narrowed — the *copy-only* retrieval baseline scores 0.000. But that only rules out
+   copying a whole primitive; it does **not** rule out a smarter baseline that
+   retrieves the closest primitive and edits its name/arguments. We did not build that
+   smarter retriever, so this shortcut is not fully excluded.
+3. **Suspected shortcut: a rule that "just works" on composites.** Narrowed — the
+   *template* baseline (fixed rules over the known operations) scores 0.000. That shows
+   the specific hand-written rules we wrote do not cover composites; it does not prove
+   no rule could, so this is a measured negative for *our* rule set.
 4. **Suspected shortcut: the judge being too strict or too loose.** This is the one
    we genuinely have to hold onto as a question, and it is why the judge is
    mutation-tested (Chapter 17). If the judge were rejecting correct composite

@@ -2,7 +2,8 @@
 
 A model that answers natural-language questions is easy to build and hard to
 evaluate. But there is one class of task where the evaluation is not a judgment call
-at all: **write a program.** We write a description, the model writes code, and a computer can tell us, with certainty, whether that code does what was asked. There
+at all: **write a program.** We write a description, the model writes code, and a computer can tell us, to a very high degree
+of confidence bounded by the judge and tests, whether that code does what was asked. There
 are no opinions about the answer, no ambiguous grading rubric, no "well, it's sort of
 correct." Either the program returns the right thing for every test, or it does not.
 
@@ -232,35 +233,32 @@ Our two gates are not an esoteric lab device; they are the same two ideas that r
 systems use, under different names. It is worth mapping them, so the book's abstract
 apparatus connects to what people actually deploy.
 
-| Our gate | Production analogue | How it works | Enforcement | Residual risk |
-|---|---|---|---|---|
-| **Gate B** (input) | **Input classifier / guardrail** | A separate model or ruleset scores the incoming prompt and blocks disallowed categories *before* the main model sees it (e.g. Llama Guard, NeMo guardrails). | Hard — a different mechanism in front, not the model deciding | Medium — the classifier is itself learned and can misclassify |
-| **Gate B** (input) | **Structured-input schema** | The API declares the request's allowed shape (JSON schema); a request outside it is invalid by construction. | Hard — rejected at the boundary | Low for *shape* compliance; not a content/safety check |
-| **Gate B** (input) | **Function/tool signatures** | The model can only call registered functions with typed signatures; off-scope actions simply aren't callable. | Hard | Low for *declared* functions; not an authorization check |
-| **Gate A** (output) | **Constrained decoding** | The decoder only ever emits tokens that keep the output inside the declared structure, so the model cannot physically produce an unparseable completion. | Hard — enforced by the decoder, not the model | Low — but guarantees *structure*, not that the content is correct |
-| **Gate A** (output) | **JSON mode** | A special mode that makes the completion parse as JSON. | Soft — the model is *encouraged*, not forced | High — JSON mode does not guarantee schema validity, and is not a schema constraint |
-| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes anything that slipped through. | Hard | Low for what it checks; the check is only as good as its rules |
+| Our gate | Production analogue | What it does (property) | What it does NOT establish |
+|---|---|---|---|
+| **Gate B** (input) | **Structured-input schema** | Declares the request's allowed shape (JSON schema); a request outside it is invalid by construction — a deterministic rule, not a model's decision | *Shape* compliance only. Schema validity is not correctness, safety, or authorization |
+| **Gate B** (input) | **Function/tool signatures** | Only registered functions with typed signatures can be called; off-scope actions aren't callable | Permission for every argument or action — a declared function can still be called with a harmful argument |
+| **Gate B** (input) | **Learned safety classifier (input)** | A separate learned model scores the prompt and a block action is applied to the score | Perfect semantic classification — the classifier is itself imperfect and can misclassify |
+| **Gate A** (output) | **Schema-constrained decoding** | Decoder only emits tokens that keep output inside the declared structure | Correctness of values or authorization — it guarantees *structure*, not semantic correctness |
+| **Gate A** (output) | **Provider JSON mode** | The provider's documented behavior for ensuring the completion is valid JSON, with incomplete-output / edge-case handling needed | Arbitrary schema adherence or semantic correctness — a provider's JSON mode ensures JSON validity (including the incomplete-output caveat), not adherence to a specific schema or correctness of values |
+| **Gate A** (output) | **Prompt-only formatting request** | The model is only *asked* to format a certain way; there is no formal syntax enforcement | Valid JSON or schema compliance — a prompt saying "please use JSON" is not an API's JSON mode |
+| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes what slipped through | Correctness of the content — the check is only as good as its rules |
 
-The thread running through the "Enforcement" column is the book's point: every reliable
-enforcement mechanism is **hard and external**, and none of them is "the model chose
-to behave." Even a frontier model that appears to refuse is doing so because RLHF
-shaped it to *tend* toward refusal — which is a soft, jailbreakable behavior, not a
-bound. The dependable version of "it only does what it was designed for" is the wiring
-we build around it, exactly as our sandbox and our validator are.
+The thread running through the "What it does NOT establish" column is the book's point:
+every reliable enforcement mechanism is **external and scoped**, and none of them is
+"the model chose to behave." Even a frontier model that appears to refuse is doing so
+because RLHF shaped it to *tend* toward refusal — which is a soft, jailbreakable
+behavior, not a bound. The dependable version of "it only does what it was designed
+for" is the wiring we build around it, exactly as our sandbox and our validator are.
 
-One distinction worth making explicit: "Hard" here means the mechanism is
-**deterministically enforced** — it rejects on a rule the system controls, not on a
-model's whim — but it does *not* mean the decision is **semantically reliable**. An
-input classifier is a learned model that can still misclassify; the *enforcement* of
-whatever it decides is hard, but the *decision* itself is soft. That is why the "Residual
-risk" column above is not uniformly empty: a hard mechanism bounds the *shape* of what
-gets through reliably (a JSON-schema validator reliably rejects malformed JSON), but it
-does not make the content correct or safe (schema compliance is not correctness; a
-registered tool signature prevents calling an undeclared function, but is not an
-authorization check; the AST allowlist bounds the shape of allowed programs but not
-resource use or adversarial resistance). Crucially, "JSON mode" is *not* a hard
-constraint at all — it is a soft nudge that the model usually follows, so it belongs in
-the soft/risk column, not alongside constrained decoding. So the reliable layer is hard
-and external — and it is a *scoping* guarantee, not a *judgment* guarantee. There is no
-mechanism in the table that gives semantic
-reliability.
+Three things follow. First, we deliberately do **not** assign "Low / Medium / High"
+residual-risk ratings to the rows above: we have no threat model or measurement to
+justify a quantitative ranking, so a color-coded risk column would be unsupported
+assertion. Instead each row names *which* failure mode remains open. Second, the
+distinction between a *prompt-only* request and an API's *JSON mode* is a real one:
+"please use JSON" is a request the model tends to follow, whereas a provider's JSON mode
+is a documented behavior with its own validity guarantee and its own incomplete-output
+edge case. Neither one is "the model is forced to comply with a schema" — that is what
+schema-constrained decoding does. Third, even schema-constrained decoding bounds the
+*shape* of what gets through; it does not make the content correct or safe. So the
+reliable layer is external and it is a *scoping* guarantee, not a *judgment* guarantee.
+There is no mechanism in the table that gives semantic reliability.

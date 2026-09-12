@@ -3,7 +3,7 @@
 A tiny model is given one job. It reads a sentence — *"write a function that takes
 two numbers, a and b, and returns their sum"* — and it writes back the right Python:
 
-```python
+```
 def solve(a, b):
     return a + b
 ```
