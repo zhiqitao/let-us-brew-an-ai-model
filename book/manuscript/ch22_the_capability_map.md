@@ -107,8 +107,10 @@ no exposure schedule could unlock composition.)*
 
 > **A small model learns narrow, individual mappings well and generalizes them across
 > instances, but its knowledge is surface-tied and non-compositional — and within the
-> tested range, neither more parameters nor more data nor a different training order
-> turns that into robust, compositional capability.**
+> tested range, neither more parameters nor more data turns that into robust,
+> compositional capability. (We also tested a scheduling change — sequential vs. joint
+> training — but that experiment measured retention of *separately learned* task groups,
+> not composition, so it does not speak to the composition boundary.)**
 
 ## Why the map is the deliverable
 

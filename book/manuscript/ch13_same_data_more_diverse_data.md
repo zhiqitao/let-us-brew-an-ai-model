@@ -102,8 +102,17 @@ wording family per operation. The high-diversity training set, however, containe
 — which makes the 1.000 at least partly a measure of **coverage** (the model had seen
 that surface), not of generalization to a surface it had never encountered.
 
-The minimal→0.000 result is unambiguous: that model saw only a narrow slice, so the
-surface test was genuinely unseen and it failed. But the high→1.000 result is
+The minimal→0.000 result is unambiguous about the factor that changed: that model saw
+only a narrow slice (one identifier-set, one wording family per operation), so the
+surface test — which used different identifiers and a *randomly-chosen different*
+wording family per operation — was genuinely unseen on the identifier axis. It scores
+0.000. But note precisely what this isolates: a *surface* shift (different identifiers
+and, per operation, a different family). It does not by itself establish that the
+specific wording family was excluded from training for every operation (in the minimal
+condition the family-set is narrow but still overlaps the test's family pool in
+principle), so we read the zero as strong evidence that a surface shift breaks the
+minimal model, not as proof that a particular family was provably absent. The
+high→1.000 result, by contrast, is
 strongest as a statement about **coverage**: diverse training covers more surfaces.
 Whether it generalizes to a wording *family it never saw* is a separate question this
 design does **not** answer — that would need a held-out family excluded from the
