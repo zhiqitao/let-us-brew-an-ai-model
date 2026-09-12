@@ -148,11 +148,11 @@ def fig_teacher():
     box(ax, 66, 28, 26, 20, "HIDDEN TESTS\n(input/expected\npairs)", fc=PURPLE, fs=8.5)
     for dx in (21, 50, 79):
         arrow(ax, 50, 62, dx, 48)
-    note(ax, 12, 20, "the program that\nmust be produced", fs=7.5, color=GREEN)
+    note(ax, 12, 20, "one correct\nimplementation", fs=7.5, color=GREEN)
     note(ax, 40, 20, "the instruction, in\nthe teacher's phrasing", fs=7.5, color=BLUE)
-    note(ax, 70, 20, "the cases the judge\nruns for grading", fs=7.5, color=PURPLE)
+    note(ax, 70, 20, "oracle outputs;\nchecked independently", fs=7.5, color=PURPLE)
     # leakage note
-    note(ax, 8, 88, "semantic-first: the program, task,\nand tests all derive from ONE record,\nso they can't drift apart", fs=8, color=GREEN)
+    note(ax, 8, 88, "semantic-first: the program, task,\nand tests all derive from ONE record,\nreducing drift (renderer bugs can still occur)", fs=8, color=GREEN)
     save(fig, "fig_teacher.png")
 
 
@@ -293,33 +293,68 @@ def fig_brew():
 # 10. THE CAPABILITY MAP (ch22) — the 2-axis landscape of what it learned.
 # =========================================================================
 def fig_capability_map():
-    import numpy as np
-    fig, ax = new_fig()
-    ax.text(50, 95, "THE CAPABILITY MAP", ha="center", va="center", fontsize=11,
-            fontweight="bold", color=INK)
-    # axes
-    arrow(ax, 12, 20, 12, 86, color=INK)   # y: generalization
-    arrow(ax, 12, 20, 92, 20, color=INK)   # x: task breadth
-    ax.text(6, 88, "generalization", fontsize=8.5, rotation=90, va="center", color=INK)
-    ax.text(60, 14, "task breadth  →", fontsize=8.5, ha="center", color=INK)
+    """The EVIDENCE MATRIX (D06): replaces the old schematic region map.
 
-    # measured regions (from the real numbers)
-    regions = [
-        (14, 30, 30, 0.35, 0.55, "SURFACE\nin-dist ~0.90\nreworded 0.000", BLUE),
-        (34, 44, 16, 0.35, 0.55, "", "#cfe0f5"),
-        (14, 34, 6, 0.55, 0.9, "ONE JOB\nwell-learned", GREEN),
-        (14, 70, 26, 0.55, 0.9, "0.9M | 6.5M | 10.2M | 29.3M", "#e0f0e4"),
+    Rows = specific training conditions / checkpoints; columns = what was actually
+    measured. Every cell is a measured number or an explicit "not tested" (NT).
+    This is a readable inventory of what was measured, not a schematic region that
+    implies an unmeasured extent of capability.
+    """
+    import numpy as np
+    fig, ax = plt.subplots(figsize=(9.6, 5.6))
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+    ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
+    ax.text(50, 96, "THE EVIDENCE MATRIX  (what was measured, run by run)",
+            ha="center", va="center", fontsize=10.5, fontweight="bold", color=INK)
+
+    rows = [
+        # name, familiar-accuracy, new-IDs, excluded-family, cover-surface, held-out-compose, final-A/B
+        ("Stage 1 pilot (0.88M)",        "0.897", "0.350", "0.000",  "-",      "0.000", "NT"),
+        ("6.5M",                         "0.897", "-",      "-",      "-",      "0.000", "NT"),
+        ("10.2M",                        "0.773", "-",      "-",      "-",      "0.000", "NT"),
+        ("29.3M",                        "0.897", "-",      "-",      "-",      "0.000", "NT"),
+        ("High-diversity (same count)",  "1.000", "-",      "NT",     "1.000",  "NT",    "NT"),
+        ("Sequential A then B",          "-",     "-",      "-",      "-",      "NT",    "A 0.000 / B 0.889"),
+        ("Joint A+B",                    "-",     "-",      "-",      "-",      "NT",    "A 1.000 / B 0.889"),
     ]
-    ax.add_patch(FancyBboxPatch((14, 34), 16, 56, boxstyle="round,pad=0.02,rounding_size=2",
-                                fc="#e0f0e4", ec=GREEN, lw=1.2))
-    ax.text(22, 71, "ONE JOB WELL-LEARNED", ha="center", fontsize=8.5, color=GREEN, fontweight="bold")
-    ax.text(22, 48, "in-dist ~0.90\nreworded 0.000\ncomposed 0.000", ha="center", fontsize=7.5, color=INK)
-    ax.add_patch(FancyBboxPatch((34, 34), 54, 56, boxstyle="round,pad=0.02,rounding_size=2",
-                                fc="#f2eef8", ec=PURPLE, lw=1.2, linestyle="--"))
-    ax.text(61, 84, "THE QUESTIONABLE MIDDLE", ha="center", fontsize=8.5, color=PURPLE, fontweight="bold")
-    ax.text(61, 46, "surface-tied, non-compositional:\n90% of every primitive, 0% when reworded\nor combined in an unseen way", ha="center", fontsize=7.5, color=INK)
-    note(ax, 12, 10, "drawn from the measured grid: it knows the narrow task deeply,\nbut the capability does not survive a change of surface or a new combination.",
-        fs=8.5, color=INK)
+    cols = ["run / condition", "familiar\nprompt", "new\nidentifiers",
+            "excluded\nwording", "covered\nalternate\nsurface",
+            "held-out\ncomposite", "final A / B\ntask accuracy"]
+    nrow, ncol = len(rows), len(cols)
+    top, left, cw, rh = 82, 2, 13.6, 9.0
+    # header
+    ax.text(left, top+4, "NT = not tested (not run or not applicable); '-' = not measured for this run",
+            fontsize=6.6, color=RED, va="bottom")
+    for c in range(ncol):
+        x = left + c*cw
+        ax.add_patch(FancyBboxPatch((x, top-6), cw-0.6, 7, boxstyle="round,pad=0.01,rounding_size=0.8",
+                                    fc="#eef1f5", ec=INK, lw=0.6))
+        ax.text(x+(cw-0.6)/2, top-6+3.5, cols[c], ha="center", va="center", fontsize=6.6, color=INK, fontweight="bold")
+    for r in range(nrow):
+        y = top - 6 - 7 - rh*(r+1)
+        name, vals = rows[r][0], rows[r][1:]
+        ax.add_patch(FancyBboxPatch((left, y), cw-0.6, rh*0.9, boxstyle="round,pad=0.01,rounding_size=0.8",
+                                    fc="#fdfbf7", ec=GREY, lw=0.6))
+        ax.text(left+(cw-0.6)/2, y+rh*0.45, name, ha="center", va="center", fontsize=6.4, color=INK, fontweight="bold")
+        for c in range(1, ncol):
+            v = vals[c-1]
+            x = left + c*cw
+            fc = "#f6faf6" if v in ("1.000","0.897","0.773","A 1.000 / B 0.889") else ("#fdf3f3" if (v and "0.000" in v) else "#ffffff")
+            ax.add_patch(FancyBboxPatch((x, y), cw-0.6, rh*0.9, boxstyle="round,pad=0.01,rounding_size=0.8",
+                                        fc=fc, ec=GREY, lw=0.4))
+            if v == "NT":
+                txt, tc = "NT", RED
+            elif v.startswith("0.000") or v == "0.000":
+                txt, tc = v, RED
+            elif v == "-":
+                txt, tc = "-", "#888888"
+            else:
+                txt, tc = v, "#2b8a3e"
+            ax.text(x+(cw-0.6)/2, y+rh*0.45, txt, ha="center", va="center", fontsize=6.3, color=tc)
+    note(ax, 3, 4, "Green = measured strong result. Red = measured zero. NT = not tested. " +
+          "The high-diversity 1.000 is *coverage* of surfaces in its training family, not transfer to an excluded wording family.",
+         fs=7.0, color=INK)
     save(fig, "fig_capability_map.png")
 
 

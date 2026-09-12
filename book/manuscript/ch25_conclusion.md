@@ -140,3 +140,43 @@ baselines, audit shortcuts, preserve failures — are the durable part. That is 
 method worth keeping, and it's the reason the book's real subject was never the model.
 The brew was never only about the model; it was about learning to ask a question
 carefully enough that the answer could be trusted.
+
+## Where this sits: related work
+
+None of the ideas here is new in isolation, and we want to say so plainly rather than
+imply novelty. This book's contribution is not inventing a technique; it is assembling
+a small, fully-controlled laboratory and being unusually honest about what the results
+do and do not establish. The underlying disciplines have long histories, and a reader
+who wants to go deeper should look there:
+
+- **Compositional generalization.** The question of whether a model can combine known
+  pieces in novel ways is a longstanding benchmark problem (e.g. the SCAN and COGS
+  datasets). Our finding — that a tiny model does not compose under our tests — is a
+  narrow case of a much-studied puzzle, studied far more thoroughly in that literature.
+- **Execution-based code evaluation.** Running generated code against hidden tests is
+  the standard for code-generation evaluation (the pass@k / HumanEval tradition). We
+  borrowed that idea and applied it at a miniature scale, and our mutation-control
+  work echoes the broader practice of testing the evaluator itself.
+- **Shortcut learning.** "The model found an easier signal than the one we intended" is
+  a well-documented phenomenon; our shortcut audit is a small, disciplined instance.
+- **Catastrophic forgetting and rehearsal.** The effect we measured in Chapter 20 is a
+  classic finding; the observation that keeping old data in the mix helps is also
+  long-established.
+- **Mutation testing.** Originating in software engineering, it is the source of our
+  judge red-team.
+
+We cite these traditions to place the book in context, not to claim we advanced them.
+If a reader wants the canonical treatments, the benchmarks and papers named above are
+the natural next step.
+
+## Reading further
+
+- For compositional generalization benchmarks: SCAN, COGS (among others).
+- For execution-based code evaluation: the pass@k / HumanEval literature.
+- For shortcut learning and spurious correlation: the shortcut-learning literature.
+- For continual learning and rehearsal: the catastrophic-forgetting literature.
+- For mutation testing of test suites: the software-testing literature.
+
+We did not benchmark against these in this book (the task and scale are far smaller),
+so we make no claim of competing with them — only of building a small, well-controlled
+instance and reporting it honestly.

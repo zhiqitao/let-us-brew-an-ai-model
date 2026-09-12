@@ -44,7 +44,25 @@ This book is a controlled empirical investigation into what a small language mod
 
 The task: read a natural-language programming request and produce a Python program, which is then executed against hidden tests.
 
-Along the way we build a laboratory: a controlled world (a sandbox), a teacher (a semantic data generator), a judge (an execution-based evaluator), and rivals (simple baselines). The model is the instrument. The experiment is the subject. And the honest territory includes the moments the model falls flat — and the moment we discovered that our own measuring stick was broken, not the model.
+Along the way we build a laboratory: a controlled world (a sandbox), a teacher (a semantic data generator), a judge (an execution-based evaluator), and rivals (simple baselines). The model is the instrument. The experiment is the subject. And the honest territory includes the moments the model falls flat --- and the moment we discovered that our own measuring stick was broken, not the model.
+
+\section*{Who this book is for}
+
+This is an accessible experimental case study, not a build-from-scratch transformer textbook. It is written for readers who are comfortable reading (or willing to skim) Python and who want to see how to set up a small, honest evaluation of a tiny model --- and, more than that, how easily a number from such an experiment can be misread. No GPU or deep-learning background is required to follow the conceptual argument; a little Python helps with the code listings. Nothing here needs a large model or a large machine --- the whole investigation runs on a single-laptop CPU.
+
+\section*{What the book claims (and what it does not)}
+
+We set the scope deliberately narrow, and we repeat it throughout. All the results are measurements on \textbf{one synthetic task} (natural-language request \textrightarrow{} single Python function), \textbf{one architecture family} (a small decoder-only transformer), \textbf{one training regime} (CPU, fixed budgets), and parameter counts up to roughly 30M. We do not claim a universal law about tiny models, and we do not claim to have identified the internal cause of the limits we observe. We claim only: \emph{under this setup, here is what was measured, here is what did not move, and here is what remains open.} If a reader takes nothing else from the book, we hope it is the discipline of saying exactly what a measurement establishes and leaving the mechanism open when the controls have not identified it.
+
+\section*{How to use the book}
+
+\begin{itemize}
+  \item \textbf{Read the body for the argument.} Each chapter opens with a concrete image before the mechanics.
+  \item \textbf{Use the appendices for reproducibility.} Appendix A shows the generator; Appendix B is the failure ledger; Appendix C is the experiment registry that ties every number to a run ID, config, and artifact.
+  \item \textbf{Run it yourself if you like.} The scripts, configs, and a release tag are in the companion repository (see Appendix C). On this CPU-only setup, the pilot trains in minutes; the larger models take longer.
+\end{itemize}
+
+The honest payoff is not ``small models are inadequate. It is a precise map of where the boundary sits under our tests --- and the many ways a promising-looking number can be an artifact of how we measured it.
 
 \clearpage
 \tableofcontents
