@@ -85,9 +85,9 @@ one glance.
 
 Going from ~0.9M to 29.3M parameters:
 
-- **Composition is 0.000 at every size.** The bigger models are *just as* unable to
+- **Composition is 0.000 at every size we ran.** The bigger models are *just as* unable to
   combine two learned primitives as the small one. Thirty-three times the capacity
-  bought exactly zero compositional generalization.
+  bought exactly zero compositional generalization *under the training schedules we used*.
 - **In-distribution is a roughly stable plateau** (0.773–0.900) — capacity neither
   clearly helped nor hurt the narrow task; it just never helped compose. (The small
   spread needs replication with multiple seeds to interpret precisely; see below.)

@@ -51,9 +51,11 @@ wording-family holdouts before any surface test.
 the composition boundary to move. It did not: composition stayed at **0.000** at all
 four sizes (0.88M, 6.5M, 10.2M, 29.3M).
 
-**What we learned.** At ~1–30M parameters, compositional generalization failure is
-**not a capacity ceiling**. It is a structural/learning limit that scaling alone does
-not resolve. This is a genuine negative result that redirects the investigation.
+**What we learned.** At ~1–30M parameters, under the training schedules we ran,
+compositional generalization stayed at 0.000 and was **not moved by scaling alone**.
+We are careful not to call this a capacity "ceiling" — it is a measured boundary in
+this regime, not proof that capacity cannot help under other conditions. It is a
+genuine negative result that redirects the investigation.
 
 **Action.** Recorded in `docs/experiments/scaling_composition.md`.
 

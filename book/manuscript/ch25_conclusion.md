@@ -31,10 +31,12 @@ not parroting.
    for `abs_add` — it scores **0.000**. And the baselines also collapse to 0.000, so
    the split is fair: only genuine composition solves it, and the model has none.
 
-**The scaling conclusion is the sharpest negative result.** Composition stays at
-**0.000** across model sizes from 0.88M to 29.3M. More capacity does not buy
-composition. This is not a capacity ceiling in the ~1–30M regime; it is a
-structural/learning limit.
+**The scaling conclusion is our sharpest negative result.** Composition stays at
+**0.000** across model sizes from 0.88M to 29.3M, under the training schedules we ran.
+Within that tested range, more capacity did not buy composition. We are careful not to
+call this a capacity "ceiling": it is a measured boundary in this regime, not proof
+that capacity cannot help under other conditions (different training budgets, larger
+sizes, or different optimizers).
 
 ## The four-point grid (measured)
 
