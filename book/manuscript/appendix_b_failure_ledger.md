@@ -108,18 +108,20 @@ conclusion.
 
 ---
 
-## 7. The free-model proofread returned degraded output
+## 7. An attempt at an independent line-edit failed
 
 **What happened.** We dispatched the 85K-char draft to two free models for a proofread.
 One leaked its chain-of-thought and broke into noise; the other timed out. No usable
 independent review was collected.
 
-**What we learned.** Free endpoints are flaky for long documents, and we should not
-fabricate fixes from unusable output. We were honest about this rather than pretend a
-review happened.
+**What we learned.** On this occasion, relying on two free hosted endpoints for a
+long-document proofread did not work. We report this narrowly: it says nothing general
+about all free endpoints, only that *these two calls on this long draft* produced no
+usable review. The discipline that matters here is that we did **not** fabricate a
+review from unusable output — we recorded the failure.
 
-**Action.** Noted honestly; the book's line-edit stands on its own merit, not a
-fabricated review.
+**Action.** Noted honestly as a production detail (see Appendix C's reproducibility note);
+the manuscript's line-edit stands on its own merit, not a fabricated review.
 
 ---
 
