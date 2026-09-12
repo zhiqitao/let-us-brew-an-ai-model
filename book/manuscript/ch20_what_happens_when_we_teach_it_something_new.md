@@ -46,12 +46,12 @@ the data, or the optimizer — it must be the schedule. That makes any differenc
 find a *procedure* finding, exactly the thing we want to isolate.
 
 ## The result
-![Continual learning](figures/fig_continual.png)
+![Final task accuracy: sequential versus joint training](figures/fig_continual.png)
 
-| Protocol | **A-retention** | **B-acquisition** |
+| Protocol | **A accuracy (final)** | **B accuracy (final)** |
 |----------|-----------------|-------------------|
 | **sequential** | **0.000** | 0.889 |
-| **replay**     | **1.000** | 0.889 |
+| **joint** | **1.000** | 0.889 |
 
 This is as clean a result as this book produced.
 
@@ -61,10 +61,12 @@ the first capability. That is not "degraded"; it is gone. Learning the lists ove
 the arithmetic.
 
 **Training A and B together prevents the forgetting.** When A and B are simply trained
-together from the start (interleaved throughout), the model's A-retention is a perfect
-**1.000**, and B-acquisition is **0.889** — identical to sequential. So keeping the old
-capability in the mix alongside the new one preserves A with **no behavioral trade-off**
-in learning B.
+together from the start (interleaved throughout), the model's final A accuracy is a
+perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential. So
+training both from the start keeps A**with no behavioral trade-off** in B. Note that a
+high final A accuracy in the jointly trained model is *not* "retention relative to an
+A-only checkpoint" — there was never an A-only checkpoint; both were trained from the
+start.
 
 One honest note on the term "replay." This design interleaves A and B **from the start**
 — which is really *joint training* on both, not "learn A first, then continue to B
@@ -89,7 +91,7 @@ longer.
 ## Why this result is so striking
 
 The symmetry is what makes this remarkable. Under sequential training, the model
-forgets A completely (0.000) but learns B fine (0.889). Under replay, it keeps A
+forgets A completely (0.000) but learns B fine (0.889). Under joint training, it keeps A
 perfectly (1.000) *and* learns B just as well (0.889). Nothing about the model, the
 data, or the optimizer changed — only whether the old examples stayed in the mix while
 the new ones were learned.
@@ -97,14 +99,14 @@ the new ones were learned.
 This is the clearest case in the book where the **training protocol, not the model or
 the data, determines the outcome.** Same model. Same data. Same optimizer. The only
 difference is whether the first capability stays "in the mix" while the second is
-learned. Sequential forgets; replay retains.
+learned. Sequential forgets; joint retains.
 
 There is an intuition that makes this easy to see. Imagine a muscle being trained on
 exercise A. If it then trains exclusively on exercise B and never revisits A, the
 muscle's adaptation to A fades. But if A and B alternate, both stay. The model's
 weights are like that muscle — the gradient signal from new examples keeps pushing
 them, and if nothing pulls them back toward the old behavior, the old behavior
-erases. Replay is simply making sure the old examples are still in the rotation.
+erases. Joint training is simply making sure the old examples are still in the rotation.
 
 The lesson generalizes directly: when a new capability is added to a model, *how* it
 is done matters more than any property of the model itself. If the new task is allowed
@@ -114,10 +116,13 @@ collapses. If old and new stay interleaved, the model can hold both.
 ## Reframing a common assumption
 
 And it reframes a common assumption. People often reach for "a bigger model" when
-confronted with a model that forgets. This experiment shows the forgetting was never
-a capacity problem — a ~0.9M model reaches high final scores on both task groups when
-trained jointly (A: 1.000, B: 0.889). It was a *training procedure* problem. Here, as
-with composition, the instinctive fix ("make it bigger") would have been exactly wrong.
+confronted with a model that forgets. This experiment shows the forgetting was not
+resolved by anything we did to capacity — a ~0.9M model reaches high final scores on
+both task groups when trained jointly (A: 1.000, B: 0.889). It was a *training
+procedure* effect. We did **not** test a larger model as a forgetting intervention, so
+we cannot conclude that a larger model would not also help here; what we can say is
+that the forgetting was already fixable by changing the schedule alone, at this scale,
+under these schedules.
 
 The pattern here echoes a deeper truth we've seen all book: the headline number
 ("did it learn the new thing?") hides the interesting failure ("what did it lose to

@@ -158,12 +158,14 @@ second, quieter question: what is the model *ever asked* to do? These are not th
 thing, and the difference is worth making sharp, because it is the difference between
 "the model cannot escape" and "the model was never put in the position to."
 
-A language model has no notion of refusal. It is not a system that decides whether a
-request is in scope; it is a next-token predictor. Hand it a request outside its
-designed job and it does not politely decline — it simply keeps predicting tokens and
-produces whatever the weights trend toward, often a confident near-program or
-garbage. So "it only does its one job" can never be a property of the model's own
-intent. It has to be a property of the wiring around it.
+A language model has no *built-in* notion of refusal. It is not, by default, a system
+that decides whether a request is in scope; it is a next-token predictor. Hand a request
+to this model outside its designed job and it does not politely decline — it simply
+keeps predicting tokens and produces whatever the weights trend toward, often a
+confident near-program or garbage. (Models *can* be trained to refuse, but this one was
+not, so refusal here is not a property to assume.) So "it only does its one job" can
+never be a property of the model's own intent here. It has to be a property of the
+wiring around it.
 
 That gives us **two independent gates**, and this chapter (so far) has really only
 built one of them:
@@ -229,15 +231,16 @@ Our two gates are not an esoteric lab device; they are the same two ideas that r
 systems use, under different names. It is worth mapping them, so the book's abstract
 apparatus connects to what people actually deploy.
 
-| Our gate | Production analogue | How it works | Soft or hard? |
-|---|---|---|---|
-| **Gate B** (input) | **Input classifier / guardrail** | A separate model or ruleset scores the incoming prompt and blocks disallowed categories *before* the main model sees it (e.g. Llama Guard, NeMo guardrails). | **Hard** — a different mechanism in front, not the model deciding |
-| **Gate B** (input) | **Structured-input schema** | The API declares the request's allowed shape (JSON schema); a request outside it is invalid by construction. | **Hard** — rejected at the boundary |
-| **Gate B** (input) | **Function/tool signatures** | The model can only call registered functions with typed signatures; off-scope actions simply aren't callable. | **Hard** |
-| **Gate A** (output) | **Constrained decoding / JSON mode** | The decoder only ever emits tokens that keep the output inside the declared structure, so the model physically cannot produce an unparseable or off-schema completion. | **Hard** — enforced by the decoder, not the model |
-| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes anything that slipped through. | **Hard** |
+| Our gate | Production analogue | How it works | Enforcement | Residual risk |
+|---|---|---|---|---|
+| **Gate B** (input) | **Input classifier / guardrail** | A separate model or ruleset scores the incoming prompt and blocks disallowed categories *before* the main model sees it (e.g. Llama Guard, NeMo guardrails). | Hard — a different mechanism in front, not the model deciding | Medium — the classifier is itself learned and can misclassify |
+| **Gate B** (input) | **Structured-input schema** | The API declares the request's allowed shape (JSON schema); a request outside it is invalid by construction. | Hard — rejected at the boundary | Low for *shape* compliance; not a content/safety check |
+| **Gate B** (input) | **Function/tool signatures** | The model can only call registered functions with typed signatures; off-scope actions simply aren't callable. | Hard | Low for *declared* functions; not an authorization check |
+| **Gate A** (output) | **Constrained decoding** | The decoder only ever emits tokens that keep the output inside the declared structure, so the model cannot physically produce an unparseable completion. | Hard — enforced by the decoder, not the model | Low — but guarantees *structure*, not that the content is correct |
+| **Gate A** (output) | **JSON mode** | A special mode that makes the completion parse as JSON. | Soft — the model is *encouraged*, not forced | High — JSON mode does not guarantee schema validity, and is not a schema constraint |
+| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes anything that slipped through. | Hard | Low for what it checks; the check is only as good as its rules |
 
-The thread running through the right-hand column is the book's point: every reliable
+The thread running through the "Enforcement" column is the book's point: every reliable
 enforcement mechanism is **hard and external**, and none of them is "the model chose
 to behave." Even a frontier model that appears to refuse is doing so because RLHF
 shaped it to *tend* toward refusal — which is a soft, jailbreakable behavior, not a
@@ -248,11 +251,15 @@ One distinction worth making explicit: "Hard" here means the mechanism is
 **deterministically enforced** — it rejects on a rule the system controls, not on a
 model's whim — but it does *not* mean the decision is **semantically reliable**. An
 input classifier is a learned model that can still misclassify; the *enforcement* of
-whatever it decides is hard, but the *decision* itself is soft. That is true of every
-row: a JSON-schema validator reliably rejects malformed JSON, but schema compliance is
-not the same as correctness or safety; a registered tool signature prevents calling an
-undeclared function, but is not an authorization check; the AST allowlist bounds the
-shape of allowed programs but not resource use or adversarial resistance. So the
-reliable layer is hard and external — and it is a *scoping* guarantee, not a
-*judgment* guarantee. There is no mechanism in the table that gives semantic
+whatever it decides is hard, but the *decision* itself is soft. That is why the "Residual
+risk" column above is not uniformly empty: a hard mechanism bounds the *shape* of what
+gets through reliably (a JSON-schema validator reliably rejects malformed JSON), but it
+does not make the content correct or safe (schema compliance is not correctness; a
+registered tool signature prevents calling an undeclared function, but is not an
+authorization check; the AST allowlist bounds the shape of allowed programs but not
+resource use or adversarial resistance). Crucially, "JSON mode" is *not* a hard
+constraint at all — it is a soft nudge that the model usually follows, so it belongs in
+the soft/risk column, not alongside constrained decoding. So the reliable layer is hard
+and external — and it is a *scoping* guarantee, not a *judgment* guarantee. There is no
+mechanism in the table that gives semantic
 reliability.
