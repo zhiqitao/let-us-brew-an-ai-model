@@ -238,11 +238,11 @@ def fig_rivals():
     box(ax, 6, 62, 28, 18, "TEMPLATE\n'if task==add:\nreturn a+b'", fc=GREY, fs=8, tc=INK)
     box(ax, 38, 62, 26, 18, "RETRIEVAL\nnearest-neighbour\ncopy", fc=GREY, fs=8, tc=INK)
     box(ax, 70, 62, 24, 18, "OUR MODEL\n0.88M", fc=ORANGE, fs=9)
-    note(ax, 6, 48, "a fixed hand-written\npattern. The floor.", fs=8, color=INK)
-    note(ax, 39, 48, "copies the closest\nmemory. The ceiling.", fs=8, color=INK)
-    note(ax, 71, 48, "the actual question:\ndoes it beat both?", fs=8, color=INK)
+    note(ax, 6, 48, "a fixed hand-written\npattern. A sanity floor.", fs=8, color=INK)
+    note(ax, 39, 48, "copies the closest\nmemory. A sanity check.", fs=8, color=INK)
+    note(ax, 71, 48, "the actual question:\ndoes it clear both?", fs=8, color=INK)
     box(ax, 6, 14, 88, 18,
-        "A result is only meaningful if it sits ABOVE the template floor\nand (where it matters) BELOW the retrieval ceiling.",
+        "The baselines are sanity checks, not a score ceiling. A result is truthful\nif we know which baseline already solves it and whether the model adds anything.",
         fc="#fbfaf6", ec=INK, fs=9, tc=INK)
     save(fig, "fig_rivals.png")
 

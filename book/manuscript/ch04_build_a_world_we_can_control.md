@@ -171,7 +171,12 @@ built one of them:
 **Gate A — the output gate (the sandbox).** Already described above: the AST allowlist
 rejects any generated program that uses a construct outside the whitelist, before it
 runs. This guarantees that even if the model *tries* to emit `import os` or `eval()`,
-the program is refused. Gate A is airtight on what the model *produces*.
+the program is refused. Gate A is a hard gate on the *syntax* of what the model
+*produces* — it is deterministic and airtight for the constructs it covers. Two
+qualifications: it bounds the *shape* of allowed programs, not their resource use or
+their adversarial resistance (an allowed program could still, in principle, loop or
+consume memory), and it is not production-grade isolation. As a scoping mechanism for
+this experiment it is sufficient; as a security sandbox it would not be.
 
 **Gate B — the input gate (the request validator).** This is the gate we build for the
 other half. It sits *in front of* the model and decides, from the incoming
@@ -184,6 +189,17 @@ phrase skeletons the teacher renders) and the designed operation vocabulary. A r
 is in scope only if it fits one of those shapes *and* names a known operation —
 otherwise it is refused. Just as the sandbox says "these are the only forms of program
 that exist," Gate B says "these are the only forms of request that exist."
+
+**One clarification on how we used it.** Gate B was built late in the investigation,
+after the surface (Chapters 13–15) and human-written evaluations. Those evaluations
+ran the model **directly, without Gate B in front of it** — precisely so that a
+low score could be attributed unambiguously to the *model*, not to a request filter
+that had quietly declined the caller. For the surface and human tests, the model saw
+the reworded / human-phrased request and failed on its own. Had Gate B been in front,
+it might well have rejected those out-of-scope phrasings (that is its job) and the
+failure would have been the filter's, not the model's. So we state it clearly: the
+surface and human-written failures are model failures, not Gate-B rejections. Gate B
+enforces scope; it does not confound those measurements.
 
 Why do we need both? Because each covers a failure the other cannot:
 
@@ -227,3 +243,16 @@ to behave." Even a frontier model that appears to refuse is doing so because RLH
 shaped it to *tend* toward refusal — which is a soft, jailbreakable behavior, not a
 bound. The dependable version of "it only does what it was designed for" is the wiring
 we build around it, exactly as our sandbox and our validator are.
+
+One distinction worth making explicit: "Hard" here means the mechanism is
+**deterministically enforced** — it rejects on a rule the system controls, not on a
+model's whim — but it does *not* mean the decision is **semantically reliable**. An
+input classifier is a learned model that can still misclassify; the *enforcement* of
+whatever it decides is hard, but the *decision* itself is soft. That is true of every
+row: a JSON-schema validator reliably rejects malformed JSON, but schema compliance is
+not the same as correctness or safety; a registered tool signature prevents calling an
+undeclared function, but is not an authorization check; the AST allowlist bounds the
+shape of allowed programs but not resource use or adversarial resistance. So the
+reliable layer is hard and external — and it is a *scoping* guarantee, not a
+*judgment* guarantee. There is no mechanism in the table that gives semantic
+reliability.

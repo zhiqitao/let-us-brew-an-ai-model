@@ -97,6 +97,24 @@ meaning. The model's inability to generalize under repetition was not a mysterio
 limitation — it was a direct consequence of a training set that gave it no reason to
 abstract.
 
+## An honest limit: coverage vs. generalization
+
+Before we claim too much, we have to be precise about what that 1.000 surface score
+actually measured. The surface test used word-identifiers and a *randomly-chosen*
+wording family per operation. The high-diversity training set, however, contained
+*all* the wording families and *both* identifier-sets. So the surface test's wording
+(and its identifiers) may well have been *present in the high-diversity training set*
+— which makes the 1.000 at least partly a measure of **coverage** (the model had seen
+that surface), not of generalization to a surface it had never encountered.
+
+The minimal→0.000 result is unambiguous: that model saw only a narrow slice, so the
+surface test was genuinely unseen and it failed. But the high→1.000 result is
+strongest as a statement about **coverage**: diverse training covers more surfaces.
+Whether it generalizes to a wording *family it never saw* is a separate question this
+design does **not** answer — that would need a held-out family excluded from the
+diverse pool. We flag this honestly, because the strong reading ("diversity produces
+generalization to unseen surfaces") is not fully established by this experiment as run.
+
 ## The honest caveat
 
 It is worth noting that this experiment measured *surface* diversity. It showed that

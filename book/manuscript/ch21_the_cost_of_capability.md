@@ -35,9 +35,15 @@ measurable costs — data, parameters, training steps, and — decisively — th
 |------------|-----------------|------------|-------|----------------|----------------------|-----------|
 | Single primitive (add, sub, …) | 1400 | 0.88M | 1500 | 0.900 | ✗ (new wording → 0.000) | ✗ |
 | New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | — |
-| Composition (abs_add, sum_of_abs) | ∞-needed | 0.9M–29.3M | — | — | — | ✗ (0.000) |
+| Composition (abs_add, sum_of_abs) | not achieved within tested budgets | 0.9M–29.3M | 1500 | varied by run (exposed) / **0.000** on held-out | ✗ | ✗ (0.000) |
 | Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | — | ✗ (A forgotten) |
 | Continual: A+B (replay) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | — | ✗ |
+
+\*The "exposed" cell is the score on combinations *shown* during training, which varied
+across the exposure and diversity runs (0.550–1.000). The held-out composite — the real
+composition test — is **0.000** in every run. We do not know how much data would be
+needed to achieve composition; we only know it was not achieved within the budgets we
+tried. Marking it "∞" would overstate an unmeasured quantity.
 
 ## What the costs tell us
 

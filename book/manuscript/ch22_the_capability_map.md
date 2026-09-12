@@ -36,7 +36,7 @@ model:
 |-------|--------------|-----------------|--------|
 | **L1 Mem** | Can it be explained by remembering? | Held-out 59/60; canary → general program | `[MEASURED]` it generalizes primitives, doesn't parrot |
 | **L2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here |
-| **L3 Surf** | Does it survive superficial change? | New wording → 0.000; new identifiers → 0.350 | `[MEASURED]` no — surface-tied, here |
+| **L3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
 | **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
 
 This is the map's spine. Read it vertically and it shows a steady decline in how much
@@ -69,7 +69,10 @@ measurements in one configuration, not proofs that hold everywhere.*
 **Measured (this setup):**
 - The model learns single operations to ~90% in-distribution and generalizes them
   across instances (L1/L2).
-- It is surface-tied: new wording → 0.000, new identifiers → 0.350 (L3).
+- The *narrowly-trained* model is surface-tied: new wording → 0.000, new identifiers →
+  0.350 (L3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
+  tested surface — though, as the caveat notes, that is strongest as a coverage
+  statement, not proof of generalization to a wholly unseen wording family.
 - It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
   0.88M→29.3M) nor more data changes this (L4).
 - Continual learning is a procedure problem: sequential forgets (A → 0.000), replay
@@ -95,8 +98,8 @@ measurements in one configuration, not proofs that hold everywhere.*
 - Whether a fundamentally different inductive bias (not scale) helps.
 
 *(The composition-exposure question — whether feeding a few composites during training
-unlocks composition — is addressed directly by the experiment now running; the result
-will settle it one way or the other.)*
+unlocks composition — has been tested and settled: it does **not**. The model
+memorized the seen combinations but still scored 0.000 on held-out ones.)*
 
 ## The boundary, in one line
 

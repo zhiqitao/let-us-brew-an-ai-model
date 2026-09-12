@@ -115,7 +115,7 @@ fabricated review.
 
 ## 8. Transient SIGILL crashes during training
 
-**What happened.** Long CPU training runs occasionally crashed with signal 11 (SIGILL)
+**What happened.** Long CPU training runs occasionally crashed with signal 4 (SIGILL)
 on the AVX-only Ivy Bridge CPU — intermittently, one run succeeds and the next dies.
 
 **What we learned.** Hardware quirks are real and part of the brew. The fix is

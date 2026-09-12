@@ -75,11 +75,14 @@ step 1499   loss 0.019
 That is a large, clean drop — from 5.84 to 0.019 in 1500 steps. Two things about this
 curve are worth sitting with, because they reveal more than the final number.
 
-**First, the shape tells us the model is learning, not memorizing-by-accident.** The
+**First, the shape tells us the *training loop is working*, nothing more.** The
 loss falls steeply in the first 200 steps (5.84 → 0.029), then flattens out near a
-floor. This is a healthy learning curve: rapid improvement at first, then diminishing
-returns as the model fits what it can. If instead the loss had wobbled or stayed high,
-we would have had a debugging problem on our hands, not a training result.
+floor. This is the curve we expect from a functioning loop that is fitting the data:
+rapid improvement at first, then diminishing returns. If instead the loss had wobbled
+or stayed high, we would have had a debugging problem on our hands, not a training
+result. But a *converging* loss by itself does not distinguish learning from
+memorization — both produce a falling loss. That distinction is exactly what the
+upcoming evaluations, not the loss curve, have to settle.
 
 **Second, the *final* value is not the interesting number.** A loss of 0.019 means the
 model can predict the next token of the *training* sequence almost perfectly. That

@@ -55,9 +55,13 @@ def make_semantics(operation, rng, id_set="letters"):
     names = list(IDENTIFIER_SETS[id_set][:n])      # pick names from the set
     arg_type = ("list" if operation in
                 ("list_sum", "list_len", "first_element") else "int")
+    # list_sum and list_len RETURN a numeric scalar (sum(xs) / len(xs)),
+    # even though they take a list as input. So output_type is int for them;
+    # only first_element returns an element of the input list type.
+    output_type = "int" if operation in ("list_sum", "list_len") else arg_type
     args = [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(n)]
     return {"operation": operation, "args": args,
-            "input_types": [arg_type] * n, "output_type": arg_type}
+            "input_types": [arg_type] * n, "output_type": output_type}
 ```
 
 ## 2. The reference program
@@ -65,7 +69,7 @@ def make_semantics(operation, rng, id_set="letters"):
 The reference generator reads the semantics and emits the correct Python. A few cases:
 
 ```python
-def generate_reference(sem):
+def generate_reference(sem, rng=None):
     op = sem["operation"]; names = [a["name"] for a in sem["args"]]
     if op == "add":
         return (f"def solve({', '.join(names)}):\n"

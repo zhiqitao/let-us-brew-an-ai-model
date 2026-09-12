@@ -150,14 +150,38 @@ regression model on the natural-language prompts and see how well it predicts th
 target operation from the words alone. If a dumb classifier succeeds, the wording is
 leaking the answer.
 
-And it caught us. On our first pilot renderer, a trivial classifier predicted the
-operation from the wording with **100% accuracy**. That's a red flag, and it's a
-valuable catch: it means our wording was so tied to the operation that a model which
-"learned" might just be exploiting the phrasing. We recorded it as a findable artifact
-(finding-001) and noted exactly what it means for the experiments that follow.
+But the method needs a careful interpretation, and our first pass misread it. On our
+first pilot renderer, a trivial classifier predicted the operation from the wording
+with **100% accuracy**. We recorded it as a red flag (finding-001). On reflection, that
+is most of the time **task signal, not leakage**: the request must name the operation,
+or the task would be ambiguous. Saying "return their sum" *should* identify addition —
+that is what makes the request unambiguous. A classifier hitting 100% because "sum"
+identifies addition is the wording doing its job, not spilling a secret.
+
+So the audit has to distinguish three things:
+
+- **Task signal** (fine): "sum" identifies addition; the request names the operation.
+- **Spurious correlation** (a real shortcut): an *irrelevant* feature that is not part
+  of the request's content — a particular identifier name, an incidental sentence
+  frame, or a formatting quirk — predicts the operation.
+- **Train/test leakage** (the real bug): duplicated examples, or evaluation
+  information, crossing the train/test boundary.
+
+A 100% TF-IDF classification score shows that operation selection is lexically *easy*
+on that split. It does not by itself establish contamination, and it does not tell us
+the model is exploiting an illegitimate signal — the phrasing is supposed to carry the
+operation. What the audit *should* do — and what our later audits do more carefully —
+is mask the operation-bearing language and ask whether *irrelevant* features still
+predict the target, and also test *held-out template families* and counterfactual
+changes to names or sentence frames. Our finding-001 note is best read as "the wording
+is very predictive of the operation" — which is a property of a clear task, not proof
+of a shortcut. (One implementation note as well: the TF-IDF vectorizer was fit on the
+whole set before cross-validation, which would leak held-out-fold vocabulary. A
+principled version fits the vectorizer inside the CV pipeline.)
 
 This is the teacher doing its real job. A dataset generator that only produces data is
-half a tool. One that produces data **and audits it** is a laboratory instrument.
+half a tool. One that produces data **and audits it** — asking whether the surface is
+carrying the answer for the *right* reason is a laboratory instrument.
 
 ## The takeaway
 

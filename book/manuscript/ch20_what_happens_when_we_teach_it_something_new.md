@@ -60,10 +60,25 @@ then lists in sequence, the model's A-retention is **0.000** — it completely f
 the first capability. That is not "degraded"; it is gone. Learning the lists overwrote
 the arithmetic.
 
-**Replay prevents it, with zero cost.** When A and B are interleaved throughout, the
-model's A-retention is a perfect **1.000**, and B-acquisition is **0.889** — identical
-to sequential. So replay bought complete retention of the old capability with **no
-trade-off whatsoever** in learning the new one.
+**Training A and B together prevents the forgetting.** When A and B are simply trained
+together from the start (interleaved throughout), the model's A-retention is a perfect
+**1.000**, and B-acquisition is **0.889** — identical to sequential. So keeping the old
+capability in the mix alongside the new one preserves A with **no behavioral trade-off**
+in learning B.
+
+One honest note on the term "replay." This design interleaves A and B **from the start**
+— which is really *joint training* on both, not "learn A first, then continue to B
+while replaying A." Both answers are legitimate, but they are different questions. The
+sequential condition is a true continual-learning setup (does learning B destroy A? —
+yes, 0.000). The interleaved condition is a joint-training control (if both are seen
+together, is there a forgetting problem at all? — no, 1.000). What this establishes is
+that **the forgetting seen under sequential training disappears when the model is
+trained jointly on both.** It does not demonstrate that a replay *buffer* salvages an
+already-trained first model — a stronger test would start from one A-trained checkpoint
+and compare B-only vs B-plus-A-replay continuation from there. Also, "zero cost" means
+**zero behavioral cost on B** (both reached 0.889), not zero compute, storage, or
+data-retention cost — the joint model is trained on more distinct examples and takes
+longer.
 
 ## Why this result is so striking
 

@@ -23,10 +23,10 @@ We train the model exactly as before, on **primitive** operations only: `add`, `
 `mul`, `abs`, and the rest. We never show it a composite operation.
 
 Then we build a set of **composite** operations that are *made from* the primitives:
-`abs_add` (absolute value of a sum), `sub_abs` (absolute difference), `sum_of_abs`
+`abs_add` (the absolute value of each input, then their sum), `sub_abs` (absolute difference), `sum_of_abs`
 (sum of absolute values), `max_add`, `double_first`, `len_minus_one`. These are not
 new primitive functions; they are combinations of the ones the model already knows.
-To solve `abs_add`, a model *must* perform an addition and then take an absolute value
+To solve `abs_add`, a model *must* take the absolute value of each input and then add the results
 — two pieces it demonstrably knows.
 
 The key design decision is that these composites were **never shown during training**
@@ -57,12 +57,25 @@ composite operations, it scores **0.000**. Not 0.1, not "sometimes," not "close.
 The model never produced a correct program for any composite operation, even though
 every composite is a combination of primitives it individually knows.
 
-And here is the crucial fairness check: the baselines fail too. The retrieval baseline
-gets 0.000 because it has nothing to retrieve — there is no composite example in its
-memory. The template baseline gets 0.000 because no template rule covers a composite.
-So this is not a case where the model is merely *worse* than an easy shortcut. This is
-a case where the easy shortcuts also collapse, which means the only way to succeed is
-to *genuinely compose* — and the model cannot.
+And here is the *instructive* baseline check: the baselines fail too. The retrieval
+baseline gets 0.000 because there is nothing to retrieve that is a composite — its
+memory holds only primitives, and it copies whole programs, not pieces. The template
+baseline gets 0.000 because no hand-written rule covers a composite. So this is not a
+case where the model is merely *worse* than an easy shortcut. It tells us something
+clear: the composition test was *not* already solved by a dumb look-up or a fixed rule.
+
+Two honest qualifications on what this does and does not prove. First, the baselines
+failing is a useful *negative* signal, not proof the test is "fair" or that every
+possible shortcut is excluded. A copy-only retriever failing does not rule out, for
+example, a "retrieve the closest primitive and patch its name" shortcut — that is a
+different, smarter baseline we did not build, so we cannot say we have excluded all
+shortcut solutions, only the two simple ones we ran. Second, it does not isolate
+*composition* as the one cause of failure: the model could also be failing for other
+reasons — unfamiliar instruction syntax, unseen vocabulary, generation-length limits,
+optimization, or a particular held-out operation. We have narrowed *some* causes (it
+knows the primitives, it generalizes instances) but not proven that composition is the
+single operating factor. That is why we describe the result as a strong measured
+failure under this setup, not a proof that composition is impossible.
 
 ## What this really means
 
@@ -152,8 +165,14 @@ memorized `abs_add` as if it were *just another primitive*, not as a *compositio
 `abs` and `add`. It learned the instance, not the operation.
 
 This closes off the naive fix ("just add composites to the data"). Composition here is
-not a matter of having seen a combination — it is a structural limit on how the model
-learns.
+not a matter of having seen a combination — **under everything we have tested**, it does
+not emerge from exposure to a few combinations or from diversifying the phrasing of the
+exposed ones. We are careful about the word "structural": this is a strong empirical
+finding about *this model, this task, this training regime*. It is not a proof that
+tiny models "cannot compose" in general — it is a measurement that, in this setup, the
+tested interventions did not produce composition. Whether some other intervention
+(different optimization, more diverse *combinations* rather than more diverse phrasings
+of the same ones) could unlock it is a separate, open question we have not closed.
 
 One step further: since diversity was the lever that *did* fix surface robustness
 (Chapter 13), we tested whether *diversifying* the composite exposure unlocks
@@ -172,11 +191,14 @@ now, and it is a genuinely different axis from the one we tested.
 ## The honest framing
 
 This is a *useful*, *clean* negative result — and in science, a decisive negative is
-often more informative than a vague positive. We now know something sharp about tiny
-models: **at ~1M parameters, they do not compose.** They learn reflexes, not
-structure. This is not a statement about "intelligence" or about "what models will
-eventually do." It is a precise, reproducible measurement of where this model's
-capability stops.
+often more informative than a vague positive. We now know something sharp about this
+model in this setup: **at ~1M parameters, in this task and training regime, it does not
+compose under the interventions we tried.** It learns reflexes here, not structure
+here. This is not a statement about "intelligence" or about "what models will
+eventually do." It is a precise, reproducible measurement of where *this* model's
+capability stops *here* — and, as we have flagged, the door to a different intervention
+(or a different, unmeasured cause such as optimization or generation-length limits)
+remains open.
 
 And it sets up the rest of the book in a way that is far more interesting than if the
 model had composed successfully. Because now the question becomes: *what would it

@@ -76,9 +76,11 @@ The most revealing number isn't the model's collapse — it's what the other two
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
-surrounding phrasing. The **retrieval baseline** also holds up (0.683). Only the
-**learned model** falls apart — because the model learned the *specific sentences*, not
-the *idea*.
+surrounding phrasing. The **retrieval baseline** also falls (0.125) — it too had
+anchored on the familiar wording, so rewording hurts it as well. Only the learned model
+is *catastrophic* here (0.000). This is the cleaner reading: identifier changes
+(`a,b` -> `left,right`) left retrieval strong (0.683), but rewording broke both the
+learned model and the retriever.
 
 So the model's 0.900 in-distribution score was largely **phrasing memorization**. It
 had learned "this exact kind of sentence maps to that program." It had not learned

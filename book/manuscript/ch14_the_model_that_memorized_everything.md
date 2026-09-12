@@ -47,13 +47,32 @@ in training, and ask the model to produce the program. If the model outputs the
 general program (e.g. `return a + b`), it is doing the computation. If it outputs some
 fixed literal or garbage, it might be memorizing something else.
 
-The canary is the sharpest probe, and it is worth explaining why. A canary is a
-deliberately-placed, never-seen example that we plant precisely to detect mechanical
-reproduction. If the model were memorizing literal answers, it would have no way to
-produce the *general* program for an input it never saw — it would either reproduce a
-memorized constant or fail. When it instead emits `def solve(a,b): return a+b`, it has
-demonstrated it is not reproducing a stored literal; it is generating a general
-program from a general rule.
+The canary is a sharp probe, and it is worth explaining what it does and does not
+show. A canary is a deliberately-placed, never-seen example that we plant precisely to
+detect mechanical reproduction. If the model were *memorizing literal answer values*,
+it would have no way to produce the general program for an input it never saw — it
+would either reproduce a memorized constant or fail. When it instead emits
+`def solve(a,b): return a+b`, it is not reproducing a stored *value*; it is producing a
+general program.
+
+Two things the canary does **not** settle. First, it is a *held-out probe*, so it
+demonstrates transfer to a prompt we did not train on — it is evidence the model
+generalizes, not proof that it has "understood" the arithmetic. The model emits
+`return a + b`; it does not execute the addition. Python does the arithmetic. What the
+model learns is a request-to-program mapping (and calling it a "canary" with the
+memorization connotation is really a held-out-probe result, not the classic
+memorization canary, which instead plants a distinctive training example and measures
+whether it is later reproduced).
+
+Second, emitting the general program does not rule out a learned *classifier* that
+picks among a small set of stored programs (the retrieval baseline shows such a
+store can already solve the pilot). A memorized-then-selected correct general program
+would also pass unseen inputs, so a passing program is not by itself decisive evidence
+against program memorization. What the combination of results (held-out 59/60 + the
+retrieval baseline needing the exact matching wording, while the neural model
+generalizes) supports is a modest claim: for simple primitives, the model forms a
+general program-generating rule. It does not support the stronger claim that the model
+"performs arithmetic" or "understands addition."
 
 ## The result
 

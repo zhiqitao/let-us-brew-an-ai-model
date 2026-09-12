@@ -14,9 +14,9 @@ The funny thing about building a ladder is that the interesting discovery is rar
 | Level | Capability | Measured result |
 |-------|-----------|-----------------|
 | 1 | arithmetic | ✅ learned, ~0.90 in-dist |
-| 2–3 | variables, conditionals | ✅ learned |
-| 4–5 | lists, indexing | ✅ learned |
-| 6 | loops | ✅ learned |
+| 2–3 | variables, conditionals | ✅ appears learned (~0.90 in-dist for arithmetic; conditionals not isolated) |
+| 4–5 | lists, indexing | partially — `list_sum`/`list_len` learned; indexing not isolated |
+| 6 | loops | not isolated (no loop operation in the primitives we tested) |
 | 7 | **composition** | ❌ **0.000** — the wall |
 | 8 | simple functions | not isolated |
 

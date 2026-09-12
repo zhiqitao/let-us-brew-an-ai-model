@@ -60,17 +60,22 @@ iteration loop, and a fast loop is what lets a scientific investigation move.
 
 A common mistake is to quote just a round "10M parameters." We refuse to hide the
 important part. The model has **884,224** parameters, of which only **830,592** are
-the actual computation. The other **53,632** are the **embeddings** — the token
-embedding (291 × 128 = 37,248) plus the positional embedding (128 × 128 = 16,384) —
-which is the part that just stores the vocabulary and position, not the part that
-does the learning. If we do not separate them, "0.9M parameters" can mislead: a big
-fraction might just be the embedding tables, not any computation.
+in the transformer blocks. The other **53,632** are the **embeddings** — the token
+embedding (291 × 128 = 37,248) plus the positional embedding (128 × 128 = 16,384).
+The embeddings are *also* learned parameters: they are trainable and they do store
+task-relevant representations. What distinguishes them from the block weights is
+that each one is only ever *looked up* (a token maps to its vector), whereas the
+block weights are *multiplied* many times per forward pass. So at ~6% of parameters,
+the embedding tables are a small share, but they are not inert — we report the split
+between embedding and non-embedding so a naive "M parameters" figure is not dominated
+by the lookup tables rather than the computation.
 
 So we always report the split: embedding vs. non-embedding.
 
 This matters more than it might seem. At tiny scale, the ratio of vocabulary to
-computation is high, which means a naive "M parameters" figure can be dominated by a
-table lookup that does no learning at all. Separating the two lets us and the reader
+computation is high, which means a naive "M parameters" figure can be dominated by
+the embedding lookups rather than the computation that must actually reason about the
+program. Separating the two lets us and the reader
 see the *actual* computation the model brings to bear — the part that must do the
 learning. It is a small discipline, but it keeps the conversation honest.
 

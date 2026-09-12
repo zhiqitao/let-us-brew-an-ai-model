@@ -8,14 +8,19 @@ machines, our **rivals**, and why they are the most important comparison in the 
 
 ![The rivals](figures/fig_rivals.png)
 
-The template is the floor, retrieval is the ceiling, and our model is the question
-mark in the middle.
+The template and the retrieval baseline are *sanity checks*, not a score ceiling. Our
+model is the question mark in the middle: it has to clear them to be worth anything,
+but beating a baseline is never a bad result — it just needs to be interpreted
+correctly.
 
 The value of a neural model's success is judged *relative to a baseline*. If a
 hand-written rule or a lookup table solves the task as well as the trained model, then
 the model isn't demonstrating capability — it's re-deriving something simpler. The
 baselines are what turn "the model works" into "the model does more than a simpler
-machine could."
+machine could." But a baseline is not a *ceiling* a result must sit below: a strong
+model beating a baseline is a good outcome. The baselines tell us *whether the task
+was already easy for a simpler machine*, which is the information we need to
+interpret the model's score — they do not cap how good a model is allowed to be.
 
 This is a point that deserves to be stated bluntly, because it is easy to overlook: a
 number in isolation is almost meaningless. "The model solved 90% of the problems"
@@ -80,7 +85,7 @@ means:
 
 And the third possibility is the one that matters most: **if the model falls *below*
 both baselines under some change, we have found a genuine limit of the model's
-learning.** The rivals are not just a ceiling to beat; they are a floor that reveals
+learning.** The rivals are a reference point, not a ceiling to beat; they reveal
 when the neural model is doing something *no simple machine can do* — and, more
 valuably, when the neural model has become *worse* than a simple machine, which is a
 powerful signal of surface-tied, non-general learning.

@@ -88,8 +88,9 @@ Going from ~0.9M to 29.3M parameters:
 - **Composition is 0.000 at every size.** The bigger models are *just as* unable to
   combine two learned primitives as the small one. Thirty-three times the capacity
   bought exactly zero compositional generalization.
-- **In-distribution is a stable plateau** (0.773–0.900) — capacity neither helped nor
-  hurt the narrow task; it just never helped compose.
+- **In-distribution is a roughly stable plateau** (0.773–0.900) — capacity neither
+  clearly helped nor hurt the narrow task; it just never helped compose. (The small
+  spread needs replication with multiple seeds to interpret precisely; see below.)
 
 ## What this means
 
@@ -109,9 +110,15 @@ the ability to compose.
 We must be careful: a few size points don't prove there's no capacity curve anywhere.
 But the shape is telling. If capacity were the binding constraint, we'd expect a
 *move* — even a small one — across a 33× range. We see none: composition is 0.000 at
-all four sizes. And crucially, the in-distribution scores are all in a healthy plateau
-(0.773–0.900) across a 33× range, so "the bigger model didn't try hard" is not the
-explanation — it tried exactly as hard and reached the same plateau.
+all four sizes. The in-distribution scores span 0.773–0.900 across a 33× range. That
+spread (0.773 vs 0.900 at 10.2M vs 0.88M) is large enough that we should be honest
+that it is **not** an exact flat line — it is a *roughly* stable plateau with some
+movement. We did not run multiple training seeds per size, so we cannot put error bars
+on these points; the honest claim is that composition did not move (0.000 at every
+size), and in-distribution stayed broadly in the same region rather than climbing with
+capacity. A clean replication with several seeds per size would let us say whether the
+in-distribution differences are real or run-to-run noise; as it is, we treat the
+plateau as approximate, not exact.
 
 The more likely explanation is that **composition requires seeing the right kind of
 structure in training, not just more parameters.** A model that only ever sees

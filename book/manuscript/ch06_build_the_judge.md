@@ -85,8 +85,8 @@ and it is the kind of thing that quietly shapes every number the judge produces.
 
 ## Mutation testing: red-teaming the judge
 
-The most important step is treating the judge as something that must be *proven*
-sound. We **mutate** the reference solution into deliberately-broken versions and ask:
+The most important step is treating the judge as something that must be *vetted*. We
+**mutate** the reference solution into deliberately-broken versions and ask:
 *does the judge catch them?*
 
 We generate mutants such as: `+` → `-`, `>` → `>=`, remove the `return`, swap the
@@ -95,8 +95,14 @@ through the hidden tests. A good test suite **rejects** an obviously-wrong mutan
 weak test suite lets it pass.
 
 The mutation score — the fraction of wrong mutants the tests catch — is a measure of
-how much we can trust the judge. If an obviously-broken program passes our tests, the
-tests are too weak, and we add more until they discriminate.
+how much we can trust the judge on *the cases it is designed for*. An obviously-broken
+program passing our tests means the tests are too weak for that class of error. Two
+honest caveats: (1) passing a finite hidden-test suite means passing *that suite*, not
+proving correctness for every allowed input — deterministic scoring is not complete
+semantic verification; (2) equivalent mutants (e.g. swapping `+` operands) do not make
+a program incorrect, so those should not count against us. We report the mutation
+behaviour honestly rather than claim the judge is "proven sound"; it is a well-tested
+*heuristic* verifier within the cases we constructed, not a proof.
 
 This is the "test the tester" principle, and it is the reason we do not trust the
 judge just because we wrote it. The judge is the instrument of measurement, so we
@@ -111,9 +117,12 @@ we evaluated our model, it **scored 0.000** — reported a total syntax failure 
 every problem. And the model wasn't wrong. The *judge* was.
 
 The root cause was a generation bug on our side: the model produced a complete, correct
-program, but it was followed by padding (null bytes), and `ast.parse` rejects null
-bytes. So the judge scored a perfectly valid program as a syntax failure. Once we
-truncated the padding, the model's true score emerged: **0.897**.
+program, but it was followed by padding (null bytes), and `ast.parse` correctly rejects
+null bytes — they are not valid source. So the fault was in the *generation/extraction
+contract*: those padding bytes were meant as a termination or padding marker that we
+needed to strip, not as part of the program. `ast.parse` behaved correctly; our
+extraction forgot to truncate the padding before parsing. Once we truncated it, the
+model's true score emerged: **0.897**.
 
 That moment is worth more than any passing test. It is the book's core lesson applied
 to ourselves: **never trust a number from a system we have not audited.** If we had

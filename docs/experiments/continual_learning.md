@@ -34,6 +34,35 @@ the old one, or did learning B destroy it?).
    acquiring a new capability can destroy an old one, and the *way* you train (replay
    vs sequential) determines whether it does.
 
+## The what-is-in-the-box caveat (honest reframing)
+
+A precise note on the design as run. The "replay/mixed" condition interleaves A and B
+**from the start** (`allt = A_train + B_train`, shuffled) — that is effectively **joint
+training**, not "learn A first, then continue to B while replaying A." Both comparisons
+are legitimate and answer different questions:
+
+- **Sequential (multitask A then B, no A during B):** a *continual-learning* setup —
+  does learning the second capability destroy the first? → A-retention 0.000.
+- **Replay/mixed (A and B trained together):** a *joint-training* control — if both are
+  seen together throughout, is there a forgetting problem at all? → A-retention 1.000.
+
+So the honest claim is: **the forgetting seen under sequential training is avoided when
+the model is simply trained jointly on both.** That is a real and useful contrast, but
+it is not the same as demonstrating that a *replay buffer* salvages an already-trained
+first model. A stronger continual-learning test would start from a single A-trained
+checkpoint, then compare B-only continuation against B-plus-A-replay continuation
+(from the same starting point), with matched budgets. We have not run that form, so
+"replay prevents forgetting" should be read as "joint re-exposure of A alongside B
+prevents forgetting," not "replay-after-A-first does."
+
+Relatedly, "replay prevents it with zero cost" is too broad. The table shows **equal B
+acquisition** (0.889 in both), not zero storage, compute, or data-retention cost.
+The joint model is trained on roughly twice the distinct examples and takes a longer
+training run; it is a *behavioral* wash on B, not a *free* difference. And a behavioral
+A-retention score of 0.000 does not establish that the old capability was literally
+erased from the weights — it establishes that, behaviorally, the model no longer solves
+A. Those are different claims.
+
 ## Why this matters for the book
 
 This is the single cleanest case in the book where the **training protocol — not the

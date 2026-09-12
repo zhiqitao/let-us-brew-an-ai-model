@@ -20,7 +20,7 @@ reworded instructions).
 | **minimal_diversity** | 0.500 | **0.000** |
 | **high_diversity**     | **1.000** | **1.000** |
 
-## Interpretation — the hypothesis is confirmed
+## Interpretation — the hypothesis is confirmed (with an important caveat)
 
 With the **same number of examples**, the outcome is entirely determined by *diversity*:
 
@@ -45,6 +45,30 @@ generalization. It also reframes the earlier surface and composition results: th
 surface fragility of the pilot model was a *data-diversity* problem, one that is
 fixable by training on more diverse phrasings/identifiers. (Composition — Chapter 16 —
 is a separate, deeper limit not resolved by surface diversity.)
+
+## Caveat — coverage vs. generalization (an honest limitation)
+
+The reviewer's question is fair, and we have to be precise about what the surface
+score actually measures here. In `run_diversity.py`, the surface test is built with
+`id_set="words"` and **no explicit `family`**, so the renderer picks a *random* family
+per operation (`family=None` → `rng.choice(fams)`). The high-diversity training pool,
+however, contains **all** families × **both** id-sets (letters + words).
+
+That means the surface test's word-identifiers *and* its (randomly-chosen) family were
+**both present in the high-diversity training set**. So the high-diversity **1.000** on
+the surface test is, at least in part, **coverage** — the model had seen that surface —
+rather than generalization to a wording family it had never seen. By contrast, the
+minimal-diversity model saw only the first family × letters, so the surface test was
+genuinely unseen for it, and its 0.000 is a real generalization failure.
+
+**Consequence:** the minimal→0.000 vs high→1.000 gap is real and reproducible, but the
+strong reading — "diversity produces generalization to *unseen* surfaces" — is **not**
+fully established by this design. What it does establish is that
+**diverse training covers more surfaces.** Whether the diverse model generalizes to a
+genuinely held-out *family* (not just held-out identifiers) is a separate, untested
+question — it would need a test family excluded from the diverse training pool. This is
+recorded as a known limitation and is exactly the kind of control the book should run
+before claiming the strong version.
 
 ## Reproduce
 ```bash
