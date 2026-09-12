@@ -47,9 +47,8 @@
 % wrapped long lines (fontsize=\small keeps listings compact).
 \renewenvironment{verbatim}{\Verbatim[breaklines=true, fontsize=\small]}{\endVerbatim}
 
-% Make an escaped underscore a discretionary break point so long run IDs and
-% filenames (snake_case tokens) wrap instead of overflowing the 6x9 text block.
-% This only relaxes long-token breaking and never forces a break.
+% Make escaped underscores breakable so long run IDs / filenames wrap instead of
+% overflowing the 6x9 text block. Only relaxes long-token breaking; never forces.
 \makeatletter
 \let\origUSchar\_
 \renewcommand{\_}{\origUSchar\allowbreak}
@@ -69,6 +68,9 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{longtable}
+% Render pandoc tables slightly smaller and tighter so wide/registry tables fit
+% the narrower 6x9 text block without overflowing.
+\setlength{\tabcolsep}{3pt}
 
 % ---- pandoc generated-command compatibility macros ----
 \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -106,11 +108,21 @@
 \AtBeginDocument{\frenchspacing}
 
 % Allow paragraphs to stretch rather than overflow to the right margin.
-\emergencystretch=3em
+\emergencystretch=2em
 % Tighten inter-column padding in tables so wide tables fit the text block.
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{3pt}
 % Let code blocks break long lines (mono) instead of overflowing.
-\setlength{\emergencystretch}{2em}
+\setlength{\emergencystretch}{3.5em}
+% Use sloppy line breaking so justified prose produces no/very few overfull lines
+% (we prefer slightly looser spacing over text running past the right margin).
+\sloppy
+
+% Allow inline \texttt to break at internal spaces in justified prose.
+\makeatletter
+\let\origtextttA\texttt
+\def\texttt#1{{\sloppy\origtextttA{#1}}}
+\makeatother
+
 
 % ---- Select color scheme ----
 \usepackage[x11names]{xcolor}

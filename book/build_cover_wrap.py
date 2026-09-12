@@ -90,15 +90,15 @@ def main():
     p.append('</g>')
 
     # barcode zone (bottom-right of back panel)
-    bx, by = b_ox + b_inner_w - 2.6, BLEED + TRIM_H - 0.85
-    bw, bh = 2.4, 1.30
+    bx, by = b_ox + b_inner_w - 2.6, BLEED + TRIM_H - 0.75
+    bw, bh = 2.4, 0.72
     p.append(f'<rect x="{pt(bx)}" y="{pt(by)}" width="{pt(bw)}" height="{pt(bh)}" fill="#FFFFFF" stroke="#B9B09E" stroke-width="1.5"/>')
-    p.append(f'<text x="{pt(bx+0.18)}" y="{pt(by+bh/2+0.10)}" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="10" fill="#8A8579">ISBN 000-0-00000-00-0</text>')
+    p.append(f'<text x="{pt(bx+0.18)}" y="{pt(by+0.60)}" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="9" fill="#8A8579">ISBN 000-0-00000-00-0</text>')
     # barcode bars
     bar_x = bx + 0.18
     for i in range(24):
         bw2 = 0.018 if i % 3 == 0 else 0.008
-        p.append(f'<rect x="{pt(bar_x)}" y="{pt(by+0.12)}" width="{pt(bw2)}" height="{pt(0.62)}" fill="#3B3B38"/>')
+        p.append(f'<rect x="{pt(bar_x)}" y="{pt(by+0.10)}" width="{pt(bw2)}" height="{pt(0.36)}" fill="#3B3B38"/>')
         bar_x += bw2 + 0.018
 
     # ---------- SPINE ----------

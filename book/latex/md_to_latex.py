@@ -55,6 +55,96 @@ IMG_RE = re.compile(r"!\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]\(([^)]+)
 TITLE_RE = re.compile(r"^#\s+(.+?)\s*$", re.M)
 ORD_RE = re.compile(r"^(#{2,3})\s+\d{1,2}\.\s+", re.M)
 
+
+def rebalance_artifact_col(block):
+    """Widen the Artifacts column of a registry-style table at the expense of narrow
+    numeric columns, so long filenames fit on fewer lines."""
+    # Find the colspec section (before \toprule).
+    i = block.find("\\toprule")
+    if i < 0:
+        return block
+    spec = block[:i]
+    cols = re.findall(r">{\\raggedright\\arraybackslash}p\{([0-9.]+)\\linewidth\}", spec)
+    if len(cols) < 5:
+        return block
+    fracs = [float(x) for x in cols]
+    # Heuristic: the Artifacts column is the second-to-last (before Key result).
+    # Widen it, shrink the narrow numeric columns (typically the 'Steps','Seed'
+    # columns which are index ~3..4).
+    n = len(fracs)
+    art_idx = n - 2
+    total = sum(fracs)
+    # Give Artifacts a bigger share: 2x a typical column, capped.
+    avg = total / n
+    target = min(avg * 2.2, total * 0.28)
+    delta = target - fracs[art_idx]
+    if delta <= 0:
+        return block
+    # Take delta from the widest non-artifact column(s) that have room (>avg*0.6).
+    # Rebuild colspec lines.
+    # Split spec by > prefix to preserve each p{} line.
+    parts = re.split(r"(?=>{\\raggedright\\arraybackslash}p\{[0-9.]+\\linewidth\})", spec)
+    newfracs = list(fracs)
+    remaining = delta
+    # steal from smaller-priority narrow numeric columns (prefer index 3,4 then others)
+    order = [3, 4, 2, 5, 1, 0]
+    for idx in order:
+        if remaining <= 0.001:
+            break
+        if idx >= n or idx == art_idx:
+            continue
+        take = min(newfracs[idx] - avg * 0.4, remaining)
+        if take > 0.001:
+            newfracs[idx] -= take
+            remaining -= take
+    newfracs[art_idx] += delta - remaining
+    # Rebuild the colspec string, preserving prefix structure.
+    out = []
+    fiter = iter(newfracs)
+    for seg in parts:
+        fs = re.search(r"p\{([0-9.]+)\\linewidth\}", seg)
+        if fs:
+            newval = next(fiter)
+            seg = re.sub(r"p\{([0-9.]+)\\linewidth\}",
+                         lambda mm: "p{%.4f\\linewidth}" % newval, seg)
+        out.append(seg)
+    return "".join(out) + block[i:]
+
+def fix_wide_tables(tex_path):
+    """Wrap wide pandoc longtables in \\small and make filename-like tokens breakable
+    so the narrower 6x9 text block does not overflow. A table with many columns (or
+    columns summing to a large fraction of \\linewidth) gets a \\small group, and long
+    `<name>.json` / `<name>.pt` tokens in table cells get an \\allowbreak before the
+    extension so they can split at the period."""
+    tex = open(tex_path, encoding="utf-8").read()
+    tbl_re = re.compile(
+        r"(\\begin\{longtable\}.*?\\end\{longtable\})", re.S)
+    def repl(m):
+        block = m.group(1)
+        spec = block.split("\\toprule")[0]
+        fracs = [float(x) for x in re.findall(r"p\{([0-9.]+)\\linewidth\}", spec)]
+        ncols = len(fracs)
+        wide = (ncols >= 7) or (sum(fracs) >= 0.70 and ncols >= 5)
+        if not wide:
+            return block
+        # <name>.ext  ->  <name>\allowbreak.ext  (split at the period)
+        block = re.sub(
+            r"([A-Za-z0-9_]+)[.](json|pt|py|txt|npz)",
+            lambda m: m.group(1) + "\\allowbreak." + m.group(2), block)
+        # For the experiment-registry-type table the Artifacts column (holding the
+        # long manifest/checkpoint filenames) needs more width than the narrow
+        # numeric columns. Rebalance the colspec: shrink the short numeric columns
+        # and give the widest-content columns (those whose body contains ".json"/
+        # ".pt", i.e. the Artifacts column) a larger share. We do this by
+        # widening the column that appears just before the Key result column.
+        block = rebalance_artifact_col(block)
+        return "\\begingroup\\footnotesize\n" + block + "\\endgroup"
+    new = tbl_re.sub(repl, tex)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
 def fix_colspec(tex_path):
     """Rewrite pandoc's relative-width table colspecs into simple
     p{<frac>\\linewidth} columns, scaled down so the full table (columns + the
@@ -238,7 +328,7 @@ def convert_chapter(fn, mapping, outbase):
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         print("pandoc fail %s: %s" % (outbase, r.stderr[-300:]))
-    fix_colspec(out); fix_figure_width(out); wrap_figures(out)
+    fix_colspec(out); fix_figure_width(out); wrap_figures(out); fix_wide_tables(out)
     return out
 
 def main():

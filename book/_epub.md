@@ -4132,20 +4132,20 @@ confused with `abs_add` (which takes two ints).
 
 ## Registry
 
-| Experiment | Run ID | Arch (emb/L/H) | Steps | Seed | Model params | Manifest | Checkpoint | Key result |
-|---|---|---|---|---|---|---|---|---|
-| Stage 1 pilot | `stage1_seed0` | 128/4/4 | 1500 | 0 | 884,224 | stage1.json | stage1.pt | in-dist 0.897; loss 5.84→0.019 |
-| Stage 3 surface | `stage3_surface` | 128/4/4 | 1500 | 0 | 884,224 | stage3_surface.json | stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
-| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 | 1500 | 0 | 884,224 | (uses pilot ckpt) | stage1.pt | in-dist 0.900; composition 0.000 |
-| Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 | 1000 | 0 | 6,500,352 | stage4_composition_6p5m.json | stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
-| Stage 4 — 10.2M | `stage4_10m` | 288/10/8 | 800 | 0 | 10,195,776 | stage4_composition_10m.json | stage4_10m.pt | in-dist 0.773; composition 0.000 |
-| Stage 4 — 29.3M | `stage4_29m` | 448/12/8 | 800 | 0 | 29,290,240 | stage4_composition.json | stage4_composition.pt | in-dist 0.897; composition 0.000 |
-| Data scaling | `data_scaling` | 128/4/4 | 800 | 0 | 884,224 | data_scaling.json | — | in-dist 0.100→0.641 (100→3000) |
-| Quantity vs diversity | `diversity` | 128/4/4 | 900 | 0 | 884,224 | diversity.json | — | minimal 0.500/0.000; high 1.000/1.000 |
-| Memorization | `memorization` | 128/4/4 | 1500 | 0 | 884,224 | memorization.json | — | 59/60 held-out; canary → general program |
-| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json | — | sequential A 0.000; joint A 1.000, B 0.889 |
-| Composition exposure | `composition_exposure_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_exposure_pilot.json | stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
-| Composition diversity | `composition_diversity_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_diversity_pilot.json | stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
+| Experiment | Run ID | Arch (emb/L/H) | Steps | Seed | Model params | Artifacts (manifest / checkpoint) | Key result |
+|---|---|---|---|---|---|---|---|
+| Stage 1 pilot | `stage1_seed0` | 128/4/4 | 1500 | 0 | 884,224 | stage1.json / stage1.pt | in-dist 0.897; loss 5.84→0.019 |
+| Stage 3 surface | `stage3_surface` | 128/4/4 | 1500 | 0 | 884,224 | stage3_surface.json / stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
+| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 | 1500 | 0 | 884,224 | (uses pilot ckpt) / stage1.pt | in-dist 0.900; composition 0.000 |
+| Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 | 1000 | 0 | 6,500,352 | stage4_composition_6p5m.json / stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
+| Stage 4 — 10.2M | `stage4_10m` | 288/10/8 | 800 | 0 | 10,195,776 | stage4_composition_10m.json / stage4_10m.pt | in-dist 0.773; composition 0.000 |
+| Stage 4 — 29.3M | `stage4_29m` | 448/12/8 | 800 | 0 | 29,290,240 | stage4_composition.json / stage4_composition.pt | in-dist 0.897; composition 0.000 |
+| Data scaling | `data_scaling` | 128/4/4 | 800 | 0 | 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
+| Quantity vs diversity | `diversity` | 128/4/4 | 900 | 0 | 884,224 | diversity.json / — | minimal 0.500/0.000; high 1.000/1.000 |
+| Memorization | `memorization` | 128/4/4 | 1500 | 0 | 884,224 | memorization.json / — | 59/60 held-out; canary → general program |
+| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json / — | sequential A 0.000; joint A 1.000, B 0.889 |
+| Composition exposure | `composition_exposure_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
+| Composition diversity | `composition_diversity_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
 
 ## The scaling run: an honesty note on "same protocol"
 
