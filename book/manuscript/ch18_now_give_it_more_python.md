@@ -1,5 +1,14 @@
 # 18. Now Give It More Python
 
+*An honest scope note up front: this chapter is about the discipline of widening
+the world, not a report of a measured widening experiment. We did not, in this book,
+actually run a full sweep of "add more Python and re-measure." What we did measure is
+that the composition failure (Chapter 16) was not a syntax problem — the model had
+the syntax and still could not compose. That is a real finding. But the versioning and
+step-by-step widening described below is the framework we would use to test new
+capability, and we state it as such rather than as a completed experiment. Where we
+say "we might add," it is a proposal, not a result.*
+
 Our pilot model lived inside a deliberately small corner of Python — a bit of
 arithmetic, a couple of comparisons, a few list operations, some basic if/else. That
 tiny corner is what let us measure capability cleanly: change one small thing at a
@@ -42,7 +51,7 @@ at a time, and always with a reason. For example, we might add:
 - a new data structure (e.g. dictionaries, if we had been lists-only),
 - short-circuit boolean logic, or a new comparison form.
 
-Each addition is a *step up a ladder*, not a teardown of the wall. And each one
+Each addition is a *controlled step*, not a teardown of the wall. And each one
 changes the set of problems the model can even express. The pilot's corner was
 deliberately small partly so that the *boundary* would be legible — and partly so
 that, when we widen it later, we can see the effect of *just that* widening.
