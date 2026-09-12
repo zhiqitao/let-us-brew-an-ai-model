@@ -143,6 +143,28 @@ key.
 
 ---
 
+## 10. A diagnostic schema we propose but did not measure
+
+Many of the failures above are reported as a single "0.000" pass@1 number. That is
+honest but blunt: it does not tell a reader *why* a run failed. A candidate program
+can fail at several distinct points — it never parses, it parses but the judge
+rejects it, or it passes the judge but is the wrong kind of program.
+
+For each of the four judge stages we would like to record not just pass/fail but
+**failure-stage counts**: how many candidates fell over at the parse of the reference,
+at the numerical comparison, at the comparison of the mutation count, or at the
+pass/fail of every hidden test. That lets a reader see whether a 0.000 is a
+*syntax collapse* (the model emits garbage) or a *semantic near-miss* (the model
+emits a coherent program that is just wrong).
+
+> We did **not** collect these per-stage counts for the experiments in this book —
+> the evaluator recorded only the final verdict, not the intermediate stage at which
+> each candidate stopped. Adding stage-level accounting is straightforward (the four
+> judge stages already exist as functions, so we would count candidates at each one)
+> and we leave the data and the figure as proposed work, not as a measured result.
+
+---
+
 *The point of this ledger is the opposite of marketing. Every entry above, in its own
 way, made the final understanding sharper — and several of them — the broken evaluator,
 the wording leak, the task-too-easy result, the 0/16 human test — are among the most
