@@ -63,10 +63,14 @@ Here is the result, and it is unambiguous:
 
 Let us read this carefully, because the meaning is subtle.
 
-On the primitive operations it saw, the model scores 0.900 — good. But on the
-composite operations, it scores **0.000**. Not 0.1, not "sometimes," not "close." Zero.
-The model never produced a correct program for any composite operation, even though
-every composite is a combination of primitives it individually knows.
+On the primitive operations it saw, the model scores **0.900 in aggregate** — that is
+the pass@1 averaged over all the primitive operations in the split, not a claim that
+every single primitive hits 0.900 individually (we did not publish a per-operation
+breakdown, so the aggregate should not be read as per-primitive accuracy). But on the
+composite operations, it scores **0.000** with the same aggregate reading. Not 0.1, not
+"sometimes," not "close." Zero. The model never produced a correct program for any
+composite operation it saw, even though every composite is a combination of primitives
+the aggregate shows it largely knows.
 
 And here is the *instructive* baseline check: the baselines fail too. The retrieval
 baseline gets 0.000 because there is nothing to retrieve that is a composite — its

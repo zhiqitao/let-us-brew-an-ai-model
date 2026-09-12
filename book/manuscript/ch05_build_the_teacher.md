@@ -17,7 +17,10 @@ way we build it, and it's the single most important design decision in the whole
 ![The teacher](figures/fig_teacher.png)
 
 One semantic record is the single source of truth: the program, the task, and the
-tests all derive from it, so they cannot drift apart.
+tests all derive from it, so they are much less likely to drift apart than if each were
+written by hand. This is not a guarantee — a bug in the reference implementation or the
+renderer could still make all three consistently wrong, which is exactly why we later
+test the judge against known-correct programs.
 
 The naive way to generate data is to write a template and fill in a few blanks:
 
@@ -42,11 +45,14 @@ SEMANTIC INTENT
       -> HIDDEN TESTS
 ```
 
-The key insight is at the top: **one semantic record drives all three.** There is no
-way for the sentence to disagree with the code or the tests, because they are all the
+The key insight is at the top: **one semantic record drives all three.** There is little
+room for the sentence to disagree with the code or the tests, because they are all the
 same meaning, rendered three ways. If we start with "the function should return
 `a + b`," the sentence says "sum," the code adds, and the tests check addition — and
-they can't drift apart, because they all came from the same seed.
+they are far less likely to drift apart, because they all came from the same seed.
+(Agreement is still only as good as that seed: a wrong reference makes the sentence,
+code, and tests agree with each other but all be wrong, which is why the judge is
+itself tested.)
 
 ## What a "semantic record" looks like
 

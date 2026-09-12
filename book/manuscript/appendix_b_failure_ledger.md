@@ -123,8 +123,13 @@ fabricated review.
 **What happened.** Long CPU training runs occasionally crashed with signal 4 (SIGILL)
 on the AVX-only Ivy Bridge CPU — intermittently, one run succeeds and the next dies.
 
-**What we learned.** Hardware quirks are real and part of the brew. The fix is
+**What we learned.** Hardware quirks are real and part of the brew. The apparent fix was
 `TORCH_DISABLE_AVX2=1` plus a retry loop (and `OMP_NUM_THREADS=1` for larger models).
+We report this as a *workaround we used*, not as a confirmed root-cause repair: the
+crashes were intermittent, so a successful retry after setting the variable does not by
+itself prove the variable is what fixed it, and we did not independently verify that the
+installed torch build actually reads this environment variable. All we can claim is
+that wrapping runs in a retry loop made them succeed reliably.
 
 **Action.** Wrapped all long runs in a retry loop; documented the workaround.
 
