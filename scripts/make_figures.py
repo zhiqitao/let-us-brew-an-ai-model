@@ -111,39 +111,41 @@ ax.set_title("Final task accuracy: sequential vs joint training (measured)")
 ax.legend(loc="upper left", frameon=False, fontsize=8); ax.grid(axis="y", alpha=0.3)
 save(fig, "fig_continual.png")
 
-# ---- 6. Live behavior sweep: pass/fail across all 5 trained models ----
-# From scripts/sweep_models.py (measured): every model solves both in-distribution
-# cases and fails reword / compose / out-of-scope. Green=PASS, red=FAIL.
+# ---- 6. Live behavior sweep: illustrative prompts on selected checkpoints ----
+# From scripts/sweep_models.py. Cells are one illustrative prompt per case.
+# NOTE: 'out-of-scope' is NOT a task failure -- it is a request Gate B would
+# decline; the model (without Gate B in front) emits noise, so we label it
+# distinctly rather than score it as a failed task.
 fig, ax = plt.subplots(figsize=(8.2, 4.6))
 models = ["0.88M\npilot", "0.88M\nsurface", "6.5M", "10.2M", "29.3M\n(30M)"]
-cases = ["in-dist\nsum", "in-dist\nproduct", "reworded", "compose", "out-of-scope"]
-# PASS=1 FAIL=0, from the measured sweep (identical pattern across all sizes)
+cases = ["familiar\nsum", "familiar\nproduct", "reworded", "new\ncombination", "out-of-scope"]
+# 1=correct program, 0=no valid program; the out-of-scope column is NOT a task the
+# model was expected to solve, so it gets its own category (grey) not a red 'fail'.
+# 2 marks "out of scope / not a task".
 data = np.array([
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 2],
+    [1, 1, 0, 0, 2],
+    [1, 1, 0, 0, 2],
+    [1, 1, 0, 0, 2],
+    [1, 1, 0, 0, 2],
 ])
-cmap = matplotlib.colors.ListedColormap(["#C44E52", "#55A868"])
-bounds = [-0.5, 0.5, 1.5]
+cmap = matplotlib.colors.ListedColormap(["#C44E52", "#55A868", "#bbbbbb"])
+bounds = [-0.5, 0.5, 1.5, 2.5]
 norm = matplotlib.colors.BoundaryNorm(bounds, cmap.N)
 im = ax.imshow(data, cmap=cmap, norm=norm, aspect="auto")
 ax.set_xticks(np.arange(len(cases))); ax.set_xticklabels(cases, fontsize=8)
 ax.set_yticks(np.arange(len(models))); ax.set_yticklabels(models, fontsize=8)
 for i in range(len(models)):
     for j in range(len(cases)):
-        out = " \u2713" if data[i, j] else " \u2717"
-        fc = "white" if data[i, j] else "white"
-        ax.text(j, i, out, ha="center", va="center", color="white", fontsize=11, fontweight="bold")
-ax.set_title("Live behavior: every trained model solves the task, and none survives\na reword, a new combination, or an out-of-scope request (measured, all 5)")
-ax.set_ylabel("model (params)")
-# legend
+        v = data[i, j]
+        mark = "\u2713" if v == 1 else ("\u2717" if v == 0 else "x")
+        ax.text(j, i, mark, ha="center", va="center", color="white", fontsize=11, fontweight="bold")
+ax.set_title("Illustrative prompts on five selected checkpoints\n(one prompt per case; green=correct, red=no valid program)")
+ax.set_ylabel("checkpoint (params)")
 import matplotlib.patches as mpatches
-ax.legend(handles=[mpatches.Patch(color="#55A868", label="pass (correct program)"),
-                   mpatches.Patch(color="#C44E52", label="fail (no valid program)")],
-          loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=2, fontsize=8)
+ax.legend(handles=[mpatches.Patch(color="#55A868", label="correct program"),
+                   mpatches.Patch(color="#C44E52", label="no valid program"),
+                   mpatches.Patch(color="#bbbbbb", label="out of scope (not a task)")],
+          loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=3, fontsize=8)
 fig.tight_layout()
 save(fig, "fig_live_sweep.png")
-
-print("\nall figures written to", FIG)

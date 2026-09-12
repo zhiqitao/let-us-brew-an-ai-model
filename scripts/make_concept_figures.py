@@ -296,26 +296,30 @@ def fig_rivals():
 # 8. THE SMALLEST BRAIN (ch08) — tokens -> embedding -> transformer -> output.
 # =========================================================================
 def fig_brain():
-    fig, ax = new_fig()
-    ax.text(50, 95, "THE SMALLEST BRAIN: 0.88M parameters", ha="center",
-            va="center", fontsize=11, fontweight="bold", color=INK)
-    box(ax, 5, 62, 18, 18, "TOKENS\n(291 vocab)", fc=BLUE, fs=8)
-    box(ax, 30, 62, 16, 18, "EMBED\n+pos", fc=BLUE, fs=8)
-    box(ax, 52, 62, 16, 18, "TRANSFORMER\nblocks\n(attention)", fc=ORANGE, fs=8)
-    box(ax, 74, 62, 18, 18, "OUTPUT\nlogits → token", fc=GREEN, fs=8)
-    arrow(ax, 23, 71, 30, 71)
-    arrow(ax, 46, 71, 52, 71)
-    arrow(ax, 68, 71, 74, 71)
-    note(ax, 5, 50, "a tiny decoder-only\nGPT. Small enough to\ntrain on one CPU core,\nbut with real attention.", fs=8, color=INK)
-    note(ax, 55, 50, "everything is measured:\nthe same architecture,\njust wider / deeper.", fs=8, color=INK)
-    box(ax, 5, 18, 88, 18, "This is the instrument. The experiment is the subject — the book\nis about what the model learns, not about how big it is.",
-        fc="#fbfaf6", ec=INK, fs=9, tc=INK)
+    """Figure 8.1 -- the architecture with actual numbers (emb dim, layers, heads)."""
+    fig, ax = new_fig(w=9.4, h=5.0)
+    ax.text(50, 96, "THE SMALLEST BRAIN: a 0.88M decoder-only GPT", ha="center",
+            va="center", fontsize=10.5, fontweight="bold", color=INK)
+    # pipeline with real dimensions
+    box(ax, 4, 70, 20, 14, "TOKENS\n(291 vocab)", fc=BLUE, fs=8)
+    box(ax, 31, 70, 18, 14, "EMBED\ntok=291×128\npos=128×128", fc=BLUE, fs=7.5)
+    box(ax, 56, 70, 20, 14, "4 BLOCKS\ncausal attention\nMLP 128→512→128", fc=ORANGE, fs=7.5)
+    box(ax, 82, 70, 16, 14, "OUTPUT\n291 logits\n→ token", fc=GREEN, fs=7.5)
+    arrow(ax, 24, 77, 31, 77)
+    arrow(ax, 49, 77, 56, 77)
+    arrow(ax, 76, 77, 82, 77)
+    autoref = "p(t+1)"  # autoregressive feedback label
+    ax.text(50, 88, "autoregressive: each predicted token is fed back as the next input",
+            ha="center", fontsize=7.5, color=INK, style="italic")
+    # key dimensions notes
+    note(ax, 4, 60, "parameters: 884,224 total (53,632 embedding\n+ 830,592 non-embedding). 4 layers × 4 heads, \nn_embd=128, block_size=128.", fs=7.2, color=INK)
+    note(ax, 4, 30, "small enough to train on one CPU core,\nbut with real (causal) self-attention.", fs=7.5, color=INK)
+    box(ax, 58, 30, 40, 22, "everything is measured: the same\narchitecture, just wider / deeper\n(6.5M, 10.2M, 29.3M).\n\nThe generated program is written by the\noutput head; a separate AST allowlist\ngates what is allowed to run.",
+        fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
+    box(ax, 4, 6, 94, 14, "This is the instrument. The experiment is the subject — the book is about what\nthe model learns, not about how big it is.",
+        fc="#fbfaf6", ec=INK, fs=8.5, tc=INK)
     save(fig, "fig_brain.png")
 
-
-# =========================================================================
-# 9. THE BREW LOOP (ch09) — the train / measure cycle that runs the book.
-# =========================================================================
 def fig_brew():
     fig, ax = new_fig()
     ax.text(50, 95, "THE BREW LOOP", ha="center", va="center", fontsize=11,

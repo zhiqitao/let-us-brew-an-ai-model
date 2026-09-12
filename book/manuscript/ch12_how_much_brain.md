@@ -27,12 +27,16 @@ thing we care about — composition — nothing changed at all.
 
 ![Model size vs composition](figures/fig_model_size.png)
 
-![Live behavior across all five trained models](figures/fig_live_sweep.png)
+![Illustrative prompts on five selected checkpoints](figures/fig_live_sweep.png)
 
-The first figure is the measured pass@1 grid; the second shows the same models *in
-action*. We run one battery of requests against each trained model and record
-whether it produced a working program. The pattern is unmistakable — the green
-column is the entire extent of what any of them learned.
+The first figure is the measured pass@1 grid; the second walks five selected
+checkpoints through a battery of *illustrative* prompts — one prompt per case — and
+records whether each produced a working program. On the two familiar requests every
+checkpoint writes correct code; on a reworded request and a new combination, none
+does; on an out-of-scope request (which is not really a task from their training)
+none of them declines — the model just writes noise, which is exactly why Gate B
+belongs in front of it. The pattern is unmistakable: the green columns are the
+entire extent of what any of them learned.
 
 ### What the models actually say
 
