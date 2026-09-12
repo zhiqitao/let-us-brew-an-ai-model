@@ -44,15 +44,18 @@ We are deliberately **not** asking whether the model "really understands" in a
 philosophical sense. We're asking narrower, answerable things: does it generalize? to
 what? and could a dumber mechanism explain the result?
 
-## The four levels of generalization
+## The four questions of generalization
 
-![The capability ladder](figures/fig_ladder.png)
+![The four evaluation questions](figures/fig_ladder.png)
 
-The ladder makes the four questions explicit. Each rung asks us to trust a result
-a little more; we never collapse them into a single number.
+The four questions make the point explicit. Each asks something distinct about a
+result, and we never collapse them into a single number. They are not a ladder — passing
+one does not establish the next; a model can answer the second question but fail the
+third and the fourth.
 
-This is the book's organizing idea. It is a ladder of how much we should
-trust a result — from "probably just remembered" to "genuinely combined."
+This is the book's organizing idea. It is four distinct questions about a result:
+from "could this just be remembering?" to "can it combine things it never saw
+combined?" and they must be reported separately.
 
 **Level 1 — Memorization.** The model reproduces something it saw in training: an exact
 example, an exact constant, a familiar phrase, a near-duplicate. *Question: could this
