@@ -140,3 +140,41 @@ The sharpest way to state it: the model did not learn *addition*. It learned the
 produces `a + b`. When the same meaning arrives in different words, the model has no
 idea what to do. And that is the difference between a system that understands and one
 that merely recites.
+
+## The human-written test set: the hardest rewording of all
+
+To push the point as far as it goes, we wrote 16 natural-language requests the way a
+*person* would actually say them — informally, varied, no templates — covering the
+pilot's primitives and its composites, and kept strictly separate from the synthetic
+training distribution. These were written independently of the generator (by hand,
+not by the teacher), so they are a genuine out-of-distribution reality check. The full
+set:
+
+1. "Take two numbers and give me back their total."
+2. "Add these two values together."
+3. "Return the result of subtracting the second number from the first."
+4. "What's the product of these two numbers?"
+5. "Tell me which of these two is the bigger one."
+6. "Which is smaller, the first or the second number?"
+7. "Give me the absolute value of this number."
+8. "Sum up every number in this list."
+9. "How many items are in this list?"
+10. "What's the first element of this list?"
+11. "Return the larger of the two, but as a positive number."
+12. "Add the absolute values of both numbers."
+13. "Give me the distance between these two numbers."
+14. "Sum the absolute values of everything in the list."
+15. "Double the first item in the list."
+16. "Return one less than the length of the list."
+
+Against the pilot checkpoint, the model solved **0 of 16**. Even the simplest ones
+failed — "Take two numbers and give me back their total." produced malformed code;
+"Tell me which of these two is the bigger one." produced `def solve(a): return a a a
++ a - b`. None produced a valid program.
+
+This is the surface-tiedness finding (the reworded 0.000 above) reproduced on
+*hand-written, out-of-distribution* phrasing. A caveat worth stating: 16 convenience
+prompts is a useful sanity check, not a statistically representative estimate of
+real-world performance, and the model was never trained on composites, so those
+failing is expected and separate. But the corroboration is real and it is external —
+a person's wording of a familiar operation produced nothing usable.
