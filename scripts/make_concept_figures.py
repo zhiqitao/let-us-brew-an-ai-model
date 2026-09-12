@@ -321,26 +321,26 @@ def fig_brain():
     save(fig, "fig_brain.png")
 
 def fig_brew():
-    fig, ax = new_fig()
+    """Figure 9.1 -- the brew loop, distinguishing training from the frozen final audit."""
+    fig, ax = new_fig(w=9.2, h=5.2)
     ax.text(50, 95, "THE BREW LOOP", ha="center", va="center", fontsize=11,
             fontweight="bold", color=INK)
-    box(ax, 10, 68, 24, 16, "GENERATE DATA\n(semantic-first)", fc=GREEN, fs=8.5)
-    box(ax, 58, 68, 24, 16, "TRAIN\n(full pass)", fc=ORANGE, fs=9)
-    box(ax, 58, 38, 24, 16, "MEASURE\n(judge on hidden\n+ reword + new)", fc=PURPLE, fs=8.5)
-    box(ax, 10, 38, 24, 16, "LEARN FROM\nTHE LOOP", fc=BLUE, fs=8.5)
-    arrow(ax, 34, 76, 58, 76)                 # generate -> train
-    arrow(ax, 70, 68, 70, 54)                 # train -> measure
-    arrow(ax, 58, 46, 34, 46)                 # measure -> learn
-    arrow(ax, 22, 54, 22, 68, style="-|>", color=INK)  # learn -> generate (close the loop)
-    note(ax, 25, 30, "each pass feeds the next: what\nwe measure shapes what we generate", fs=8, color=INK, ha="center")
-    note(ax, 10, 14, "the book is written discipline-first: measure in-distribution,\nthen push each boundary one at a time, and never mash levels together.",
-        fs=8, color=INK)
+    # training side
+    box(ax, 8, 66, 26, 16, "GENERATE DATA\n(semantic-first)", fc=GREEN, fs=8.5)
+    box(ax, 42, 66, 26, 16, "TRAIN\nfixed step budget\n(e.g. 1500 steps)", fc=ORANGE, fs=8)
+    arrow(ax, 34, 74, 42, 74)
+    # dev evaluation feeds iteration
+    box(ax, 76, 66, 22, 16, "DEV EVALUATE\n(informs iteration)", fc=PURPLE, fs=7.5)
+    arrow(ax, 68, 74, 76, 74)
+    # frozen final audit (separate, not part of the loop)
+    box(ax, 42, 36, 26, 16, "FROZEN FINAL AUDIT\n(one-time, on the\nnever-moved test set)", fc=BLUE, fs=7.5)
+    arrow(ax, 55, 66, 55, 52)
+    note(ax, 74, 44, "the frozen audit runs once\non the held-out test; it is NOT\nfed back to change training.", fs=7.0, color=INK)
+    note(ax, 8, 44, "the dev loop that iterates is separate\nfrom the one-time final audit.", fs=7.5, color=INK, ha="center")
+    note(ax, 8, 16, "each dev pass feeds the next: what we measure shapes what we generate;\nbut the final numbers come from a single frozen audit, not an adaptive one.",
+         fs=7.5, color=INK, ha="center")
     save(fig, "fig_brew.png")
 
-
-# =========================================================================
-# 10. THE CAPABILITY MAP (ch22) — the 2-axis landscape of what it learned.
-# =========================================================================
 def fig_capability_map():
     """The EVIDENCE MATRIX (D06): replaces the old schematic region map.
 
