@@ -93,6 +93,30 @@ examples spread across more variety. That distinction (Chapter 13) is where the 
 limits live: our surface and composition experiments suggest the model's real weakness
 is a *diversity and structure* gap, not a *quantity* gap.
 
+### A note on uncertainty
+
+It is worth being precise about the three very different kinds of "uncertainty" people
+sometimes conflate here:
+
+- **Fixed test score.** A pass@1 like 0.641 is the exact measured score on *this* test
+  set, under this decoding and evaluation procedure. It is a property of that dataset.
+- **Uncertainty over a target distribution.** If we wanted to say "the model scores
+  ~0.64 on new tasks of this type," we'd need a sense of how much 0.641 would vary
+  across different test sets. We do not have that: each size and each data count was
+  trained and evaluated **once**, with one seed, so we cannot put error bars on these
+  points.
+- **Seed variation.** We ran each condition with a single seed. That does not mean every
+  kind of interval is impossible — it means *seed variance* is unknown. We treat the
+  numbers as measured for the run we did, and as approximate for the underlying
+  capability, rather than as a tight estimate.
+
+A further caution against a naive confidence interval: the test set is not a set of
+independent, uniformly-drawn examples. It comes from one generator, reuses a handful of
+wording families and operation templates, and (in some splits) shares prompts across
+conditions. So a standard binomial interval can be misleadingly tight, and a "3/n" upper
+bound for a zero result assumes independent draws that this generator does not
+provide. We therefore report raw counts and do not attach invented error bars.
+
 ## The practical answer
 
 For a single narrow operation on a ~0.9M model, we need on the order of thousands of

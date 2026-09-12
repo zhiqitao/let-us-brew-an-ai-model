@@ -73,6 +73,40 @@ by the lookup tables rather than the computation.
 
 So we always report the split: embedding vs. non-embedding.
 
+## The model, in one box
+
+So that there is no ambiguity about what we trained, here is the complete specification
+of the pilot model (the 0.88M model; the larger runs in Chapter 12 only scale width
+and depth, and the registry in Appendix C lists each one's exact configuration):
+
+| Property | Value |
+|---|---|
+| Architecture | GPT-style decoder-only transformer |
+| Vocabulary | 291 tokens |
+| Embedding dim (`n_embd`) | 128 |
+| Layers (`n_layer`) | 4 |
+| Heads (`n_head`) | 4 |
+| FFN width (intermediate) | 4 × `n_embd` = 512 |
+| Context budget (`block_size`) | 128 tokens |
+| Dropout | 0.0 (deterministic) |
+| Attention | Causal (masked), self-attention |
+| Positional encoding | Learned, 128 × 128 |
+| Final norm | LayerNorm before the output head |
+| Output head | `n_embd` → 291 logits, **no bias, no weight tying** |
+| Parameter split | 884,224 total = 53,632 embedding (token 37,248 + position 16,384) + 830,592 non-embedding |
+| Weight init | Normal(0, 0.02) |
+
+**What the model is asked to do.** Each training example is the prompt and the target
+program concatenated as a single token sequence (`prompt + "\n" + reference_code`), and
+the model is trained with standard next-token cross-entropy over that whole sequence.
+There is no loss masking that restricts credit to the program positions — the model is
+rewarded for predicting the prompt's continuation (including its own wording) as well as
+the program. Generation uses temperature 0.8 multinomial sampling for `max_new` tokens,
+with the context window truncated to `block_size` (it reconditions on the sequence so
+far at every step). There is no separate "refuse to answer"
+behavior — the model is trained simply to keep predicting, which is exactly why we
+build gates around it (Chapter 4).
+
 This matters more than it might seem. At tiny scale, the ratio of vocabulary to
 computation is high, which means a naive "M parameters" figure can be dominated by
 the embedding lookups rather than the computation that must actually reason about the
