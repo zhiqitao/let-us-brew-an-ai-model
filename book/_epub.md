@@ -478,12 +478,14 @@ second, quieter question: what is the model *ever asked* to do? These are not th
 thing, and the difference is worth making sharp, because it is the difference between
 "the model cannot escape" and "the model was never put in the position to."
 
-A language model has no notion of refusal. It is not a system that decides whether a
-request is in scope; it is a next-token predictor. Hand it a request outside its
-designed job and it does not politely decline — it simply keeps predicting tokens and
-produces whatever the weights trend toward, often a confident near-program or
-garbage. So "it only does its one job" can never be a property of the model's own
-intent. It has to be a property of the wiring around it.
+A language model has no *built-in* notion of refusal. It is not, by default, a system
+that decides whether a request is in scope; it is a next-token predictor. Hand a request
+to this model outside its designed job and it does not politely decline — it simply
+keeps predicting tokens and produces whatever the weights trend toward, often a
+confident near-program or garbage. (Models *can* be trained to refuse, but this one was
+not, so refusal here is not a property to assume.) So "it only does its one job" can
+never be a property of the model's own intent here. It has to be a property of the
+wiring around it.
 
 That gives us **two independent gates**, and this chapter (so far) has really only
 built one of them:
@@ -549,15 +551,16 @@ Our two gates are not an esoteric lab device; they are the same two ideas that r
 systems use, under different names. It is worth mapping them, so the book's abstract
 apparatus connects to what people actually deploy.
 
-| Our gate | Production analogue | How it works | Soft or hard? |
-|---|---|---|---|
-| **Gate B** (input) | **Input classifier / guardrail** | A separate model or ruleset scores the incoming prompt and blocks disallowed categories *before* the main model sees it (e.g. Llama Guard, NeMo guardrails). | **Hard** — a different mechanism in front, not the model deciding |
-| **Gate B** (input) | **Structured-input schema** | The API declares the request's allowed shape (JSON schema); a request outside it is invalid by construction. | **Hard** — rejected at the boundary |
-| **Gate B** (input) | **Function/tool signatures** | The model can only call registered functions with typed signatures; off-scope actions simply aren't callable. | **Hard** |
-| **Gate A** (output) | **Constrained decoding / JSON mode** | The decoder only ever emits tokens that keep the output inside the declared structure, so the model physically cannot produce an unparseable or off-schema completion. | **Hard** — enforced by the decoder, not the model |
-| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes anything that slipped through. | **Hard** |
+| Our gate | Production analogue | How it works | Enforcement | Residual risk |
+|---|---|---|---|---|
+| **Gate B** (input) | **Input classifier / guardrail** | A separate model or ruleset scores the incoming prompt and blocks disallowed categories *before* the main model sees it (e.g. Llama Guard, NeMo guardrails). | Hard — a different mechanism in front, not the model deciding | Medium — the classifier is itself learned and can misclassify |
+| **Gate B** (input) | **Structured-input schema** | The API declares the request's allowed shape (JSON schema); a request outside it is invalid by construction. | Hard — rejected at the boundary | Low for *shape* compliance; not a content/safety check |
+| **Gate B** (input) | **Function/tool signatures** | The model can only call registered functions with typed signatures; off-scope actions simply aren't callable. | Hard | Low for *declared* functions; not an authorization check |
+| **Gate A** (output) | **Constrained decoding** | The decoder only ever emits tokens that keep the output inside the declared structure, so the model cannot physically produce an unparseable completion. | Hard — enforced by the decoder, not the model | Low — but guarantees *structure*, not that the content is correct |
+| **Gate A** (output) | **JSON mode** | A special mode that makes the completion parse as JSON. | Soft — the model is *encouraged*, not forced | High — JSON mode does not guarantee schema validity, and is not a schema constraint |
+| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes anything that slipped through. | Hard | Low for what it checks; the check is only as good as its rules |
 
-The thread running through the right-hand column is the book's point: every reliable
+The thread running through the "Enforcement" column is the book's point: every reliable
 enforcement mechanism is **hard and external**, and none of them is "the model chose
 to behave." Even a frontier model that appears to refuse is doing so because RLHF
 shaped it to *tend* toward refusal — which is a soft, jailbreakable behavior, not a
@@ -568,13 +571,17 @@ One distinction worth making explicit: "Hard" here means the mechanism is
 **deterministically enforced** — it rejects on a rule the system controls, not on a
 model's whim — but it does *not* mean the decision is **semantically reliable**. An
 input classifier is a learned model that can still misclassify; the *enforcement* of
-whatever it decides is hard, but the *decision* itself is soft. That is true of every
-row: a JSON-schema validator reliably rejects malformed JSON, but schema compliance is
-not the same as correctness or safety; a registered tool signature prevents calling an
-undeclared function, but is not an authorization check; the AST allowlist bounds the
-shape of allowed programs but not resource use or adversarial resistance. So the
-reliable layer is hard and external — and it is a *scoping* guarantee, not a
-*judgment* guarantee. There is no mechanism in the table that gives semantic
+whatever it decides is hard, but the *decision* itself is soft. That is why the "Residual
+risk" column above is not uniformly empty: a hard mechanism bounds the *shape* of what
+gets through reliably (a JSON-schema validator reliably rejects malformed JSON), but it
+does not make the content correct or safe (schema compliance is not correctness; a
+registered tool signature prevents calling an undeclared function, but is not an
+authorization check; the AST allowlist bounds the shape of allowed programs but not
+resource use or adversarial resistance). Crucially, "JSON mode" is *not* a hard
+constraint at all — it is a soft nudge that the model usually follows, so it belongs in
+the soft/risk column, not alongside constrained decoding. So the reliable layer is hard
+and external — and it is a *scoping* guarantee, not a *judgment* guarantee. There is no
+mechanism in the table that gives semantic
 reliability.
 
 ---
@@ -598,7 +605,10 @@ way we build it, and it's the single most important design decision in the whole
 ![The teacher](figures/fig_teacher.png)
 
 One semantic record is the single source of truth: the program, the task, and the
-tests all derive from it, so they cannot drift apart.
+tests all derive from it, so they are much less likely to drift apart than if each were
+written by hand. This is not a guarantee — a bug in the reference implementation or the
+renderer could still make all three consistently wrong, which is exactly why we later
+test the judge against known-correct programs.
 
 The naive way to generate data is to write a template and fill in a few blanks:
 
@@ -623,11 +633,14 @@ SEMANTIC INTENT
       -> HIDDEN TESTS
 ```
 
-The key insight is at the top: **one semantic record drives all three.** There is no
-way for the sentence to disagree with the code or the tests, because they are all the
+The key insight is at the top: **one semantic record drives all three.** There is little
+room for the sentence to disagree with the code or the tests, because they are all the
 same meaning, rendered three ways. If we start with "the function should return
 `a + b`," the sentence says "sum," the code adds, and the tests check addition — and
-they can't drift apart, because they all came from the same seed.
+they are far less likely to drift apart, because they all came from the same seed.
+(Agreement is still only as good as that seed: a wrong reference makes the sentence,
+code, and tests agree with each other but all be wrong, which is why the judge is
+itself tested.)
 
 ## What a "semantic record" looks like
 
@@ -1130,6 +1143,40 @@ between embedding and non-embedding so a naive "M parameters" figure is not domi
 by the lookup tables rather than the computation.
 
 So we always report the split: embedding vs. non-embedding.
+
+## The model, in one box
+
+So that there is no ambiguity about what we trained, here is the complete specification
+of the pilot model (the 0.88M model; the larger runs in Chapter 12 only scale width
+and depth, and the registry in Appendix C lists each one's exact configuration):
+
+| Property | Value |
+|---|---|
+| Architecture | GPT-style decoder-only transformer |
+| Vocabulary | 291 tokens |
+| Embedding dim (`n_embd`) | 128 |
+| Layers (`n_layer`) | 4 |
+| Heads (`n_head`) | 4 |
+| FFN width (intermediate) | 4 × `n_embd` = 512 |
+| Context budget (`block_size`) | 128 tokens |
+| Dropout | 0.0 (deterministic) |
+| Attention | Causal (masked), self-attention |
+| Positional encoding | Learned, 128 × 128 |
+| Final norm | LayerNorm before the output head |
+| Output head | `n_embd` → 291 logits, **no bias, no weight tying** |
+| Parameter split | 884,224 total = 53,632 embedding (token 37,248 + position 16,384) + 830,592 non-embedding |
+| Weight init | Normal(0, 0.02) |
+
+**What the model is asked to do.** Each training example is the prompt and the target
+program concatenated as a single token sequence (`prompt + "\n" + reference_code`), and
+the model is trained with standard next-token cross-entropy over that whole sequence.
+There is no loss masking that restricts credit to the program positions — the model is
+rewarded for predicting the prompt's continuation (including its own wording) as well as
+the program. Generation uses temperature 0.8 multinomial sampling for `max_new` tokens,
+with the context window truncated to `block_size` (it reconditions on the sequence so
+far at every step). There is no separate "refuse to answer"
+behavior — the model is trained simply to keep predicting, which is exactly why we
+build gates around it (Chapter 4).
 
 This matters more than it might seem. At tiny scale, the ratio of vocabulary to
 computation is high, which means a naive "M parameters" figure can be dominated by
@@ -1637,6 +1684,30 @@ examples spread across more variety. That distinction (Chapter 13) is where the 
 limits live: our surface and composition experiments suggest the model's real weakness
 is a *diversity and structure* gap, not a *quantity* gap.
 
+### A note on uncertainty
+
+It is worth being precise about the three very different kinds of "uncertainty" people
+sometimes conflate here:
+
+- **Fixed test score.** A pass@1 like 0.641 is the exact measured score on *this* test
+  set, under this decoding and evaluation procedure. It is a property of that dataset.
+- **Uncertainty over a target distribution.** If we wanted to say "the model scores
+  ~0.64 on new tasks of this type," we'd need a sense of how much 0.641 would vary
+  across different test sets. We do not have that: each size and each data count was
+  trained and evaluated **once**, with one seed, so we cannot put error bars on these
+  points.
+- **Seed variation.** We ran each condition with a single seed. That does not mean every
+  kind of interval is impossible — it means *seed variance* is unknown. We treat the
+  numbers as measured for the run we did, and as approximate for the underlying
+  capability, rather than as a tight estimate.
+
+A further caution against a naive confidence interval: the test set is not a set of
+independent, uniformly-drawn examples. It comes from one generator, reuses a handful of
+wording families and operation templates, and (in some splits) shares prompts across
+conditions. So a standard binomial interval can be misleadingly tight, and a "3/n" upper
+bound for a zero result assumes independent draws that this generator does not
+provide. We therefore report raw counts and do not attach invented error bars.
+
 ## The practical answer
 
 For a single narrow operation on a ~0.9M model, we need on the order of thousands of
@@ -1926,8 +1997,17 @@ wording family per operation. The high-diversity training set, however, containe
 — which makes the 1.000 at least partly a measure of **coverage** (the model had seen
 that surface), not of generalization to a surface it had never encountered.
 
-The minimal→0.000 result is unambiguous: that model saw only a narrow slice, so the
-surface test was genuinely unseen and it failed. But the high→1.000 result is
+The minimal→0.000 result is unambiguous about the factor that changed: that model saw
+only a narrow slice (one identifier-set, one wording family per operation), so the
+surface test — which used different identifiers and a *randomly-chosen different*
+wording family per operation — was genuinely unseen on the identifier axis. It scores
+0.000. But note precisely what this isolates: a *surface* shift (different identifiers
+and, per operation, a different family). It does not by itself establish that the
+specific wording family was excluded from training for every operation (in the minimal
+condition the family-set is narrow but still overlaps the test's family pool in
+principle), so we read the zero as strong evidence that a surface shift breaks the
+minimal model, not as proof that a particular family was provably absent. The
+high→1.000 result, by contrast, is
 strongest as a statement about **coverage**: diverse training covers more surfaces.
 Whether it generalizes to a wording *family it never saw* is a separate question this
 design does **not** answer — that would need a held-out family excluded from the
@@ -2377,8 +2457,11 @@ boundary. If it can, we have found something remarkable.
 To make the test fair, we also show what *both* baselines do. The retrieval baseline
 has nothing to compose — it can only find the closest primitive example and copy it.
 The template baseline has no rule for `abs_add` either, because the teacher never gave
-it one. So if *everything* fails, we have a fair statement: composition cannot be
-achieved by the easy shortcuts, and the model too cannot do it.
+it one. So if *everything* fails, the failure is at least not unique to the learned
+model: the easy shortcuts also cannot do it (without this negative signal, a model-only
+failure could just mean the task was inherently beyond any of our methods). This is a
+useful cross-check, though it is a measured negative, not a proof that no shortcut
+exists.
 
 ## What we measured
 
@@ -2391,10 +2474,14 @@ Here is the result, and it is unambiguous:
 
 Let us read this carefully, because the meaning is subtle.
 
-On the primitive operations it saw, the model scores 0.900 — good. But on the
-composite operations, it scores **0.000**. Not 0.1, not "sometimes," not "close." Zero.
-The model never produced a correct program for any composite operation, even though
-every composite is a combination of primitives it individually knows.
+On the primitive operations it saw, the model scores **0.900 in aggregate** — that is
+the pass@1 averaged over all the primitive operations in the split, not a claim that
+every single primitive hits 0.900 individually (we did not publish a per-operation
+breakdown, so the aggregate should not be read as per-primitive accuracy). But on the
+composite operations, it scores **0.000** with the same aggregate reading. Not 0.1, not
+"sometimes," not "close." Zero. The model never produced a correct program for any
+composite operation it saw, even though every composite is a combination of primitives
+the aggregate shows it largely knows.
 
 And here is the *instructive* baseline check: the baselines fail too. The retrieval
 baseline gets 0.000 because there is nothing to retrieve that is a composite — its
@@ -2459,12 +2546,15 @@ asymmetry is not a contradiction; it is the shape of the truth we are mapping.
 ## Why we don't call it a "failure of one thing" without checking the other two
 
 A careful reader will ask: is composition genuinely impossible for this model, or did
-we simply make the test too hard? The baselines answer this. If the test were simply
+we simply make the test too hard? The baselines help here. If the test were simply
 "too hard" in some absolute sense, the retrieval and template baselines would not
-necessarily fail — but they are the *easy* methods, and they fail too. So the test is
-not too hard for an easy method; it is unsolvable by any method except genuine
-composition, and the model has no composition. This is a fair, controlled comparison,
-which is exactly what our one-variable discipline demands.
+necessarily fail — but they are the *easy* methods, and they fail too. That does not
+prove the test is "fair" in an absolute sense or rule out every shortcut; it is a
+useful negative signal that the failure is not merely because an easy method happens to
+stumble. It makes the result a measured negative, not a proof that no method could
+succeed or that the boundary is structural. What we can say: within this apparatus and
+these baselines, no method we tried — learned, retrieval, or template — produced a
+composite program, which is the result we report.
 
 ## The shortcut audit
 
@@ -2622,6 +2712,37 @@ And the judge's honesty was validated the hard way: it reported the model at 0.0
 our very first evaluation, and that was a *judge bug*, not a model failure. Once we
 fixed the judge, the model's true 0.897 emerged. A judge that can be wrong — and we
 proved ours was — must be red-teamed before its numbers are trusted.
+
+## A concrete example: the judge learns a new test
+
+To make "test the tester" a reader skill rather than a slogan, here is a small
+constructed example of how a weak test can let a wrong program survive, and how a
+distinguishing test catches it. (This is a teaching illustration of the principle, **not**
+a record of a real finding from the experiment — the measured mutation report in the
+section above is the actual data.)
+
+Suppose the task is to compute `a + b`, and the reference is:
+
+```python
+def solve(a, b):
+    return a + b
+```
+
+Now consider a mutant that flips the operator to subtraction:
+
+```python
+def solve(a, b):
+    return a - b
+```
+
+A single weak test on `(a=0, b=0)` does **not** catch it: for `(0, 0)`, both `a + b` and
+`a - b` return `0`, so the mutant survives and the suite looks green. But a
+distinguishing test on `(a=2, b=3)` — where the reference returns `5` and the mutant
+returns `-1` — catches it. The point is that a test must be *discriminating*: it has to
+separate the correct program from the specific wrong ones, not merely produce a pass
+for whatever got written. That is exactly what the measured mutation suite is designed
+to probe, and why its 0.829 kill rate (6 survivors) is a real, quantified measure of
+the suite's discriminating power rather than a claim that it is exhaustive.
 
 ## The honest framing
 
@@ -2895,12 +3016,12 @@ the data, or the optimizer — it must be the schedule. That makes any differenc
 find a *procedure* finding, exactly the thing we want to isolate.
 
 ## The result
-![Continual learning](figures/fig_continual.png)
+![Final task accuracy: sequential versus joint training](figures/fig_continual.png)
 
-| Protocol | **A-retention** | **B-acquisition** |
+| Protocol | **A accuracy (final)** | **B accuracy (final)** |
 |----------|-----------------|-------------------|
 | **sequential** | **0.000** | 0.889 |
-| **replay**     | **1.000** | 0.889 |
+| **joint** | **1.000** | 0.889 |
 
 This is as clean a result as this book produced.
 
@@ -2910,10 +3031,12 @@ the first capability. That is not "degraded"; it is gone. Learning the lists ove
 the arithmetic.
 
 **Training A and B together prevents the forgetting.** When A and B are simply trained
-together from the start (interleaved throughout), the model's A-retention is a perfect
-**1.000**, and B-acquisition is **0.889** — identical to sequential. So keeping the old
-capability in the mix alongside the new one preserves A with **no behavioral trade-off**
-in learning B.
+together from the start (interleaved throughout), the model's final A accuracy is a
+perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential. So
+training both from the start keeps A**with no behavioral trade-off** in B. Note that a
+high final A accuracy in the jointly trained model is *not* "retention relative to an
+A-only checkpoint" — there was never an A-only checkpoint; both were trained from the
+start.
 
 One honest note on the term "replay." This design interleaves A and B **from the start**
 — which is really *joint training* on both, not "learn A first, then continue to B
@@ -2938,7 +3061,7 @@ longer.
 ## Why this result is so striking
 
 The symmetry is what makes this remarkable. Under sequential training, the model
-forgets A completely (0.000) but learns B fine (0.889). Under replay, it keeps A
+forgets A completely (0.000) but learns B fine (0.889). Under joint training, it keeps A
 perfectly (1.000) *and* learns B just as well (0.889). Nothing about the model, the
 data, or the optimizer changed — only whether the old examples stayed in the mix while
 the new ones were learned.
@@ -2946,14 +3069,14 @@ the new ones were learned.
 This is the clearest case in the book where the **training protocol, not the model or
 the data, determines the outcome.** Same model. Same data. Same optimizer. The only
 difference is whether the first capability stays "in the mix" while the second is
-learned. Sequential forgets; replay retains.
+learned. Sequential forgets; joint retains.
 
 There is an intuition that makes this easy to see. Imagine a muscle being trained on
 exercise A. If it then trains exclusively on exercise B and never revisits A, the
 muscle's adaptation to A fades. But if A and B alternate, both stay. The model's
 weights are like that muscle — the gradient signal from new examples keeps pushing
 them, and if nothing pulls them back toward the old behavior, the old behavior
-erases. Replay is simply making sure the old examples are still in the rotation.
+erases. Joint training is simply making sure the old examples are still in the rotation.
 
 The lesson generalizes directly: when a new capability is added to a model, *how* it
 is done matters more than any property of the model itself. If the new task is allowed
@@ -2963,10 +3086,13 @@ collapses. If old and new stay interleaved, the model can hold both.
 ## Reframing a common assumption
 
 And it reframes a common assumption. People often reach for "a bigger model" when
-confronted with a model that forgets. This experiment shows the forgetting was never
-a capacity problem — a ~0.9M model reaches high final scores on both task groups when
-trained jointly (A: 1.000, B: 0.889). It was a *training procedure* problem. Here, as
-with composition, the instinctive fix ("make it bigger") would have been exactly wrong.
+confronted with a model that forgets. This experiment shows the forgetting was not
+resolved by anything we did to capacity — a ~0.9M model reaches high final scores on
+both task groups when trained jointly (A: 1.000, B: 0.889). It was a *training
+procedure* effect. We did **not** test a larger model as a forgetting intervention, so
+we cannot conclude that a larger model would not also help here; what we can say is
+that the forgetting was already fixable by changing the schedule alone, at this scale,
+under these schedules.
 
 The pattern here echoes a deeper truth we've seen all book: the headline number
 ("did it learn the new thing?") hides the interesting failure ("what did it lose to
@@ -3232,15 +3358,19 @@ measurements in one configuration, not proofs that hold everywhere.*
 - Whether a fundamentally different inductive bias (not scale) helps.
 
 *(The composition-exposure question — whether feeding a few composites during training
-unlocks composition — has been tested and settled: it does **not**. The model
-memorized the seen combinations but still scored 0.000 on held-out ones.)*
+unlocks composition — we tested in both a naive-exposure and a diversity form; in both
+it did **not**: the model memorized the seen combinations but scored 0.000 on held-out
+ones. We report this as a measured result under those two schedules, not as proof that
+no exposure schedule could unlock composition.)*
 
 ## The boundary, in one line
 
 > **A small model learns narrow, individual mappings well and generalizes them across
 > instances, but its knowledge is surface-tied and non-compositional — and within the
-> tested range, neither more parameters nor more data nor a different training order
-> turns that into robust, compositional capability.**
+> tested range, neither more parameters nor more data turns that into robust,
+> compositional capability. (We also tested a scheduling change — sequential vs. joint
+> training — but that experiment measured retention of *separately learned* task groups,
+> not composition, so it does not speak to the composition boundary.)**
 
 ## Why the map is the deliverable
 
@@ -3303,11 +3433,12 @@ in the computation.
 
 **It cannot compose what it knows.** Train on `add`, `sub`, `abs`, `max`, `list_sum`
 as separate primitives; test on `abs_add` (abs then add) and `sum_of_abs` (abs over a
-list sum) — operations that combine two things it knows perfectly. The model scores
+list sum) — operations that combine two things it knows. The model scores
 **0.000**. It did not learn "I know abs and I know add, therefore I can do
-abs+abs." This is Level-4 structural failure. And crucially, the baseline systems
-*also* scored 0.000 — so the test is fair, and the only way to solve it would be
-genuine composition, which the model lacks.
+abs+abs." This is a Level-4 failure under these schedules. The baseline systems
+(which we designed to be easy) *also* scored 0.000 — a useful cross-check that the
+failure is not unique to the learned model, though it is a measured negative, not a
+proof that no method or shortcut could ever solve it.
 
 ## The two axes of the boundary
 
@@ -3888,11 +4019,18 @@ vec = TfidfVectorizer()
 X = vec.fit_transform([t["nl"]["prompt"] for t in tasks])
 clf = LogisticRegression(max_iter=1000)
 scores = cross_val_score(clf, X, y, cv=5)
-print(f"classifier predicts operation: {scores.mean():.3f}")   # >0.9 means LEAK
+print(f"classifier predicts operation: {scores.mean():.3f}")   # high = strong overlap; see note below
 ```
 
-When we ran this on the first pilot renderer, it printed **1.000** — a 100% leak —
-and that finding drove the later expansion of the paraphrase families.
+When we ran this on the first pilot renderer, it printed **1.000** — the wording
+perfectly predicted the operation. It is important to read this correctly: much of that
+is **task signal, not leakage**. The prompt must name the operation ("sum", "absolute
+value"), so a classifier can trivially recover it from the wording; that is the task
+being solvable as stated, not a defect. The audit's real purpose is to catch the
+*opposite* problem — where some *other* accidental cue (a duplicated example, a leaked
+hidden-test value, an identifier that reveals the answer) is what drives the score. So
+we treat a high score as a flag to inspect *which* words drive it, not as proof of
+leakage by itself.
 
 ## How to run it
 
@@ -3939,17 +4077,22 @@ approach failed.
 
 ---
 
-## 2. The pilot wording leaked the answer (100% predictability)
+## 2. The pilot wording was so predictive of the answer we had to look again
 
 **What happened.** The leakage audit trained a trivial TF-IDF classifier to predict the
 operation from the natural-language prompt. It succeeded **100%** of the time.
 
-**What we learned.** Our first renderer's wording was so tied to the operation that a
-model "succeeding" might just be exploiting the phrasing, not learning the computation.
-This is *why* the surface-generalization tests matter.
+**What we learned.** At first we recorded this as "the wording leaks the answer," but on
+reflection most of it is **task signal, not leakage**: the request is supposed to name
+the operation ("sum", "absolute value"), so a classifier recovering it from the wording
+is the request doing its job. What it does tell us is that a model "succeeding" might
+just be exploiting that phrasing rather than learning the computation — which is *why*
+the surface-generalization tests matter. We therefore treat the 100% score as a flag to
+inspect *which* words drive it (operation words vs. an accidental cue), not as proof of
+contamination.
 
-**Action.** Recorded as finding-001; noted the pilot is fine for Stage 1 but must add
-wording-family holdouts before any surface test.
+**Action.** Recorded as finding-001 (with the interpretation corrected above); noted the
+pilot is fine for Stage 1 but must add wording-family holdouts before any surface test.
 
 ---
 
@@ -4031,8 +4174,13 @@ fabricated review.
 **What happened.** Long CPU training runs occasionally crashed with signal 4 (SIGILL)
 on the AVX-only Ivy Bridge CPU — intermittently, one run succeeds and the next dies.
 
-**What we learned.** Hardware quirks are real and part of the brew. The fix is
+**What we learned.** Hardware quirks are real and part of the brew. The apparent fix was
 `TORCH_DISABLE_AVX2=1` plus a retry loop (and `OMP_NUM_THREADS=1` for larger models).
+We report this as a *workaround we used*, not as a confirmed root-cause repair: the
+crashes were intermittent, so a successful retry after setting the variable does not by
+itself prove the variable is what fixed it, and we did not independently verify that the
+installed torch build actually reads this environment variable. All we can claim is
+that wrapping runs in a retry loop made them succeed reliably.
 
 **Action.** Wrapped all long runs in a retry loop; documented the workaround.
 
@@ -4224,12 +4372,36 @@ training runs.
 
 Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.py`,
 `run_composition_exposure.py`, `run_composition_diversity.py`, `run_surface.py`,
-`run_data_scaling.py`, `run_continual.py`). The recommended repository release tag is
-`v20261001`. To rerun, set `TORCH_DISABLE_AVX2=1` on this CPU lab (to avoid a SIGILL on
-the Ivy Bridge AVX-only silicon) and invoke the script with the architecture, steps,
-and seed shown in the registry. Expected artifacts are the listed manifests and
-checkpoints. Runtime is roughly 5-10 minutes per 1500-step pilot training on a
-single-core CPU; larger models (6.5M-29.3M) take substantially longer.
+`run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`). The
+recommended release tag is `v20261001`. Here is a concrete quick start:
+
+1. **Clone the companion repository** (see the front matter for the URL) and check out
+   the `v20261001` tag.
+2. **Create an environment.** The runs were done on Python 3.11.16 with PyTorch
+   2.14.0+cpu (CPU build) and no GPU. A `requirements.txt` at the repo root pins the
+   versions.
+3. **Set the environment variable** `TORCH_DISABLE_AVX2=1` on this CPU lab (to avoid a
+   SIGILL on the Ivy Bridge AVX-only silicon).
+4. **Run a pilot:** `python scripts/train.py --steps 1500 --n-embd 128 --n-layer 4
+   --n-head 4 --bs 16 --seed 0` then `python scripts/eval_ckpt.py`. This trains and
+   evaluates the 0.88M pilot and writes its manifest.
+5. **Expected artifacts:** the run's manifest (e.g. `stage1.json`) and checkpoint
+   (`stage1.pt`) under `artifacts/manifests/` and `artifacts/checkpoints/`.
+
+**Runtime.** Roughly 5-10 minutes per 1500-step pilot training on a single-core CPU;
+larger models (6.5M-29.3M) take substantially longer (minutes to low tens of minutes
+each). These are hardware-specific and will differ on your machine; the [MEASURED]
+numbers in the book are the ones from *our* runs.
+
+**Verified commands.** The commands above and the evaluator used to produce the pass@1
+results are the ones that ran for this book; the scripts are deterministic given the
+same seed and configuration (the run scripts fix the seed and hyperparameters in the
+registry).
+
+**A production note on the free-endpoint side.** We do not rely on any external
+service for the results in this book; everything was trained and evaluated locally on
+the CPU lab described above, so the numbers do not depend on a hosted endpoint staying
+up or behaving.
 
 ---
 
