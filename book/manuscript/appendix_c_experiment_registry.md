@@ -227,7 +227,7 @@ Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.p
 `run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`).
 
 **Publication status: honest disclosure.** As of this writing the companion repository
-has an immutable release tag **`v20261001`** (commit `eeb1c54`) created for this book, but
+has an immutable release tag **`v20261001`** (commit `67edcae`) created for this book, but
 the repository is **not yet published at a public URL**. We therefore cannot yet give a
 reader a working link, and we do not want to pretend otherwise. When it is published, the
 release tag and commit above are the identifiers to use; until then the reproduction path
