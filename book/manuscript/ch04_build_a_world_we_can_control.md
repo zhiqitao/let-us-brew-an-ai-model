@@ -76,7 +76,8 @@ harder to reason about. A smaller world is a *better* world for this book, becau
 every construct that is allowed is one we must understand the model's relationship to.
 
 We also version this spec (`python_capability_v0_1`) so that later, when we give the
-model *more* Python (Chapter 18), we can point to exactly what grew. Versioning the
+model *more* Python (see the closing chapter's future-work note), we can point to
+exactly what grew. Versioning the
 world is what lets us claim, later, that a change in behavior was caused by a change
 in the world, and not by something else that drifted.
 

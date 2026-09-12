@@ -396,7 +396,8 @@ harder to reason about. A smaller world is a *better* world for this book, becau
 every construct that is allowed is one we must understand the model's relationship to.
 
 We also version this spec (`python_capability_v0_1`) so that later, when we give the
-model *more* Python (Chapter 18), we can point to exactly what grew. Versioning the
+model *more* Python (see the closing chapter's future-work note), we can point to
+exactly what grew. Versioning the
 world is what lets us claim, later, that a change in behavior was caused by a change
 in the world, and not by something else that drifted.
 
@@ -2770,119 +2771,6 @@ recorded that we paid it, rather than merely asserting that we are trustworthy.
 
 ---
 
-# 18. Now Give It More Python
-
-*An honest scope note up front: this chapter is about the discipline of widening
-the world, not a report of a measured widening experiment. We did not, in this book,
-actually run a full sweep of "add more Python and re-measure." What we did measure is
-that the composition failure (Chapter 16) was not a syntax problem — the model had
-the syntax and still could not compose. That is a real finding. But the versioning and
-step-by-step widening described below is the framework we would use to test new
-capability, and we state it as such rather than as a completed experiment. Where we
-say "we might add," it is a proposal, not a result.*
-
-Our pilot model lived inside a deliberately small corner of Python — a bit of
-arithmetic, a couple of comparisons, a few list operations, some basic if/else. That
-tiny corner is what let us measure capability cleanly: change one small thing at a
-time and watch what happens.
-
-But a capability map drawn on one tiny corner only tells us where the boundary is
-*for that corner.* It would be a narrow conclusion if we claimed "this model can do
-`a + b` and nothing else" — of course it could, we only taught it that. So the next
-question is the natural one: **what happens when we widen the world?** Does giving the
-model a richer language unlock more capability, or does it just give it more ways to
-tie itself to surface form?
-
-This is the chapter about **expanding the capability spec** — the versioned whitelist
-from Chapter 4 that defines what Python the model is allowed to write.
-
-## Why the world is versioned
-
-The key mechanical fact we need here is that the capability spec is **versioned**
-(`python_capability_v0_1`, `v0_2`, and so on). It is not a living, unwritten list of
-"what the model can do." It is a recorded, frozen definition of "what the model is
-allowed to do" at a particular point.
-
-This matters enormously for the one-variable discipline. If we widen the allowed
-Python *and* change the data *and* retrain, we could not say which change caused any
-shift in behavior. But if we record the spec version alongside every result, we can
-point to exactly what grew — "the model was given list comprehensions at spec v0_3" —
-and attribute any change to that. Versioning the world is what lets us make a causal
-claim about capability, rather than a correlational guess. It is the same reason we
-record the exact model configuration and dataset in every manifest.
-
-## How we widen the world
-
-Expanding the world is a controlled act, not a free-for-all. We do not hand the model
-the entire Python standard library at once. We add constructs deliberately, one family
-at a time, and always with a reason. For example, we might add:
-
-- a new built-in (say, a mathematical function we were keeping out),
-- a new control-flow construct (e.g. `break`/`continue` in loops, if they were
-  missing),
-- a new data structure (e.g. dictionaries, if we had been lists-only),
-- short-circuit boolean logic, or a new comparison form.
-
-Each addition is a *controlled step*, not a teardown of the wall. And each one
-changes the set of problems the model can even express. The pilot's corner was
-deliberately small partly so that the *boundary* would be legible — and partly so
-that, when we widen it later, we can see the effect of *just that* widening.
-
-## A crucial reframing: syntax is not the hard part
-
-Here is where the experiment teaches us something that changes how we think about the
-whole question. It is tempting to imagine that the model's limit is about *syntax* —
-that if we just teach it more Python, it will be more capable. Our results say
-otherwise, and it matters.
-
-The composition result from Chapter 16 is the clearest example. The model knew the syntax of both
-`abs` and `add`. It could produce `return a + b` and `return abs(x)` perfectly. The
-break came when it needed to *combine* them into `return abs(a) + abs(b)`. There was no
-new syntax involved — every token in `abs(a) + abs(b)` was already within the model's
-known vocabulary and its allowed subset. The model simply could not put two things it
-knew together.
-
-So the real dividing line in this book is **not "how much Python the model is given."**
-It is **"whether the model can compose the Python it already knows."** Giving the
-model *more* syntax would let it express more kinds of programs, but it would not give
-it the *ability to combine* — and that ability, not the vocabulary, is what separates
-a bag of reflexes from genuine capability.
-
-## Why we still widen the world
-
-That said, widening the world remains the right thing to do, and for an honest reason:
-it lets us *test whether the boundary moves*. The interesting scientific question is
-not "can a tiny model learn any fixed corner?" — the answer is yes. The question is
-"does the boundary of what it can do shift when we push the world's edges out?" If we
-widen the allowed Python and the model still cannot compose, that is stronger evidence
-that the limit is structural, not about the surface of the language. If the boundary
-does move, that is a genuine discovery.
-
-So this chapter is less about a single dramatic result and more about a discipline: a
-controlled, versioned, one-variable-at-a-time *capacity ladder* that lets us watch
-exactly where the model starts to fall apart as we widen what it may do.
-
-## The ladder, as a discipline
-
-The discipline is: define one more capability, generate data for it, train, evaluate,
-audit, record — *then* move on. Never widen multiple things at once. The ladder is not
-a claim that the model will reach the top; it is a map of where the model *does* stop.
-
-And a stopping point is itself a result. We found ours at composition: the model can do
-each rung's primitives but not combine them. That finding — cheap and specific — is
-worth more than a glossy claim of having "reached Python Level 8." Knowing exactly
-where the model stops, and being able to say *why*, is the entire value of this kind of
-careful, pessimistic, honest investigation.
-
-## The honest summary
-
-Giving the model more Python is not the same as giving it more capability. The pilot
-already revealed the real boundary: composition. Widening the world is worth doing —
-but the purpose is to *test where the boundary is and whether it moves*, not to
-assume that more syntax automatically means more understanding.
-
----
-
 # 19. The Capability Ladder Revisited
 
 We've climbed parts of the ladder through the experiments. This chapter pulls together
@@ -3260,13 +3148,17 @@ free — simply by choosing a better procedure. Cost, like capability, is often 
 
 # 22. The Capability Map
 
-We have run a handful of tightly-controlled experiments. Rather than a list of
-results, let us draw the **capability map**: one picture that says, for each behavior
-we tested, whether the model acquired it, whether it generalizes, what it costs, and
-where it breaks.
+We have run a small, disciplined set of experiments and measured a coherent boundary.
+Rather than a list of results, let us draw the **capability map**: one picture that
+says, for each behavior we tested, whether the model acquired it, whether it generalizes,
+what it costs, and where it breaks.
 
-We record each finding with an honest epistemic label — what is *proven* (measured),
-what is *supported*, what is *suggestive*, and what is *unknown*.
+Everything below is scoped to **our** setup: a ~0.9M–29.3M decoder-only transformer,
+trained on a few thousand generated natural-language-to-Python tasks, evaluated by a
+mutation-tested execution-based judge. These are claims about this brew, not universal
+laws about all small models. Where we say "here" or "in this regime", it is deliberate —
+these are well-controlled measurements in one configuration, not proofs that hold
+everywhere.
 
 ## Why a map, and not a single score
 
@@ -3279,15 +3171,12 @@ the boundary.
 
 So we draw a map instead. A map does not pretend to be one verdict; it shows
 *dimensions*. It answers, for each question we asked, what we found — and, crucially,
-what we did *not* find. That honesty about the unknown is what makes the map worth
-more than a headline.
+what we did *not* find. That honesty about the unknown is what makes the map worth more
+than a headline.
 
 ## The four-level generalization map
 
 ![The capability map](figures/fig_capability_map.png)
-
-The map puts the measured grid on two axes: the breadth of tasks and the depth
-of generalization. The narrow job is well-learned; the broader ground is not.
 
 Recall the four levels from Chapter 2. Here is what we measured at each, on the ~0.9M
 model:
@@ -3299,116 +3188,10 @@ model:
 | **L3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
 | **L4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
 
-This is the map's spine. Read it vertically and it shows a steady decline in how much
-we can trust the model's "understanding" as we move from "did it see this before"
-(Level 1) to "can it put things together" (Level 4). The model passes the first two
-levels cleanly and fails the last two completely. That is the boundary we keep coming
-back to.
-
-## The scaling map (what changes it)
-
-| Lever | Tested | Effect on composition |
-|-------|--------|-----------------------|
-| Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
-| Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64), not composition |
-| Training protocol | sequential vs replay | **big** — fixes continual retention (0.000→1.000) |
-
-The second half of the map is about levers, and it is where the surprising findings
-live. We tried three ways to move the composition boundary — more capacity, more data,
-and a different training procedure. Two of them did nothing to composition, and one of
-them was the decisive lever for a *different* problem (continual learning). This
-asymmetry is worth circling, because it tells us where effort does and does not pay.
-
-## What's measured vs. what's unknown
-
-*Every result here is tied to this specific setup — one synthetic task, one
-architecture family, one training configuration, capped at ~30M parameters. We say
-"here" and "in this regime" deliberately, because these are well-controlled
-measurements in one configuration, not proofs that hold everywhere.*
-
-**Measured (this setup):**
-- The model learns single operations to ~90% in-distribution and generalizes them
-  across instances (L1/L2).
-- The *narrowly-trained* model is surface-tied: new wording → 0.000, new identifiers →
-  0.350 (L3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
-  tested surface — though, as the caveat notes, that is strongest as a coverage
-  statement, not proof of generalization to a wholly unseen wording family.
-- It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
-  0.88M→29.3M) nor more data changes this (L4).
-- Continual learning is a procedure problem: sequential forgets (A → 0.000), replay
-  retains (A → 1.000) with no acquisition cost.
-- The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too
-  easy"; the composition split is not (all baselines 0.000).
-
-**Supported / suggestive / open:**
-- The composition failure is now **tested twice, not simply suggestive**: (a) exposure
-  to a few composites during training does **not** unlock composition on unseen ones
-  (the model memorizes the seen combinations at 0.667 but stays at 0.000 on held-out
-  ones); and (b) diversifying the *surface* of the composite exposure (many phrasings ×
-  id-sets) also leaves the held-out composite at **0.000**. So it is neither a "just
-  show it combinations" fix nor a "diversify the phrasing" fix (Chapter 16).
-- The one lever we have **not** isolated is diversity of the *inner structure* — many
-  *different* primitive pairings rather than different phrasings of the same few. That
-  is the remaining open experiment.
-- Whether the composition wall is truly structural or simply sits above our ~30M
-  ceiling is **untested** — we stop where the CPU lab becomes impractical.
-
-**Unknown (did not test):**
-- Whether behavior on 3+ capabilities or post-continual composition holds.
-- Whether a fundamentally different inductive bias (not scale) helps.
-
-*(The composition-exposure question — whether feeding a few composites during training
-unlocks composition — we tested in both a naive-exposure and a diversity form; in both
-it did **not**: the model memorized the seen combinations but scored 0.000 on held-out
-ones. We report this as a measured result under those two schedules, not as proof that
-no exposure schedule could unlock composition.)*
-
-## The boundary, in one line
-
-> **A small model learns narrow, individual mappings well and generalizes them across
-> instances, but its knowledge is surface-tied and non-compositional — and within the
-> tested range, neither more parameters nor more data turns that into robust,
-> compositional capability. (We also tested a scheduling change — sequential vs. joint
-> training — but that experiment measured retention of *separately learned* task groups,
-> not composition, so it does not speak to the composition boundary.)**
-
-## Why the map is the deliverable
-
-This map is the book's real output. It is not a single headline accuracy that would
-mislead; it is a precise, honest picture of where capability exists, where it
-collapses, and what (and what doesn't) shift the boundary. It is the answer to the
-central question — and it is falsifiable, built from real measured runs, and honest
-about what remains unknown.
-
-The deeper value of the map is what it does to our confidence. Before drawing it, we
-knew "the model is limited." After drawing it, we know more precisely which limits we
-*moved* with a lever and which we *did not*: composition and surface-tiedness were not
-moved by scale or more-of-the-same data (in our runs), while continual forgetting was
-both seen and fixed by how we trained. We are careful not to call the unmoved ones
-"structural" as if we had proven their cause — we observed that the tested levers did
-not reach them. That distinction — which limits we could move and which we could not —
-is the kind of knowledge that changes what a practitioner would try next. It is not
-the same as saying "small models are weak"; it is saying "here is where the weakness
-lived under our tests, and here is what did and did not reach it."
-
-That precision, not a dramatic narrative, is the honest payoff of the whole brew. And
-it is why we are willing to state as an *unknown* the questions we did not answer,
-rather than fill the map with confident guesses. A map with a blank region is more
-useful than a map painted over with speculation, because the blank marks where the
-next investigation should go.
-
----
-
-# 23. What Small Models Can Actually Learn
-
-We have run a small, disciplined set of experiments and measured a coherent boundary.
-Let us now state, carefully and honestly, what the experiments showed — the
-synthesis the whole book has been assembling.
-
-Everything below is scoped to **our** setup: a ~0.9M–29.3M decoder-only transformer,
-trained on a few thousand generated natural-language-to-Python tasks, evaluated by a
-mutation-tested execution-based judge. These are claims about this brew, not
-universal laws about all small models.
+Read the map vertically and it shows a steady decline in how much we can trust the
+model's "understanding" as we move from "did it see this before" (Level 1) to "can it
+put things together" (Level 4). The model passes the first two levels cleanly and fails
+the last two completely.
 
 ## What the model can do
 
@@ -3425,20 +3208,19 @@ parrot. That is Level-2 distributional generalization, achieved.
 ## What the model cannot do
 
 **It cannot survive changes to the surface form.** Change the variable names from
-`a,b` to `left,right` (identical computation) and performance falls to 0.350.
-Rephrase the instruction with a wording family the model never saw (identical
-computation) and performance falls to **0.000** — below *both* baselines. This is
-Level-3 failure: the model's capability is **anchored to the phrasing**, not grounded
-in the computation.
+`a,b` to `left,right` (identical computation) and performance falls to 0.350. Rephrase
+the instruction with a wording family the model never saw (identical computation) and
+performance falls to **0.000** — below *both* baselines. This is Level-3 failure: the
+model's capability is **anchored to the phrasing**, not grounded in the computation.
 
 **It cannot compose what it knows.** Train on `add`, `sub`, `abs`, `max`, `list_sum`
 as separate primitives; test on `abs_add` (abs then add) and `sum_of_abs` (abs over a
-list sum) — operations that combine two things it knows. The model scores
-**0.000**. It did not learn "I know abs and I know add, therefore I can do
-abs+abs." This is a Level-4 failure under these schedules. The baseline systems
-(which we designed to be easy) *also* scored 0.000 — a useful cross-check that the
-failure is not unique to the learned model, though it is a measured negative, not a
-proof that no method or shortcut could ever solve it.
+list sum) — operations that combine two things it knows. The model scores **0.000**. It
+did not learn "I know abs and I know add, therefore I can do abs+abs." This is a
+Level-4 failure under these schedules. The baseline systems (which we designed to be
+easy) *also* scored 0.000 — a useful cross-check that the failure is not unique to the
+learned model, though it is a measured negative, not a proof that no method or shortcut
+could ever solve it.
 
 ## The two axes of the boundary
 
@@ -3446,29 +3228,35 @@ Put together, the results define a sharp boundary along two independent axes:
 
 **Axis 1 — Surface form.** The model's knowledge is tied to the exact wording and
 identifier names it saw. It does not generalize "sum of two numbers" as an abstract
-concept; it generalizes "this sentence shape → this code." Change the surface, and
-the capability evaporates.
+concept; it generalizes "this sentence shape → this code." Change the surface, and the
+capability evaporates.
 
 **Axis 2 — Composition.** Even within a surface form it knows, the model did not
 combine two learned pieces into a novel structure in our tests. It behaved as if it
 lacked a compositional engine here.
 
-**The honest conclusion in one sentence:**
+## The scaling map (what changes it)
 
-> A ~0.9M model genuinely learns individual mappings and generalizes them across
-> *instances*, but the knowledge is surface-tied (new wording → 0.000) and
-> non-compositional (unseen combinations → 0.000) — and neither more capacity
-> (up to 29.3M) nor more data (within what we tested) is close to fixing it *under the
-> schedules we ran*.
+| Lever | Tested | Effect on composition |
+|-------|--------|-----------------------|
+| Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
+| Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64), not composition |
+| Training protocol | sequential vs joint | **big** — fixes continual retention (0.000→1.000) |
+
+The second half of the map is about levers, and it is where the surprising findings
+live. We tried three ways to move the composition boundary — more capacity, more data,
+and a different training procedure. Two of them did nothing to composition, and one of
+them was the decisive lever for a *different* problem (continual learning). This
+asymmetry is worth circling, because it tells us where effort does and does not pay.
 
 ## The capacity grid, in full
 
-The sharpest negative result in the whole book is the model-size sweep, and it
-deserves its own table because it is the claim a reader would most want to test.
-We ran the composition experiment across a ~33× range of capacity. We did **not** hold
-every hyperparameter constant — the runs used different step counts (see Appendix C),
-so this is a sweep across capacity with some training-budget variation alongside it,
-not a strictly-controlled size-only comparison.
+The sharpest negative result in the whole book is the model-size sweep, and it deserves
+its own table because it is the claim a reader would most want to test. We ran the
+composition experiment across a ~33× range of capacity. We did **not** hold every
+hyperparameter constant — the runs used different step counts (see Appendix C), so this
+is a sweep across capacity with some training-budget variation alongside it, not a
+strictly-controlled size-only comparison.
 
 | Model | parameters | in-distribution | composition |
 |-------|-----------|-----------------|-------------|
@@ -3479,209 +3267,146 @@ not a strictly-controlled size-only comparison.
 
 Four sizes. Composition is **0.000 at all four** under the schedules we ran. That is
 the same number repeated across a 33× change in the one resource we might otherwise
-blame. We would be careful not to over-read it: because the step counts differed,
-this is evidence that capacity alone, under these runs, did not produce composition —
-it is not a proof that capacity *cannot* (there may be a threshold, or different
-training budgets, we did not reach). What we can say is that, across the capacity
-range and schedules we tested, composition did not move off 0.000.
+blame. We would be careful not to over-read it: because the step counts differed, this
+is evidence that capacity alone, under these runs, did not produce composition — it is
+not a proof that capacity *cannot* (there may be a threshold, or different training
+budgets, we did not reach).
 
 Two honest notes on the grid. First, in-distribution scores sit in a healthy plateau
 (0.773–0.900) across all four sizes — capacity neither helped nor hurt the narrow task.
 (One 10.2M reading of 0.383 turned out to be a training-run artifact.) Second,
-in-distribution scores do not predict the composition result at all: the models that
-reached 0.900 in-distribution scored 0.000 on composition, same as the one that
-reached 0.773. Capacity that helps the shallow score does nothing for the deep one.
+in-distribution performance is **not** a monotonic ladder that predicts the deep
+boundary: the models that reached 0.900 in-distribution scored 0.000 on composition,
+exactly like the one that reached 0.773. Capacity that helps the shallow score does
+nothing for the deep one.
 
-## What it's NOT, and why that matters
+## What's measured vs. what's unknown
 
-This is **not** evidence that the model is "stupid" or that the approach "doesn't
-work." It is evidence about *what kind of capability small models acquire from this
-kind of data*. The model is good at exactly what it was trained to do — map a narrow
-phrasing to a narrow computation — and bad at the two things that separate "reflex"
-from "capability": robustness to surface change, and composition.
+**Measured (this setup):**
+- The model learns single operations to ~90% in-distribution and generalizes them
+  across instances (L1/L2).
+- The *narrowly-trained* model is surface-tied: new wording → 0.000, new identifiers →
+  0.350 (L3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
+  tested surface — though, as the caveat notes, that is strongest as a coverage
+  statement, not proof of generalization to a wholly unseen wording family.
+- It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
+  0.88M→29.3M) nor more data changes this (L4).
+- Continual learning is a procedure problem: sequential forgets (A → 0.000), joint
+  retains (A → 1.000) with no acquisition cost.
+- The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too
+  easy"; the composition split is not (all baselines 0.000).
 
-The value of measuring this precisely is that it tells us *where* to look next. It is
-not a shrug and a "small models are limited." It is a specific, falsifiable map: the
-boundary is on surface-robustness and composition, not on in-distribution learning.
+**Supported / suggestive / open:**
+- The composition failure is now **tested twice, not simply suggestive**: (a) exposure
+  to a few composites during training does **not** unlock composition on unseen ones
+  (the model memorizes the seen combinations at 0.667 but stays at 0.000 on held-out
+  ones); and (b) diversifying the *surface* of the composite exposure (many phrasings ×
+  id-sets) also leaves the held-out composite at **0.000**. So it is neither a "just
+  show it combinations" fix nor a "diversify the phrasing" fix.
+- The one lever we have **not** isolated is diversity of the *inner structure* — many
+  *different* primitive pairings rather than different phrasings of the same few. That
+  is the remaining open experiment.
+- Whether the composition wall is truly structural or simply sits above our ~30M
+  ceiling is **untested** — we stop where the CPU lab becomes impractical.
 
-## What this means for the bigger picture
+**Unknown (did not test):**
+- Whether behavior on 3+ capabilities or post-continual composition holds.
+- Whether a fundamentally different inductive bias (not scale) helps.
 
-There is a tendency, when reading results like these, to draw a bleak conclusion:
-"small models can't really learn, so this was a waste." That reading would be wrong
-on both halves.
+## The methodology findings
 
-On the first half — small models *do* genuinely learn. The model reliably maps
-natural language to correct Python at ~90% in-distribution, and it does so by
-generalizing across instances, not by memorizing. That is real learning of a narrow
-kind, and it should not be discounted.
+Independent of the model, the **methodology** produced its own results — and several are
+as valuable as any model number:
 
-On the second half — the effort was far from wasted. We now hold a precise,
-measurement-backed boundary: on surface robustness (Level 3) and composition (Level 4),
-this model's capability stops *under the setups we tested*. We are careful with the
-word "structural" — we observe a boundary, we do not prove its cause; it could in
-principle be an internal-representation limit, an optimization / training-budget
-limit, or a generation-length limit, and we have not isolated which. That is the kind
-of knowledge that changes what someone would try next. If a practitioner wants robust,
-compositional capability, the map says: do not just scale up, and do not just add more
-of the same data — instead consider changing the *structure* of the data (more
-diversity, exposure to combinations) or the *inductive bias* of the model. Those are
-directions worth testing; our results show the naive ones (more capacity, more of the
-same data) did not work here, but they do not prove the tested alternatives will either.
+- **Test the tester.** Our own evaluator reported the model at 0.000 on its first run.
+  It was the *judge* that was broken (a null-byte artifact), not the model. Fixing it
+  revealed the true 0.897. Never trust a number from a system we have not audited.
+- **Test the teacher.** The leakage audit caught a 100%-predictable operation from the
+  pilot wording — which, on reflection, is mostly task signal (the request must name
+  the operation), not a leak. This is why surface splits need held-out template
+  families.
+- **Test the data.** The diversity-vs-quantity experiment showed the *same* example
+  count produces surface-fragility (0.000) with minimal diversity or much broader
+  surface coverage (1.000) with high diversity. Diversity — not quantity — is what
+  changes how much surface the model covers. (This is coverage of the surfaces in the
+  training family; it is not established transfer to a wording family excluded from
+  training.)
+- **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
+  (1.000), proving it was "too easy," and forced us to build harder splits. And the
+  moments the model *fell below* a baseline were the most informative results.
+- **The protocol, not capacity, determines continual learning.** Sequential training
+  destroyed capability A (0.000) when learning B; joint training preserved A perfectly
+  (1.000) at no cost to B. This is a *procedure* finding.
 
-So the honest takeaway is not "small models are inadequate." It is "small models
-learn narrow mappings well, and the path to broader capability runs through different
-kinds of data and different inductive structures — not merely more of what we already
-have." That is a useful, and slightly counterintuitive, answer.
+## The boundary, in one line
 
-## Preferring "what these experiments showed"
+> **A small model learns narrow, individual mappings well and generalizes them across
+> instances, but its knowledge is surface-tied and non-compositional — and within the
+> tested range, neither more parameters nor more data turns that into robust,
+> compositional capability. (We also tested a scheduling change — sequential vs. joint
+> training — but that experiment measured retention of *separately learned* task
+> groups, not composition, so it does not speak to the composition boundary.)**
 
-Throughout, we deliberately avoid claiming things about "all small models." We can
-only say what *this* model, on *this* task, with *this* data, did. And what it did is
-both genuinely interesting (it learns!) and sharply bounded (it doesn't generalize
-or compose).
+## Why the map is the deliverable
 
-That boundary — precise, measured, and honest — is the book's real deliverable.
+This map is the book's real output. It is not a single headline accuracy that would
+mislead; it is a precise, honest picture of where capability exists, where it collapses,
+and what (and what doesn't) shift the boundary. It is the answer to the central
+question — and it is falsifiable, built from real measured runs, and honest about what
+remains unknown.
+
+The deeper value of the map is what it does to our confidence. Before drawing it, we
+knew "the model is limited." After drawing it, we know more precisely which limits we
+*moved* with a lever and which we *did not*: composition and surface-tiedness were not
+moved by scale or more-of-the-same data (in our runs), while continual forgetting was
+both seen and fixed by how we trained. We are careful not to call the unmoved ones
+"structural" as if we had proven their cause — we observed that the tested levers did
+not reach them.
+
+That distinction — which limits we could move and which we could not — is the kind of
+knowledge that changes what a practitioner would try next. It is not the same as saying
+"small models are weak"; it is saying "here is where the weakness lived under our tests,
+and here is what did and did not reach it." A map with a blank region is more useful
+than a map painted over with speculation, because the blank marks where the next
+investigation should go.
+
+This is also **not** evidence that the model is "stupid" or that the approach "doesn't
+work." The model is good at exactly what it was trained to do — map a narrow phrasing to
+a narrow computation — and bad at the two things that separate "reflex" from
+"capability": robustness to surface change, and composition. The value of measuring it
+precisely is that it tells us *where* to look next.
 
 ---
 
-# 24. The Model Wasn't the Point
+# 23. The Model Wasn't the Point: A Conclusion
 
-We began with a question that sounded technical: *can a small language model learn
-to solve programming tasks?* The answer we got was more interesting and less about
-the model than we expected.
+We began with a question that sounded technical: *can a small language model learn to
+solve programming tasks?* The answer we got was more interesting and less about the
+model than we expected.
 
 ## Where the journey started
 
-The premise was: building a small model is relatively easy; determining what it
-actually learned is the hard part. That premise turned out to be more accurate than
-we had any right to expect. The model was built in an afternoon. Understanding what it
-had — and had not — learned took the rest of the book.
+The premise was: building a small model is relatively easy; determining what it actually
+learned is the hard part. That premise turned out to be more accurate than we had any
+right to expect. The model was built in an afternoon. Understanding what it had — and had
+not — learned took the rest of the book.
 
-That first line deserves to be unpacked, because it is the whole book in miniature.
-A decoder-only transformer that maps a handful of programming sentences to Python is
-an afternoon's work once the pieces are in place. But *knowing what that model
-actually did* — whether it learned, memorized, associated, or cheated — required a
-world, a teacher, a judge, rivals, and a battery of controlled experiments. The
-model was the easy part. The certainty about what it did was the hard part, and it is
-the part worth writing about.
-
-We built a laboratory, not just a model. Four artifacts: a **controlled world** (an
-AST-whitelisted Python sandbox), a **teacher** (a semantic dataset generator), a
-**judge** (an execution-based, mutation-tested evaluator), and the **student** (the
-model itself). The model was only one component. The experiment was the subject.
-
-## What the laboratory produced
-
-The experiments told a clean, coherent, honest story:
-
-- **The model learns.** On individual operations it reliably maps natural language to
-  correct Python, beating a hand-written template rule system and reaching ~90%
-  in-distribution.
-- **But it is surface-tied.** Change the variable names, and it drops to 0.35. Change
-  the wording while keeping the computation identical, and it falls to **0.000** —
-  below both baselines.
-- **And it cannot compose.** Even though it knows every primitive, it scores **0.000**
-  on operations that combine two things it knows — at every model size we tested,
-  up to 29.3M.
-- **Neither capacity nor data fixes it at this scale.** A ~33× larger model (up to
-  29.3M) and many more examples leave the composition boundary at 0.000.
-
-Along the way, the laboratory caught itself. The first time we evaluated the model, it
-scored 0.000 — and it wasn't the model's fault. The evaluator was broken (a NUL-
-padding artifact in the output made every program fail to parse). Fixing the *
-tester* revealed the model's true 0.897. That moment — discovering our own instrument
-was wrong before we trusted it — is as much a part of this book as any model result.
-
-## The deeper achievement
-
-The book's real finding is not "small models are limited." It is:
-
-> **Building a trustworthy experiment was harder and more valuable than building the
-> model.**
-
-The model was the instrument. The experiment was the subject. The things that made
-this work — the sandbox that rejects anything not explicitly allowed, the judge that
-executes code and compares semantics rather than strings, the mutation suite that
-red-teams the judge, the leakage audit that caught our own dataset leaking the answer,
-the baselines that ask "could a simpler machine do this?", the four-level taxonomy
-that refuses to collapse everything into one number — those are the actual
-achievements here.
-
-It is worth lingering on why each of these matters, because together they form a
-discipline rather than a checklist. The sandbox's allowlist (not a blocklist) meant
-the model could never do something we did not intend, so a failure could always be
-attributed to the model rather than to an accident of environment. The judge's
-execution-based, semantic comparison meant a "correct" answer was objectively
-correct, not merely stylistically close. The mutation suite meant we doubted the
-judge before we trusted it. The baseline comparisons meant a number only had meaning
-relative to a simpler machine. And the four-level taxonomy meant we never overstated
-a result by collapsing different kinds of generalization into one score.
-
-These are the disciplines that make a claim about "what a model learned" worth
-trusting. They are the real product of this book.
-
-## The recurring habit
-
-There is a way of thinking that runs through everything here, and it is worth naming
-directly because it is what a careful investigation actually looks like. It is the
-habit of distrusting the easy answer — including our own.
-
-Every time we got a number, the next step was not to celebrate or to move on. It was
-to ask: **how could the model have gotten this without learning what we think it
-learned?** Could it have memorized? Retrieved? Exploited a template? Leaked the
-answer from our own data? Hit a bug in our evaluator? Each of those is a way a
-seemingly-impressive result can be hollow, and each one we then built a control to
-test. That constant, deliberate suspicion — aimed at our own apparatus as much as at
-the model — is the difference between "we ran an experiment" and "we know what the
-experiment means."
-
-## What the reader takes away
-
-If we take one thing from this book, it is a habit, not a fact:
-
-> **Never trust a number from a model we don't understand, or from an experiment we
-> haven't audited.**
-
-Before we believe "the model learned to add," we have to be able to answer: remove
-the memorization, the retrieval, the templates, the leakage, the evaluator artifacts —
-what remains? In our case, for simple primitives, what remained was genuine
-learning-within-a-surface-form. It was real, and it was narrow, and it did not
-compose.
-
-That is the honest, complete answer. We did not build a general programmer. We built
-the means to ask, precisely and honestly, what a small model can and cannot learn —
-and we got an answer worth having.
-
-**Build the model. Test the model. Break the evaluator. Break the model. Audit the
-data. Challenge the conclusion. Repeat.** Only then say: "This is what the model
-learned."
-
-The model was not the point. The experiment was. Because the world is full of models,
-but a disciplined way of finding out what they actually learned — that is rare, and
-that is what is worth keeping.
-
----
-
-# 25. Conclusion and Where This Brew Leads
-
-We have built a laboratory, run a battery of controlled experiments, and drawn an
-honest map. This is where we stand — and where the investigation goes next.
+A decoder-only transformer that maps a handful of programming sentences to Python is an
+afternoon's work once the pieces are in place. But *knowing what that model actually did*
+— whether it learned, memorized, associated, or cheated — required a world, a teacher, a
+judge, rivals, and a battery of controlled experiments. The model was the easy part. The
+certainty about what it did was the hard part, and it is the part worth writing about.
 
 ## What the experiment established
 
-At the core, the answer to the book's central question is now clear and measured:
+At the core, the answer to the book's central question is now clear and measured. The
+experiments separate cleanly into what the model **can** do and what it **cannot**.
 
-> How much structured programming capability can a small language model actually
-> learn — and how can we tell whether it learned rather than memorized?
-
-The experiments separate cleanly into what the model **can** do and what it **cannot**.
-
-**It can learn, and it learns well — within a narrow regime.** On individual
-operations, the model reliably maps a natural-language spec to correct Python, reaching
-**~0.90 pass@1** in-distribution on a 0.88M parameter model. It generalizes across
-*instances*: on held-out prompts it passes, and on a canary it produces the general
-program, not a memorized literal. So this is genuine learning of the narrow task,
-not parroting.
+**It can learn, and it learns well — within a narrow regime.** On individual operations,
+the model reliably maps a natural-language spec to correct Python, reaching **~0.90
+pass@1** in-distribution on a 0.88M parameter model. It generalizes across *instances*:
+on held-out prompts it passes, and on a canary it produces the general program, not a
+memorized literal. So this is genuine learning of the narrow task, not parroting.
 
 **But it is surface-tied and non-compositional.** The two limits that matter:
 
@@ -3702,138 +3427,154 @@ call this a capacity "ceiling": it is a measured boundary in this regime, not pr
 that capacity cannot help under other conditions (different training budgets, larger
 sizes, or different optimizers).
 
-## The four-point grid (measured)
+## What the laboratory produced along the way
 
-| Model | in-distribution | composition |
-|-------|-----------------|-------------|
-| 0.88M | 0.900 | **0.000** |
-| 6.5M  | 0.897 | **0.000** |
-| 10.2M | 0.773 | **0.000** |
-| 29.3M | 0.897 | **0.000** |
+The experiments told a clean, coherent, honest story — and the laboratory caught
+itself. The first time we evaluated the model, it scored 0.000 — and it wasn't the
+model's fault. The evaluator was broken (a NUL-padding artifact in the output made
+every program fail to parse). Fixing the *tester* revealed the model's true 0.897. That
+moment — discovering our own instrument was wrong before we trusted it — is as much a
+part of this book as any model result.
 
-Four sizes, spanning ~33× in capacity. Composition is **0.000 at every one** — a
-robust, falsifiable finding that the boundary is not about how much brain the model
-has. Two honest notes on the grid. First, in-distribution sits in a healthy plateau
-(0.773–0.900) across all four sizes — capacity neither helped nor hurt the narrow task.
-(One 10.2M reading of 0.383 turned out to be a training-run artifact.) Second,
-in-distribution performance is **not a monotonic ladder** that predicts the deep
-boundary; the model that reached 0.900 in-distribution still scored 0.000 on
-composition, exactly like the one that reached 0.773.
+## The deeper achievement
 
-## The methodology findings
+The book's real finding is not "small models are limited." It is:
 
-Independent of the model, the **methodology** produced its own results — and several
-are as valuable as any model number:
+> **Building a trustworthy experiment was harder and more valuable than building the
+> model.**
 
-- **Test the tester.** Our own evaluator reported the model at 0.000 on its first run.
-  It was the *judge* that was broken (a null-byte artifact), not the model. Fixing it
-  revealed the true 0.897. Never trust a number from a system we have not audited.
-- **Test the teacher.** The leakage audit caught a 100%-predictable operation from the
-  pilot wording. This is why surface splits need held-out template families.
-- **Test the data.** The diversity-vs-quantity experiment showed the *same* example
-  count produces surface-fragility (0.000) with minimal diversity or much broader
-  surface coverage (1.000) with high diversity. Diversity — not quantity — is what
-  changes how much surface the model covers. (This is coverage of the surfaces in the
-  training family; it is not established transfer to a wording family excluded from
-  training — see Chapter 13's caveat.)
-- **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
-  (1.000), proving it was "too easy," and forced us to build harder splits. And the
-  moments the model *fell below* a baseline were the most informative results.
-- **The protocol, not capacity, determines continual learning.** Sequential training
-  destroyed capability A (0.000) when learning B; replay preserved A perfectly (1.000)
-  at no cost to B. This is a *procedure* finding.
+The model was the instrument. The experiment was the subject. The things that made this
+work — the sandbox that rejects anything not explicitly allowed, the judge that executes
+code and compares semantics rather than strings, the mutation suite that red-teams the
+judge, the leakage audit, the baselines that ask "could a simpler machine do this?", the
+four-level taxonomy that refuses to collapse everything into one number — those are the
+actual achievements here.
 
-## The brewing experience, distilled
+Each of these forms a discipline rather than a checklist. The sandbox's allowlist (not a
+blocklist) meant the model could never do something we did not intend, so a failure
+could always be attributed to the model rather than to an accident of environment. The
+judge's execution-based, semantic comparison meant a "correct" answer was objectively
+correct, not merely stylistically close. The mutation suite meant we doubted the judge
+before we trusted it. The baseline comparisons meant a number only had meaning relative
+to a simpler machine. And the four-level taxonomy meant we never overstated a result by
+collapsing different kinds of generalization into one score.
 
-Beyond the numbers, there is a way of working this book was really about. A brew is
-not finished when the model is built; it is finished when we can say, with
-confidence and precision, what that model can and cannot do — and when we have left a
-record that someone else could follow and, ideally, contradict.
+## The recurring habit
 
-That process had a rhythm. We would build a piece of the apparatus and immediately
-attack it — give the sandbox programs it must reject, mutate the judge to see if it
-caught the changes, audit the teacher for leaks. We would run an experiment, get a
-number, and then spend as much effort asking *how the model might have cheated* as we
-had spent getting the number. And more than once, the interesting discovery was not
-in the model's behavior but in our own tools: the judge that mis-scored a working
-model, the data generator that leaked the operation, the pilot task that a lookup
-table could solve perfectly.
+There is a way of thinking that runs through everything here, and it is worth naming
+directly because it is what a careful investigation actually looks like. It is the habit
+of distrusting the easy answer — including our own.
 
-This is the honest shape of empirical work. It is seldom a straight line from
+Every time we got a number, the next step was not to celebrate or to move on. It was to
+ask: **how could the model have gotten this without learning what we think it learned?**
+Could it have memorized? Retrieved? Exploited a template? Leaked the answer from our own
+data? Hit a bug in our evaluator? Each of those is a way a seemingly-impressive result
+can be hollow, and each one we then built a control to test. That constant, deliberate
+suspicion — aimed at our own apparatus as much as at the model — is the difference
+between "we ran an experiment" and "we know what the experiment means."
+
+Beyond the numbers, there is a way of working this book was really about. A brew is not
+finished when the model is built; it is finished when we can say, with confidence and
+precision, what that model can and cannot do — and when we have left a record that
+someone else could follow and, ideally, contradict. It is seldom a straight line from
 hypothesis to clean result. It is a loop of building, testing the builder, being
-surprised, and revising. The surprise is not a detour from the method; it is the
-method. And a book about science should show that loop, not hide it.
+surprised, and revising. The surprise is not a detour from the method; it is the method.
+And a book about science should show that loop, not hide it.
+
+## What the reader takes away
+
+If we take one thing from this book, it is a habit, not a fact:
+
+> **Never trust a number from a model we don't understand, or from an experiment we
+> haven't audited.**
+
+Before we believe "the model learned to add," we have to be able to answer: remove the
+memorization, the retrieval, the templates, the leakage, the evaluator artifacts — what
+remains? In our case, for simple primitives, what remained was genuine
+learning-within-a-surface-form. It was real, and it was narrow, and it did not compose.
+
+**Build the model. Test the model. Break the evaluator. Break the model. Audit the
+data. Challenge the conclusion. Repeat.** Only then say: "This is what the model
+learned."
 
 ## Where this brew leads
 
-The honest map points at specific next experiments, not vague "more data / bigger
-model":
+The honest map points at specific next experiments, not vague "more data / bigger model":
 
 1. **Does *structural* diversity of combinations unlock composition?** We tested two
    things and both failed: (a) feeding a few composites during training (held-out still
    0.000), and (b) diversifying the *surface* of the composite exposure (many phrasings
    × id-sets; held-out still 0.000). So the remaining open question is diversity of the
-   *inner structure* — exposing the model to many *different* primitive pairings, not
-   just different phrasings of the same few — to see whether that teaches a general
-   compose-operator. That is the one lever we haven't isolated.
+   *inner structure* — exposing the model to many *different* primitive pairings — to
+   see whether that teaches a general compose-operator. That is the one lever we have
+   not isolated.
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
    measured 0.773 (a stable plateau, not the earlier 0.383 artifact). A proper
-   training-duration and config sweep at 10M would confirm the plateau is robust
-   rather than a single-seed coincidence.
+   training-duration and config sweep at 10M would confirm the plateau is robust.
 3. **Does continuing to scale past 30M shift the boundary?** The grid stops where the
-   brew lab's CPU becomes impractical. A larger-scale run (or a GPU) would probe
-   whether the composition wall eventually moves.
-4. **Does diversity fix composition?** Diversity fixed the *surface* problem
-   (0.000 → 1.000). Whether the *same* lever helps composition is the natural next
-   test of the "structural data" hypothesis.
+   brew lab's CPU becomes impractical. A larger-scale run (or a GPU) would probe whether
+   the composition wall eventually moves.
+4. **Does diversity fix composition?** Diversity fixed the *surface* problem (0.000 →
+   1.000). Whether the *same* lever helps composition is the natural next test of the
+   "structural data" hypothesis.
 5. **Human-style training.** The 0/16 human test set shows the model fails on
-   naturally-phrased prompts. Training on diverse, human-style prompts — the lever
-   that already fixed surface robustness — is the obvious path to real usability.
+   naturally-phrased prompts. Training on diverse, human-style prompts is the obvious
+   path to real usability.
+
+### A future note on widening the world
+
+One planned direction is **widening the capability spec** — giving the model more Python
+(loops, indexing, richer structures) and re-measuring. We did **not** run a full sweep of
+"add more Python and re-measure" in this book. What we did measure is that the
+composition failure was not a syntax problem: the model had the syntax and still could
+not compose. The versioned, step-by-step widening framework (the capability spec's
+`v0_1`, `v0_2`, …) is how we would test new capability, and we state it as a proposal
+for the future rather than a completed result.
 
 ## The honest ending
 
-The model was the instrument. The experiment was the subject. We did not build a
-general programmer, and we will not pretend otherwise. What we *did* build is the
-means to ask, precisely and honestly, what a small model can and cannot learn — and we
-got an answer worth having:
+The model was the instrument. The experiment was the subject. We did not build a general
+programmer, and we will not pretend otherwise. What we *did* build is the means to ask,
+precisely and honestly, what a small model can and cannot learn — and we got an answer
+worth having:
 
 > A small model learns narrow tasks well, but its knowledge is surface-tied and
 > non-compositional, and within the tested range neither more capacity nor more data
 > turns it into robust, compositional capability.
 
-And the brakes we learned — test the tester, test the teacher, compare against
-baselines, audit shortcuts, preserve failures — are the durable part. That is the
-method worth keeping, and it's the reason the book's real subject was never the model.
-The brew was never only about the model; it was about learning to ask a question
-carefully enough that the answer could be trusted.
+And the habits we learned — test the tester, test the teacher, compare against baselines,
+audit shortcuts, preserve failures — are the durable part. That is the method worth
+keeping, and it is the reason the book's real subject was never the model. The brew was
+never only about the model; it was about learning to ask a question carefully enough that
+the answer could be trusted.
 
 ## Where this sits: related work
 
 None of the ideas here is new in isolation, and we want to say so plainly rather than
-imply novelty. This book's contribution is not inventing a technique; it is assembling
-a small, fully-controlled laboratory and being unusually honest about what the results
-do and do not establish. The underlying disciplines have long histories, and a reader
-who wants to go deeper should look there:
+imply novelty. This book's contribution is not inventing a technique; it is assembling a
+small, fully-controlled laboratory and being unusually honest about what the results do
+and do not establish. The underlying disciplines have long histories, and a reader who
+wants to go deeper should look there:
 
 - **Compositional generalization.** The question of whether a model can combine known
   pieces in novel ways is a longstanding benchmark problem (e.g. the SCAN and COGS
   datasets). Our finding — that a tiny model does not compose under our tests — is a
-  narrow case of a much-studied puzzle, studied far more thoroughly in that literature.
+  narrow case of a much-studied puzzle.
 - **Execution-based code evaluation.** Running generated code against hidden tests is
   the standard for code-generation evaluation (the pass@k / HumanEval tradition). We
-  borrowed that idea and applied it at a miniature scale, and our mutation-control
-  work echoes the broader practice of testing the evaluator itself.
+  borrowed that idea and applied it at a miniature scale, and our mutation-control work
+  echoes the broader practice of testing the evaluator itself.
 - **Shortcut learning.** "The model found an easier signal than the one we intended" is
   a well-documented phenomenon; our shortcut audit is a small, disciplined instance.
-- **Catastrophic forgetting and rehearsal.** The effect we measured in Chapter 20 is a
-  classic finding; the observation that keeping old data in the mix helps is also
+- **Catastrophic forgetting and rehearsal.** The effect we measured is a classic
+  finding; the observation that keeping old data in the mix helps is also
   long-established.
 - **Mutation testing.** Originating in software engineering, it is the source of our
   judge red-team.
 
-We cite these traditions to place the book in context, not to claim we advanced them.
-If a reader wants the canonical treatments, the benchmarks and papers named above are
-the natural next step.
+We cite these traditions to place the book in context, not to claim we advanced them. We
+did not benchmark against these in this book (the task and scale are far smaller), so we
+make no claim of competing with them.
 
 ## Reading further
 
@@ -3842,10 +3583,6 @@ the natural next step.
 - For shortcut learning and spurious correlation: the shortcut-learning literature.
 - For continual learning and rehearsal: the catastrophic-forgetting literature.
 - For mutation testing of test suites: the software-testing literature.
-
-We did not benchmark against these in this book (the task and scale are far smaller),
-so we make no claim of competing with them — only of building a small, well-controlled
-instance and reporting it honestly.
 
 ## Three short exercises
 
@@ -4365,7 +4102,7 @@ training runs.
 - **Composition beyond ~30M** (and the true "structural vs. above-our-ceiling"
   question) is not tested — the CPU lab becomes impractical beyond that.
 - **A true replay-after-A-first** continual-learning design (vs the joint-training
-  control we ran) is not tested; see the Chapter 20 caveat.
+  control we ran) is not tested; see the Chapter 18 caveat.
 - **Mutation-testing acceptance** and a *surviving* mutant report showing the judge
   caught an error — a gap the book should close (see Chapter 17) before claiming the
   judge's reliability is demonstrated.

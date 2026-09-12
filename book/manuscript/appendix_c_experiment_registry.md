@@ -133,7 +133,7 @@ training runs.
 - **Composition beyond ~30M** (and the true "structural vs. above-our-ceiling"
   question) is not tested — the CPU lab becomes impractical beyond that.
 - **A true replay-after-A-first** continual-learning design (vs the joint-training
-  control we ran) is not tested; see the Chapter 20 caveat.
+  control we ran) is not tested; see the Chapter 18 caveat.
 - **Mutation-testing acceptance** and a *surviving* mutant report showing the judge
   caught an error — a gap the book should close (see Chapter 17) before claiming the
   judge's reliability is demonstrated.

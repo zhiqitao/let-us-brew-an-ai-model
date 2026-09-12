@@ -35,14 +35,12 @@ ACTS = [
         "ch14_the_model_that_memorized_everything.md",
         "ch15_new_words_same_problem.md", "ch16_same_pieces_new_combination.md",
         "ch17_redteam_the_judge.md"]),
-    ("Give It More Python", [
-        "ch18_now_give_it_more_python.md", "ch19_the_capability_ladder_revisited.md"]),
     ("Break It", [
         "ch20_what_happens_when_we_teach_it_something_new.md",
         "ch21_the_cost_of_capability.md"]),
     ("What Did We Learn?", [
-        "ch22_the_capability_map.md", "ch23_what_small_models_can_actually_learn.md",
-        "ch24_the_model_wasnt_the_point.md", "ch25_conclusion.md"]),
+        "ch19_the_capability_ladder_revisited.md",
+        "ch22_the_capability_map.md", "ch25_conclusion.md"]),
 ]
 APPENDIX = [
     ("The Generator, Every Piece", "appendix_a_generator.md"),
