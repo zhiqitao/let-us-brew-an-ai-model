@@ -184,18 +184,23 @@ def fig_judge():
         (30, "3. EXECUTION\nruns cleanly?", PURPLE),
         (10, "4. SEMANTIC\nmatches expected?", ORANGE),
     ]
-    # put the stage column on the LEFT half, notes in a clean right column
+    # put the stage column on the LEFT half, explicit YES/NO branches on the right.
     for y, lab, c in stages:
         box(ax, 20, y, 38, 14, lab, fc=c, fs=8.5)
+        # "NO -> reject" branch off the right of every stage
+        arrow(ax, 58, y + 7, 66, y + 7, color=RED)
+        box(ax, 68, y + 2, 24, 10, "NO\n→ rejected\n(score 0)", fc="#f6dede", ec=RED, fs=7, tc=RED)
+        # "YES" tag between stages (except after the last)
+        if y > 10:
+            ax.text(39, y - 1.5, "yes", ha="center", fontsize=6.5, color=GREEN, style="italic")
     # short clean arrows in the gap between boxes
     for i in range(3):
-        y = 70 - (i * 20)          # top box bottom
-        arrow(ax, 39, y + 4, 39, y - 2)  # down into next box
-    note(ax, 12, 86, "any 'no' → whole program\nrejected, then zero", fs=8, color=RED)
-    note(ax, 63, 55, "short-circuit:\nfail at any stage", fs=8, color=RED)
-    box(ax, 63, 14, 34, 20,
-        "Only a program that clears all\nfour gets credit. One number\nwould hide which stage failed.",
-        fc="#fbfaf6", ec=INK, fs=8.5, tc=INK)
+        y = 70 - (i * 20)
+        arrow(ax, 39, y + 4, 39, y - 2)
+    note(ax, 74, 90, "any 'no' → whole program\nrejected, then zero", fs=8, color=RED)
+    box(ax, 30, 2, 46, 7,
+        "Only a program that clears all four gets credit.\nOne number would hide which stage failed.",
+        fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
     save(fig, "fig_judge.png")
 
 
