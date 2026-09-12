@@ -55,7 +55,6 @@ IMG_RE = re.compile(r"!\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]\(([^)]+)
 TITLE_RE = re.compile(r"^#\s+(.+?)\s*$", re.M)
 ORD_RE = re.compile(r"^(#{2,3})\s+\d{1,2}\.\s+", re.M)
 
-
 def fix_colspec(tex_path):
     """Rewrite pandoc's relative-width table colspecs into simple
     p{<frac>\\linewidth} columns, scaled down so the full table (columns + the
@@ -120,6 +119,54 @@ def fix_colspec(tex_path):
         return True
     return False
 
+def wrap_figures(tex_path):
+    """Convert each pandoc `figure` environment into a single captioned figure that
+    registers in the List of Figures AND works inside nested (quote/list) contexts.
+
+    Pandoc emits:
+        \\begin{figure}\\centering\\pandocbounded{\\includegraphics[...]{...}}
+        \\caption{...}\\end{figure}
+    We rewrite the whole block into a non-floating `\\captionof` figure (so it does
+    not need outer par mode) with a single caption, avoiding duplicate captions.
+    """
+    tex = open(tex_path, encoding="utf-8").read()
+    pat = re.compile(
+        r"\\begin\{figure\}(.*?)\\end\{figure\}", re.S)
+    def repl(m):
+        block = m.group(1)
+        # pull the includegraphics options + file
+        img = re.search(r"\\includegraphics\[([^\]]*)\]\{([^}]+)\}", block)
+        if not img:
+            return m.group(0)
+        opts, path = img.group(1), img.group(2)
+        # pull the caption text
+        cap = None
+        c = re.search(r"\\caption\{([^}]*)\}", block)
+        if c:
+            cap = c.group(1).strip()
+        if not cap:
+            cap = re.search(r"alt=\{([^}]*)\}", opts).group(1).strip()
+        return (
+            "\\begin{center}\\includegraphics[%s]{%s}\\\\"
+            "\\captionof{figure}{%s}\\end{center}" % (opts, path, cap)
+        )
+    new = pat.sub(repl, tex)
+    # Handle bare inline \pandocbounded{\includegraphics[alt={Cap}]{...}} that pandoc
+    # did NOT wrap in a figure env (e.g. an image inline inside a paragraph). Wrap it.
+    pat2 = re.compile(
+        r"\\pandocbounded\{\\includegraphics\[([^\]]*?alt=\{([^}]*)\}[^\]]*?)\]\{(figures/[^}]+)\}\}",
+        re.S)
+    def repl2(m):
+        opts, cap, path = m.group(1), m.group(2).strip(), m.group(3)
+        return (
+            "\\begin{center}\\includegraphics[%s]{%s}\\\\"
+            "\\captionof{figure}{%s}\\end{center}" % (opts, path, cap)
+        )
+    new = pat2.sub(repl2, new)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
 
 def fix_figure_width(tex_path):
     tex = open(tex_path, encoding="utf-8").read()
@@ -133,7 +180,6 @@ def fix_figure_width(tex_path):
         open(tex_path, "w", encoding="utf-8").write(new)
         return True
     return False
-
 
 def copy_figures():
     """Copy all chapter figures into a flat dir; return {orig_rel: flat_name}.
@@ -165,7 +211,6 @@ def copy_figures():
             shutil.copy(cs, os.path.join(FIG, ext))
     return mapping
 
-
 def chapter_title(fn):
     txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
     m = TITLE_RE.search(txt)
@@ -173,7 +218,6 @@ def chapter_title(fn):
     # strip a leading manual "N. " prefix if present so LaTeX owns numbering
     title = re.sub(r"^\d{1,2}\.\s*", "", title)
     return title
-
 
 def convert_chapter(fn, mapping, outbase):
     txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
@@ -194,9 +238,8 @@ def convert_chapter(fn, mapping, outbase):
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         print("pandoc fail %s: %s" % (outbase, r.stderr[-300:]))
-    fix_colspec(out); fix_figure_width(out)
+    fix_colspec(out); fix_figure_width(out); wrap_figures(out)
     return out
-
 
 def main():
     mapping = copy_figures()
@@ -236,7 +279,6 @@ def main():
     book = render_book_tex(build_lines)
     open(os.path.join(LATEX, "book.tex"), "w", encoding="utf-8").write(book)
     print("wrote book.tex; chapters:", len(chapters_out), "appendices:", ap)
-
 
 def render_book_tex(build_lines):
     body = "\n".join(build_lines)
@@ -299,7 +341,6 @@ def render_book_tex(build_lines):
 \\end{{document}}
 """
 
-
 def preface_extract():
     # A generated preface plus a reader contract (audience, claims, how to use).
     return r"""This book is a controlled empirical investigation into what a small language model can actually learn when it is given exactly one narrowly defined, objectively testable job.
@@ -325,7 +366,6 @@ We set the scope deliberately narrow, and we repeat it throughout. All the resul
 \end{itemize}
 
 The honest payoff is not ``small models are inadequate. It is a precise map of where the boundary sits under our tests --- and the many ways a promising-looking number can be an artifact of how we measured it."""
-
 
 if __name__ == "__main__":
     main()
