@@ -1,0 +1,364 @@
+{
+  "aggregate": {
+    "operations": 16,
+    "mutants_total": 35,
+    "killed": 29,
+    "survived": 6,
+    "invalid": 0,
+    "kill_rate": 0.829,
+    "all_reference_positive_controls_accepted": true
+  },
+  "per_operation": [
+    {
+      "op": "add",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "add_to_sub": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "sub",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "sub_to_add": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "mul",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "mul_to_div": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "max_of",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 1,
+      "survived": 1,
+      "invalid": 0,
+      "kill_rate": 0.5,
+      "by_class": {
+        "gt_to_gte": {
+          "killed": 0,
+          "survived": 1,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "min_of",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 1,
+      "survived": 1,
+      "invalid": 0,
+      "kill_rate": 0.5,
+      "by_class": {
+        "lt_to_lte": {
+          "killed": 0,
+          "survived": 1,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "abs_of",
+      "ref_accepted": true,
+      "mutants_total": 3,
+      "killed": 2,
+      "survived": 1,
+      "invalid": 0,
+      "kill_rate": 0.667,
+      "by_class": {
+        "sub_to_add": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "lt_to_lte": {
+          "killed": 0,
+          "survived": 1,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "list_sum",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "add_to_sub": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "list_len",
+      "ref_accepted": true,
+      "mutants_total": 1,
+      "killed": 1,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "first_element",
+      "ref_accepted": true,
+      "mutants_total": 1,
+      "killed": 1,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "cond_abs_max",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 1,
+      "survived": 1,
+      "invalid": 0,
+      "kill_rate": 0.5,
+      "by_class": {
+        "gt_to_gte": {
+          "killed": 0,
+          "survived": 1,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "abs_add",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "add_to_sub": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "sub_abs",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "sub_to_add": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "sum_of_abs",
+      "ref_accepted": true,
+      "mutants_total": 4,
+      "killed": 3,
+      "survived": 1,
+      "invalid": 0,
+      "kill_rate": 0.75,
+      "by_class": {
+        "add_to_sub": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "sub_to_add": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "lt_to_lte": {
+          "killed": 0,
+          "survived": 1,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "max_add",
+      "ref_accepted": true,
+      "mutants_total": 4,
+      "killed": 3,
+      "survived": 1,
+      "invalid": 0,
+      "kill_rate": 0.75,
+      "by_class": {
+        "add_to_sub": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "sub_to_add": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "gt_to_gte": {
+          "killed": 0,
+          "survived": 1,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "double_first",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "mul_to_div": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    },
+    {
+      "op": "len_minus_one",
+      "ref_accepted": true,
+      "mutants_total": 2,
+      "killed": 2,
+      "survived": 0,
+      "invalid": 0,
+      "kill_rate": 1.0,
+      "by_class": {
+        "sub_to_add": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        },
+        "remove_return": {
+          "killed": 1,
+          "survived": 0,
+          "invalid": 0
+        }
+      }
+    }
+  ]
+}

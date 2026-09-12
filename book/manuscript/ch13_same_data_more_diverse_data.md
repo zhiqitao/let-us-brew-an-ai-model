@@ -79,23 +79,18 @@ differed.
 
 ## What this really means
 
-This is the book's most useful finding, and it reframes the whole data question. It is
-not that "more data is better." It is that **the kind of variation in the data is what
-creates robust capability.**
+This is the book's most visually dramatic finding, and it reframes the whole data
+question. It is not that "more data is better." It is that **the kind of variation in
+the data changes what the model can do.**
 
 A model fed many examples of few phrasings memorizes the phrasings. A model fed the
-same number of examples spread across many phrasings learns the *underlying operation*
-— because the only thing that stays constant across varied phrasings is the operation
-itself. When the wording varies but the meaning stays the same, the model has no
-choice but to attach its learning to the meaning rather than to any particular
-surface. Diversity does not just add information; it *forces* abstraction.
-
-This connects directly to the book's central theme. We spent the book asking whether
-the model *learned* or merely associated. Here is a lever that pushes it from
-association toward learning: vary the surface form until the only stable thing is the
-meaning. The model's inability to generalize under repetition was not a mysterious
-limitation — it was a direct consequence of a training set that gave it no reason to
-abstract.
+same number of examples spread across many phrasings comes to cover far more of the
+surface space. We cannot say from this experiment alone that it has "learned the
+underlying operation" in the strong sense — that would require a wording family it
+was *never* trained on, which this design does not test (see the caveat below). What
+the result shows is a large and real shift in coverage: the diverse model gets 1.000
+where the narrow model gets 0.000, and the *only* change is diversity of the training
+set. That is a strong lever, even before we claim it forces abstraction.
 
 ## An honest limit: coverage vs. generalization
 
@@ -114,6 +109,23 @@ Whether it generalizes to a wording *family it never saw* is a separate question
 design does **not** answer — that would need a held-out family excluded from the
 diverse pool. We flag this honestly, because the strong reading ("diversity produces
 generalization to unseen surfaces") is not fully established by this experiment as run.
+
+### This chapter vs. Chapter 15: two different "surface" tests
+
+It is easy to blur these two, so let us keep them apart. Both test surface change, but
+they answer different questions:
+
+| | Chapter 13 (this chapter) | Chapter 15 (Stage 3) |
+|---|---------------------------|----------------------|
+| Training wording | minimal (few families) or high (all families, both id-sets) | all-but-the-last family per op |
+| Test surface | same family set the model trained on (coverage) | the **held-out last family** the model never saw |
+| What 1.000 / 0.000 means | coverage of surfaces *within* the training family | generalization to a wording family *excluded* from training |
+| Valid conclusion | high diversity covers more surface | narrow training fails on a genuinely unseen family |
+
+The Chapter 15 result is a genuine held-out-family test (a dedup audit confirms the
+held-out wording family does not appear in training). The Chapter 13 result is a
+coverage demonstration. Only Chapter 15 speaks to generalization to a *never-seen*
+wording; Chapter 13 shows diversity widens the covered surface.
 
 ## The honest caveat
 

@@ -50,8 +50,11 @@ learning it isn't learning much.
 Building this rival is almost too easy. It is a few rules that map common words to
 common code. But its simplicity is precisely its value. It is the lowest useful
 baseline: the floor of what any reasonable person would expect a hard-coded system to
-achieve. If our learned model cannot beat this floor, then the model is not learning —
-it is re-deriving a rule table, more expensively and less reliably.
+achieve. If our learned model cannot beat this floor, we learn an important fact:
+the task does not require the extra machinery — it does not establish an *advantage*
+over this baseline. That is a statement about the task (it is easy for a rule table),
+not a statement that no learning occurred. The model may well have learned; it is just
+not learning anything *beyond* what a few rules give us.
 
 ## Rival 2 — retrieval
 

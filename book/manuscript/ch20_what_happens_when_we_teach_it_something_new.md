@@ -109,9 +109,9 @@ collapses. If old and new stay interleaved, the model can hold both.
 
 And it reframes a common assumption. People often reach for "a bigger model" when
 confronted with a model that forgets. This experiment shows the forgetting was never
-a capacity problem — a ~0.9M model holds both capabilities perfectly under replay. It
-was a *training procedure* problem. Here, as with composition, the instinctive fix
-("make it bigger") would have been exactly wrong.
+a capacity problem — a ~0.9M model reaches high final scores on both task groups when
+trained jointly (A: 1.000, B: 0.889). It was a *training procedure* problem. Here, as
+with composition, the instinctive fix ("make it bigger") would have been exactly wrong.
 
 The pattern here echoes a deeper truth we've seen all book: the headline number
 ("did it learn the new thing?") hides the interesting failure ("what did it lose to
@@ -132,10 +132,12 @@ to always measure *both* the new and the old.
 
 ## The honest summary
 
-Acquiring a new capability can destroy an old one — and it is entirely up to how we
-train. Sequential training forgets; replay retains with no cost. This is a controlled,
-reproducible demonstration that catastrophic forgetting is a procedure problem, and
-it is one of the most practically useful results in the book.
+Acquiring a new capability can destroy an old one — and it is largely up to how we
+train. Sequential training forgets; keeping both in the mix preserves them. This is a
+controlled, reproducible demonstration that destructive forgetting is a procedure
+problem, and it is one of the most practically useful results in the book. ("No cost"
+here means no behavioral cost on the new capability — not zero compute, storage, or
+data-retention cost, and not a true replay-after-A-first demonstration; see above.)
 
 What makes it feel like a real discovery is that the right answer was sitting in a
 choice we made near-automatically. When we first set up the experiment, sequential

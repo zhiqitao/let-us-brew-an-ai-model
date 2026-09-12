@@ -69,11 +69,14 @@ whole thing off.
 
 But the book's own discipline — *test the tester* — demanded we ask whether the
 *judge* was the problem, not the model. So we looked at what the judge actually
-saw. And there it was: the generated programs were perfectly valid Python, except
-they had a run of **NUL bytes** (`\x00`) appended after the finished program. The
-model had learned to pad its output with a byte that means "nothing," and Python's
-parser rejects NUL bytes outright. So `ast.parse` threw a syntax error on perfectly
-good code, and the judge scored the model's valid program as a *syntax failure*.
+saw. And there it was: the generated programs were valid Python up to the end of the
+program, except they had a run of **NUL bytes** (`\x00`) appended after it. The
+model had learned to pad its output with a byte that means "nothing." Python's parser
+correctly rejects NUL bytes — they are not valid source. The fault was in the
+*extraction contract*, not the parser: we had failed to strip the padding before
+handing the output to `ast.parse`. So `ast.parse` threw a syntax error on what was,
+after truncation, good code, and the judge scored the model's program as a *syntax
+failure*.
 
 The fix was a single line: truncate the generated program at the first NUL byte. A
 trivial change, and suddenly the model's score leapt from 0.000 to 0.897.

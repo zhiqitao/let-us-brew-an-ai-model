@@ -117,13 +117,15 @@ central question — and it is falsifiable, built from real measured runs, and h
 about what remains unknown.
 
 The deeper value of the map is what it does to our confidence. Before drawing it, we
-knew "the model is limited." After drawing it, we know *precisely which limits are
-structural* (composition, surface-tiedness — not moved by scale or data) and *which
-are procedural* (continual forgetting — fixed entirely by how we train). That
-distinction between structural and procedural limits is the kind of knowledge that
-changes what a practitioner would try next. It is not the same as saying "small
-models are weak"; it is saying "here is exactly where the weakness lives, and here is
-what does and does not reach it."
+knew "the model is limited." After drawing it, we know more precisely which limits we
+*moved* with a lever and which we *did not*: composition and surface-tiedness were not
+moved by scale or more-of-the-same data (in our runs), while continual forgetting was
+both seen and fixed by how we trained. We are careful not to call the unmoved ones
+"structural" as if we had proven their cause — we observed that the tested levers did
+not reach them. That distinction — which limits we could move and which we could not —
+is the kind of knowledge that changes what a practitioner would try next. It is not
+the same as saying "small models are weak"; it is saying "here is where the weakness
+lived under our tests, and here is what did and did not reach it."
 
 That precision, not a dramatic narrative, is the honest payoff of the whole brew. And
 it is why we are willing to state as an *unknown* the questions we did not answer,

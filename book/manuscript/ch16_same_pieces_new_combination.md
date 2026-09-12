@@ -4,8 +4,9 @@ Everything so far warned us. The model knows `abs` and `add` individually. Chang
 wording and it breaks; change the identifier names and it stumbles. But the pieces are
 there. So the question this chapter asks is the sharpest one of the whole book:
 
-> If the model knows how to *add* and how to take an *absolute value*, can it do the
-> thing the two of them make together — compute the absolute value of a sum?
+> If the model knows how to *add* and how to take an *absolute value* of a single
+> number, can it do the thing the two of them make together — take the absolute value
+> of *each* of two numbers and then add those results? (`abs(a) + abs(b)`)
 
 This is **compositional generalization**: taking knowledge the model already has and
 applying it to a structure it never saw during training. It is arguably the deepest
@@ -88,11 +89,14 @@ one with an "abs" skill — but no door between them. It cannot take the output 
 and feed it into the other, even though that is the simplest possible combination.
 
 This is the deep meaning of "surface-tied" that we began to glimpse in Chapter 15.
-It is not merely that the model is sensitive to wording. It is that the model's
-knowledge is **flat and associative**, not **structured and compositional**. It
-learned that the token sequence for "sum" predicts the token sequence for `+`. It did
-not learn a general *operation* that can be an argument to another general operation.
-The knowledge is a set of reflexes, not a toolbox with reusable parts.
+It is not merely that the model is sensitive to wording. It is that, in this task and
+regime, the model's knowledge behaves as if it is **flat and associative**, not
+**structured and compositional**. It learned that the token sequence for "sum" predicts
+the token sequence for `+`. It did not behave as if it had learned a general
+*operation* that can be an argument to another general operation — at least not in the
+way the composition test requires. We say "behaves as if" deliberately: this is an
+observation about what the model produces under our evaluations, not a claim about
+its internal representation.
 
 This distinction is why we built the four-level generalization taxonomy in the first
 place and why we refused to collapse everything into one number. If we had only

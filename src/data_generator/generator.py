@@ -49,11 +49,15 @@ def make_semantics(operation, rng, id_set="letters"):
     arg_type = "list" if operation in ("list_sum", "list_len", "first_element",
                                        "sum_of_abs", "double_first", "len_minus_one") else "int"
     args = [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(n)]
+    # In this task family every operation returns an int scalar. Lists appear only
+    # as INPUTS (a list of ints); list_sum/list_len/first_element/double_first/
+    # len_minus_one all return an int, not the list itself. So output_type is always
+    # "int"; only the input types vary.
     return {
         "operation": operation,
         "args": args,
         "input_types": [arg_type] * n,
-        "output_type": arg_type if operation in ("list_len", "first_element", "len_minus_one") else "int",
+        "output_type": "int",
         "capability_tags": _tags(operation),
         "complexity": _complexity(operation),
     }

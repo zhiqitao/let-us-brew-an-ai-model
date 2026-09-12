@@ -97,13 +97,15 @@ Going from ~0.9M to 29.3M parameters:
 This directly answers the book's central question — *does more brain buy genuine
 capability, or merely more memorization?* — with a decisive answer at this scale:
 
-> **It buys neither. At ~1–30M parameters, the compositional failure is invariant to
-> model size.**
+> **It buys neither, on what we ran.** At ~1–30M parameters, composition stayed at
+> 0.000 across every size and schedule we tested.
 
-The boundary we found in Chapter 16 is **not a capacity ceiling**. It is a
-structural/learning limit that scaling alone does not resolve. A bigger model at this
-scale just does the same narrow thing slightly more efficiently; it does not develop
-the ability to compose.
+The boundary we found in Chapter 16 was **not moved by scale in our tests**. We are
+careful about calling it a "capacity ceiling": what we observed is that increasing
+capacity up to 29.3M, under the schedules we ran, did not produce composition. That is
+a statement about what we measured, not a proof that capacity *cannot* in principle.
+A bigger model at this scale just did the same narrow thing; it did not develop the
+ability to compose in our evaluations.
 
 ## The audit: is this a fair comparison?
 

@@ -56,8 +56,8 @@ otherwise, and it matters.
 
 The composition result from Chapter 16 is the clearest example. The model knew the syntax of both
 `abs` and `add`. It could produce `return a + b` and `return abs(x)` perfectly. The
-break came when it needed to *combine* them into `return abs(a + b)`. There was no
-new syntax involved — every token in `abs(a + b)` was already within the model's
+break came when it needed to *combine* them into `return abs(a) + abs(b)`. There was no
+new syntax involved — every token in `abs(a) + abs(b)` was already within the model's
 known vocabulary and its allowed subset. The model simply could not put two things it
 knew together.
 

@@ -55,10 +55,10 @@ def make_semantics(operation, rng, id_set="letters"):
     names = list(IDENTIFIER_SETS[id_set][:n])      # pick names from the set
     arg_type = ("list" if operation in
                 ("list_sum", "list_len", "first_element") else "int")
-    # list_sum and list_len RETURN a numeric scalar (sum(xs) / len(xs)),
-    # even though they take a list as input. So output_type is int for them;
-    # only first_element returns an element of the input list type.
-    output_type = "int" if operation in ("list_sum", "list_len") else arg_type
+    # Every operation here returns an int scalar. Lists appear only as INPUTS
+    # (a list of ints); list_sum/list_len/first_element all return an int, not
+    # the list itself. So output_type is always "int"; only input_types vary.
+    output_type = "int"
     args = [{"name": names[i], "type": arg_type, "role": "operand"} for i in range(n)]
     return {"operation": operation, "args": args,
             "input_types": [arg_type] * n, "output_type": output_type}

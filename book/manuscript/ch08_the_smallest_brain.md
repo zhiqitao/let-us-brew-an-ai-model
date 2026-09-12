@@ -59,8 +59,9 @@ iteration loop, and a fast loop is what lets a scientific investigation move.
 ## The honest parameter count
 
 A common mistake is to quote just a round "10M parameters." We refuse to hide the
-important part. The model has **884,224** parameters, of which only **830,592** are
-in the transformer blocks. The other **53,632** are the **embeddings** — the token
+important part. The model has **884,224** parameters, of which **830,592** are
+non-embedding (the transformer blocks, plus the final layer-norm and the output
+projection head) and **53,632** are the **embeddings** — the token
 embedding (291 × 128 = 37,248) plus the positional embedding (128 × 128 = 16,384).
 The embeddings are *also* learned parameters: they are trainable and they do store
 task-relevant representations. What distinguishes them from the block weights is

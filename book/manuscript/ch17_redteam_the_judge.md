@@ -43,19 +43,28 @@ we can check.
 
 ## What we found
 
-The mutation suite is the sharpest tool here. By generating deliberately-broken
-variants of the reference solution and checking that the hidden tests catch them, we
-measured how discriminating the tests really are. If an obviously-wrong mutant — say
-`+` changed to `-` — passes our tests, the tests are too weak and must be strengthened
-until important mutant classes are reliably detected.
+The mutation suite is the sharpest tool here. We generated deliberately-broken
+variants of the reference solution and ran them through the judge against that
+operation's hidden tests, then measured how many the tests *kill*. The measured
+result, across all 16 operations, is honest and **partial**:
+
+- **35 mutants generated, 29 killed, 6 survived** — an overall kill rate of **0.829**.
+- **Positive control passed:** the correct reference program was *accepted* by the
+  judge for every operation. This rules out the failure mode of a
+  reject-everything evaluator — it genuinely distinguishes correct programs from most
+  broken ones.
+- **But the suite has blind spots.** 6 of 35 mutants survived. The weakest operations
+  were `max_of`, `min_of`, and `cond_abs_max`, which caught only half their mutants.
+  So the hidden tests are **not** edge-case-complete.
 
 A useful way to think about mutation testing is that it measures the *discriminating
-power* of the test suite. A test suite that passes for a correct program and fails for
-an incorrect one is a good suite. A suite that passes for both is not testing
-anything — it is going through the motions. The mutation score tells us, concretely,
-how much of that "should be caught" space our tests actually cover. And the whole
-point is to drive it up: the more wrong programs the judge rejects, the more we trust
-that a program it accepts is actually right.
+power* of the test suite. A suite that passes for a correct program and fails for an
+incorrect one is a good suite. A suite that passes for both is not testing anything.
+The mutation score tells us, concretely, how much of that "should be caught" space our
+tests actually cover — and here it says we cover about 83% of the deliberate error
+classes we generated, with real gaps. (One caveat: some surviving mutants may be
+*semantically equivalent*, e.g. swapping the operands of integer `+`. We did not build
+an equivalence check, so we report "survived" plainly rather than guess.)
 
 And the judge's honesty was validated the hard way: it reported the model at 0.000 on
 our very first evaluation, and that was a *judge bug*, not a model failure. Once we
@@ -67,9 +76,12 @@ proved ours was — must be red-teamed before its numbers are trusted.
 Red-teaming the judge is not a formality; it is the difference between "we ran a
 number" and "we know the number means something." The specific lessons:
 
-- **Strengthen tests until wrong programs fail.** The mutation score is the measure.
+- **Strengthen tests until wrong programs fail.** The mutation score is the measure,
+  and ours is 0.829 — good, not complete. There are blind spots to close (max_of,
+  min_of, cond_abs_max).
 - **Trust the judge less than the tests.** The judge is a pipeline; the *hidden tests*
-  are what actually catch errors, so they must be numerous and edge-case-complete.
+  are what actually catch errors. We do not claim they are edge-case-complete — the
+  measured mutation report shows they are not.
 - **Attack our own instrument deliberately.** The adversarial habit — "how could this
   number be wrong?" — is what keeps the whole experiment honest.
 

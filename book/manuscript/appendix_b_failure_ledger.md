@@ -15,9 +15,12 @@ Each entry: what happened, what we learned, and what we did about it.
 reported **0.000** (syntax failure on every problem). This looked like a total failure
 of the approach.
 
-**What we found.** The model was actually producing correct programs — but our
-generation output appended null-byte padding, and Python's parser rejects null bytes.
-So the **judge** was scoring valid programs as syntax errors.
+**What we found.** The model was actually producing programs that were correct up to
+the end of the program — but our generation output appended null-byte padding, and
+Python's parser *correctly* rejects null bytes (they are not valid source). The fault
+was in our **extraction contract**: we handed the parser padded output without
+stripping the padding. So the **judge** was scoring what were, after truncation, valid
+programs as syntax errors.
 
 **What we learned.** The most important lesson of the book, demonstrated on ourselves:
 *never trust a number from a system we have not audited.* Fixing the judge revealed the

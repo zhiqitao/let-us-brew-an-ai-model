@@ -65,9 +65,11 @@ are as valuable as any model number:
 - **Test the teacher.** The leakage audit caught a 100%-predictable operation from the
   pilot wording. This is why surface splits need held-out template families.
 - **Test the data.** The diversity-vs-quantity experiment showed the *same* example
-  count produces surface-fragility (0.000) with minimal diversity or robust
-  generalization (1.000) with high diversity. Diversity — not quantity — is what
-  creates robust capability.
+  count produces surface-fragility (0.000) with minimal diversity or much broader
+  surface coverage (1.000) with high diversity. Diversity — not quantity — is what
+  changes how much surface the model covers. (This is coverage of the surfaces in the
+  training family; it is not established transfer to a wording family excluded from
+  training — see Chapter 13's caveat.)
 - **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
   (1.000), proving it was "too easy," and forced us to build harder splits. And the
   moments the model *fell below* a baseline were the most informative results.

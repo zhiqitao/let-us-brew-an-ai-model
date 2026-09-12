@@ -64,24 +64,25 @@ tells us *where* things go wrong, and that diagnostic power is worth keeping.
 
 ## Semantic comparison: don't trust string equality
 
-A naive evaluator would check `output == expected`. That fails in subtle ways. Two
-programs can produce the "same" result that isn't string-equal: floats with rounding,
-a dict with keys in a different order, nested structures. So the judge uses a proper
-**semantic comparator**:
+A naive evaluator would compare outputs as strings. That is wrong — the result of a
+program is a *value*, so comparing text representations of numbers would reject correct
+answers (`0.1 + 0.2` as text is not `0.3`). So the judge compares values with a
+**semantic comparator**. Notably, Python's own `==` already recurses into lists and
+ignores dictionary insertion order, so the comparator's job is narrower than "fix all
+of Python's equality quirks." It adds three real policies on top of Python semantics:
 
-- integers compared exactly,
-- floats compared with an explicit tolerance,
-- booleans compared as booleans (not as 0/1),
-- lists compared element-by-element, recursively,
-- dictionaries compared key-insensitively (order doesn't matter),
-- nested structures compared recursively.
+- **floats compared with an explicit tolerance** (Python's `==` on floats is exact;
+  `0.1 + 0.2 == 0.3` is `False`). We use an absolute tolerance.
+- **booleans treated as booleans, not as 0/1** (so `True` is not equal to `1`),
+- **dicts compared order-insensitively**, which Python already does for `==`; the
+  comparator re-implements it explicitly for clarity and to recurse into values.
 
 The comparator itself is tested — we don't assume it's right just because it's simple.
-And the tolerance matters: floating point arithmetic is not exact, so `0.1 + 0.2`
-does not come out to exactly `0.3`. A judge that demanded exact equality on floats
-would reject correct programs. A judge with no tolerance at all would be as broken as
-one that accepted anything. Choosing the right tolerance is a real design decision,
-and it is the kind of thing that quietly shapes every number the judge produces.
+And the tolerance matters: floating point arithmetic is not exact, so a judge that
+demanded exact equality on floats would reject correct programs. A judge with no
+tolerance at all would be as broken as one that accepted anything. Choosing the right
+tolerance is a real design decision, and it is the kind of thing that quietly shapes
+every number the judge produces.
 
 ## Mutation testing: red-teaming the judge
 

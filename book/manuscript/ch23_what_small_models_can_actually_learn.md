@@ -47,23 +47,26 @@ identifier names it saw. It does not generalize "sum of two numbers" as an abstr
 concept; it generalizes "this sentence shape → this code." Change the surface, and
 the capability evaporates.
 
-**Axis 2 — Composition.** Even within a surface form it knows, the model cannot
-combine two learned pieces into a novel structure. It has reflexes, not a
-compositional engine.
+**Axis 2 — Composition.** Even within a surface form it knows, the model did not
+combine two learned pieces into a novel structure in our tests. It behaved as if it
+lacked a compositional engine here.
 
 **The honest conclusion in one sentence:**
 
 > A ~0.9M model genuinely learns individual mappings and generalizes them across
 > *instances*, but the knowledge is surface-tied (new wording → 0.000) and
 > non-compositional (unseen combinations → 0.000) — and neither more capacity
-> (up to 29.3M) nor more data (within what we tested) is close to fixing it.
+> (up to 29.3M) nor more data (within what we tested) is close to fixing it *under the
+> schedules we ran*.
 
 ## The capacity grid, in full
 
 The sharpest negative result in the whole book is the model-size sweep, and it
 deserves its own table because it is the claim a reader would most want to test.
-We ran the composition experiment across a ~33× range of capacity, holding
-everything else constant.
+We ran the composition experiment across a ~33× range of capacity. We did **not** hold
+every hyperparameter constant — the runs used different step counts (see Appendix C),
+so this is a sweep across capacity with some training-budget variation alongside it,
+not a strictly-controlled size-only comparison.
 
 | Model | parameters | in-distribution | composition |
 |-------|-----------|-----------------|-------------|
@@ -72,11 +75,13 @@ everything else constant.
 | 10M point | 10,195,776 (10.2M) | 0.773 | **0.000** |
 | 30M point | 29,290,240 (29.3M) | 0.897 | **0.000** |
 
-Four sizes. Composition is **0.000 at all four**. That is not a coincidence and it is
-not a weak signal; it is the same number repeated across a 33× change in the one
-resource we might otherwise blame. If capacity were the binding constraint on
-composition, we would have expected at least a *drift* between 0.88M and 29.3M. There
-was none. The composition boundary is not a capacity ceiling in this regime.
+Four sizes. Composition is **0.000 at all four** under the schedules we ran. That is
+the same number repeated across a 33× change in the one resource we might otherwise
+blame. We would be careful not to over-read it: because the step counts differed,
+this is evidence that capacity alone, under these runs, did not produce composition —
+it is not a proof that capacity *cannot* (there may be a threshold, or different
+training budgets, we did not reach). What we can say is that, across the capacity
+range and schedules we tested, composition did not move off 0.000.
 
 Two honest notes on the grid. First, in-distribution scores sit in a healthy plateau
 (0.773–0.900) across all four sizes — capacity neither helped nor hurt the narrow task.
@@ -109,13 +114,17 @@ generalizing across instances, not by memorizing. That is real learning of a nar
 kind, and it should not be discounted.
 
 On the second half — the effort was far from wasted. We now hold a precise,
-falsifiable boundary: on surface robustness (Level 3) and composition (Level 4), this
-model's capability stops, and the stop is structural, not a matter of scale. That is
-the kind of knowledge that changes what someone would try next. If a practitioner
-wants robust, compositional capability, the map says: do not just scale up, and do
-not just add more of the same data — instead change the *structure* of the data (more
+measurement-backed boundary: on surface robustness (Level 3) and composition (Level 4),
+this model's capability stops *under the setups we tested*. We are careful with the
+word "structural" — we observe a boundary, we do not prove its cause; it could in
+principle be an internal-representation limit, an optimization / training-budget
+limit, or a generation-length limit, and we have not isolated which. That is the kind
+of knowledge that changes what someone would try next. If a practitioner wants robust,
+compositional capability, the map says: do not just scale up, and do not just add more
+of the same data — instead consider changing the *structure* of the data (more
 diversity, exposure to combinations) or the *inductive bias* of the model. Those are
-actionable directions, and the experiments tell us why the naive directions fail.
+directions worth testing; our results show the naive ones (more capacity, more of the
+same data) did not work here, but they do not prove the tested alternatives will either.
 
 So the honest takeaway is not "small models are inadequate." It is "small models
 learn narrow mappings well, and the path to broader capability runs through different

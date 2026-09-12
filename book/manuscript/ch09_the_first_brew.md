@@ -106,11 +106,13 @@ or whether something is broken. In this case the model reached near-floor loss w
 fraction of a point.
 
 There is also a genuine practical question that arises during training: **how do we
-know it hasn't crashed mid-run?** In this book we habitually save the checkpoint
-*before* evaluating, so a crash during evaluation costs nothing and a crash during
-training at least preserves what was learned up to that point. This is a small
-discipline, but it has saved us more than once — a training run on this hardware takes
-real time, and we do not want to lose it to a brittle downstream step.
+know it hasn't crashed mid-run?** We use periodic **training checkpoints** that record
+the state at regular intervals *during* the run, so that a crash at step 1200 loses at
+most the steps since the last save. A single save only at the end of training — say,
+just before evaluation — does **not** protect against a mid-run crash; it only protects
+the completed run. So we keep intermediate checkpoints, not just a final one. This is
+a small discipline, but it has saved us more than once — a training run on this
+hardware takes real time, and we do not want to lose it to an unplanned stop.
 
 ## The honest caveat
 
