@@ -410,6 +410,20 @@ def render_book_tex(build_lines):
 \\noindent\\footnotesize In short: \\emph{{read, study, and share the book text freely (non-commercially); do not sell or republish the text as a product without the author's authorisation. The code examples may be adapted and reused in your own work.}}
 
 \\noindent\\footnotesize The work is provided ``as is'', without warranty of any kind.
+
+\\vspace{{0.8cm}}
+\\noindent\\textbf{{About the author.}} Zhiqi Tao works on AI systems, with a focus
+on building and evaluating small models in controlled settings. This book grew out
+of a running laboratory notebook: build a tiny model, give it one job, and find out
+precisely what it can and cannot learn --- with the failure ledger as much a part of
+the result as the successes.
+
+\\vspace{{0.8cm}}
+\\noindent\\footnotesize\\textbf{{Companion repository and errata.}} The code,
+scripts, configurations, and checkpoints that reproduce every experiment in this
+book live in the companion repository (see Appendix C for the quick start and the
+release tag). An online errata page will be maintained for any corrections
+discovered after publication; report issues to zhiqi.tao@gmail.com.
 \\vfill
 \\end{{titlepage}}
 

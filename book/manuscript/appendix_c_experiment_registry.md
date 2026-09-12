@@ -142,9 +142,33 @@ training runs.
 
 Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.py`,
 `run_composition_exposure.py`, `run_composition_diversity.py`, `run_surface.py`,
-`run_data_scaling.py`, `run_continual.py`). The recommended repository release tag is
-`v20261001`. To rerun, set `TORCH_DISABLE_AVX2=1` on this CPU lab (to avoid a SIGILL on
-the Ivy Bridge AVX-only silicon) and invoke the script with the architecture, steps,
-and seed shown in the registry. Expected artifacts are the listed manifests and
-checkpoints. Runtime is roughly 5-10 minutes per 1500-step pilot training on a
-single-core CPU; larger models (6.5M-29.3M) take substantially longer.
+`run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`). The
+recommended release tag is `v20261001`. Here is a concrete quick start:
+
+1. **Clone the companion repository** (see the front matter for the URL) and check out
+   the `v20261001` tag.
+2. **Create an environment.** The runs were done on Python 3.11.16 with PyTorch
+   2.14.0+cpu (CPU build) and no GPU. A `requirements.txt` at the repo root pins the
+   versions.
+3. **Set the environment variable** `TORCH_DISABLE_AVX2=1` on this CPU lab (to avoid a
+   SIGILL on the Ivy Bridge AVX-only silicon).
+4. **Run a pilot:** `python scripts/train.py --steps 1500 --n-embd 128 --n-layer 4
+   --n-head 4 --bs 16 --seed 0` then `python scripts/eval_ckpt.py`. This trains and
+   evaluates the 0.88M pilot and writes its manifest.
+5. **Expected artifacts:** the run's manifest (e.g. `stage1.json`) and checkpoint
+   (`stage1.pt`) under `artifacts/manifests/` and `artifacts/checkpoints/`.
+
+**Runtime.** Roughly 5-10 minutes per 1500-step pilot training on a single-core CPU;
+larger models (6.5M-29.3M) take substantially longer (minutes to low tens of minutes
+each). These are hardware-specific and will differ on your machine; the [MEASURED]
+numbers in the book are the ones from *our* runs.
+
+**Verified commands.** The commands above and the evaluator used to produce the pass@1
+results are the ones that ran for this book; the scripts are deterministic given the
+same seed and configuration (the run scripts fix the seed and hyperparameters in the
+registry).
+
+**A production note on the free-endpoint side.** We do not rely on any external
+service for the results in this book; everything was trained and evaluated locally on
+the CPU lab described above, so the numbers do not depend on a hosted endpoint staying
+up or behaving.

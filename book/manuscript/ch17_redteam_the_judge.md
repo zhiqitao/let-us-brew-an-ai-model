@@ -71,6 +71,37 @@ our very first evaluation, and that was a *judge bug*, not a model failure. Once
 fixed the judge, the model's true 0.897 emerged. A judge that can be wrong — and we
 proved ours was — must be red-teamed before its numbers are trusted.
 
+## A concrete example: the judge learns a new test
+
+To make "test the tester" a reader skill rather than a slogan, here is a small
+constructed example of how a weak test can let a wrong program survive, and how a
+distinguishing test catches it. (This is a teaching illustration of the principle, **not**
+a record of a real finding from the experiment — the measured mutation report in the
+section above is the actual data.)
+
+Suppose the task is to compute `a + b`, and the reference is:
+
+```python
+def solve(a, b):
+    return a + b
+```
+
+Now consider a mutant that flips the operator to subtraction:
+
+```python
+def solve(a, b):
+    return a - b
+```
+
+A single weak test on `(a=0, b=0)` does **not** catch it: for `(0, 0)`, both `a + b` and
+`a - b` return `0`, so the mutant survives and the suite looks green. But a
+distinguishing test on `(a=2, b=3)` — where the reference returns `5` and the mutant
+returns `-1` — catches it. The point is that a test must be *discriminating*: it has to
+separate the correct program from the specific wrong ones, not merely produce a pass
+for whatever got written. That is exactly what the measured mutation suite is designed
+to probe, and why its 0.829 kill rate (6 survivors) is a real, quantified measure of
+the suite's discriminating power rather than a claim that it is exhaustive.
+
 ## The honest framing
 
 Red-teaming the judge is not a formality; it is the difference between "we ran a
