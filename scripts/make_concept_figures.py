@@ -101,9 +101,9 @@ def fig_apparatus():
     note(ax, 70, 76, "GATE A (output): a program outside\nthe whitelist is refused before running.", fs=8, color=RED)
 
     # what each stage produces / what the judge compares, in the lower band
-    note(ax, 10, 30, "one semantic record fans out into the program,\nthe NL task, and the hidden tests.", fs=8, color=GREEN)
-    note(ax, 55, 30, "the judge compares the model's program\nagainst the reference on hidden tests.", fs=8, color=PURPLE)
-    box(ax, 30, 12, 48, 13, "the model is the instrument;\nthe experiment is the subject", fc="#fbfaf6",
+    note(ax, 8, 42, "one semantic record fans out into the\nprogram, the NL task, and the hidden tests.", fs=8, color=GREEN)
+    note(ax, 52, 42, "the judge compares the model's program\nagainst the reference on hidden tests.", fs=8, color=PURPLE)
+    box(ax, 26, 8, 48, 12, "the model is the instrument;\nthe experiment is the subject", fc="#fbfaf6",
         ec=INK, fs=8.5, tc=INK)
     save(fig, "fig_apparatus.png")
 

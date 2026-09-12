@@ -26,18 +26,22 @@ def save(fig, name):
 # ---- 1. Model-size vs composition (measured, 4 points) ----
 # 10.2M uses the clean-retrain value (0.773); the original 0.383 was a SIGILL
 # training-run artifact (see docs/experiments/scaling_composition.md).
+# Line form (not grouped bars) because composition is uniformly 0.000: a
+# zero-height bar reads as "missing data"; two flat lines are unambiguous.
 fig, ax = plt.subplots()
 labels = ["0.88M", "6.5M", "10.2M", "29.3M"]
 in_dist = [0.900, 0.897, 0.773, 0.897]
 comp    = [0.000, 0.000, 0.000, 0.000]
-x = np.arange(len(labels)); w = 0.38
-ax.bar(x-w/2, in_dist, w, color="#4C72B0", label="in-distribution")
-ax.bar(x+w/2, comp,    w, color="#C44E52", label="composition")
-for xi, v in zip(x-w/2, in_dist): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
-for xi, v in zip(x+w/2, comp):    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
-ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.05); ax.set_ylabel("pass@1")
+x = np.arange(len(labels))
+ax.plot(x, in_dist, "o-", color="#4C72B0", lw=2, ms=8, label="in-distribution")
+ax.plot(x, comp,    "s-", color="#C44E52", lw=2, ms=8, label="composition")
+for xi, v in zip(x, in_dist): ax.text(xi, v+0.03, f"{v:.3f}", ha="center", fontsize=8, color="#4C72B0")
+for xi, v in zip(x, comp):    ax.text(xi, v+0.07, f"{v:.3f}", ha="center", fontsize=8, color="#C44E52", fontweight="bold")
+ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_xlim(-0.4, len(labels)-0.1); ax.set_ylim(-0.10, 1.05); ax.set_ylabel("pass@1")
 ax.set_title("Model size: in-distribution vs composition (measured, 4 points)")
-ax.legend(); ax.grid(axis="y", alpha=0.3)
+ax.legend(loc="upper left", frameon=False, fontsize=8)
+ax.grid(alpha=0.3)
+fig.tight_layout()
 save(fig, "fig_model_size.png")
 
 # ---- 2. Surface generalization (measured) ----
