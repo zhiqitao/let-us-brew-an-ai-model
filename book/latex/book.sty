@@ -40,7 +40,6 @@
   }{\setmonofont{Latin Modern Mono}[Scale=0.9]}%
 }
 
-% Code blocks: allow long lines to wrap (breaklines) instead of overflowing.
 % Pandoc emits plain \begin{verbatim} for code listings; reroute it to
 % fancyvrb's Verbatim with breaklines so long source-listing lines wrap.
 \usepackage{fancyvrb}
@@ -48,13 +47,22 @@
 % wrapped long lines (fontsize=\small keeps listings compact).
 \renewenvironment{verbatim}{\Verbatim[breaklines=true, fontsize=\small]}{\endVerbatim}
 
+% Make an escaped underscore a discretionary break point so long run IDs and
+% filenames (snake_case tokens) wrap instead of overflowing the 6x9 text block.
+% This only relaxes long-token breaking and never forces a break.
+\makeatletter
+\let\origUSchar\_
+\renewcommand{\_}{\origUSchar\allowbreak}
+\makeatother
+
+
 % Sans font for headings accent
 \IfFontExistsTF{Liberation Sans}{%
   \setsansfont{Liberation Sans}%
 }{}
 
 % ---- Adjust page layout ----
-\usepackage[top=1in, left=1.2in, right=1.2in, bottom=1.2in, footskip=0.7in]{geometry}
+\usepackage[paperwidth=6in, paperheight=9in, top=0.85in, bottom=0.95in, left=0.75in, right=0.75in, footskip=0.55in]{geometry}
 % Balanced margins (no reviewer gutter).
 
 % ---- Tables (pandoc needs longtable + array family) ----

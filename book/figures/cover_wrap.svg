@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 914 666" width="12.7049in" height="9.2500in">
+<defs><linearGradient id="wrapbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2EEE4"/><stop offset="1" stop-color="#E9E3D6"/></linearGradient></defs>
+<rect x="0" y="0" width="914" height="666" fill="url(#wrapbg)"/>
+<g transform="translate(34.20,37.80)">
+<text font-family="Helvetica, Arial, sans-serif" font-weight="800" font-size="21" fill="#141414">LET US BREW AN AI MODEL</text>
+<text y="30" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13" fill="#6E6E68">What tiny language models can actually learn when given one job</text>
+<rect x="0" y="44" width="381.60" height="2" fill="#1E7A6F"/>
+<text font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13.5" fill="#3B3B38">
+<tspan x="0" y="90">Building a small language model is comparatively easy.</tspan>
+<tspan x="0" y="110">Determining what it actually learned is the hard part.</tspan>
+<tspan x="0" y="138">This book is a controlled empirical investigation into one</tspan>
+<tspan x="0" y="158">tiny transformer, given exactly one job: read a plain-English</tspan>
+<tspan x="0" y="178">programming request, write Python, and pass hidden tests. We</tspan>
+<tspan x="0" y="198">measure where its capability ends.</tspan>
+</text>
+<rect x="0" y="250" width="381.60" height="169" rx="8" fill="#FFFFFF" stroke="#1E7A6F" stroke-width="2"/>
+<text x="14" y="280" font-family="Helvetica, Arial, sans-serif" font-weight="800" font-size="16" fill="#1E7A6F">THE CAPABILITY MAP</text>
+<text x="14" y="310" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13" fill="#3B3B38"><tspan font-weight="700" fill="#A84C1F">L1</tspan>  Memorize - generalizes <tspan fill="#3B3B38">| 59/60 held-out</tspan></text>
+<text x="14" y="332" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13" fill="#3B3B38"><tspan font-weight="700" fill="#A84C1F">L2</tspan>  New instances <tspan fill="#3B3B38">| 0.900</tspan></text>
+<text x="14" y="354" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13" fill="#3B3B38"><tspan font-weight="700" fill="#A84C1F">L3</tspan>  Surface change <tspan fill="#3B3B38">| 0.000</tspan></text>
+<text x="14" y="376" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13" fill="#3B3B38"><tspan font-weight="700" fill="#A84C1F">L4</tspan>  Composition <tspan fill="#3B3B38">| 0.000</tspan></text>
+<text x="14" y="389" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="11.5" fill="#6E6E68">Including the Failure Ledger on the broken evaluator, the leaked</text>
+<text x="14" y="408" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="11.5" fill="#6E6E68">wording, and a task a lookup table solved.</text>
+<text x="0" y="601.20" font-family="Helvetica, Arial, sans-serif" font-weight="800" font-size="22" fill="#141414">ZHIQI TAO</text>
+</g>
+<rect x="228.60" y="595.80" width="172.80" height="93.60" fill="#FFFFFF" stroke="#B9B09E" stroke-width="1.5"/>
+<text x="241.56" y="649.80" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="10" fill="#8A8579">ISBN 000-0-00000-00-0</text>
+<rect x="241.56" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="244.15" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="246.02" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="247.90" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="250.49" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="252.36" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="254.23" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="256.82" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="258.70" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="260.57" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="263.16" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="265.03" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="266.90" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="269.50" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="271.37" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="273.24" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="275.83" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="277.70" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="279.58" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="282.17" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="284.04" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="285.91" y="604.44" width="1.30" height="44.64" fill="#3B3B38"/>
+<rect x="288.50" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="290.38" y="604.44" width="0.58" height="44.64" fill="#3B3B38"/>
+<rect x="441.00" y="0" width="32.75" height="666" fill="#F2EEE4"/>
+<text font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="17" fill="#141414" transform="rotate(-90 457.38 333)" text-anchor="middle" x="457.38" y="333">LET US BREW AN AI MODEL</text>
+<text font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="13" fill="#1E7A6F" transform="rotate(-90 457.38 436)" text-anchor="middle" x="457.38" y="436">ZHIQI TAO</text>
+<image xlink:href="fig_cover.svg" x="473.75" y="9.00" width="432.00" height="648.00" preserveAspectRatio="none"/>
+</svg>
