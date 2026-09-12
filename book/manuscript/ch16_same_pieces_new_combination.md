@@ -20,6 +20,16 @@ that merely memorized the word "sum" mapped to a `+` cannot.
 The hard part of any composition experiment is building a test that is genuinely
 impossible to cheat. Here is how we do it.
 
+![Same operators, different programs](figures/fig_same_ops.png)
+
+One clarification before the mechanics. The composite `abs_add` is **`abs(a) + abs(b)`**
+(the sum of the absolute values of each input), *not* the absolute value of a sum
+(`abs(a + b)`). These are different functions — for `a = -3, b = 2` they give `5` and
+`1`. The figure above shows the two, and the book consistently uses the right-hand
+one (`abs(a) + abs(b)`) for `abs_add`. This matters because the two would require
+different programs and distinguishing tests; calling one by the other's name would
+change the oracle.
+
 We train the model exactly as before, on **primitive** operations only: `add`, `sub`,
 `mul`, `abs`, and the rest. We never show it a composite operation.
 

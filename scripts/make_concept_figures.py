@@ -373,6 +373,103 @@ def fig_capability_map():
     save(fig, "fig_capability_map.png")
 
 
+def fig_same_ops():
+    """D03 -- SAME OPERATORS, DIFFERENT PROGRAMS (ch16).
+
+    Side-by-side expression trees for abs(a+b) vs abs(a)+abs(b), with the input
+    a=-3, b=2, intermediate values, and outputs 1 and 5. Purely a mathematical
+    illustration of the abs_add ambiguity, not a model outcome.
+    """
+    fig, ax = new_fig(w=9.0, h=4.8)
+    ax.text(50, 95, "SAME OPERATORS, DIFFERENT PROGRAMS", ha="center", va="center",
+            fontsize=10.5, fontweight="bold", color=INK)
+    ax.text(50, 88, "Knowing the operators does not fix the order in which they are applied.",
+            ha="center", va="center", fontsize=8, color=INK)
+    # left: abs(a + b)
+    ax.text(25, 76, "abs(a + b)", ha="center", fontsize=10, fontweight="bold", color=BLUE)
+    ax.text(25, 66, "absolute value of the sum", ha="center", fontsize=7.5, color=INK)
+    # tree: sum node -> abs
+    box(ax, 19, 46, 12, 8, "a + b", fc=BLUE, fs=8)
+    ax.text(25, 38, "a = -3, b = 2  →  a+b = -1", ha="center", fontsize=7.5, color=INK)
+    box(ax, 19, 26, 12, 8, "abs(-1)", fc=BLUE, fs=8)
+    ax.text(25, 18, "= 1", ha="center", fontsize=9, fontweight="bold", color=BLUE)
+    arrow(ax, 25, 46, 25, 34)
+    arrow(ax, 25, 34, 25, 26)
+
+    # right: abs(a) + abs(b)
+    ax.text(75, 76, "abs(a) + abs(b)", ha="center", fontsize=10, fontweight="bold", color=GREEN)
+    ax.text(75, 66, "sum of the absolute values  (this is abs_add)", ha="center", fontsize=7.5, color=INK)
+    box(ax, 62, 50, 11, 8, "abs(a)", fc=GREEN, fs=8)
+    box(ax, 78, 50, 11, 8, "abs(b)", fc=GREEN, fs=8)
+    ax.text(66, 42, "abs(-3) = 3", ha="center", fontsize=7, color=INK)
+    ax.text(82, 42, "abs(2) = 2", ha="center", fontsize=7, color=INK)
+    box(ax, 70, 30, 12, 8, "3 + 2", fc=GREEN, fs=8)
+    ax.text(76, 22, "= 5", ha="center", fontsize=9, fontweight="bold", color=GREEN)
+    arrow(ax, 68, 50, 73, 38); arrow(ax, 82, 50, 80, 38)
+    arrow(ax, 76, 38, 76, 30)
+
+    note(ax, 50, 8, "These are mathematically different functions (outputs 1 vs 5 for the same input). "
+          + "The composite in this book, abs_add, is the right-hand one: abs(a) + abs(b).",
+         fs=7.5, color=INK)
+    save(fig, "fig_same_ops.png")
+
+
+def fig_coverage():
+    """D02 -- COVERAGE IS NOT A HELD-OUT FAMILY TEST (ch13).
+
+    Rows = training condition (minimal / high diversity); the surface evaluation is a
+    cell in the same family set the model trained on, so high-diversity 1.000 is
+    coverage, not transfer to an excluded family. A second (proposed, not measured)
+    panel shows what a true holdout would require.
+    """
+    import numpy as np
+    fig, ax = plt.subplots(figsize=(8.8, 5.0))
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+    ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
+    ax.text(50, 96, "COVERAGE IS NOT A HELD-OUT FAMILY TEST", ha="center", va="center",
+            fontsize=10.5, fontweight="bold", color=INK)
+
+    # main panel: same family set
+    ax.text(23, 86, "what was measured", ha="center", fontsize=8.5, fontweight="bold", color=INK)
+    # family set axis
+    ax.add_patch(FancyBboxPatch((6, 30), 34, 6, boxstyle="round,pad=0.02,rounding_size=1",
+                                fc="#eef1f5", ec=GREY, lw=0.8))
+    # model trained on all families
+    for i, fam in enumerate(["fam A", "fam B", "fam C"]):
+        x = 8 + i*10
+        ax.add_patch(FancyBboxPatch((x, 46), 9, 9, boxstyle="round,pad=0.02,rounding_size=1",
+                                    fc="#cfe0f5", ec=INK, lw=0.8))
+        ax.text(x+4.5, 50.5, fam, ha="center", fontsize=6.5, color=INK)
+    ax.text(21, 41, "high-diversity training: sees fam A / B / C", ha="center", fontsize=6.4, color=INK)
+    # surface test point (well above the families, not overlapping)
+    ax.add_patch(FancyBboxPatch((24, 66), 9, 8, boxstyle="round,pad=0.02,rounding_size=1",
+                                fc="#e0f0e4", ec=GREEN, lw=0.8))
+    ax.text(28.5, 70, "surface test", ha="center", fontsize=6.4, color=INK)
+    ax.text(28.5, 60, "test is IN the training family set\n→ 1.000 is coverage", ha="center",
+            fontsize=6.4, color=GREEN)
+    ax.text(23, 20, "So the high-diversity 1.000 is COVERAGE of surfaces it was trained on,\nnot generalization to a wording family it never saw.",
+            ha="center", fontsize=7.2, color=INK)
+
+    # proposed holdout panel (right, dashed)
+    ax.text(74, 86, "what a true holdout needs  (proposed, not measured)", ha="center",
+            fontsize=7.6, fontweight="bold", color=PURPLE)
+    ax.add_patch(FancyBboxPatch((58, 24), 32, 62, boxstyle="round,pad=0.02,rounding_size=2",
+                                fc="#fbfaf6", ec=PURPLE, lw=1.0, linestyle="--"))
+    for i, fam in enumerate(["fam A", "fam B", "fam C", "fam D"]):
+        fc = "#cfe0f5" if i < 3 else "#f6dede"
+        x = 60 + i*7.5
+        ax.add_patch(FancyBboxPatch((x, 66), 6.5, 9, boxstyle="round,pad=0.02,rounding_size=1",
+                                    fc=fc, ec=INK, lw=0.7))
+        ax.text(x+3.2, 70.5, fam, ha="center", fontsize=6.2, color=INK)
+    ax.text(74, 60, "train on A/B/C, hold out D", ha="center", fontsize=6.4, color=INK)
+    ax.add_patch(FancyBboxPatch((64, 40), 20, 9, boxstyle="round,pad=0.02,rounding_size=1",
+                                fc="#f6dede", ec=RED, lw=0.8))
+    ax.text(74, 44.5, "test on family D (never seen)", ha="center", fontsize=6.4, color=RED)
+    ax.text(74, 30, "only this tests generalization\nto an EXCLUDED family", ha="center", fontsize=6.6, color=INK)
+    save(fig, "fig_coverage.png")
+
+
 if __name__ == "__main__":
     fig_apparatus()
     fig_two_gates()
@@ -384,3 +481,5 @@ if __name__ == "__main__":
     fig_brain()
     fig_brew()
     fig_capability_map()
+    fig_same_ops()
+    fig_coverage()

@@ -127,6 +127,12 @@ held-out wording family does not appear in training). The Chapter 13 result is a
 coverage demonstration. Only Chapter 15 speaks to generalization to a *never-seen*
 wording; Chapter 13 shows diversity widens the covered surface.
 
+![Coverage is not a held-out family test](figures/fig_coverage.png)
+
+The figure makes the distinction explicit: the high-diversity surface test lives
+*inside* the training family set (so its 1.000 is coverage), whereas a true
+held-out-family test would train on some families and test on one that is never shown.
+
 ## The honest caveat
 
 It is worth noting that this experiment measured *surface* diversity. It showed that
