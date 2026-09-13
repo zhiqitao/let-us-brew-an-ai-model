@@ -391,7 +391,7 @@ list can be evaded by creative phrasing. A grammar says: these are the only form
 exist. Anything outside the grammar is not merely suspect; it is *unparseable in our
 world.* That is the philosophy of the sandbox.
 
-This is the single most important design decision in the whole apparatus, and it
+This is a central design decision in the apparatus, and it
 deserves to be stated plainly: **the sandbox does not try to catch bad programs. It
 states upfront what is allowed, and everything else is refused.**
 
@@ -616,7 +616,7 @@ surface but test the same idea, so a student who actually learned the idea passe
 whether or not they've seen the phrasing.
 
 Our **teacher** is that good worksheet-writer. But there's something special about the
-way we build it, and it's the single most important design decision in the whole book.
+way we build it, and it's a central design decision in the whole book.
 
 ## Semantic-first: start with the meaning, not a template
 
@@ -3492,10 +3492,11 @@ These conditions are not "one bigger model"; they test whether *training content
 | Sequential (A then B) | 0.000 | 0.889 | NT |
 | Joint (A+B from start) | 1.000 | 0.889 | — |
 
-Note the "sequential" A figure is a **final task accuracy**, not "retention relative to a
-pre-B checkpoint" — there was no A-only checkpoint to retain against. A true
-replay-after-A-first continuation (which *would* measure retention relative to an
-A-trained checkpoint) was **not** run.
+Note the "sequential" A figure: the **final** A accuracy (0.000) is measured after phase B.
+We also measured A **right after phase A** (before B) on the same run — it was **1.000**
+(Appendix C.8), so the sequential drop is a same-run before/after forgetting result, not a
+case of A never being acquired. A true replay-after-A-first continuation (which *would*
+start from an A-trained checkpoint and continue with B plus A replay) was **not** run.
 
 Read the map column by column and it shows a clear boundary rather than an ordered
 ladder: the four questions are **separate evaluations**, not steps of a single ascending

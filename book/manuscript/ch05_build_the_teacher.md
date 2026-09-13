@@ -10,7 +10,7 @@ surface but test the same idea, so a student who actually learned the idea passe
 whether or not they've seen the phrasing.
 
 Our **teacher** is that good worksheet-writer. But there's something special about the
-way we build it, and it's the single most important design decision in the whole book.
+way we build it, and it's a central design decision in the whole book.
 
 ## Semantic-first: start with the meaning, not a template
 

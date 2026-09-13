@@ -52,7 +52,7 @@ list can be evaded by creative phrasing. A grammar says: these are the only form
 exist. Anything outside the grammar is not merely suspect; it is *unparseable in our
 world.* That is the philosophy of the sandbox.
 
-This is the single most important design decision in the whole apparatus, and it
+This is a central design decision in the apparatus, and it
 deserves to be stated plainly: **the sandbox does not try to catch bad programs. It
 states upfront what is allowed, and everything else is refused.**
 
