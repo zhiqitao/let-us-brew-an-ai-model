@@ -220,9 +220,10 @@ Why do we need both? Because each covers a failure the other cannot:
   output.
 
 Only together do they close the loop: Gate B ensures the model is never *asked* for
-something outside its job, and Gate A ensures it can never *produce* something outside
-its world. That is the only way to make "this model does exactly one thing" a true
-statement, rather than an optimistic description.
+something outside its job, and Gate A rejects programs using constructs outside its
+allowed syntax. Together that scopes the model to a single accepted request shape and a
+single accepted program shape — a *scoping* guarantee, not proof of semantic correctness,
+and not a claim that the model can never do anything unintended beyond those two scopes.
 
 There is a deep parallel here with the book's central thesis. The model is the
 instrument; the experiment is the subject. In the same way, the *boundaries* are never

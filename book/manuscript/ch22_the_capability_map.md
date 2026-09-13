@@ -119,8 +119,10 @@ not test (its test reuses training prompt strings).
 **It cannot survive changes to the surface form.** Change the variable names from
 `a,b` to `left,right` (identical computation) and performance falls to 0.350. Rephrase
 the instruction with a wording family the model never saw (identical computation) and
-performance falls to **0.000** — below *both* baselines. This is Question-3 failure: the
-model's capability is **anchored to the phrasing**, not grounded in the computation.
+performance falls to **0.000** — below *both* baselines. This is Question-3 failure:
+the model's capability is **anchored to the phrasing it saw**, not robust to a change of
+wording. (That is about *robustness to the shift we tested*; it does not by itself prove
+there is no internal semantic representation.)
 
 **It cannot compose what it knows.** Train on `add`, `sub`, `abs`, `max`, `list_sum`
 as separate primitives; test on `abs_add` (sum of two absolute values) and `sum_of_abs` — operations that combine two things it knows. The model scores **0.000**. It
