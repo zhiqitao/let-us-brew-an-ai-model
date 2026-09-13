@@ -164,11 +164,11 @@ held-out-family test would train on some families and test on one that is never 
 ## The honest caveat
 
 It is worth noting that this experiment measured *surface* diversity. It showed that
-varying phrasing and identifiers makes the model robust to surface change (the Question-3
-boundary). It does **not** show that diversity fixes *compositional* generalization
-(the Question-4 boundary) — that is a separate, harder question. Whether the same lever
-helps a model combine two things it knows is the most natural next experiment, and it
-is called out in the conclusion.
+varying phrasing and identifiers makes the model cover the alternate surfaces *within
+the tested family set* (the Question-3 boundary). It does **not** show that diversity
+fixes *compositional* generalization (the Question-4 boundary) — that is a separate,
+harder question. Whether the same lever helps a model combine two things it knows is the
+most natural next experiment, and it is called out in the conclusion.
 
 So the honest scope of the finding is precise: **surface diversity improved coverage of
 the alternate surfaces within the tested family set — a coverage result, not transfer to
@@ -177,15 +177,17 @@ composition, remains open.
 
 ## The lesson
 
-This reframes what "more data" buys. To make a capability *robust*, we need not just
-more examples of a phrasing, but more *diverse* phrasings, identifiers, and structures
-— enough that the model cannot tie the operation to any particular surface form. Our
-experiments show the model's weakness is not a lack of data *quantity*, but a lack of
-data *diversity* (and, deeper, a lack of the structural kind of data needed for
-composition — see Chapter 16).
+This reframes what "more data" buys. To make a capability cover more of the surface
+space, we need not just more examples of a phrasing, but more *diverse* phrasings,
+identifiers, and structures — enough that the model cannot tie the operation to any
+particular surface form. Our experiments show the model's weakness, for *robustness and
+generalization*, is not a lack of more records (quantity does raise in-distribution fit —
+Chapter 11), but a lack of data *diversity* (and, deeper, a lack of the structural kind of
+data needed for composition — see Chapter 16).
 
 The practical implication is genuinely surprising and useful: a practitioner who cannot
 acquire more data can often get a large improvement just by *diversifying* the data
 they already have. Re-phrasing the same examples, varying the identifiers, and
-spreading across template families can turn a brittle 0.500/0.000 model into a robust
-1.000/1.000 — with zero additional data. That is the kind of result that changes how a dataset would actually be built.
+spreading across template families can turn a brittle 0.500/0.000 model into one that
+covers 1.000/1.000 of the tested surfaces — with zero additional data. That is the kind
+of result that changes how a dataset would actually be built.

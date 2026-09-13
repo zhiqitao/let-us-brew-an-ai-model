@@ -45,7 +45,7 @@ evaluation denominator.
 | `stage3_surface` | 600 (10 op × 60) | 0.88M | 1,500 |
 | `data_scaling` (per size) | 100, 300, 1000, 3000 | 0.88M | 800 |
 | `stage4_exposure` | not recorded | 0.88M | 1,500 |
-| `div_minimal` / `div_high` | not recorded | 0.88M | 1,500 |
+| `compdiv_minimal` / `compdiv_high` | not recorded | 0.88M | 1,500 |
 | size sweep | not recorded | 0.88M / 6.5M / 10.2M / 29.3M | 1,500 / 1,000 / 800 / 800 |
 | `continual_seq` | 1,400 + 1,400 | 0.88M | 1,400 |
 | `continual_joint` | 2,800 interleaved | 0.88M | 1,400 |
@@ -61,8 +61,8 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | `stage3_surface` | 0.900 | 0.350 | 0.000 | — |
 | `data_scaling` | 0.100 / 0.098 / 0.300 / 0.641 | — | — | — |
 | `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
-| `div_minimal` | 1.000 | — | — | 0.592 / 0.000 |
-| `div_high` | 1.000 | — | — | 0.550 / 0.000 |
+| `compdiv_minimal` | 1.000 | — | — | 0.592 / 0.000 |
+| `compdiv_high` | 1.000 | — | — | 0.550 / 0.000 |
 | size 0.88M | 0.900 | — | — | 0.000 |
 | size 6.5M | 0.897 | — | — | 0.000 |
 | size 10.2M | 0.773 | — | — | 0.000 |
@@ -71,11 +71,16 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | `continual_joint` | A 1.000; B 0.889 | — | — | — |
 
 *`stage1`'s composes value (0.000) is from the stage-4 re-evaluation of that pilot
-checkpoint. The `div_minimal`/`div_high` and `stage4_exposure` composes values are
-reported as *exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed
-records each); the held-out composite — the transfer test — was 0.000 in every composition
-run, and those held-out candidates failed parsing (Appendix B.10). The continual rows test
-task *retention*, not composition, so their "composes" cell is `—`.*
+checkpoint. The `stage4_exposure` and `compdiv_*` composes values are reported as
+*exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed records
+each); the held-out composite — the transfer test — was 0.000 in every composition run,
+and those held-out candidates failed parsing (Appendix B.10). The continual rows test
+task *retention*, not composition, so their "composes" cell is `—`. Note that the
+`compdiv_*` rows (both in-dist 1.000, composes 0.592/0.550) are the **composition-
+diversity** intervention runs from Chapter 16/Appendix C (`composition_diversity_pilot`,
+1,500 steps) — a different experiment from Chapter 13's quantity-vs-diversity run
+(`diversity`, 900 steps), whose minimal-diversity in-distribution score was 0.500. They
+are not the same run, so the different in-distribution numbers are not a conflict.*
 
 *Legend: `—` = that specific breakdown was not separately reported for that run (or the run
 did not test it). We reserve an explicit `0.000` for outcomes we measured and that came out
