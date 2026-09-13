@@ -1919,12 +1919,8 @@ one prompt per case — and records whether each produced a working program. On 
 familiar requests every checkpoint writes correct code; on a reworded request and a new
 combination, none does; on an out-of-scope request (which is not really a task from their
 training) none of them declines — the model just writes noise, which is exactly why Gate B
-belongs in front of it. The pattern across these *illustrative* prompts is striking: on
-the two familiar requests every checkpoint writes correct code, while on the reworded
-request and the new combination none does, and on the out-of-scope request none of them
-declines — the model just writes noise. (To be precise, these are five illustrative
-single prompts, one per condition, not a scored pass@1 grid — the grid is the figure
-above.)
+belongs in front of it. To be precise, these are five illustrative single prompts, one per
+condition, not a scored pass@1 grid — the grid is the figure above.
 
 ### What the models actually say
 
@@ -2872,7 +2868,10 @@ We split the six composite operations: the model was trained on **three** of the
 | **Held-out composites (never seen)** | **0.000** |
 
 The model learns the *specific* composites it was shown — 0.667 on the exposed ones.
-But it still scores a flat **0.000** on the combinations it never saw, even though it
+(That 0.667 is itself a partial score: even on the three composites it trained on, the
+model did not reach 1.000, so a single exposed aggregate of 0.667 does not establish
+that every one of those operations was individually mastered.) But it still scores a
+flat **0.000** on the combinations it never saw, even though it
 uses primitives it knows perfectly (in-distribution 1.000).
 
 That is the answer, scoped carefully: **under the interventions we tested, exposure did
@@ -4553,12 +4552,11 @@ is structurally a composition even though it is listed as a primitive.
 
 The two right-hand columns are **descriptive sketches, not verbatim source**:
 "mathematical behavior" is a compact formula, and "behavioral sketch" is a readable
-pseudocode/one-line restatement — *not* the exact string the judge accepts (the actual
-reference programs are in `src/data_generator/generator.py`). In particular, the one-line
-forms below are not valid indentation-preserving Python: `if a > b: return a; return b`
-places **both** returns inside the `if` suite, whereas the real reference is a multi-line
-function whose second `return` is unindented and reached only when the test fails.
-Treat these columns as behavior summaries and inspect `generator.py` (or the register's
+one-line restatement — *not* the exact string the judge accepts (the actual
+reference programs are in `src/data_generator/generator.py`). The one-line forms below
+read as concise Python expressions such as `a if a > b else b` for clarity; the true
+reference functions are multi-line in the generator, so treat the sketch as the
+*behavior*, not the byte-for-byte source. Inspect `generator.py` (or the register's
 run record) for the accepted source.
 
 | ID | class | arity | input | mathematical behavior | behavioral sketch (not verbatim source) |
@@ -4566,17 +4564,17 @@ run record) for the accepted source.
 | `add` | primitive | 2 | int, int | `a + b` | `return a + b` |
 | `sub` | primitive | 2 | int, int | `a - b` | `return a - b` |
 | `mul` | primitive | 2 | int, int | `a * b` | `return a * b` |
-| `max_of` | primitive | 2 | int, int | `max(a,b)` | `if a > b: return a; return b` |
-| `min_of` | primitive | 2 | int, int | `min(a,b)` | `if a < b: return a; return b` |
-| `abs_of` | primitive | 1 | int | `abs(a)` | `if a < 0: return -a; return a` |
-| `list_sum` | primitive | 1 | list[int] | `sum(xs)` | loop accumulating `total` |
-| `list_len` | primitive | 1 | list[int] | `len(xs)` | `return len(xs)` |
-| `first_element` | primitive | 1 | list[int] | `xs[0]` | `return xs[0]` |
-| `cond_abs_max` | primitive | 2 | int, int | `max(abs(a),abs(b))` | `if abs(a) > abs(b): return abs(a); return abs(b)` |
+| `max_of` | primitive | 2 | int, int | `max(a,b)` | `a if a > b else b` |
+| `min_of` | primitive | 2 | int, int | `min(a,b)` | `a if a < b else b` |
+| `abs_of` | primitive | 1 | int | `abs(a)` | `a if a >= 0 else -a` |
+| `list_sum` | primitive | 1 | list[int] | `sum(xs)` | `sum(xs)` |
+| `list_len` | primitive | 1 | list[int] | `len(xs)` | `len(xs)` |
+| `first_element` | primitive | 1 | list[int] | `xs[0]` | `xs[0]` |
+| `cond_abs_max` | primitive | 2 | int, int | `max(abs(a),abs(b))` | `a if abs(a) >= abs(b) else b` |
 | `abs_add` | **composite** | 2 | int, int | `abs(a) + abs(b)` | `return abs(a) + abs(b)` |
 | `sub_abs` | **composite** | 2 | int, int | `abs(a - b)` | `return abs(a - b)` |
-| `sum_of_abs` | **composite** | 1 | list[int] | sum of elementwise absolute values | loop accumulating `total` with sign |
-| `max_add` | **composite** | 2 | int, int | `max(a+b, a-b)` | `if (a+b) > (a-b): return a+b; return a-b` |
+| `sum_of_abs` | **composite** | 1 | list[int] | sum of elementwise absolute values | `sum(abs(x) for x in xs)` |
+| `max_add` | **composite** | 2 | int, int | `max(a+b, a-b)` | `(a+b) if (a+b) > (a-b) else (a-b)` |
 | `double_first` | **composite** | 1 | list[int] | `2 * xs[0]` | `return 2 * xs[0]` |
 | `len_minus_one` | **composite** | 1 | list[int] | `len(xs) - 1` | `return len(xs) - 1` |
 

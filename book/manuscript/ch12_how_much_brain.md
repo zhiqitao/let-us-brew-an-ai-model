@@ -41,12 +41,8 @@ one prompt per case — and records whether each produced a working program. On 
 familiar requests every checkpoint writes correct code; on a reworded request and a new
 combination, none does; on an out-of-scope request (which is not really a task from their
 training) none of them declines — the model just writes noise, which is exactly why Gate B
-belongs in front of it. The pattern across these *illustrative* prompts is striking: on
-the two familiar requests every checkpoint writes correct code, while on the reworded
-request and the new combination none does, and on the out-of-scope request none of them
-declines — the model just writes noise. (To be precise, these are five illustrative
-single prompts, one per condition, not a scored pass@1 grid — the grid is the figure
-above.)
+belongs in front of it. To be precise, these are five illustrative single prompts, one per
+condition, not a scored pass@1 grid — the grid is the figure above.
 
 ### What the models actually say
 

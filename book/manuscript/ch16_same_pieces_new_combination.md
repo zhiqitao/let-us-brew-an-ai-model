@@ -215,7 +215,10 @@ We split the six composite operations: the model was trained on **three** of the
 | **Held-out composites (never seen)** | **0.000** |
 
 The model learns the *specific* composites it was shown — 0.667 on the exposed ones.
-But it still scores a flat **0.000** on the combinations it never saw, even though it
+(That 0.667 is itself a partial score: even on the three composites it trained on, the
+model did not reach 1.000, so a single exposed aggregate of 0.667 does not establish
+that every one of those operations was individually mastered.) But it still scores a
+flat **0.000** on the combinations it never saw, even though it
 uses primitives it knows perfectly (in-distribution 1.000).
 
 That is the answer, scoped carefully: **under the interventions we tested, exposure did
