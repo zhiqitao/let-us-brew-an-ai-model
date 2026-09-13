@@ -28,7 +28,17 @@ atomic entry in the generator's operation tables (part of the training pool);
 the classification is *operational*, not purely structural, because `cond_abs_max`
 is structurally a composition even though it is listed as a primitive.
 
-| ID | class | arity | input | mathematical behavior | sandbox reference (loop form) |
+The two right-hand columns are **descriptive sketches, not verbatim source**:
+"mathematical behavior" is a compact formula, and "behavioral sketch" is a readable
+pseudocode/one-line restatement — *not* the exact string the judge accepts (the actual
+reference programs are in `src/data_generator/generator.py`). In particular, the one-line
+forms below are not valid indentation-preserving Python: `if a > b: return a; return b`
+places **both** returns inside the `if` suite, whereas the real reference is a multi-line
+function whose second `return` is unindented and reached only when the test fails.
+Treat these columns as behavior summaries and inspect `generator.py` (or the register's
+run record) for the accepted source.
+
+| ID | class | arity | input | mathematical behavior | behavioral sketch (not verbatim source) |
 |----|-------|-------|-------|------------------------|-------------------------------|
 | `add` | primitive | 2 | int, int | `a + b` | `return a + b` |
 | `sub` | primitive | 2 | int, int | `a - b` | `return a - b` |
@@ -82,7 +92,7 @@ values, **not** the absolute value of the list sum.
 | Data scaling | `data_scaling` | 128/4/4 | 800 | 0 | 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
 | Quantity vs diversity | `diversity` | 128/4/4 | 900 | 0 | 884,224 | diversity.json / — | minimal 0.500/0.000; high 1.000/1.000 |
 | Memorization | `memorization` | 128/4/4 | 1500 | 0 | 884,224 | memorization.json / — | 59/60 held-out; canary → general program |
-| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json / — | sequential A 0.000; joint A 1.000, B 0.889 |
+| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | Composition exposure | `composition_exposure_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
 | Composition diversity | `composition_diversity_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
 
@@ -121,15 +131,16 @@ training runs.
 
 ## Denominator and uniqueness notes
 
-- **pass@1 denominators.** The pilot used 300 held-out test prompts (1400 train /
-  300 val / 300 test). Stage 4 used 300 held-out primitives for in-distribution and
-  240 composite tasks (6 ops × 40) for composition; the judge then scores each. The
-  data-scaling rows **share a single common held-out test set** (one `pool_test`,
-  60 records per op, generated once and reused across every size), so the training-size
-  comparison in that run is against the *same* held-out set. (It is a different set
-  from the pilot's 300-case test, so the data-scaling scores are not directly
-  comparable to the pilot's 0.897.) Exact successes/totals are recorded in each
-  manifest.
+- **pass@1 denominators.** The pilot used 300 held-out test **records** (1,400 train /
+  300 val / 300 test), drawn from only **21 distinct prompt strings** (see the novelty
+  audit; the test prompts are not new). Stage 4 used 300 held-out primitives for
+  in-distribution and 240 composite tasks (6 ops × 40) for composition; the judge then
+  scores each. The data-scaling rows share a single common held-out test set (one
+  `pool_test`, 540 records = 10 ops × 54 after the per-op split, generated once and reused
+  across every size), so the training-size comparison in that run is against the *same*
+  held-out set. (It is a different set from the pilot's 300-record test, so the
+  data-scaling scores are not directly comparable to the pilot's 0.897.) Exact
+  successes/totals (integers over the reported denominator) are recorded in each manifest.
 - **Unique model-visible prompts ≠ task IDs.** In the teacher, a task-ID seed changes
   the *hidden-test inputs*, so a new task ID can change the test values while the
   prompt and reference program stay identical. A reported "held-out" prompt therefore
@@ -156,42 +167,73 @@ training runs.
 ## The novelty audit (what was actually "new" in each held-out set)
 
 Because a task ID can change only the hidden-test *inputs* while the prompt string stays
-the same, we audited every split for what was actually new to the model. Here is what
-we found, measured on the real dataset files under `artifacts/datasets/`.
+the same, we audited every split for what was actually new to the model. It is important
+to keep three kinds of evidence apart: the **original scored data**, a **regenerated
+diagnostic reproduction**, and **illustrative examples**. Only the first validates an
+actually-reported result.
 
-**Pilot (Stage 1, `pilot_train/val/test.jsonl`).** All three splits share the **same 21
-unique prompt strings** and the **same 21 (prompt, program) pairs**; the 10 canonical
-reference programs are identical across splits. The train set has 1,400 records, val and
-test 300 each. **Prompt overlap between train and test is 21/21** (i.e. every test prompt
-also appears in training), and each test record is a new *task ID* that only changes the
-hidden-test input values. So the pilot's reported in-distribution result (0.897) is **not
-a test of new prompts** — it is a test of whether the model, given a prompt it saw in
+**Pilot (Stage 1) — audited on the original `pilot_train/val/test.jsonl` files.**
+This check is on the real dataset files (1,400 train / 300 val / 300 test records), not a
+regeneration. All three splits share the **same 21 unique prompt strings** and the **same
+21 (prompt, program) pairs**; the 10 canonical reference programs are identical across
+splits. **Prompt overlap between train and test is 21/21** — every test prompt string also
+appears in training — and each test record is a new *task ID* that only changes the
+hidden-test *input values*. So the pilot's reported in-distribution result (0.897) is **not
+a test of new prompts**: it is a test of whether the model, given a prompt it saw in
 training, produces a program that passes *new input values*. That is a meaningful but
 narrower thing than generalization to a new request. We flag this explicitly, because
-"held-out" in the pilot means "new instances of a seen prompt," not "a never-seen
-request."
+"held-out" in the pilot means "new instances of a seen prompt," not "a never-seen request."
 
-For a truly new *prompt* — one not in training — see the **human-written test set** in
-Chapter 15 (16 prompts, all new, **0/16** correct), and the surface / composition
-holdouts below.
+**Stage 3 surface & Stage 4 composition — audited on a *regenerated reproduction*.**
+These checks run `scripts/run_dedup_audit.py`, which rebuilds a smaller sample (10 records
+per op for surface, 100 train / 60 composite for composition) with the *current* generator
+and writes `artifacts/manifests/dedup_audit.json`. They report train × holdout **exact
+prompt-string overlap = 0** for the held-out wording family and for the composite
+holdout. We want to be clear about the limits of this: a regenerated reproduction can
+test the current generator's behavior; it does **not** by itself prove that the original
+scored Stage-3/Stage-4 files had the same membership (the original runs used larger
+per-op counts — 60 per op for the scored Stage-3 surface run, 240 composite records for
+Stage-4 — and those exact original files are the scored ones). So the surface/composition
+"overlap = 0" should be read as a property of the *reproduced* splits, corroborating but
+not *proving* the historical holdout until the original files are also audited.
 
-**Stage 3 surface (`stage3_surface` experiment).** Audited in
-`artifacts/manifests/dedup_audit.json`: train 110 records / 11 unique prompts; in-dist
-100 / 10; held-out-wording 100 / 10. **Train × held-out-wording prompt overlap = 0** and
-pair overlap = 0, i.e. the held-out wording family never appears in training. This is a
-genuine new-*prompt* holdout. (10 records are audited per op in this reproduction; the
-full run used larger per-op counts and the real dataset files.)
+**A logical caveat: exact-prompt disjointness ≠ wording-family exclusion.** Two different
+prompt strings can be rendered from the same wording family using different identifiers or
+constants. So "no exact prompt-string overlap" does **not** alone prove "no shared wording
+family." Family exclusion must be checked separately (by family ID or a verified
+construction invariant), not inferred from prompt-string disjointness. The ch13/ch15
+wording-family distinction in the body rests on the *construction* — the teacher explicitly
+keeps the last family of each operation out of training — not merely on zero prompt-string
+overlap.
 
-**Composition (Stage 4).** Audited: train (primitives) 100 / 21 unique prompts;
-composite holdout 60 / 6 unique prompts. **Train × composite prompt overlap = 0**, so the
-holdout composite prompts never appear in the primitive-training set.
+**The 59/60 probe — separate, and novelty-unverified.** This is a distinct task-ID-level
+probe on the pilot (Chapter 14). It is **not** covered by the novelty audit above, and the
+audit does **not** verify that the 60 probe prompts (or the canary) were new to the model —
+they may well reuse training prompt strings, since the pilot test set reuses all 21. So we
+cannot claim the 59/60 probe established unseen-prompt generalization; we can only say it
+reported how many of those 60 records produced a general program. We treat it as a scoped
+probe, not a proof of a general rule or of the absence of memorization.
 
-**What this audit does *not* show.** It does not by itself verify the *59/60* memorization
-probe (which is a separate task-ID-level probe on the pilot), and it does not separate
-tokenizer-fit exposure from training-example overlap — the tokenizer was fit on composite
-reference text as noted above. A clean excluded-family audit for Stage 3 does not
-automatically validate the pilot's 300 held-out examples or the 59/60 probe, because those
-are different splits.
+## The sequential before/after measurement (Appendix C.8)
+
+The continuing-learning result reports final A/B task accuracy. Because **final** A alone
+cannot distinguish "learned then forgotten" from "never acquired," we re-ran the identical
+sequential pipeline (same op sets, seeds, per-op counts, step counts, tokenizer schedule,
+optimizer defaults) and inserted a **same-run intermediate A evaluation right after phase A
+and before any B exposure**, writing `artifacts/manifests/continual_preB.json`
+(`scripts/run_continual_preB.py`). The measured trajectory on the A-test:
+
+| point | A accuracy |
+|---|---|
+| right after phase A (before B) | **1.000** |
+| after phase B (final) | **0.000** |
+
+Combined with the joint control (A 1.000, B 0.889), this shows: A was acquired to 1.000
+and then fell to 0.000 after B — a genuine same-run drop, not under-acquisition. Final B
+accuracy in the sequential run was 0.889. Note this re-run is the *sequential* pipeline
+with an added checkpoint for A; it is **not** the true replay-after-A-first design (which
+starts from an A-trained checkpoint and continues with B plus A replay), and we did not
+run that.
 
 ## What is NOT tested (explicitly)
 
@@ -227,26 +269,37 @@ Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.p
 `run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`).
 
 **Publication status: honest disclosure.** As of this writing the companion repository
-has an immutable release tag **`v20261001`** (an annotated tag on the release commit) created for this book, but
-the repository is **not yet published at a public URL**. We therefore cannot yet give a
-reader a working link, and we do not want to pretend otherwise. When it is published, the
-release tag and commit above are the identifiers to use; until then the reproduction path
-is a promise of the intended state, not a live, clickable step. (When it is public, the
-repository URL and an errata page address will be added here and on the copyright page.)
+has a release tag **`v20261001`**, created for this book and pointing at release commit
+**`b40c95a7bbefcb400ca08cb340e9b67b4cfc4cd3`** (full hash), but the repository is **not yet
+published at a public URL**. We therefore cannot yet give a reader a working link, and we
+do not want to pretend otherwise. We cite the **full commit hash**, not just the tag,
+because a Git tag is a movable reference and is not by itself immutable — the commit hash
+identifies the exact tree. When it is published, the repository URL and an errata page
+address will be added here and on the copyright page.
 
 This means an *external* reader cannot fully reproduce the pilot **right now** — that is a
 real limitation of the current draft, and we label it as such rather than claim it is
 reproducible today. What follows is the exact path, so that once the repository is
-published the steps are verbatim.
+published the steps are verbatim. We make a clear distinction between (a) the originally
+scored experiment, whose files are preserved in this repository, and (b) a freshly
+reproduced rerun, which may differ; none of the numbers in this book should be read as a
+reproducibility *confirmation* until an independent run reproduces them.
 
 **The quick start (once the repository is available):**
 
 1. **Clone the companion repository** and check out the `v20261001` tag.
-2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). A
-   `requirements.txt` at the repo root pins the versions.
-3. **Prepare the tokenizer.** The tokenizer is trained and saved to
-   `artifacts/tokenizer/` (e.g. `pilot_tok.json`) before training; the run scripts expect
-   it to already exist. This is a real prerequisite that is easy to miss.
+2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). The
+   project depends on `torch` and the standard library; we did not ship a
+   `requirements.txt` (the repo has none), so install the pinned torch version
+   explicitly, e.g. `pip install torch==2.14.0` (CPU wheel) in your environment.
+3. **Prepare the data & tokenizer.** Generate the dataset files under
+   `artifacts/datasets/` (e.g. `python scripts/generate_data.py`), then train the
+   tokenizer. The pilot tokenizer is built inside `scripts/train.py` (via
+   `train_tokenizer(..., save_path=...)`), so an explicit tokenizer step is only needed
+   for runs that reuse a saved tokenizer; when in doubt, `train.py` writes e.g.
+   `artifacts/tokenizer/pilot_tok.json`. Run scripts expect the matching tokenizer to
+   already exist, so verify the manifest records which tokenizer each checkpoint uses
+   before evaluating.
 4. **Run a pilot:** `python scripts/train.py --steps 1500 --n-embd 128 --n-layer 4
    --n-head 4 --bs 16 --seed 0` then `python scripts/eval_ckpt.py`. `eval_ckpt.py` loads
    the saved checkpoint by default (the `stage1.pt`/`stage1.json` artifacts produced by

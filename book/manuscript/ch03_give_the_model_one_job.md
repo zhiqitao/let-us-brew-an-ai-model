@@ -39,8 +39,11 @@ for every case.
 Every task is described by a small, formal schema — the ground truth that drives
 everything. The key insight is that **one semantic record generates all three**
 things we need: the reference program, the natural-language spec, and the hidden
-tests. That way there is no drift between "what the task is" and "how we ask for it"
-and "how we test it."
+tests. That way there is far less drift between "what the task is" and "how we ask for it"
+and "how we test it" than if each were authored separately. **"Less drift" is not "no
+drift"** — because all three derive from the same semantic record, a mistake in that
+record would be shared by all three (a correlated error), so consistency here is a
+reduction in risk, not a guarantee.
 
 The semantic core captures the operation and its arguments:
 
@@ -79,11 +82,15 @@ tests are produced by a *separate generator* from the program, which means they 
 independent oracle guard: if the program-generator and the test-generator shared a bug,
 the tests could pass a wrong program (a correlated-implementation-error problem). Because
 the tests are a separate path over the same `semantics`, the oracle is decoupled from the
-program generator, so a single mistake in either does not silently become a false
-pass. But both ultimately derive from the same operation definition, so this is a *control
-for correlated implementation bugs*, **not** a proof that the model "understands" the
-operation — understanding is a different question (and the surface/composition chapters
-answer it separately).
+program generator, which reduces the chance that a single implementation mistake becomes a
+false pass. But it does **not** eliminate it. Both the program and the test values derive
+from the *same* operation definition, so if that shared specification is wrong, both can
+be wrong together; and a *finite* set of inputs can simply miss a defect that only shows on
+an untested input. So this is a *control for correlated implementation bugs* — a useful
+sanity check, not a guarantee — and **not** a proof that the model "understands" the
+operation (understanding is a different question, and the surface/composition chapters
+answer it separately). A passing program is also consistent with the model selecting a
+correct general program rather than computing anything afresh.
 
 ## The success criterion
 

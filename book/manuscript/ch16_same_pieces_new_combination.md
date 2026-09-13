@@ -251,12 +251,16 @@ now, and it is a genuinely different axis from the one we tested.
 
 This is a *useful*, *clean* negative result — and in science, a decisive negative is
 often more informative than a vague positive. We now know something sharp about this
-model in this setup: **at ~1M parameters, in this task and training regime, it does not
-compose under the interventions we tried.** It learns reflexes here, not structure
-here. This is not a statement about "intelligence" or about "what models will
-eventually do." It is a precise, reproducible measurement of where *this* model's
-capability stops *here* — and, as we have flagged, the door to a different intervention
-(or a different, unmeasured cause such as optimization or generation-length limits)
+model in this setup: **at ~1M parameters, in this task and training regime, it produces
+no successful held-out composite completion under the interventions we tried.** A candid
+qualification: the recorded aggregate stage rates for the held-out composites showed
+syntax_rate = 0.0 — the failures were logged before execution — so the **cause** of the
+zero is not resolved by the aggregate (it could be generation/parsing, a length limit,
+optimization, or a capability limit; see Appendix B.10). What we can claim is the
+measured outcome and that the interventions we tried did not produce a success. This is
+not a statement about "intelligence" or about "what models will eventually do." It is a
+precise, reproducible measurement of where *this* model's capability stops *here* — and,
+as we have flagged, the door to a different intervention
 remains open.
 
 And it sets up the rest of the book in a way that is far more interesting than if the

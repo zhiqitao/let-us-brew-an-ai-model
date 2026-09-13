@@ -17,13 +17,18 @@ own impatience. This chapter is that first batch.
 Python program. The model's job is to read the spec and produce the code. Each task is
 a single semantic record — one idea — rendered three ways (a program, an English
 instruction, a set of hidden tests), so the data is internally consistent by
-construction. We do not need to worry that a prompt says "sum" but its answer
-subtracts, because both came from the same seed.
+construction. We do **not** need to worry as much that a prompt says "sum" but its answer
+subtracts, because both came from the same seed. That said, "same seed" is not a
+guarantee: a wrong semantic record would be wrong in all three renderings at once, so
+the consistency reduces (but does not eliminate) the risk of a prompt/answer mismatch.
 
-We hold out a separate 300-task test set that shares no operation with training in a
-leaky way, so the model cannot simply see the same task again. This split discipline
-is not optional: it is what lets us claim, later, that the model's score reflects
-unseen tasks, not memorized ones.
+We hold out a separate 300-record test set. Because the teacher uses a task-ID seed to
+change only the hidden-test *inputs* while the prompt string and reference program stay
+the same, those 300 records **reuse the same 21 prompt strings** as training (see the
+novelty audit in Appendix C); what is new at test time is the task ID and the
+execution-test values, not the prompt. We state this plainly, because it shapes exactly
+what the pilot's 0.897 does and does not establish: familiar-prompt program generation
+on fresh execution inputs, not generalization to a new request.
 
 ## The model
 

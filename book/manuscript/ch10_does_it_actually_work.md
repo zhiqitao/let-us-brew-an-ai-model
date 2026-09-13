@@ -77,11 +77,13 @@ def solve(a, ab
 
 — a truncated, unusable fragment. The generation stopped early. We did not preserve the
 raw token sequence, so we cannot state the precise stop reason from the record (it could
-be the `max_new` limit, an EOS/PAD tie-out, the NUL-byte extraction boundary, or simply
-an unlucky sampled end). What is clear is that it is a **partial lexical fragment**, not
-a complete program — and because a termination/extraction defect already changed the
-pilot score once, we flag these fragments as a *generation-limit/termination* effect, not
-as direct evidence of a pure capability limit. On a genuinely
+be the `max_new` limit, an EOS/PAD tie-out, the NUL-byte extraction boundary, or an
+unlucky sampled end). What is clear is that it is an **incomplete extracted candidate whose
+termination/extraction cause was not preserved** — a partial Python identifier/source
+fragment, not a complete program. Because a termination/extraction defect already changed
+the pilot score once, we flag these as an *incomplete extracted candidate*, and do **not**
+assert a specific internal cause (we cannot, from the record, tell it apart from a genuine
+capability limit). On a genuinely
 reworded surface ("Return the value obtained by adding together two numbers, denoted
 p and q."), it produced:
 
@@ -98,9 +100,19 @@ execution or comparison, because they do not parse as complete Python programs.
 ## What we measured: pass@1
 
 Here is the headline result, reported as **problem-level hidden-test pass@1 under the
-evaluation's default temperature-0.8 sampling** — that is, for each problem, did the
-*single sample* the model produced pass *every* hidden test? (This is sample pass@1, one
-sample per prompt, not a distribution over many samples.)
+evaluation's default temperature-0.8 sampling** — that is, for each evaluation record, did
+the *single sample* the model produced pass *every* hidden test? (This is sample pass@1,
+one sample per record, not a distribution over many samples.) Two sampling details matter
+for interpreting it: (1) the evaluator calls the model **once per evaluation record**
+(`for t in tasks: candidate(t)` → a fresh `model.generate`), so records that happen to
+share a prompt string still get **independent** draws — no output is cached or reused
+across records; and (2) the fixed score is a property of the checkpoint, the sampled
+outputs, the record weights, the tests, and the decoding settings (temperature, `max_new`,
+stop policy, NUL truncation), not just of the dataset. A single sample per record does not
+give within-run sampling error, but the repeated records do act as within-prompt
+replicates for the purposes of a familiar-prompt aggregate. The training seed and the
+generation seed are reported separately in the run record, and `max_new` / stop policy /
+extraction rules live in `src/eval/evaluator_runner.py`.
 
 | Candidate | syntax | executable | **pass@1** |
 |-----------|--------|-----------|------------|
@@ -110,18 +122,23 @@ sample per prompt, not a distribution over many samples.)
 
 Three things stand out.
 
-**First, the model genuinely learned something.** 0.897 means that ~90% of the time,
-an unseen problem's natural-language spec produced a program that passed all its
-hidden tests. That is not a toy result. And crucially, it **beats the hand-written
-template/rule baseline** (0.800). A hard-coded pattern-matching system that
-recognizes keywords like "sum" and emits a template gets 80%; our learned model gets
-~90%. So the model is doing *more* than a fixed rule system can do on this task.
+**First, the model learns to produce a program for a prompt it has seen many times.**
+0.897 means that ~90% of the time, given a *familiar* prompt string, the model produced a
+program that passed all the *fresh input values* the judge supplied. That is not a toy
+result: the model emits valid, correct Python for a request it has been trained on. But
+note exactly what is and is not being claimed. Because every one of the 300 test records
+reuses a prompt string the model saw in training, this figure is **familiar-prompt program
+generation on new execution inputs** — not generalization to a new request. And it still
+**beats the hand-written rule baseline** (0.800) on that same set. A hard-coded
+pattern-matching system that recognizes keywords like "sum" and emits a template gets 80%;
+our learned model gets ~90%. So on this task, the learned model does *more* than a fixed
+rule system.
 
 **Second — but retrieval does even better.** A trivial TF-IDF retriever that does
 nothing but find the closest training example and reuse its program scores **1.000**.
 
-That second fact is not a failure; it is the single most important thing this pilot
-taught us. It tells us the task, as currently constructed, is **too easy to force
+That second fact is not a failure; it is the pivotal thing this pilot taught us. It
+tells us the task, as currently constructed, is **too easy to force
 generalization**. When a non-learning lookup solves 100% of the test set, then the
 test set is solvable by retrieval, and a model scoring 90% is not yet being tested on
 whether it can generalize — only on whether it can match the surface form of a
@@ -156,8 +173,8 @@ failure*.
 The fix was a single line: truncate the generated program at the first NUL byte. A
 trivial change, and suddenly the model's score leapt from 0.000 to 0.897.
 
-This is the single most important lesson of the whole book, and it is not about the
-model at all. **The evaluator was broken, not the model.** We had designed every
+This is the pivotal lesson of this chapter, and it is not about the model at all.
+**The evaluator was broken, not the model.** We had designed every
 experiment to detect shortcuts and outright cheating in the *model*, and we nearly
 missed the one case where the measuring stick itself was faulty. The "test the
 tester" principle — that we must verify the tool measures what we think it measures
@@ -190,20 +207,31 @@ there without learning.
    (surface-change) and Question-4 (composition) experiments, which we run next.
 
 2. **Suspected shortcut: exact memorization.**
-   **Why it could explain it:** the model saw 1,400 examples; maybe it memorized them.
-   **Control (Ch14):** on held-out prompts it still passed 59/60, and on a *canary*
-   prompt it produced the *general* program rather than a memorized literal.
-   **What it rules out:** pure example-memorization.
+   **Why it could explain it:** the model saw 1,400 examples; maybe it memorized the
+   prompt→program pairs.
+   **Control (Ch14):** a probe of 60 pilot records and a held-out probe. On 59/60 it
+   produced a passing general program, and on the held-out probe it emitted the
+   *general* program rather than a memorized literal. **Caveat:** the pilot test
+   reuses training prompt strings, so this does **not** establish unseen-prompt
+   generalization — it shows the model produces a *general* program (not a memorized
+   constant literal) for these records.
+   **What it rules out:** the narrow claim that the model merely emits memorized
+   *constant* outputs.
    **What remains:** the deeper question — is the *general program* it produces
    genuinely tied to the computation, or to the particular wording?
 
 ## The honest summary
 
 The pilot succeeded in exactly the way a pilot should: the laboratory works, the
-model learns, and — perhaps most valuably — the experiment told us something
-*uncomfortable but true*. The task is retrieval-solvable, and a model that beats a
-template rule system yet sits below a lookup table has not yet been tested on the
-thing we care about most: whether it generalizes.
+model **reliably produces a correct program for a prompt it was trained on**, and —
+perhaps most valuably — the experiment told us something *uncomfortable but true*. The
+task is retrieval-solvable, a model that beats a template rule system yet sits below a
+lookup table, and — crucially — the test reuses the model's known prompt strings, so the
+pilot **did not actually test generalization to a new request**. It tested reliable
+familiar-prompt generation and shows that the *apparatus* can produce meaningful,
+checkable measurements. Whether the model can generalize is the question the remaining
+chapters actually probe, using prompts and composition that genuinely were not in
+training.
 
 And we were reminded, in the most direct way possible, that the measuring stick is as
 much a subject of the experiment as the model. The instrument and the thing measured

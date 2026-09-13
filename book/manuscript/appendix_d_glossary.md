@@ -68,10 +68,20 @@ flag it.
 - **Mutation testing.** Generating deliberately-broken programs and checking that the
   hidden-test suite catches them, to measure how discriminating the tests are.
 
-- **pass@1.** The fraction of evaluation prompts for which the model's (greedily
-  decoded) program passes all hidden tests.
+- **pass@1.** The fraction of evaluation records for which the model's **single
+  temperature-0.8 sampled** program passes all of that record's hidden tests (see
+  "Sampled decoding" above). One fresh sample is drawn per evaluation record; the fixed
+  observed score is a property of the checkpoint, the sampled outputs, the record
+  weights, the tests, and the decoding settings — not just of the dataset.
 
-- **Primitive.** A single, non-composite operation (e.g. `add`, `abs_of`, `list_sum`).
+- **Primitive.** A single atom in the *generator's* operation set — e.g. `add`, `abs_of`,
+  `list_sum`, `max_of`. It is an **atomic generator entry**, not a structurally
+  indivisible program: a "primitive" operation's reference program may itself contain
+  sub-expressions (for example the pilot's `cond_abs_max` computes a max of absolute
+  values and is genuinely composite). When we say the model trained on "primitives only,"
+  we mean it trained on the *named generator operations* as atomic teacher tasks, not
+  that each reference program was syntactically indivisible. See the operation dictionary
+  in Chapter 16 for which entries are composite.
 
 - **Sandbox / Gate A.** The software layer that runs generated programs and rejects any
   that use a construct outside an allowlist (e.g. `import`, `eval`), before they run.

@@ -39,9 +39,11 @@ it is what makes the resulting curve a *claim* rather than a coincidence.
 ## What it tells us
 ![Data scaling](figures/fig_data_scaling.png)
 
-*Every point is one run on a common held-out test set (one `pool_test`, 60 records per
-op, reused across sizes); four points describe a trend under these budgets, not a
-sharp threshold.*
+*Every point is one run on a common held-out test set (one `pool_test`, 540 records = 10
+operations × 54 each after the per-op train/test split, reused across sizes), so the
+rates are integer fractions over 540 (54/540 = 0.100, 53/540 = 0.098, 162/540 = 0.300,
+346/540 = 0.641). Four points describe a trend under these budgets, not a sharp
+threshold.*
 
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
 0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
@@ -49,17 +51,20 @@ this narrow mapping.
 
 **There is a small-data plateau.** At 100 and 300 examples the model is essentially
 identical (~0.10). The improvement only becomes substantial between 1000 and 3000. So
-there is a *threshold* below which the model gets almost nothing and above which
-performance climbs. That threshold is a real, measurable property of the task and
-model.
+under these budgets, there is a *plateau-then-rise* pattern: below roughly 1000 examples
+the model gets almost nothing, and above that it climbs. This is an **observed trend on
+four points with one run each**, not an inferred sharp threshold with a precisely
+locatable knee. Call it a qualitative plateau, and read no more into the exact
+crossover point than the four points support.
 
-This is the shape that matters. It is not a smooth, gentle rise. It is a flat line,
-then a sudden climb. That flat-then-steep shape is what we would expect if the model needs a minimum amount of data before it can form *any* reliable association — below
-that, it simply does not have enough examples to learn the mapping, and adding a
-couple hundred more changes nothing. Above it, each additional batch of data starts
-paying off. Finding that threshold is more useful than knowing "more data is good,"
-because it tells us the *knee* of the curve, and the knee is where a practitioner
-should aim.
+This is the shape that matters. It is not a smooth, gentle rise. Under these budgets it
+reads as a flat line, then a climb. That flat-then-steep shape is consistent with the
+model needing a minimum amount of data before it can form *any* reliable association —
+below that, it does not have enough examples to learn the mapping, and adding a couple
+hundred more changes nothing; above it, each additional batch starts paying off. A
+practitioner facing this particular task should treat "a few hundred examples" as too
+small, but we would not oversell the exact crossover as a precisely located knee, because
+it is read from four single runs with no repeated seeds.
 
 ## The motif, restated
 

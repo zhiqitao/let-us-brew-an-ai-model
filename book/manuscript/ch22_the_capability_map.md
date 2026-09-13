@@ -34,8 +34,8 @@ does not require answering Question 1, and so on.)
 
 | Question | What it asks | Measured result | Status (in this setup) |
 |-------|--------------|-----------------|--------|
-| **Q1 Mem** | Could it be explained by remembering? | Held-out 59/60; canary → general program | `[MEASURED]` it generalizes primitives, doesn't parrot |
-| **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here |
+| **Q1 Mem** | Could it be explained by remembering? | task-ID probe 59/60; held-out pair → general program | `[MEASURED]` not literal answer-parrots on familiar prompts; new-prompt transfer **not** tested (pilot reuses training prompts) |
+| **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here (new *inputs*, familiar prompt) |
 | **Q3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
 | **Q4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
 
@@ -44,9 +44,12 @@ does not require answering Question 1, and so on.)
 The table above groups results by *question*. But each number belongs to a specific
 **checkpoint** (a saved model) and a specific **evaluation split**, and it is important
 not to let one row mix scores from different models. Here is the same evidence laid out
-run by run, so every cell traces to the checkpoint the registry names. A dash (`—`)
-means that evaluation was **not run for that checkpoint**; `NT` means the evaluation is
-not applicable to that run; `0.000` is a measured zero.
+run by run, so every cell traces to the checkpoint the registry names. Notation used
+throughout: `—` = **not run for that checkpoint**; `NT` = **not tested** for this run
+(the question would be applicable but was not evaluated); `NA` = **not applicable** (the
+question cannot apply, by design); `0.000` = a measured zero. A single `—`/`NT`
+distinction: we only use `NT` when the evaluation *could* have been run but was not, and
+`NA` only when it makes no sense for that run.
 
 **Panel 1 — code-generation evaluations, by checkpoint**
 
@@ -81,7 +84,7 @@ These conditions are not "one bigger model"; they test whether *training content
 
 | Protocol | final A accuracy | final B accuracy | true replay-after-A |
 |---|---|---|---|
-| Sequential (A then B) | 0.000 | 0.889 | NT (not run) |
+| Sequential (A then B) | 0.000 | 0.889 | NT |
 | Joint (A+B from start) | 1.000 | 0.889 | — |
 
 Note the "sequential" A figure is a **final task accuracy**, not "retention relative to a
@@ -89,10 +92,12 @@ pre-B checkpoint" — there was no A-only checkpoint to retain against. A true
 replay-after-A-first continuation (which *would* measure retention relative to an
 A-trained checkpoint) was **not** run.
 
-Read the map vertically and it shows a steady decline in how much we can trust the
-model's "understanding" as we move from "did it see this before" (Level 1) to "can it
-put things together" (Level 4). The model passes the first two levels cleanly and fails
-the last two completely.
+Read the map column by column and it shows a clear boundary rather than an ordered
+ladder: the four questions are **separate evaluations**, not steps of a single ascending
+scale. So do not read "Level 1 → Level 4" as a measured decline in "understanding." The
+honest reading is that these are four distinct, non-nested probes, and the model passes
+the first two (familiar-prompt generation, new-instance distribution) and fails the last
+two (surface change, composition) under this setup.
 
 ## What the model can do
 
@@ -101,10 +106,12 @@ the last two completely.
 problems under the evaluation's default temperature-0.8 sampled decoding. It beats a hand-written template rule system (0.900
 vs 0.800). This is real, measurable capability on a narrow task.
 
-**It generalizes across instances, not just examples.** It passed 59/60 held-out
-prompts and, on a *canary* it had never seen, produced the *general* program rather
-than a memorized literal. So for a single operation, the model is a learner, not a
-parrot. That is Question-2 distributional generalization, achieved.
+**It produces general programs for fresh inputs of a prompt it saw in training.** On the
+task-ID probe it passed 59/60, and on a held-out pair it produced the *general* program
+rather than a memorized literal. So for a single operation, the model is not a literal
+answer-parrot on familiar prompts. That is distributional generalization across *instances*
+of a seen prompt — it is **not** transfer to a genuinely new request, which the pilot did
+not test (its test reuses training prompt strings).
 
 ## What the model cannot do
 
@@ -191,8 +198,12 @@ nothing for the deep one.
   0.350 (Q3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
   tested surface — though, as the caveat notes, that is strongest as a coverage
   statement, not proof of generalization to a wholly unseen wording family.
-- It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
-  0.88M→29.3M) nor more data changes this (Q4).
+- It cannot compose: unseen combinations → 0.000 across 0.88M→29.3M capacity (the
+  model-size sweep tested composition at each size). **Caveat:** the *data-size* sweep
+  (Chapter 11) tested in-distribution accuracy only, not composition, so we do **not**
+  claim that more data likewise fails to help composition — that specific
+  "more data doesn't fix composition" claim was **not** tested and is not made here
+  (Q4).
 - Continual learning is a procedure problem: sequential forgets (A → 0.000), joint
   retains (A → 1.000) with no acquisition cost.
 - The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too

@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 914 666" width="12.7027in" height="9.2500in">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 916 666" width="12.7229in" height="9.2500in">
 <defs><linearGradient id="wrapbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2EEE4"/><stop offset="1" stop-color="#E9E3D6"/></linearGradient></defs>
-<rect x="0" y="0" width="914" height="666" fill="url(#wrapbg)"/>
+<rect x="0" y="0" width="916" height="666" fill="url(#wrapbg)"/>
 <g transform="translate(34.20,37.80)">
 <text font-family="Helvetica, Arial, sans-serif" font-weight="800" font-size="21" fill="#141414">LET US BREW AN AI MODEL</text>
 <text y="30" font-family="Helvetica, Arial, sans-serif" font-weight="400" font-size="13" fill="#6E6E68">What tiny language models can actually learn when given one job</text>
@@ -49,8 +49,8 @@
 <rect x="285.91" y="610.20" width="1.30" height="25.92" fill="#3B3B38"/>
 <rect x="288.50" y="610.20" width="0.58" height="25.92" fill="#3B3B38"/>
 <rect x="290.38" y="610.20" width="0.58" height="25.92" fill="#3B3B38"/>
-<rect x="441.00" y="0" width="32.59" height="666" fill="#F2EEE4"/>
-<text font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="17" fill="#141414" transform="rotate(-90 457.30 333)" text-anchor="middle" x="457.30" y="333">LET US BREW AN AI MODEL</text>
-<text font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="13" fill="#1E7A6F" transform="rotate(-90 457.30 436)" text-anchor="middle" x="457.30" y="436">ZHIQI TAO</text>
-<image xlink:href="fig_cover.svg" x="473.59" y="9.00" width="432.00" height="648.00" preserveAspectRatio="none"/>
+<rect x="441.00" y="0" width="34.05" height="666" fill="#F2EEE4"/>
+<text font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="17" fill="#141414" transform="rotate(-90 458.03 333)" text-anchor="middle" x="458.03" y="333">LET US BREW AN AI MODEL</text>
+<text font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="13" fill="#1E7A6F" transform="rotate(-90 458.03 436)" text-anchor="middle" x="458.03" y="436">ZHIQI TAO</text>
+<image xlink:href="fig_cover.svg" x="475.05" y="9.00" width="432.00" height="648.00" preserveAspectRatio="none"/>
 </svg>

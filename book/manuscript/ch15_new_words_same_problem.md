@@ -74,9 +74,10 @@ computation is identical in all three cases.
 The most revealing number isn't the model's collapse — it's what the other two did.
 ![Surface generalization](figures/fig_surface.png)
 
-*Each pass@1 is over 100 held-out problems per condition; the "new wording" column is
-the Stage-3 genuine held-out wording family (train × holdout prompt overlap = 0, see
-the novelty audit in Appendix C), and decoding is temperature-0.8 single-sample.*
+*Each pass@1 is over 600 held-out problems per condition (10 operations × 60 records
+each, the scored `stage3_surface` run); so the rates are exact integer fractions over
+600 (e.g. 525/600 = 0.875, 75/600 = 0.125, 410/600 = 0.683). The "new wording" column is
+the Stage-3 held-out wording family; decoding is temperature-0.8 single-sample.*
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
@@ -176,6 +177,17 @@ each by whether it asks for a **primitive** operation (1–10) or a **composite*
 14. "Sum the absolute values of everything in the list."
 15. "Double the first item in the list."
 16. "Return one less than the length of the list."
+
+**A note on the 11–16 label, because it is not uniform.** Only requests 12–16 map to the
+**six genuinely held-out composite operations** (`abs_add`, `sub_abs`, `sum_of_abs`,
+`max_add`, `double_first`, `len_minus_one`). Request 11 ("larger of the two, but as a
+positive number") maps to `cond_abs_max` — an operation that *is in the named* generator
+training pool (the pilot's primitive set) even though it is structurally composite. So
+request 11 is a case of a **familiar operation in new phrasing**, not held-out composite
+behavior. We therefore keep the "composite" label as shorthand but read requests 11–16 as
+a mixture: 11 tests new phrasing of a seen (but composite) op, and 12–16 test genuinely
+held-out composite tasks. The outcome (0/16) is the same either way, but the
+interpretation of *why* differs.
 
 Against the pilot checkpoint, the model solved **0 of 16**. Breaking it out, it solved
 **0 of 10 primitive** requests and **0 of 6 composite** requests. Even the simplest ones

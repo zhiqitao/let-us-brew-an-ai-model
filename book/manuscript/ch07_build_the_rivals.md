@@ -48,13 +48,17 @@ recognizer does fine, then the task's "hard part" is just pattern-matching, and 
 learning it isn't learning much.
 
 Building this rival is almost too easy. It is a few rules that map common words to
-common code. But its simplicity is precisely its value. It is the lowest useful
-baseline: the floor of what any reasonable person would expect a hard-coded system to
-achieve. If our learned model cannot beat this floor, we learn an important fact:
-the task does not require the extra machinery — it does not establish an *advantage*
-over this baseline. That is a statement about the task (it is easy for a rule table),
-not a statement that no learning occurred. The model may well have learned; it is just
-not learning anything *beyond* what a few rules give us.
+common code. But its simplicity is precisely its value. It is a **specific, hand-written
+alternative** against which to measure the learned model. Be clear about what this
+baseline does and does not establish. It is **not** a lower bound on all possible rule
+systems, and it is **not** a limit on what a simpler machine could do — it is one
+particular rule table, worth the keyword → code mappings it happens to encode. If our
+learned model cannot beat *this* baseline, we learn an important, but narrow, fact: the
+task does not require the extra machinery, at least relative to *this* alternative. That
+is a statement about the task and this specific baseline (it is easy for this rule table),
+not a statement that no learning occurred, and not a statement that no other baseline
+exists. The model may well have learned; it is just not learning anything *beyond* what
+this particular set of rules gives us.
 
 ## Rival 2 — retrieval
 

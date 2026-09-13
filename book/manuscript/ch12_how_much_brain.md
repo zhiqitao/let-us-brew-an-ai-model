@@ -73,7 +73,7 @@ i solve(a, b:
         return       return b        # syntax error
 
 # prompt: absolute value of each, return their sum
-def solve(a, ab                       # syntax error — generation ended early, partial token
+def solve(a, ab                       # syntax error — generation ended early, partial Python identifier/source fragment
 ```
 
 And given an out-of-scope request, it does not decline at all — it just writes

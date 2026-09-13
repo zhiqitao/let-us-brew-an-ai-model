@@ -66,14 +66,17 @@ incorrect one is a good suite. A suite that passes for both is not testing anyth
 At first glance six survivors look like six test-suite defects. But every one of them is
 the same kind of change: a **strict comparison flipped to a non-strict one** (`>`→`>=` or
 `<`→`<=`) in a function that returns a max/min/absolute-value. Over the integer domain
-these are **semantically equivalent** to the reference — `a >= b` returns the same value
-as `a > b` when `a == b` (both return that value), and `x <= 0` returns the same as
-`x < 0` when `x == 0` because `-0 == 0`. We built a small equivalence check and confirmed
-it: **all six survivors returned identical values to their reference across every
-integer input we enumerated.** So they are *not* six missed defects; they are six
-tie-breaking equivalences.
+these are **semantically equivalent** to the reference. Be careful with the wording here:
+the predicates differ — `a >= b` is True and `a > b` is False when `a == b` — but the
+*enclosing max/min function* returns the same value in both cases, because at the tie the
+equal branch and the (now-reached) outer branch yield the same number. We built a small
+equivalence check and confirmed it matched on the bounded integer domain we enumerated
+(and, for these tie-only mutants, a short case analysis establishes the equivalence over
+the integer domain: the operator differs only at equality, and both branches return equal
+values there). So they are *not* six missed defects; they are six tie-breaking
+equivalences.
 
-This is the important nuance the reviewer's phrase captures: *a surviving **equivalent**
+This is the important nuance worth spelling out: *a surviving **equivalent**
 mutant is not a missed error.* The mutation score therefore does **not** mean "the test
 suite has six confirmed defects." It means:
 
@@ -83,13 +86,24 @@ suite has six confirmed defects." It means:
 > defects. They do show the tests do not *distinguish* a `>` from a `>=` at a tie — but
 > since the two behave identically here, that is not a correctness gap.
 
-So the honest conclusion is: the **raw rejection score** (0.829) is a measure of how
-many deliberately-broken variants were caught, and the **non-equivalent mutation score**
-is effectively **29/35 with 0 genuine misses** after equivalence review. We report both
-separately, and we do not claim the suite is "not edge-case-complete" as if that were six
-confirmed bugs. (The reference controls rule out reject-everything behavior on those 16
-correct programs; they do not prove the tests catch every possible false-negative for
-*other* alternative correct programs.)
+So the honest conclusion is to report **three distinct measurements**, each with its own
+denominator:
+
+- **Raw rejection fraction:** 29 / 35 = **0.829** — the share of all 35 generated mutants
+  that the suite rejected.
+- **Equivalence-adjusted mutation score:** 29 / (35 − 6) = 29 / 29 = **1.000** — the share
+  of *non-equivalent* mutants rejected, after excluding the six tie-breaking equivalents
+  from the denominator. (A survivor that is equivalent is not a test-suite defect, so it is
+  excluded from the adjusted denominator rather than merely relabeled in plain prose.)
+- **Reference-control acceptance:** 16 / 16 = **1.000** — the suite accepted every correct
+  reference program.
+
+We report these three separately. The raw score is *not* the same as the adjusted score:
+0.829 and 1.000 measure different things. Neither is a proportion of "all possible error
+classes covered," and neither is a proof that the test suite is complete. (The reference
+controls rule out reject-everything behavior on those 16 correct programs; they do not
+prove the tests catch every possible false-negative for *other* alternative correct
+programs.)
 
 And the judge's honesty was validated the hard way: it reported the model at 0.000 on
 our very first evaluation, and that was a *judge bug*, not a model failure. Once we
@@ -124,20 +138,23 @@ distinguishing test on `(a=2, b=3)` — where the reference returns `5` and the 
 returns `-1` — catches it. The point is that a test must be *discriminating*: it has to
 separate the correct program from the specific wrong ones, not merely produce a pass
 for whatever got written. That is exactly what the measured mutation suite is designed
-to probe, and why its 0.829 kill rate (6 survivors) is a real, quantified measure of
-the suite's discriminating power rather than a claim that it is exhaustive.
+to probe, and why its 0.829 raw rejection fraction (29/35, with the six survivors all
+tie-equivalent) is a real, quantified measure of the suite's discriminating power rather
+than a claim that it is exhaustive.
 
 ## The honest framing
 
 Red-teaming the judge is not a formality; it is the difference between "we ran a
 number" and "we know the number means something." The specific lessons:
 
-- **Strengthen tests until wrong programs fail.** The mutation score is the measure,
-  and ours is 0.829 — the raw rejection rate. After equivalence review the six survivors
-  are all strict→non-strict tie-breaks that behave identically on the integer domain,
-  so there are **no confirmed genuine misses** among the mutants we generated. What the
-  score *does* reflect is that the tests discriminate most, but not all, deliberate
-  error classes we chose to generate.
+- **Strengthen tests until wrong programs fail.** The mutation score is the measure.
+  Our raw rejection fraction is 29/35 = 0.829; the equivalence-adjusted score — after
+  excluding the six tie-equivalent survivors from the denominator — is 29/29 = 1.000.
+  Those are two different numbers, and we report them separately: 0.829 is what the
+  suite *caught* of everything we broke, and 1.000 is the adjusted share after
+  accounting for survivors that were not actually bugs. What the score does *not* do is
+  prove the tests discriminate every possible error class; it quantifies the ones we
+  chose to generate.
 - **Trust the judge less than the tests.** The judge is a pipeline; the *hidden tests*
   are what actually catch errors. We do not claim the tests distinguish every
   conceivable wrong program — the reference controls only prove they accept all 16

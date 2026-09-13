@@ -55,15 +55,27 @@ find a *procedure* finding, exactly the thing we want to isolate.
 
 This is as clean a result as this book produced.
 
-**Sequential training causes catastrophic forgetting.** After learning arithmetic and
-then lists in sequence, the model's A-retention is **0.000** — it completely forgot
-the first capability. That is not "degraded"; it is gone. Learning the lists overwrote
-the arithmetic.
+**A note on what "0.000" does and does not show.** We measured the sequential run's A
+accuracy **right after phase A and again after phase B** on the same trajectory. The
+pre-B A accuracy was **1.000**; after learning B, the same run's A accuracy fell to
+**0.000**. So the sequential zero is not a case of "A was never acquired" — A was
+acquired to 1.000 and then lost. This is a **same-run before/after** measurement (the
+sequential pipeline re-run with an intermediate A evaluation right after phase A and
+before any B exposure; see Appendix C.8), which is what supports reading the sequential
+drop as genuine forgetting of learned A competence rather than under-acquisition.
 
-**Training A and B together prevents the forgetting.** When A and B are simply trained
+**Sequential training produces a much lower final A accuracy than joint training.** After
+learning arithmetic and then lists in sequence, the model's final A accuracy is **0.000**;
+when the two are trained together, the final A accuracy is **1.000**, with the same B
+accuracy (0.889) in both. So the *training schedule* – whether the first capability stays
+in the mix while the second is learned – is what differs, and that scheduling difference
+changes the final A outcome. That is a *procedure* finding about final accuracy, regardless
+of which of the two readings above the pre-B measurement supports.
+
+**Training A and B together keeps A's final accuracy high.** When A and B are simply trained
 together from the start (interleaved throughout), the model's final A accuracy is a
 perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential. So
-training both from the start keeps A**with no behavioral trade-off** in B. Note that a
+training both from the start keeps A **with no behavioral trade-off** in B. Note that a
 high final A accuracy in the jointly trained model is *not* "retention relative to an
 A-only checkpoint" — there was never an A-only checkpoint; both were trained from the
 start.
@@ -83,10 +95,13 @@ What this establishes is that **the forgetting seen under sequential training di
 when the model is trained jointly on both.** It does not demonstrate that a replay
 *buffer* salvages an already-trained first model — a stronger test would start from one
 A-trained checkpoint and compare B-only vs B-plus-A-replay continuation from there.
-Also, "zero cost" means **zero behavioral cost on B** (both reached 0.889), not zero
-compute, storage, or
-data-retention cost — the joint model is trained on more distinct examples and takes
-longer.
+Also, note what "no trade-off in B" does and does not mean: both protocols used the **same
+example set and the same total step budget** (A and B examples; `steps_a + steps_b`), only
+the *order and mixing* differed. So the joint result is **not** because joint training got
+extra data, a longer run, or a bigger model — it is the same workload, interleaved rather
+than sequenced. That is exactly the procedure finding. We did **not** quantify wall-clock
+time or compute precisely enough to claim one schedule is "faster" or "cheaper," so we make
+no such claim here; the measured comparison is final task accuracy, not resource cost.
 
 ## Why this result is so striking
 
@@ -138,17 +153,21 @@ to always measure *both* the new and the old.
    **Control:** joint (A+B interleaved) training, identical A test — A-retention 1.000.
    **What it rules out:** a broken A test. The same test that scores 0.000 under
    sequential training scores 1.000 under joint training.
-   **What remains:** whether this holds for three or more capabilities, and whether
-   joint training lets the model *compose* A and B after the fact.
+   **What remains:** whether the sequential 0.000 reflects *lost* A rather than
+   *unacquired* A. The same-run pre-B measurement settles this: A was 1.000 right after
+   phase A and 0.000 after B, so it is a genuine drop, not under-acquisition. Also
+   whether this holds for three or more capabilities, and whether joint training
+   lets the model *compose* A and B.
 
 ## The honest summary
 
-Acquiring a new capability can destroy an old one — and it is largely up to how we
-train. Sequential training forgets; keeping both in the mix preserves them. This is a
-controlled, reproducible demonstration that destructive forgetting is a procedure
-problem, and it is one of the most practically useful results in the book. ("No cost"
-here means no behavioral cost on the new capability — not zero compute, storage, or
-data-retention cost, and not a true replay-after-A-first demonstration; see above.)
+This is a controlled, reproducible demonstration that the *training schedule* affects final
+task accuracy: the same workload produces a 0.000 final A accuracy when learned sequentially
+and a 1.000 final A accuracy when learned jointly, with identical B accuracy in both. The
+same-run pre-B measurement (Appendix C.8) confirms the sequential drop is genuine forgetting:
+A was 1.000 right after phase A and fell to 0.000 after B, so it was acquired and then lost
+rather than never learned. We make no resource-cost claim: both protocols used the same
+example set and step budget, and we did not quantify compute precisely.
 
 What makes it feel like a real discovery is that the right answer was sitting in a
 choice we made near-automatically. When we first set up the experiment, sequential

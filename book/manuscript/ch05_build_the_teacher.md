@@ -112,11 +112,26 @@ each it computes the expected value from the operation itself.
 
 ## Why the tests come from the meaning, not the code
 
-This is a subtle but crucial point. If we generated the tests by looking at the
-reference program, a model that memorized the reference would already know what the
-tests check. By generating them from the *semantics* instead, the tests probe whether
-the model independently understands the operation — whether it can produce the right
-answer for inputs it could not have seen in the reference.
+This is a subtle but crucial point, and we want to be precise about what it does and
+does not establish. If we generated the tests by looking at the reference program, a
+model that emitted the reference would trivially pass — the tests would be circular.
+By generating the tests from the shared *semantics* instead, the tests provide a
+**separate implementation path**: the expected values are computed from the operation
+definition, in a different code path from the model's program, so a *correct* program
+and a *wrong* one can be told apart. This is a useful control against
+**correlated implementation errors** — if the reference generator and the test oracle
+shared the same buggy code path, they could agree and let a wrong program pass.
+
+But it is **not** a guarantee. Two reservations are worth stating plainly. First, the
+reference and the test oracle share the same *specification* (the semantic record), so
+if that specification encodes an error, both can be wrong together and a wrong program
+can pass unseen. Second, a *finite* set of inputs can miss a defect that only shows for
+inputs outside the tested set. So the independence of these two code paths is a useful
+*sanity check*, not a proof that the oracle is perfect or that a passing program
+"understands" the operation — a model that emits a correct general program (rather than
+a memorized constant) also passes, so a pass does not distinguish understanding from
+correct program selection. The honest claim is narrower: generating tests from the
+semantics decouples the expected values from the model's own output.
 
 ## Maximizing controlled diversity
 
@@ -148,13 +163,18 @@ If those correlations exist, a model (or a trivial classifier) can solve the tas
 without learning the computation. The generator is built to break them, and then — this
 is the crucial part — we **check that it actually did**.
 
-## The lexical diagnostic (was: the leakage audit)
+## The lexical diagnostic
 
 Before trusting any dataset, we ask: *can a trivial classifier predict the answer from
 the surface alone?* The method is deliberately crude: train a TF-IDF + logistic
 regression model on the natural-language prompts and see how well it predicts the
-target operation from the words alone. If a dumb classifier succeeds, the wording is
-leaking the answer.
+target operation from the words alone. A high score is a **flag to investigate**, not a
+verdict: because the request usually names the operation, much of that predictability is
+task signal, not leakage. Also note what an operation-prediction score does and does not
+measure — it is a check on *whether the surface is informative about the target
+operation*, not an audit for duplicated records or for leaked hidden-test values;
+distinguishing those are separate checks. So we treat a high diagnostic score as a
+signal to look closer and then decide whether it is task signal or a real shortcut.
 
 But the method needs a careful interpretation, and our first pass misread it. On our
 first pilot renderer, a trivial classifier predicted the operation from the wording

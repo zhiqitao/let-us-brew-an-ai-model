@@ -193,6 +193,39 @@ stage rates but not a per-candidate stage-resolved audit trail.
 > straightforward (the four judge stages already exist as functions) and we leave the
 > per-candidate stage accounting as proposed work, not as a measured result.
 
+**The aggregate counts do leave a useful trace.** Even without per-candidate records, we
+can build a coarse stage breakdown from the cumulative stage rates, because they share the
+same denominator (the number of evaluation records):
+
+```
+parse failures              = N − parsed
+post-parse / pre-execution  = parsed − executable
+executed but test-failing   = executable − all_tests_pass
+successes                   = all_tests_pass
+```
+
+Note the middle category combines *capability* failures with *runtime* failures unless
+those were saved separately, so we do **not** split it. Applying this to the pilot's
+`stage1` run: the MODEL's syntax, executable, and pass rates were all 0.897 (over the
+300-record test). Since `parsed = executable = all_tests_pass`, the recorded pilot failures
+were **all at the parsing stage** — the model either produced a parseable program (and
+then it executed and passed), or it produced something that did not parse. This corroborates
+the fragment evidence in Chapter 10, and it is precisely why we insist on the aggregate
+stage rates being reported alongside pass@1.
+
+We recommend the same check for the composite runs before attributing their 0.000 to a
+*semantic* failure. We applied it: for the `composition_exposure` run's held-out
+composites, the MODEL's **syntax_rate = 0.0**, executable_rate = 0.0, and pass@1 = 0.0.
+So the composite 0.000 is **not** a record of programs that parsed, ran, and were then
+rejected by the semantic comparator — it is a record of candidates that **never even
+parsed**. The dominant recorded failure is at *generation/parsing*, not at the semantic
+comparison. This is a substantive qualification of any "semantic failure" reading of the
+composition result: what we measured is an aggregate zero, and its recorded failures
+were all pre-execution. (We do not claim the *only* cause is parsing — the cause of the
+unparseable output is not resolved — only that the recorded stage rate puts the failure
+before the semantic comparison, so "the model understood the pieces but could not combine
+them" is **not** supported by these aggregate counts alone.)
+
 ---
 
 *The point of this ledger is the opposite of marketing. Every entry above, in its own

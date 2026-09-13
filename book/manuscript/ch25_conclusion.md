@@ -24,9 +24,11 @@ experiments separate cleanly into what the model **can** do and what it **cannot
 
 **It can learn, and it learns well — within a narrow regime.** On individual operations,
 the model reliably maps a natural-language spec to correct Python, reaching **~0.90
-pass@1** in-distribution on a 0.88M parameter model. It generalizes across *instances*:
-on held-out prompts it passes, and on a canary it produces the general program, not a
-memorized literal. So this is genuine learning of the narrow task, not parroting.
+pass@1** in-distribution on a 0.88M parameter model. It produces general programs for
+*fresh inputs of a prompt it saw in training* — a task-ID probe passes 59/60 and a
+held-out pair yields the general program, not a memorized literal. That is genuine,
+if narrow: it is **not** transfer to a genuinely new request, because the pilot's test
+reuses training prompt strings.
 
 **But it is surface-tied and non-compositional.** The two limits that matter:
 
@@ -49,8 +51,10 @@ the *same count* spread across many phrasings and both identifier-sets scored **
 on the covered surfaces. That result is explicitly a **coverage** improvement, not a
 proven transfer to a never-seen wording family (which the book could not establish from
 that design). So the picture is more than "small models are fragile": *content diversity*
-widens what a small model handles, while neither more capacity nor more data touched its
-compositional limit.
+widens what a small model handles. More *capacity* (0.88M→29.3M) also did not lift the
+compositional limit. **We do not claim the same for more *data*:** the data-size sweep
+tested in-distribution accuracy only, not composition, so whether more data would help
+composition is a question we did not test and do not assert.
 
 **The scaling conclusion is our sharpest negative result.** Composition stays at
 **0.000** across model sizes from 0.88M to 29.3M, under the training schedules we ran.
@@ -176,8 +180,8 @@ precisely and honestly, what a small model can and cannot learn — and we got a
 worth having:
 
 > A small model learns narrow tasks well, but its knowledge is surface-tied and
-> non-compositional, and within the tested range neither more capacity nor more data
-> turns it into robust, compositional capability.
+> non-compositional; more capacity (0.88M→29.3M) does not change the compositional
+> limit. Whether more *data* would is a question we did not test.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,
 audit shortcuts, preserve failures — are the durable part. That is the method worth
@@ -215,19 +219,23 @@ make no claim of competing with them.
 
 ## Reading further
 
-These are the published works the book's questions relate to. Every entry is a
-real, verifiable paper — not a generic pointer to "the literature." One line each on
-why it matters for the questions here.
+These are the published works the book's questions relate to, cited with stable
+identifiers (DOI or ACL Anthology / arXiv record) so a reader can verify each. One line
+each on why it matters for the questions here. We have not benchmarked against any of
+them — the task and scale here are far smaller — so we make no claim of competing with
+them; the citations place the book's questions in context.
 
 - **Compositional generalization.** Lake & Baroni, *Generalization without Systematicity:
   On the Compositional Skills of Sequence-to-Sequence Recurrent Networks*, ICML 2018.
   Introduced the **SCAN** benchmark, which probes exactly the "new combination of known
   pieces" question (the book's Question 4) and found seq2seq models largely fail it.
 - Kim & Linzen, *COGS: A Compositional Generalization Challenge based on Semantic
-  Interpretation*, EMNLP 2020. A harder test of compositional generalization for NL
-  (question answering over a small language), which pushed systems toward much lower
-  accuracy than their in-distribution scores implied — the same in-distribution vs.
-  compositional gap the book measures.
+  Interpretation*, EMNLP 2020, pp. 9087-9105 — https://aclanthology.org/2020.emnlp-main.731/
+  . COGS is a **semantic-parsing / compositional-generalization** dataset (fragments
+  grounded in a small world language), not a question-answering benchmark. It showed
+  seq2seq models achieving much lower accuracy on novel combinations than on
+  in-distribution examples — the same in-distribution vs. compositional gap the book
+  measures.
 - **Execution-based code evaluation.** Chen, Tworek, Jun, Yuan, et al., *Evaluating Large
   Language Models Trained on Code*, arXiv:2107.03374, 2021 (HumanEval / Codex). The
   pass@k formulation the book adapts to problem-level pass@1, and the insight that
@@ -238,7 +246,9 @@ why it matters for the questions here.
   the task, or a shortcut to it?" — the question the book's surface test (Question 3)
   and lexical diagnostic address directly.
 - **Continual learning and catastrophic forgetting.** McCloskey & Cohen, *Catastrophic
-  Interference in Connectionist Networks*, Cognitive Science 1989 (the original
+  Interference in Connectionist Networks: The Sequential Learning Problem*, in *Psychology
+  of Learning and Motivation*, pp. 109-165, 1989 — https://doi.org/10.1016/S0079-7421(08)60536-8
+  . (The original
   forgetting result); and Kirkpatrick et al., *Overcoming Catastrophic Forgetting in
   Neural Networks*, PNAS 2017 (elastic weight consolidation, a rehearsal-free
   alternative). These frame the book's sequential vs. joint training result.
@@ -266,8 +276,11 @@ Write down what this does and does *not* establish — name at least two other c
 zero that the result does not rule out, and one thing you could run to distinguish them.
 
 *(Answers: 1. The first is generalization to an excluded family; the second is coverage
-of a surface within the training family — only the first speaks to a never-seen family,
-and the book keeps them apart. 2. For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
+of a surface within the training family. Only the first speaks to a never-seen *family*.
+Note that a genuinely new prompt *within a familiar family* is still a real form of
+in-distribution generalization (a new surface, same computation) — "excluded-family
+transfer" is a stronger and different shift, not the only form of generalization the
+book measures. 2. For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
 they give `1` and `5`. One test can be satisfied by both programs, so a distinguishing
 test must use a signed input where the two differ. 3. The zero shows that, under this
 decoding/evaluation procedure, no program passed every hidden test. It does not

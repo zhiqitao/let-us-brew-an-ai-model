@@ -253,8 +253,11 @@ for every case.
 Every task is described by a small, formal schema — the ground truth that drives
 everything. The key insight is that **one semantic record generates all three**
 things we need: the reference program, the natural-language spec, and the hidden
-tests. That way there is no drift between "what the task is" and "how we ask for it"
-and "how we test it."
+tests. That way there is far less drift between "what the task is" and "how we ask for it"
+and "how we test it" than if each were authored separately. **"Less drift" is not "no
+drift"** — because all three derive from the same semantic record, a mistake in that
+record would be shared by all three (a correlated error), so consistency here is a
+reduction in risk, not a guarantee.
 
 The semantic core captures the operation and its arguments:
 
@@ -293,11 +296,15 @@ tests are produced by a *separate generator* from the program, which means they 
 independent oracle guard: if the program-generator and the test-generator shared a bug,
 the tests could pass a wrong program (a correlated-implementation-error problem). Because
 the tests are a separate path over the same `semantics`, the oracle is decoupled from the
-program generator, so a single mistake in either does not silently become a false
-pass. But both ultimately derive from the same operation definition, so this is a *control
-for correlated implementation bugs*, **not** a proof that the model "understands" the
-operation — understanding is a different question (and the surface/composition chapters
-answer it separately).
+program generator, which reduces the chance that a single implementation mistake becomes a
+false pass. But it does **not** eliminate it. Both the program and the test values derive
+from the *same* operation definition, so if that shared specification is wrong, both can
+be wrong together; and a *finite* set of inputs can simply miss a defect that only shows on
+an untested input. So this is a *control for correlated implementation bugs* — a useful
+sanity check, not a guarantee — and **not** a proof that the model "understands" the
+operation (understanding is a different question, and the surface/composition chapters
+answer it separately). A passing program is also consistent with the model selecting a
+correct general program rather than computing anything afresh.
 
 ## The success criterion
 
@@ -711,11 +718,26 @@ each it computes the expected value from the operation itself.
 
 ## Why the tests come from the meaning, not the code
 
-This is a subtle but crucial point. If we generated the tests by looking at the
-reference program, a model that memorized the reference would already know what the
-tests check. By generating them from the *semantics* instead, the tests probe whether
-the model independently understands the operation — whether it can produce the right
-answer for inputs it could not have seen in the reference.
+This is a subtle but crucial point, and we want to be precise about what it does and
+does not establish. If we generated the tests by looking at the reference program, a
+model that emitted the reference would trivially pass — the tests would be circular.
+By generating the tests from the shared *semantics* instead, the tests provide a
+**separate implementation path**: the expected values are computed from the operation
+definition, in a different code path from the model's program, so a *correct* program
+and a *wrong* one can be told apart. This is a useful control against
+**correlated implementation errors** — if the reference generator and the test oracle
+shared the same buggy code path, they could agree and let a wrong program pass.
+
+But it is **not** a guarantee. Two reservations are worth stating plainly. First, the
+reference and the test oracle share the same *specification* (the semantic record), so
+if that specification encodes an error, both can be wrong together and a wrong program
+can pass unseen. Second, a *finite* set of inputs can miss a defect that only shows for
+inputs outside the tested set. So the independence of these two code paths is a useful
+*sanity check*, not a proof that the oracle is perfect or that a passing program
+"understands" the operation — a model that emits a correct general program (rather than
+a memorized constant) also passes, so a pass does not distinguish understanding from
+correct program selection. The honest claim is narrower: generating tests from the
+semantics decouples the expected values from the model's own output.
 
 ## Maximizing controlled diversity
 
@@ -747,13 +769,18 @@ If those correlations exist, a model (or a trivial classifier) can solve the tas
 without learning the computation. The generator is built to break them, and then — this
 is the crucial part — we **check that it actually did**.
 
-## The lexical diagnostic (was: the leakage audit)
+## The lexical diagnostic
 
 Before trusting any dataset, we ask: *can a trivial classifier predict the answer from
 the surface alone?* The method is deliberately crude: train a TF-IDF + logistic
 regression model on the natural-language prompts and see how well it predicts the
-target operation from the words alone. If a dumb classifier succeeds, the wording is
-leaking the answer.
+target operation from the words alone. A high score is a **flag to investigate**, not a
+verdict: because the request usually names the operation, much of that predictability is
+task signal, not leakage. Also note what an operation-prediction score does and does not
+measure — it is a check on *whether the surface is informative about the target
+operation*, not an audit for duplicated records or for leaked hidden-test values;
+distinguishing those are separate checks. So we treat a high diagnostic score as a
+signal to look closer and then decide whether it is task signal or a real shortcut.
 
 But the method needs a careful interpretation, and our first pass misread it. On our
 first pilot renderer, a trivial classifier predicted the operation from the wording
@@ -1005,13 +1032,17 @@ recognizer does fine, then the task's "hard part" is just pattern-matching, and 
 learning it isn't learning much.
 
 Building this rival is almost too easy. It is a few rules that map common words to
-common code. But its simplicity is precisely its value. It is the lowest useful
-baseline: the floor of what any reasonable person would expect a hard-coded system to
-achieve. If our learned model cannot beat this floor, we learn an important fact:
-the task does not require the extra machinery — it does not establish an *advantage*
-over this baseline. That is a statement about the task (it is easy for a rule table),
-not a statement that no learning occurred. The model may well have learned; it is just
-not learning anything *beyond* what a few rules give us.
+common code. But its simplicity is precisely its value. It is a **specific, hand-written
+alternative** against which to measure the learned model. Be clear about what this
+baseline does and does not establish. It is **not** a lower bound on all possible rule
+systems, and it is **not** a limit on what a simpler machine could do — it is one
+particular rule table, worth the keyword → code mappings it happens to encode. If our
+learned model cannot beat *this* baseline, we learn an important, but narrow, fact: the
+task does not require the extra machinery, at least relative to *this* alternative. That
+is a statement about the task and this specific baseline (it is easy for this rule table),
+not a statement that no learning occurred, and not a statement that no other baseline
+exists. The model may well have learned; it is just not learning anything *beyond* what
+this particular set of rules gives us.
 
 ## Rival 2 — retrieval
 
@@ -1265,13 +1296,18 @@ own impatience. This chapter is that first batch.
 Python program. The model's job is to read the spec and produce the code. Each task is
 a single semantic record — one idea — rendered three ways (a program, an English
 instruction, a set of hidden tests), so the data is internally consistent by
-construction. We do not need to worry that a prompt says "sum" but its answer
-subtracts, because both came from the same seed.
+construction. We do **not** need to worry as much that a prompt says "sum" but its answer
+subtracts, because both came from the same seed. That said, "same seed" is not a
+guarantee: a wrong semantic record would be wrong in all three renderings at once, so
+the consistency reduces (but does not eliminate) the risk of a prompt/answer mismatch.
 
-We hold out a separate 300-task test set that shares no operation with training in a
-leaky way, so the model cannot simply see the same task again. This split discipline
-is not optional: it is what lets us claim, later, that the model's score reflects
-unseen tasks, not memorized ones.
+We hold out a separate 300-record test set. Because the teacher uses a task-ID seed to
+change only the hidden-test *inputs* while the prompt string and reference program stay
+the same, those 300 records **reuse the same 21 prompt strings** as training (see the
+novelty audit in Appendix C); what is new at test time is the task ID and the
+execution-test values, not the prompt. We state this plainly, because it shapes exactly
+what the pilot's 0.897 does and does not establish: familiar-prompt program generation
+on fresh execution inputs, not generalization to a new request.
 
 ## The model
 
@@ -1482,11 +1518,13 @@ def solve(a, ab
 
 — a truncated, unusable fragment. The generation stopped early. We did not preserve the
 raw token sequence, so we cannot state the precise stop reason from the record (it could
-be the `max_new` limit, an EOS/PAD tie-out, the NUL-byte extraction boundary, or simply
-an unlucky sampled end). What is clear is that it is a **partial lexical fragment**, not
-a complete program — and because a termination/extraction defect already changed the
-pilot score once, we flag these fragments as a *generation-limit/termination* effect, not
-as direct evidence of a pure capability limit. On a genuinely
+be the `max_new` limit, an EOS/PAD tie-out, the NUL-byte extraction boundary, or an
+unlucky sampled end). What is clear is that it is an **incomplete extracted candidate whose
+termination/extraction cause was not preserved** — a partial Python identifier/source
+fragment, not a complete program. Because a termination/extraction defect already changed
+the pilot score once, we flag these as an *incomplete extracted candidate*, and do **not**
+assert a specific internal cause (we cannot, from the record, tell it apart from a genuine
+capability limit). On a genuinely
 reworded surface ("Return the value obtained by adding together two numbers, denoted
 p and q."), it produced:
 
@@ -1503,9 +1541,19 @@ execution or comparison, because they do not parse as complete Python programs.
 ## What we measured: pass@1
 
 Here is the headline result, reported as **problem-level hidden-test pass@1 under the
-evaluation's default temperature-0.8 sampling** — that is, for each problem, did the
-*single sample* the model produced pass *every* hidden test? (This is sample pass@1, one
-sample per prompt, not a distribution over many samples.)
+evaluation's default temperature-0.8 sampling** — that is, for each evaluation record, did
+the *single sample* the model produced pass *every* hidden test? (This is sample pass@1,
+one sample per record, not a distribution over many samples.) Two sampling details matter
+for interpreting it: (1) the evaluator calls the model **once per evaluation record**
+(`for t in tasks: candidate(t)` → a fresh `model.generate`), so records that happen to
+share a prompt string still get **independent** draws — no output is cached or reused
+across records; and (2) the fixed score is a property of the checkpoint, the sampled
+outputs, the record weights, the tests, and the decoding settings (temperature, `max_new`,
+stop policy, NUL truncation), not just of the dataset. A single sample per record does not
+give within-run sampling error, but the repeated records do act as within-prompt
+replicates for the purposes of a familiar-prompt aggregate. The training seed and the
+generation seed are reported separately in the run record, and `max_new` / stop policy /
+extraction rules live in `src/eval/evaluator_runner.py`.
 
 | Candidate | syntax | executable | **pass@1** |
 |-----------|--------|-----------|------------|
@@ -1515,18 +1563,23 @@ sample per prompt, not a distribution over many samples.)
 
 Three things stand out.
 
-**First, the model genuinely learned something.** 0.897 means that ~90% of the time,
-an unseen problem's natural-language spec produced a program that passed all its
-hidden tests. That is not a toy result. And crucially, it **beats the hand-written
-template/rule baseline** (0.800). A hard-coded pattern-matching system that
-recognizes keywords like "sum" and emits a template gets 80%; our learned model gets
-~90%. So the model is doing *more* than a fixed rule system can do on this task.
+**First, the model learns to produce a program for a prompt it has seen many times.**
+0.897 means that ~90% of the time, given a *familiar* prompt string, the model produced a
+program that passed all the *fresh input values* the judge supplied. That is not a toy
+result: the model emits valid, correct Python for a request it has been trained on. But
+note exactly what is and is not being claimed. Because every one of the 300 test records
+reuses a prompt string the model saw in training, this figure is **familiar-prompt program
+generation on new execution inputs** — not generalization to a new request. And it still
+**beats the hand-written rule baseline** (0.800) on that same set. A hard-coded
+pattern-matching system that recognizes keywords like "sum" and emits a template gets 80%;
+our learned model gets ~90%. So on this task, the learned model does *more* than a fixed
+rule system.
 
 **Second — but retrieval does even better.** A trivial TF-IDF retriever that does
 nothing but find the closest training example and reuse its program scores **1.000**.
 
-That second fact is not a failure; it is the single most important thing this pilot
-taught us. It tells us the task, as currently constructed, is **too easy to force
+That second fact is not a failure; it is the pivotal thing this pilot taught us. It
+tells us the task, as currently constructed, is **too easy to force
 generalization**. When a non-learning lookup solves 100% of the test set, then the
 test set is solvable by retrieval, and a model scoring 90% is not yet being tested on
 whether it can generalize — only on whether it can match the surface form of a
@@ -1561,8 +1614,8 @@ failure*.
 The fix was a single line: truncate the generated program at the first NUL byte. A
 trivial change, and suddenly the model's score leapt from 0.000 to 0.897.
 
-This is the single most important lesson of the whole book, and it is not about the
-model at all. **The evaluator was broken, not the model.** We had designed every
+This is the pivotal lesson of this chapter, and it is not about the model at all.
+**The evaluator was broken, not the model.** We had designed every
 experiment to detect shortcuts and outright cheating in the *model*, and we nearly
 missed the one case where the measuring stick itself was faulty. The "test the
 tester" principle — that we must verify the tool measures what we think it measures
@@ -1595,20 +1648,31 @@ there without learning.
    (surface-change) and Question-4 (composition) experiments, which we run next.
 
 2. **Suspected shortcut: exact memorization.**
-   **Why it could explain it:** the model saw 1,400 examples; maybe it memorized them.
-   **Control (Ch14):** on held-out prompts it still passed 59/60, and on a *canary*
-   prompt it produced the *general* program rather than a memorized literal.
-   **What it rules out:** pure example-memorization.
+   **Why it could explain it:** the model saw 1,400 examples; maybe it memorized the
+   prompt→program pairs.
+   **Control (Ch14):** a probe of 60 pilot records and a held-out probe. On 59/60 it
+   produced a passing general program, and on the held-out probe it emitted the
+   *general* program rather than a memorized literal. **Caveat:** the pilot test
+   reuses training prompt strings, so this does **not** establish unseen-prompt
+   generalization — it shows the model produces a *general* program (not a memorized
+   constant literal) for these records.
+   **What it rules out:** the narrow claim that the model merely emits memorized
+   *constant* outputs.
    **What remains:** the deeper question — is the *general program* it produces
    genuinely tied to the computation, or to the particular wording?
 
 ## The honest summary
 
 The pilot succeeded in exactly the way a pilot should: the laboratory works, the
-model learns, and — perhaps most valuably — the experiment told us something
-*uncomfortable but true*. The task is retrieval-solvable, and a model that beats a
-template rule system yet sits below a lookup table has not yet been tested on the
-thing we care about most: whether it generalizes.
+model **reliably produces a correct program for a prompt it was trained on**, and —
+perhaps most valuably — the experiment told us something *uncomfortable but true*. The
+task is retrieval-solvable, a model that beats a template rule system yet sits below a
+lookup table, and — crucially — the test reuses the model's known prompt strings, so the
+pilot **did not actually test generalization to a new request**. It tested reliable
+familiar-prompt generation and shows that the *apparatus* can produce meaningful,
+checkable measurements. Whether the model can generalize is the question the remaining
+chapters actually probe, using prompts and composition that genuinely were not in
+training.
 
 And we were reminded, in the most direct way possible, that the measuring stick is as
 much a subject of the experiment as the model. The instrument and the thing measured
@@ -1660,9 +1724,11 @@ it is what makes the resulting curve a *claim* rather than a coincidence.
 ## What it tells us
 ![Data scaling](figures/fig_data_scaling.png)
 
-*Every point is one run on a common held-out test set (one `pool_test`, 60 records per
-op, reused across sizes); four points describe a trend under these budgets, not a
-sharp threshold.*
+*Every point is one run on a common held-out test set (one `pool_test`, 540 records = 10
+operations × 54 each after the per-op train/test split, reused across sizes), so the
+rates are integer fractions over 540 (54/540 = 0.100, 53/540 = 0.098, 162/540 = 0.300,
+346/540 = 0.641). Four points describe a trend under these budgets, not a sharp
+threshold.*
 
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
 0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
@@ -1670,17 +1736,20 @@ this narrow mapping.
 
 **There is a small-data plateau.** At 100 and 300 examples the model is essentially
 identical (~0.10). The improvement only becomes substantial between 1000 and 3000. So
-there is a *threshold* below which the model gets almost nothing and above which
-performance climbs. That threshold is a real, measurable property of the task and
-model.
+under these budgets, there is a *plateau-then-rise* pattern: below roughly 1000 examples
+the model gets almost nothing, and above that it climbs. This is an **observed trend on
+four points with one run each**, not an inferred sharp threshold with a precisely
+locatable knee. Call it a qualitative plateau, and read no more into the exact
+crossover point than the four points support.
 
-This is the shape that matters. It is not a smooth, gentle rise. It is a flat line,
-then a sudden climb. That flat-then-steep shape is what we would expect if the model needs a minimum amount of data before it can form *any* reliable association — below
-that, it simply does not have enough examples to learn the mapping, and adding a
-couple hundred more changes nothing. Above it, each additional batch of data starts
-paying off. Finding that threshold is more useful than knowing "more data is good,"
-because it tells us the *knee* of the curve, and the knee is where a practitioner
-should aim.
+This is the shape that matters. It is not a smooth, gentle rise. Under these budgets it
+reads as a flat line, then a climb. That flat-then-steep shape is consistent with the
+model needing a minimum amount of data before it can form *any* reliable association —
+below that, it does not have enough examples to learn the mapping, and adding a couple
+hundred more changes nothing; above it, each additional batch starts paying off. A
+practitioner facing this particular task should treat "a few hundred examples" as too
+small, but we would not oversell the exact crossover as a precisely located knee, because
+it is read from four single runs with no repeated seeds.
 
 ## The motif, restated
 
@@ -1851,7 +1920,7 @@ i solve(a, b:
         return       return b        # syntax error
 
 # prompt: absolute value of each, return their sum
-def solve(a, ab                       # syntax error — generation ended early, partial token
+def solve(a, ab                       # syntax error — generation ended early, partial Python identifier/source fragment
 ```
 
 And given an out-of-scope request, it does not decline at all — it just writes
@@ -2027,8 +2096,11 @@ models behaved completely differently.
   the narrow task (0.500) but was completely brittle to any surface change (0.000). It
   learned the few phrasings it was given and nothing about the *idea*.
 - **High diversity:** in-distribution **1.000**, surface **1.000**. The model mastered
-  the task *and* held up perfectly under surface change. It learned the actual
-  operation, not a phrasing.
+  the task and held up perfectly under the surface change we applied. What this
+  establishes (see the coverage caveat below) is broad **coverage** of the surfaces that
+  were in its training family set; it does not by itself prove generalization to a
+  wording family it never saw. We say "covers more alternate surfaces," not "learned the
+  operation as an abstract idea."
 
 That is a swing from 0.500/0.000 to 1.000/1.000 — all from changing *how* the examples
 varied, not *how many* there were. The same count. The same model. Only the diversity
@@ -2079,14 +2151,20 @@ generalization to unseen surfaces") is not fully established by this experiment 
 ### This chapter vs. Chapter 15: two different "surface" tests
 
 It is easy to blur these two, so let us keep them apart. Both test surface change, but
-they answer different questions:
+they answer different questions. As two labeled notes:
 
-| | Chapter 13 (this chapter) | Chapter 15 (Stage 3) |
-|---|---------------------------|----------------------|
-| Training wording | minimal (few families) or high (all families, both id-sets) | all-but-the-last family per op |
-| Test surface | same family set the model trained on (coverage) | the **held-out last family** the model never saw |
-| What 1.000 / 0.000 means | coverage of surfaces *within* the training family | generalization to a wording family *excluded* from training |
-| Valid conclusion | high diversity covers more surface | narrow training fails on a genuinely unseen family |
+**CHAPTER 13: ALTERNATE-SURFACE COVERAGE**
+- **Training:** a narrow pool or a broad pool (all families, both identifier-sets).
+- **Evaluation:** the same alternate-surface test, with the pool's families; overlap
+  differs by condition.
+- **Finding:** the broader pool performs better on covered surfaces.
+- **Not established:** transfer to a never-seen wording family by the broader model.
+
+**CHAPTER 15: EXCLUDED-FAMILY EVALUATION**
+- **Training:** specified families, with one family excluded per operation.
+- **Evaluation:** that excluded family, on the scored data.
+- **Finding:** the reported samples yielded zero complete-test successes.
+- **Scope:** the novelty audit and the denominator must match the scored run.
 
 The Chapter 15 result is a genuine held-out-family test (the novelty audit in Appendix C
 reports train × held-out-wording prompt overlap of **0**, so the held-out wording family
@@ -2141,9 +2219,10 @@ mean what we think they mean.
 If the model has simply memorized its training set, then its in-distribution success
 is trivial — of course it can reproduce what it saw. If it has *learned*, then it can
 apply the mapping to things it never saw. Our Stage-1 result said the model gets
-~90% on *held-out* problems, which is a strong hint it learned. But "held-out" can be
-a weak guarantee if the held-out problems are surface-near to training ones. So we
-test memorization explicitly.
+~90% on the pilot's test records, which is a hint that it learned something more than
+literal reproduction. But that result reused training prompt strings, so it is not by
+itself evidence of transfer to a new prompt. So we test memorization explicitly, and we
+are careful about what "new" means.
 
 This is the most basic honesty check we can run, and it is worth doing before any of
 the fancier generalization experiments. Because if the model were simply memorizing, it
@@ -2190,9 +2269,14 @@ program exactly, that is consistent with either memorization or learning (a lear
 also gets the training answers right). So this alone proves nothing — but it grounds
 the other two.
 
-**Test 2 — held-out generalization.** Give the model a *fresh* prompt for the same
-operation, one it never saw, and ask for the program. If it passes, it has not merely
-memorized the 60-prompt sample.
+**Test 2 — fresh-instance generalization (task-ID probe).** Give the model a prompt it
+saw in training, but with a *new task ID* that changes the hidden-test *input values*,
+and ask for the program. If it produces a passing general program, it is not merely
+reproducing a single stored answer for that record. **Important caveat:** this is a
+task-ID-level probe, not a new-prompt test. Because the pilot reuses the same 21 prompt
+strings in training and test, this does **not** establish generalization to a prompt the
+model never saw (see the novelty audit in Appendix C); it shows the model produces a
+general program that passes *new inputs* for a *familiar* prompt.
 
 **Test 3 — the canary.** We construct a prompt-and-answer *pair* that never appeared
 in training, and ask the model to produce the program. If the model outputs the
@@ -2207,28 +2291,28 @@ would either reproduce a memorized constant or fail. When it instead emits
 `def solve(a,b): return a+b`, it is not reproducing a stored *value*; it is producing a
 general program.
 
-Two things the canary does **not** settle. First, it is a *held-out probe*, so it
-demonstrates transfer to a prompt we did not train on — it is evidence the model
-generalizes, not proof that it has "understood" the arithmetic. The model emits
-`return a + b`; it does not execute the addition. Python does the arithmetic. What the
-model learns is a request-to-program mapping (and calling it a "canary" with the
-memorization connotation is really a held-out-probe result, not the classic
-memorization canary, which instead plants a distinctive training example and measures
-whether it is later reproduced).
+Two things the canary does **not** settle. First, it is a held-out *pair*, so it
+demonstrates the model emits a general program for a prompt/pair combination we did not
+train on — evidence the model does not just reproduce stored constant *values*. It is
+not proof that it has "understood" the arithmetic; the model emits `return a + b`, it does
+not execute the addition (Python does). What the model learns is a request-to-program
+mapping. (Calling this a "canary" with its memorization connotation is really a
+*held-out-probe* result, not the classic memorization canary, which instead plants a
+distinctive training example and measures whether it is later reproduced.)
 
-Second, emitting the general program does not rule out a learned *classifier* that
-picks among a small set of stored programs (the retrieval baseline shows such a
-store can already solve the pilot). A memorized-then-selected correct general program
-would also pass unseen inputs, so a passing program is not by itself decisive evidence
-against program memorization. Still, the comparator caveat cuts the other way too, and
-we want to state the direction correctly: on the reworded surface the neural model scores
-**0.000** while the retrieval baseline scores **0.125** — so on that particular
-evaluation the retriever is the *stronger* of the two, not the weaker. The modest claim
-that does survive is: for simple *familiar* primitives (the pilot's in-distribution
-split, new instances of seen prompts), the model forms a general program-generating rule.
-It does not support the stronger claim that the model "performs arithmetic" or
-"understands addition," nor does it support treating the neural model as more robust to
-rewording than a retriever.
+Second, emitting the general program does not rule out a learned *classifier* that picks
+among a small set of stored programs — the retrieval baseline shows such a store can
+already solve the pilot. A correct general program emitted for a familiar prompt is also
+consistent with the model having *selected* a general program it saw many times in
+training, rather than having generated it compositionally for the first time. So a passing
+program is not by itself decisive evidence against program memorization. On the reworded
+surface, the neural model scores **0.000** while the retrieval baseline scores **0.125** —
+so on that particular evaluation the retriever is the *stronger* of the two, not the
+weaker. The modest claim that does survive is: for simple *familiar* primitives (the
+pilot's in-distribution split — new instances of seen prompts), the model forms a
+general program-generating rule. It does not support the stronger claim that the model
+"performs arithmetic" or "understands addition," nor that it is more robust to rewording
+than a retriever.
 
 ## The result
 
@@ -2236,25 +2320,29 @@ On a 60-example sample:
 
 - **Train-prompt reproduction:** 60/60 — the model reproduces every training example's
   reference program exactly. (Expected for a well-fit learner.)
-- **Held-out generalization:** 59/60 — it also solves essentially every *unseen*
-  prompt of the same operation.
-- **Canary:** the model emits the **general program** (`def solve(a,b): return a+b`),
+- **Fresh-instance generalization (task-ID probe):** 59/60 — for a familiar prompt with a
+  *new task ID / new input values*, it produces a passing general program.
+- **Canary (held-out pair):** the model emits the **general program** (`def solve(a,b): return a+b`),
   not a memorized constant.
 
 ## What this tells us — a nuanced answer
 
-For **simple primitives**, the model behaves like a **learner, not a parrot**:
+For **simple primitives**, on *familiar prompts with fresh execution inputs*, the model
+behaves more like a **learner than a fixed literal-retriever**:
 
 - It reproduces training examples (expected — a learner does that too).
-- It **generalizes** to held-out prompts (59/60), so it did not simply memorize the
-  60 instances.
-- On a **canary** it emits the general program, not a memorized literal — so it did
-  not memorize answer values.
+- It passes a task-ID probe (59/60), so it does not merely emit one stored answer per
+  record; it produces a general program that passes *new input values* for a prompt it
+  saw in training.
+- On a held-out probe it emits the general program, not a memorized literal — so it did
+  not memorize *answer values*.
 
-So at the level of *individual examples*, the model is not a parrot. It has learned
-something that transfers to new instances of the same operation. This is real learning
-of a narrow kind, and it is worth stating clearly: the model did not merely memorize
-its training set. It formed a general rule for each primitive.
+So at the level of *individual records with fresh inputs*, the model is not a literal
+parrot. It has formed a program-generating rule for each primitive that transfers to new
+inputs of a familiar prompt. **This is real, but narrow.** Because the pilot reuses the
+same prompt strings in training and test, none of these probes demonstrates transfer to a
+prompt the model never saw. That genuinely-new-prompt question is what the surface and
+composition holdouts answer later.
 
 ## The shortcut audit, and the honest boundary
 
@@ -2269,12 +2357,16 @@ So the refined picture is:
 
 | | What the model does |
 |---|---|
-| Memorize exact training instances? | **No** — generalizes to held-out + canary |
-| Ground the computation independent of wording? | **No** — collapses on new wording |
+| Memorize exact answer *values*? | **No** — canary produces a general program, not a literal |
+| Memorize the prompt→program mapping for a *handful* of stored programs? | **Not excluded** — retrieval baseline shows a selectable store already solves the pilot |
+| Produce a general program that passes *new inputs* for a familiar prompt? | **Yes** — 59/60 on the task-ID probe |
+| Ground the computation independent of wording? | **No** — collapses on new wording; see Chapter 15 |
 
-The model is neither a parrot nor a mathematician. It has learned a *robust association
-within a surface form* — it is not memorizing specific examples, but it is also not
-representing "addition" in a way that survives being said differently.
+The model is neither a literal parrot nor a mathematician. It has learned a *robust
+association within a surface form* — it is not emitting memorized answer values, and it
+can produce general programs for fresh inputs of a prompt it saw in training, but the
+prompts it succeeds on are exactly the familiar ones, and it cannot survive being said
+differently.
 
 ## The lesson
 
@@ -2286,14 +2378,13 @@ that exposes it — is worth more than any single accuracy number.
 
 What this tells us is that "memorization" is not a single thing. There are at least
 two kinds, and they have very different implications. The model did *not* memorize
-specific training pairs — it generalizes across instances. But it *did* memorize the
-surface form — it can only generalize within the phrasing it saw. So the honest
-characterization is that the model's knowledge sits at a specific level of the
-taxonomy: it has moved past Level 1 (reproducing exact examples) into Level 2 (new
-instances of the same task), but it is firmly stuck at Level 1 with respect to the
-*surface* — it cannot survive a change to the outer layer. Distinguishing these kinds
-of memorization, and knowing which one we are looking at, is the whole point of the
-experiment.
+answer values — a held-out probe yields a general program, not a literal. But it also
+did not demonstrate transfer to a genuinely new prompt, and its success is confined to
+the phrasing it saw. So rather than placing it on a single "memorize → learn" ladder, the
+honest statement is more modest: it reliably regenerates correct general programs for
+familiar prompts, and we have *not* verified whether it would do the same for a prompt it
+had never seen. Distinguishing these kinds of memorization, and being explicit about
+which one we are looking at, is part of the experiment.
 
 ---
 
@@ -2373,9 +2464,10 @@ computation is identical in all three cases.
 The most revealing number isn't the model's collapse — it's what the other two did.
 ![Surface generalization](figures/fig_surface.png)
 
-*Each pass@1 is over 100 held-out problems per condition; the "new wording" column is
-the Stage-3 genuine held-out wording family (train × holdout prompt overlap = 0, see
-the novelty audit in Appendix C), and decoding is temperature-0.8 single-sample.*
+*Each pass@1 is over 600 held-out problems per condition (10 operations × 60 records
+each, the scored `stage3_surface` run); so the rates are exact integer fractions over
+600 (e.g. 525/600 = 0.875, 75/600 = 0.125, 410/600 = 0.683). The "new wording" column is
+the Stage-3 held-out wording family; decoding is temperature-0.8 single-sample.*
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
@@ -2475,6 +2567,17 @@ each by whether it asks for a **primitive** operation (1–10) or a **composite*
 14. "Sum the absolute values of everything in the list."
 15. "Double the first item in the list."
 16. "Return one less than the length of the list."
+
+**A note on the 11–16 label, because it is not uniform.** Only requests 12–16 map to the
+**six genuinely held-out composite operations** (`abs_add`, `sub_abs`, `sum_of_abs`,
+`max_add`, `double_first`, `len_minus_one`). Request 11 ("larger of the two, but as a
+positive number") maps to `cond_abs_max` — an operation that *is in the named* generator
+training pool (the pilot's primitive set) even though it is structurally composite. So
+request 11 is a case of a **familiar operation in new phrasing**, not held-out composite
+behavior. We therefore keep the "composite" label as shorthand but read requests 11–16 as
+a mixture: 11 tests new phrasing of a seen (but composite) op, and 12–16 test genuinely
+held-out composite tasks. The outcome (0/16) is the same either way, but the
+interpretation of *why* differs.
 
 Against the pilot checkpoint, the model solved **0 of 16**. Breaking it out, it solved
 **0 of 10 primitive** requests and **0 of 6 composite** requests. Even the simplest ones
@@ -2757,12 +2860,16 @@ now, and it is a genuinely different axis from the one we tested.
 
 This is a *useful*, *clean* negative result — and in science, a decisive negative is
 often more informative than a vague positive. We now know something sharp about this
-model in this setup: **at ~1M parameters, in this task and training regime, it does not
-compose under the interventions we tried.** It learns reflexes here, not structure
-here. This is not a statement about "intelligence" or about "what models will
-eventually do." It is a precise, reproducible measurement of where *this* model's
-capability stops *here* — and, as we have flagged, the door to a different intervention
-(or a different, unmeasured cause such as optimization or generation-length limits)
+model in this setup: **at ~1M parameters, in this task and training regime, it produces
+no successful held-out composite completion under the interventions we tried.** A candid
+qualification: the recorded aggregate stage rates for the held-out composites showed
+syntax_rate = 0.0 — the failures were logged before execution — so the **cause** of the
+zero is not resolved by the aggregate (it could be generation/parsing, a length limit,
+optimization, or a capability limit; see Appendix B.10). What we can claim is the
+measured outcome and that the interventions we tried did not produce a success. This is
+not a statement about "intelligence" or about "what models will eventually do." It is a
+precise, reproducible measurement of where *this* model's capability stops *here* — and,
+as we have flagged, the door to a different intervention
 remains open.
 
 And it sets up the rest of the book in a way that is far more interesting than if the
@@ -2841,14 +2948,17 @@ incorrect one is a good suite. A suite that passes for both is not testing anyth
 At first glance six survivors look like six test-suite defects. But every one of them is
 the same kind of change: a **strict comparison flipped to a non-strict one** (`>`→`>=` or
 `<`→`<=`) in a function that returns a max/min/absolute-value. Over the integer domain
-these are **semantically equivalent** to the reference — `a >= b` returns the same value
-as `a > b` when `a == b` (both return that value), and `x <= 0` returns the same as
-`x < 0` when `x == 0` because `-0 == 0`. We built a small equivalence check and confirmed
-it: **all six survivors returned identical values to their reference across every
-integer input we enumerated.** So they are *not* six missed defects; they are six
-tie-breaking equivalences.
+these are **semantically equivalent** to the reference. Be careful with the wording here:
+the predicates differ — `a >= b` is True and `a > b` is False when `a == b` — but the
+*enclosing max/min function* returns the same value in both cases, because at the tie the
+equal branch and the (now-reached) outer branch yield the same number. We built a small
+equivalence check and confirmed it matched on the bounded integer domain we enumerated
+(and, for these tie-only mutants, a short case analysis establishes the equivalence over
+the integer domain: the operator differs only at equality, and both branches return equal
+values there). So they are *not* six missed defects; they are six tie-breaking
+equivalences.
 
-This is the important nuance the reviewer's phrase captures: *a surviving **equivalent**
+This is the important nuance worth spelling out: *a surviving **equivalent**
 mutant is not a missed error.* The mutation score therefore does **not** mean "the test
 suite has six confirmed defects." It means:
 
@@ -2858,13 +2968,24 @@ suite has six confirmed defects." It means:
 > defects. They do show the tests do not *distinguish* a `>` from a `>=` at a tie — but
 > since the two behave identically here, that is not a correctness gap.
 
-So the honest conclusion is: the **raw rejection score** (0.829) is a measure of how
-many deliberately-broken variants were caught, and the **non-equivalent mutation score**
-is effectively **29/35 with 0 genuine misses** after equivalence review. We report both
-separately, and we do not claim the suite is "not edge-case-complete" as if that were six
-confirmed bugs. (The reference controls rule out reject-everything behavior on those 16
-correct programs; they do not prove the tests catch every possible false-negative for
-*other* alternative correct programs.)
+So the honest conclusion is to report **three distinct measurements**, each with its own
+denominator:
+
+- **Raw rejection fraction:** 29 / 35 = **0.829** — the share of all 35 generated mutants
+  that the suite rejected.
+- **Equivalence-adjusted mutation score:** 29 / (35 − 6) = 29 / 29 = **1.000** — the share
+  of *non-equivalent* mutants rejected, after excluding the six tie-breaking equivalents
+  from the denominator. (A survivor that is equivalent is not a test-suite defect, so it is
+  excluded from the adjusted denominator rather than merely relabeled in plain prose.)
+- **Reference-control acceptance:** 16 / 16 = **1.000** — the suite accepted every correct
+  reference program.
+
+We report these three separately. The raw score is *not* the same as the adjusted score:
+0.829 and 1.000 measure different things. Neither is a proportion of "all possible error
+classes covered," and neither is a proof that the test suite is complete. (The reference
+controls rule out reject-everything behavior on those 16 correct programs; they do not
+prove the tests catch every possible false-negative for *other* alternative correct
+programs.)
 
 And the judge's honesty was validated the hard way: it reported the model at 0.000 on
 our very first evaluation, and that was a *judge bug*, not a model failure. Once we
@@ -2899,20 +3020,23 @@ distinguishing test on `(a=2, b=3)` — where the reference returns `5` and the 
 returns `-1` — catches it. The point is that a test must be *discriminating*: it has to
 separate the correct program from the specific wrong ones, not merely produce a pass
 for whatever got written. That is exactly what the measured mutation suite is designed
-to probe, and why its 0.829 kill rate (6 survivors) is a real, quantified measure of
-the suite's discriminating power rather than a claim that it is exhaustive.
+to probe, and why its 0.829 raw rejection fraction (29/35, with the six survivors all
+tie-equivalent) is a real, quantified measure of the suite's discriminating power rather
+than a claim that it is exhaustive.
 
 ## The honest framing
 
 Red-teaming the judge is not a formality; it is the difference between "we ran a
 number" and "we know the number means something." The specific lessons:
 
-- **Strengthen tests until wrong programs fail.** The mutation score is the measure,
-  and ours is 0.829 — the raw rejection rate. After equivalence review the six survivors
-  are all strict→non-strict tie-breaks that behave identically on the integer domain,
-  so there are **no confirmed genuine misses** among the mutants we generated. What the
-  score *does* reflect is that the tests discriminate most, but not all, deliberate
-  error classes we chose to generate.
+- **Strengthen tests until wrong programs fail.** The mutation score is the measure.
+  Our raw rejection fraction is 29/35 = 0.829; the equivalence-adjusted score — after
+  excluding the six tie-equivalent survivors from the denominator — is 29/29 = 1.000.
+  Those are two different numbers, and we report them separately: 0.829 is what the
+  suite *caught* of everything we broke, and 1.000 is the adjusted share after
+  accounting for survivors that were not actually bugs. What the score does *not* do is
+  prove the tests discriminate every possible error class; it quantifies the ones we
+  chose to generate.
 - **Trust the judge less than the tests.** The judge is a pipeline; the *hidden tests*
   are what actually catch errors. We do not claim the tests distinguish every
   conceivable wrong program — the reference controls only prove they accept all 16
@@ -2991,15 +3115,27 @@ find a *procedure* finding, exactly the thing we want to isolate.
 
 This is as clean a result as this book produced.
 
-**Sequential training causes catastrophic forgetting.** After learning arithmetic and
-then lists in sequence, the model's A-retention is **0.000** — it completely forgot
-the first capability. That is not "degraded"; it is gone. Learning the lists overwrote
-the arithmetic.
+**A note on what "0.000" does and does not show.** We measured the sequential run's A
+accuracy **right after phase A and again after phase B** on the same trajectory. The
+pre-B A accuracy was **1.000**; after learning B, the same run's A accuracy fell to
+**0.000**. So the sequential zero is not a case of "A was never acquired" — A was
+acquired to 1.000 and then lost. This is a **same-run before/after** measurement (the
+sequential pipeline re-run with an intermediate A evaluation right after phase A and
+before any B exposure; see Appendix C.8), which is what supports reading the sequential
+drop as genuine forgetting of learned A competence rather than under-acquisition.
 
-**Training A and B together prevents the forgetting.** When A and B are simply trained
+**Sequential training produces a much lower final A accuracy than joint training.** After
+learning arithmetic and then lists in sequence, the model's final A accuracy is **0.000**;
+when the two are trained together, the final A accuracy is **1.000**, with the same B
+accuracy (0.889) in both. So the *training schedule* – whether the first capability stays
+in the mix while the second is learned – is what differs, and that scheduling difference
+changes the final A outcome. That is a *procedure* finding about final accuracy, regardless
+of which of the two readings above the pre-B measurement supports.
+
+**Training A and B together keeps A's final accuracy high.** When A and B are simply trained
 together from the start (interleaved throughout), the model's final A accuracy is a
 perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential. So
-training both from the start keeps A**with no behavioral trade-off** in B. Note that a
+training both from the start keeps A **with no behavioral trade-off** in B. Note that a
 high final A accuracy in the jointly trained model is *not* "retention relative to an
 A-only checkpoint" — there was never an A-only checkpoint; both were trained from the
 start.
@@ -3019,10 +3155,13 @@ What this establishes is that **the forgetting seen under sequential training di
 when the model is trained jointly on both.** It does not demonstrate that a replay
 *buffer* salvages an already-trained first model — a stronger test would start from one
 A-trained checkpoint and compare B-only vs B-plus-A-replay continuation from there.
-Also, "zero cost" means **zero behavioral cost on B** (both reached 0.889), not zero
-compute, storage, or
-data-retention cost — the joint model is trained on more distinct examples and takes
-longer.
+Also, note what "no trade-off in B" does and does not mean: both protocols used the **same
+example set and the same total step budget** (A and B examples; `steps_a + steps_b`), only
+the *order and mixing* differed. So the joint result is **not** because joint training got
+extra data, a longer run, or a bigger model — it is the same workload, interleaved rather
+than sequenced. That is exactly the procedure finding. We did **not** quantify wall-clock
+time or compute precisely enough to claim one schedule is "faster" or "cheaper," so we make
+no such claim here; the measured comparison is final task accuracy, not resource cost.
 
 ## Why this result is so striking
 
@@ -3074,17 +3213,21 @@ to always measure *both* the new and the old.
    **Control:** joint (A+B interleaved) training, identical A test — A-retention 1.000.
    **What it rules out:** a broken A test. The same test that scores 0.000 under
    sequential training scores 1.000 under joint training.
-   **What remains:** whether this holds for three or more capabilities, and whether
-   joint training lets the model *compose* A and B after the fact.
+   **What remains:** whether the sequential 0.000 reflects *lost* A rather than
+   *unacquired* A. The same-run pre-B measurement settles this: A was 1.000 right after
+   phase A and 0.000 after B, so it is a genuine drop, not under-acquisition. Also
+   whether this holds for three or more capabilities, and whether joint training
+   lets the model *compose* A and B.
 
 ## The honest summary
 
-Acquiring a new capability can destroy an old one — and it is largely up to how we
-train. Sequential training forgets; keeping both in the mix preserves them. This is a
-controlled, reproducible demonstration that destructive forgetting is a procedure
-problem, and it is one of the most practically useful results in the book. ("No cost"
-here means no behavioral cost on the new capability — not zero compute, storage, or
-data-retention cost, and not a true replay-after-A-first demonstration; see above.)
+This is a controlled, reproducible demonstration that the *training schedule* affects final
+task accuracy: the same workload produces a 0.000 final A accuracy when learned sequentially
+and a 1.000 final A accuracy when learned jointly, with identical B accuracy in both. The
+same-run pre-B measurement (Appendix C.8) confirms the sequential drop is genuine forgetting:
+A was 1.000 right after phase A and fell to 0.000 after B, so it was acquired and then lost
+rather than never learned. We make no resource-cost claim: both protocols used the same
+example set and step budget, and we did not quantify compute precisely.
 
 What makes it feel like a real discovery is that the right answer was sitting in a
 choice we made near-automatically. When we first set up the experiment, sequential
@@ -3264,8 +3407,8 @@ does not require answering Question 1, and so on.)
 
 | Question | What it asks | Measured result | Status (in this setup) |
 |-------|--------------|-----------------|--------|
-| **Q1 Mem** | Could it be explained by remembering? | Held-out 59/60; canary → general program | `[MEASURED]` it generalizes primitives, doesn't parrot |
-| **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here |
+| **Q1 Mem** | Could it be explained by remembering? | task-ID probe 59/60; held-out pair → general program | `[MEASURED]` not literal answer-parrots on familiar prompts; new-prompt transfer **not** tested (pilot reuses training prompts) |
+| **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here (new *inputs*, familiar prompt) |
 | **Q3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
 | **Q4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
 
@@ -3274,9 +3417,12 @@ does not require answering Question 1, and so on.)
 The table above groups results by *question*. But each number belongs to a specific
 **checkpoint** (a saved model) and a specific **evaluation split**, and it is important
 not to let one row mix scores from different models. Here is the same evidence laid out
-run by run, so every cell traces to the checkpoint the registry names. A dash (`—`)
-means that evaluation was **not run for that checkpoint**; `NT` means the evaluation is
-not applicable to that run; `0.000` is a measured zero.
+run by run, so every cell traces to the checkpoint the registry names. Notation used
+throughout: `—` = **not run for that checkpoint**; `NT` = **not tested** for this run
+(the question would be applicable but was not evaluated); `NA` = **not applicable** (the
+question cannot apply, by design); `0.000` = a measured zero. A single `—`/`NT`
+distinction: we only use `NT` when the evaluation *could* have been run but was not, and
+`NA` only when it makes no sense for that run.
 
 **Panel 1 — code-generation evaluations, by checkpoint**
 
@@ -3311,7 +3457,7 @@ These conditions are not "one bigger model"; they test whether *training content
 
 | Protocol | final A accuracy | final B accuracy | true replay-after-A |
 |---|---|---|---|
-| Sequential (A then B) | 0.000 | 0.889 | NT (not run) |
+| Sequential (A then B) | 0.000 | 0.889 | NT |
 | Joint (A+B from start) | 1.000 | 0.889 | — |
 
 Note the "sequential" A figure is a **final task accuracy**, not "retention relative to a
@@ -3319,10 +3465,12 @@ pre-B checkpoint" — there was no A-only checkpoint to retain against. A true
 replay-after-A-first continuation (which *would* measure retention relative to an
 A-trained checkpoint) was **not** run.
 
-Read the map vertically and it shows a steady decline in how much we can trust the
-model's "understanding" as we move from "did it see this before" (Level 1) to "can it
-put things together" (Level 4). The model passes the first two levels cleanly and fails
-the last two completely.
+Read the map column by column and it shows a clear boundary rather than an ordered
+ladder: the four questions are **separate evaluations**, not steps of a single ascending
+scale. So do not read "Level 1 → Level 4" as a measured decline in "understanding." The
+honest reading is that these are four distinct, non-nested probes, and the model passes
+the first two (familiar-prompt generation, new-instance distribution) and fails the last
+two (surface change, composition) under this setup.
 
 ## What the model can do
 
@@ -3331,10 +3479,12 @@ the last two completely.
 problems under the evaluation's default temperature-0.8 sampled decoding. It beats a hand-written template rule system (0.900
 vs 0.800). This is real, measurable capability on a narrow task.
 
-**It generalizes across instances, not just examples.** It passed 59/60 held-out
-prompts and, on a *canary* it had never seen, produced the *general* program rather
-than a memorized literal. So for a single operation, the model is a learner, not a
-parrot. That is Question-2 distributional generalization, achieved.
+**It produces general programs for fresh inputs of a prompt it saw in training.** On the
+task-ID probe it passed 59/60, and on a held-out pair it produced the *general* program
+rather than a memorized literal. So for a single operation, the model is not a literal
+answer-parrot on familiar prompts. That is distributional generalization across *instances*
+of a seen prompt — it is **not** transfer to a genuinely new request, which the pilot did
+not test (its test reuses training prompt strings).
 
 ## What the model cannot do
 
@@ -3421,8 +3571,12 @@ nothing for the deep one.
   0.350 (Q3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
   tested surface — though, as the caveat notes, that is strongest as a coverage
   statement, not proof of generalization to a wholly unseen wording family.
-- It cannot compose: unseen combinations → 0.000, and neither ~33× capacity (across
-  0.88M→29.3M) nor more data changes this (Q4).
+- It cannot compose: unseen combinations → 0.000 across 0.88M→29.3M capacity (the
+  model-size sweep tested composition at each size). **Caveat:** the *data-size* sweep
+  (Chapter 11) tested in-distribution accuracy only, not composition, so we do **not**
+  claim that more data likewise fails to help composition — that specific
+  "more data doesn't fix composition" claim was **not** tested and is not made here
+  (Q4).
 - Continual learning is a procedure problem: sequential forgets (A → 0.000), joint
   retains (A → 1.000) with no acquisition cost.
 - The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too
@@ -3558,9 +3712,11 @@ experiments separate cleanly into what the model **can** do and what it **cannot
 
 **It can learn, and it learns well — within a narrow regime.** On individual operations,
 the model reliably maps a natural-language spec to correct Python, reaching **~0.90
-pass@1** in-distribution on a 0.88M parameter model. It generalizes across *instances*:
-on held-out prompts it passes, and on a canary it produces the general program, not a
-memorized literal. So this is genuine learning of the narrow task, not parroting.
+pass@1** in-distribution on a 0.88M parameter model. It produces general programs for
+*fresh inputs of a prompt it saw in training* — a task-ID probe passes 59/60 and a
+held-out pair yields the general program, not a memorized literal. That is genuine,
+if narrow: it is **not** transfer to a genuinely new request, because the pilot's test
+reuses training prompt strings.
 
 **But it is surface-tied and non-compositional.** The two limits that matter:
 
@@ -3583,8 +3739,10 @@ the *same count* spread across many phrasings and both identifier-sets scored **
 on the covered surfaces. That result is explicitly a **coverage** improvement, not a
 proven transfer to a never-seen wording family (which the book could not establish from
 that design). So the picture is more than "small models are fragile": *content diversity*
-widens what a small model handles, while neither more capacity nor more data touched its
-compositional limit.
+widens what a small model handles. More *capacity* (0.88M→29.3M) also did not lift the
+compositional limit. **We do not claim the same for more *data*:** the data-size sweep
+tested in-distribution accuracy only, not composition, so whether more data would help
+composition is a question we did not test and do not assert.
 
 **The scaling conclusion is our sharpest negative result.** Composition stays at
 **0.000** across model sizes from 0.88M to 29.3M, under the training schedules we ran.
@@ -3710,8 +3868,8 @@ precisely and honestly, what a small model can and cannot learn — and we got a
 worth having:
 
 > A small model learns narrow tasks well, but its knowledge is surface-tied and
-> non-compositional, and within the tested range neither more capacity nor more data
-> turns it into robust, compositional capability.
+> non-compositional; more capacity (0.88M→29.3M) does not change the compositional
+> limit. Whether more *data* would is a question we did not test.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,
 audit shortcuts, preserve failures — are the durable part. That is the method worth
@@ -3749,19 +3907,23 @@ make no claim of competing with them.
 
 ## Reading further
 
-These are the published works the book's questions relate to. Every entry is a
-real, verifiable paper — not a generic pointer to "the literature." One line each on
-why it matters for the questions here.
+These are the published works the book's questions relate to, cited with stable
+identifiers (DOI or ACL Anthology / arXiv record) so a reader can verify each. One line
+each on why it matters for the questions here. We have not benchmarked against any of
+them — the task and scale here are far smaller — so we make no claim of competing with
+them; the citations place the book's questions in context.
 
 - **Compositional generalization.** Lake & Baroni, *Generalization without Systematicity:
   On the Compositional Skills of Sequence-to-Sequence Recurrent Networks*, ICML 2018.
   Introduced the **SCAN** benchmark, which probes exactly the "new combination of known
   pieces" question (the book's Question 4) and found seq2seq models largely fail it.
 - Kim & Linzen, *COGS: A Compositional Generalization Challenge based on Semantic
-  Interpretation*, EMNLP 2020. A harder test of compositional generalization for NL
-  (question answering over a small language), which pushed systems toward much lower
-  accuracy than their in-distribution scores implied — the same in-distribution vs.
-  compositional gap the book measures.
+  Interpretation*, EMNLP 2020, pp. 9087-9105 — https://aclanthology.org/2020.emnlp-main.731/
+  . COGS is a **semantic-parsing / compositional-generalization** dataset (fragments
+  grounded in a small world language), not a question-answering benchmark. It showed
+  seq2seq models achieving much lower accuracy on novel combinations than on
+  in-distribution examples — the same in-distribution vs. compositional gap the book
+  measures.
 - **Execution-based code evaluation.** Chen, Tworek, Jun, Yuan, et al., *Evaluating Large
   Language Models Trained on Code*, arXiv:2107.03374, 2021 (HumanEval / Codex). The
   pass@k formulation the book adapts to problem-level pass@1, and the insight that
@@ -3772,7 +3934,9 @@ why it matters for the questions here.
   the task, or a shortcut to it?" — the question the book's surface test (Question 3)
   and lexical diagnostic address directly.
 - **Continual learning and catastrophic forgetting.** McCloskey & Cohen, *Catastrophic
-  Interference in Connectionist Networks*, Cognitive Science 1989 (the original
+  Interference in Connectionist Networks: The Sequential Learning Problem*, in *Psychology
+  of Learning and Motivation*, pp. 109-165, 1989 — https://doi.org/10.1016/S0079-7421(08)60536-8
+  . (The original
   forgetting result); and Kirkpatrick et al., *Overcoming Catastrophic Forgetting in
   Neural Networks*, PNAS 2017 (elastic weight consolidation, a rehearsal-free
   alternative). These frame the book's sequential vs. joint training result.
@@ -3800,8 +3964,11 @@ Write down what this does and does *not* establish — name at least two other c
 zero that the result does not rule out, and one thing you could run to distinguish them.
 
 *(Answers: 1. The first is generalization to an excluded family; the second is coverage
-of a surface within the training family — only the first speaks to a never-seen family,
-and the book keeps them apart. 2. For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
+of a surface within the training family. Only the first speaks to a never-seen *family*.
+Note that a genuinely new prompt *within a familiar family* is still a real form of
+in-distribution generalization (a new surface, same computation) — "excluded-family
+transfer" is a stronger and different shift, not the only form of generalization the
+book measures. 2. For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
 they give `1` and `5`. One test can be satisfied by both programs, so a distinguishing
 test must use a signed input where the two differ. 3. The zero shows that, under this
 decoding/evaluation procedure, no program passed every hidden test. It does not
@@ -4181,6 +4348,39 @@ stage rates but not a per-candidate stage-resolved audit trail.
 > straightforward (the four judge stages already exist as functions) and we leave the
 > per-candidate stage accounting as proposed work, not as a measured result.
 
+**The aggregate counts do leave a useful trace.** Even without per-candidate records, we
+can build a coarse stage breakdown from the cumulative stage rates, because they share the
+same denominator (the number of evaluation records):
+
+```
+parse failures              = N − parsed
+post-parse / pre-execution  = parsed − executable
+executed but test-failing   = executable − all_tests_pass
+successes                   = all_tests_pass
+```
+
+Note the middle category combines *capability* failures with *runtime* failures unless
+those were saved separately, so we do **not** split it. Applying this to the pilot's
+`stage1` run: the MODEL's syntax, executable, and pass rates were all 0.897 (over the
+300-record test). Since `parsed = executable = all_tests_pass`, the recorded pilot failures
+were **all at the parsing stage** — the model either produced a parseable program (and
+then it executed and passed), or it produced something that did not parse. This corroborates
+the fragment evidence in Chapter 10, and it is precisely why we insist on the aggregate
+stage rates being reported alongside pass@1.
+
+We recommend the same check for the composite runs before attributing their 0.000 to a
+*semantic* failure. We applied it: for the `composition_exposure` run's held-out
+composites, the MODEL's **syntax_rate = 0.0**, executable_rate = 0.0, and pass@1 = 0.0.
+So the composite 0.000 is **not** a record of programs that parsed, ran, and were then
+rejected by the semantic comparator — it is a record of candidates that **never even
+parsed**. The dominant recorded failure is at *generation/parsing*, not at the semantic
+comparison. This is a substantive qualification of any "semantic failure" reading of the
+composition result: what we measured is an aggregate zero, and its recorded failures
+were all pre-execution. (We do not claim the *only* cause is parsing — the cause of the
+unparseable output is not resolved — only that the recorded stage rate puts the failure
+before the semantic comparison, so "the model understood the pieces but could not combine
+them" is **not** supported by these aggregate counts alone.)
+
 ---
 
 *The point of this ledger is the opposite of marketing. Every entry above, in its own
@@ -4220,7 +4420,17 @@ atomic entry in the generator's operation tables (part of the training pool);
 the classification is *operational*, not purely structural, because `cond_abs_max`
 is structurally a composition even though it is listed as a primitive.
 
-| ID | class | arity | input | mathematical behavior | sandbox reference (loop form) |
+The two right-hand columns are **descriptive sketches, not verbatim source**:
+"mathematical behavior" is a compact formula, and "behavioral sketch" is a readable
+pseudocode/one-line restatement — *not* the exact string the judge accepts (the actual
+reference programs are in `src/data_generator/generator.py`). In particular, the one-line
+forms below are not valid indentation-preserving Python: `if a > b: return a; return b`
+places **both** returns inside the `if` suite, whereas the real reference is a multi-line
+function whose second `return` is unindented and reached only when the test fails.
+Treat these columns as behavior summaries and inspect `generator.py` (or the register's
+run record) for the accepted source.
+
+| ID | class | arity | input | mathematical behavior | behavioral sketch (not verbatim source) |
 |----|-------|-------|-------|------------------------|-------------------------------|
 | `add` | primitive | 2 | int, int | `a + b` | `return a + b` |
 | `sub` | primitive | 2 | int, int | `a - b` | `return a - b` |
@@ -4274,7 +4484,7 @@ values, **not** the absolute value of the list sum.
 | Data scaling | `data_scaling` | 128/4/4 | 800 | 0 | 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
 | Quantity vs diversity | `diversity` | 128/4/4 | 900 | 0 | 884,224 | diversity.json / — | minimal 0.500/0.000; high 1.000/1.000 |
 | Memorization | `memorization` | 128/4/4 | 1500 | 0 | 884,224 | memorization.json / — | 59/60 held-out; canary → general program |
-| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json / — | sequential A 0.000; joint A 1.000, B 0.889 |
+| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | Composition exposure | `composition_exposure_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
 | Composition diversity | `composition_diversity_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
 
@@ -4313,15 +4523,16 @@ training runs.
 
 ## Denominator and uniqueness notes
 
-- **pass@1 denominators.** The pilot used 300 held-out test prompts (1400 train /
-  300 val / 300 test). Stage 4 used 300 held-out primitives for in-distribution and
-  240 composite tasks (6 ops × 40) for composition; the judge then scores each. The
-  data-scaling rows **share a single common held-out test set** (one `pool_test`,
-  60 records per op, generated once and reused across every size), so the training-size
-  comparison in that run is against the *same* held-out set. (It is a different set
-  from the pilot's 300-case test, so the data-scaling scores are not directly
-  comparable to the pilot's 0.897.) Exact successes/totals are recorded in each
-  manifest.
+- **pass@1 denominators.** The pilot used 300 held-out test **records** (1,400 train /
+  300 val / 300 test), drawn from only **21 distinct prompt strings** (see the novelty
+  audit; the test prompts are not new). Stage 4 used 300 held-out primitives for
+  in-distribution and 240 composite tasks (6 ops × 40) for composition; the judge then
+  scores each. The data-scaling rows share a single common held-out test set (one
+  `pool_test`, 540 records = 10 ops × 54 after the per-op split, generated once and reused
+  across every size), so the training-size comparison in that run is against the *same*
+  held-out set. (It is a different set from the pilot's 300-record test, so the
+  data-scaling scores are not directly comparable to the pilot's 0.897.) Exact
+  successes/totals (integers over the reported denominator) are recorded in each manifest.
 - **Unique model-visible prompts ≠ task IDs.** In the teacher, a task-ID seed changes
   the *hidden-test inputs*, so a new task ID can change the test values while the
   prompt and reference program stay identical. A reported "held-out" prompt therefore
@@ -4348,42 +4559,73 @@ training runs.
 ## The novelty audit (what was actually "new" in each held-out set)
 
 Because a task ID can change only the hidden-test *inputs* while the prompt string stays
-the same, we audited every split for what was actually new to the model. Here is what
-we found, measured on the real dataset files under `artifacts/datasets/`.
+the same, we audited every split for what was actually new to the model. It is important
+to keep three kinds of evidence apart: the **original scored data**, a **regenerated
+diagnostic reproduction**, and **illustrative examples**. Only the first validates an
+actually-reported result.
 
-**Pilot (Stage 1, `pilot_train/val/test.jsonl`).** All three splits share the **same 21
-unique prompt strings** and the **same 21 (prompt, program) pairs**; the 10 canonical
-reference programs are identical across splits. The train set has 1,400 records, val and
-test 300 each. **Prompt overlap between train and test is 21/21** (i.e. every test prompt
-also appears in training), and each test record is a new *task ID* that only changes the
-hidden-test input values. So the pilot's reported in-distribution result (0.897) is **not
-a test of new prompts** — it is a test of whether the model, given a prompt it saw in
+**Pilot (Stage 1) — audited on the original `pilot_train/val/test.jsonl` files.**
+This check is on the real dataset files (1,400 train / 300 val / 300 test records), not a
+regeneration. All three splits share the **same 21 unique prompt strings** and the **same
+21 (prompt, program) pairs**; the 10 canonical reference programs are identical across
+splits. **Prompt overlap between train and test is 21/21** — every test prompt string also
+appears in training — and each test record is a new *task ID* that only changes the
+hidden-test *input values*. So the pilot's reported in-distribution result (0.897) is **not
+a test of new prompts**: it is a test of whether the model, given a prompt it saw in
 training, produces a program that passes *new input values*. That is a meaningful but
 narrower thing than generalization to a new request. We flag this explicitly, because
-"held-out" in the pilot means "new instances of a seen prompt," not "a never-seen
-request."
+"held-out" in the pilot means "new instances of a seen prompt," not "a never-seen request."
 
-For a truly new *prompt* — one not in training — see the **human-written test set** in
-Chapter 15 (16 prompts, all new, **0/16** correct), and the surface / composition
-holdouts below.
+**Stage 3 surface & Stage 4 composition — audited on a *regenerated reproduction*.**
+These checks run `scripts/run_dedup_audit.py`, which rebuilds a smaller sample (10 records
+per op for surface, 100 train / 60 composite for composition) with the *current* generator
+and writes `artifacts/manifests/dedup_audit.json`. They report train × holdout **exact
+prompt-string overlap = 0** for the held-out wording family and for the composite
+holdout. We want to be clear about the limits of this: a regenerated reproduction can
+test the current generator's behavior; it does **not** by itself prove that the original
+scored Stage-3/Stage-4 files had the same membership (the original runs used larger
+per-op counts — 60 per op for the scored Stage-3 surface run, 240 composite records for
+Stage-4 — and those exact original files are the scored ones). So the surface/composition
+"overlap = 0" should be read as a property of the *reproduced* splits, corroborating but
+not *proving* the historical holdout until the original files are also audited.
 
-**Stage 3 surface (`stage3_surface` experiment).** Audited in
-`artifacts/manifests/dedup_audit.json`: train 110 records / 11 unique prompts; in-dist
-100 / 10; held-out-wording 100 / 10. **Train × held-out-wording prompt overlap = 0** and
-pair overlap = 0, i.e. the held-out wording family never appears in training. This is a
-genuine new-*prompt* holdout. (10 records are audited per op in this reproduction; the
-full run used larger per-op counts and the real dataset files.)
+**A logical caveat: exact-prompt disjointness ≠ wording-family exclusion.** Two different
+prompt strings can be rendered from the same wording family using different identifiers or
+constants. So "no exact prompt-string overlap" does **not** alone prove "no shared wording
+family." Family exclusion must be checked separately (by family ID or a verified
+construction invariant), not inferred from prompt-string disjointness. The ch13/ch15
+wording-family distinction in the body rests on the *construction* — the teacher explicitly
+keeps the last family of each operation out of training — not merely on zero prompt-string
+overlap.
 
-**Composition (Stage 4).** Audited: train (primitives) 100 / 21 unique prompts;
-composite holdout 60 / 6 unique prompts. **Train × composite prompt overlap = 0**, so the
-holdout composite prompts never appear in the primitive-training set.
+**The 59/60 probe — separate, and novelty-unverified.** This is a distinct task-ID-level
+probe on the pilot (Chapter 14). It is **not** covered by the novelty audit above, and the
+audit does **not** verify that the 60 probe prompts (or the canary) were new to the model —
+they may well reuse training prompt strings, since the pilot test set reuses all 21. So we
+cannot claim the 59/60 probe established unseen-prompt generalization; we can only say it
+reported how many of those 60 records produced a general program. We treat it as a scoped
+probe, not a proof of a general rule or of the absence of memorization.
 
-**What this audit does *not* show.** It does not by itself verify the *59/60* memorization
-probe (which is a separate task-ID-level probe on the pilot), and it does not separate
-tokenizer-fit exposure from training-example overlap — the tokenizer was fit on composite
-reference text as noted above. A clean excluded-family audit for Stage 3 does not
-automatically validate the pilot's 300 held-out examples or the 59/60 probe, because those
-are different splits.
+## The sequential before/after measurement (Appendix C.8)
+
+The continuing-learning result reports final A/B task accuracy. Because **final** A alone
+cannot distinguish "learned then forgotten" from "never acquired," we re-ran the identical
+sequential pipeline (same op sets, seeds, per-op counts, step counts, tokenizer schedule,
+optimizer defaults) and inserted a **same-run intermediate A evaluation right after phase A
+and before any B exposure**, writing `artifacts/manifests/continual_preB.json`
+(`scripts/run_continual_preB.py`). The measured trajectory on the A-test:
+
+| point | A accuracy |
+|---|---|
+| right after phase A (before B) | **1.000** |
+| after phase B (final) | **0.000** |
+
+Combined with the joint control (A 1.000, B 0.889), this shows: A was acquired to 1.000
+and then fell to 0.000 after B — a genuine same-run drop, not under-acquisition. Final B
+accuracy in the sequential run was 0.889. Note this re-run is the *sequential* pipeline
+with an added checkpoint for A; it is **not** the true replay-after-A-first design (which
+starts from an A-trained checkpoint and continues with B plus A replay), and we did not
+run that.
 
 ## What is NOT tested (explicitly)
 
@@ -4419,26 +4661,37 @@ Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.p
 `run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`).
 
 **Publication status: honest disclosure.** As of this writing the companion repository
-has an immutable release tag **`v20261001`** (an annotated tag on the release commit) created for this book, but
-the repository is **not yet published at a public URL**. We therefore cannot yet give a
-reader a working link, and we do not want to pretend otherwise. When it is published, the
-release tag and commit above are the identifiers to use; until then the reproduction path
-is a promise of the intended state, not a live, clickable step. (When it is public, the
-repository URL and an errata page address will be added here and on the copyright page.)
+has a release tag **`v20261001`**, created for this book and pointing at release commit
+**`b40c95a7bbefcb400ca08cb340e9b67b4cfc4cd3`** (full hash), but the repository is **not yet
+published at a public URL**. We therefore cannot yet give a reader a working link, and we
+do not want to pretend otherwise. We cite the **full commit hash**, not just the tag,
+because a Git tag is a movable reference and is not by itself immutable — the commit hash
+identifies the exact tree. When it is published, the repository URL and an errata page
+address will be added here and on the copyright page.
 
 This means an *external* reader cannot fully reproduce the pilot **right now** — that is a
 real limitation of the current draft, and we label it as such rather than claim it is
 reproducible today. What follows is the exact path, so that once the repository is
-published the steps are verbatim.
+published the steps are verbatim. We make a clear distinction between (a) the originally
+scored experiment, whose files are preserved in this repository, and (b) a freshly
+reproduced rerun, which may differ; none of the numbers in this book should be read as a
+reproducibility *confirmation* until an independent run reproduces them.
 
 **The quick start (once the repository is available):**
 
 1. **Clone the companion repository** and check out the `v20261001` tag.
-2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). A
-   `requirements.txt` at the repo root pins the versions.
-3. **Prepare the tokenizer.** The tokenizer is trained and saved to
-   `artifacts/tokenizer/` (e.g. `pilot_tok.json`) before training; the run scripts expect
-   it to already exist. This is a real prerequisite that is easy to miss.
+2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). The
+   project depends on `torch` and the standard library; we did not ship a
+   `requirements.txt` (the repo has none), so install the pinned torch version
+   explicitly, e.g. `pip install torch==2.14.0` (CPU wheel) in your environment.
+3. **Prepare the data & tokenizer.** Generate the dataset files under
+   `artifacts/datasets/` (e.g. `python scripts/generate_data.py`), then train the
+   tokenizer. The pilot tokenizer is built inside `scripts/train.py` (via
+   `train_tokenizer(..., save_path=...)`), so an explicit tokenizer step is only needed
+   for runs that reuse a saved tokenizer; when in doubt, `train.py` writes e.g.
+   `artifacts/tokenizer/pilot_tok.json`. Run scripts expect the matching tokenizer to
+   already exist, so verify the manifest records which tokenizer each checkpoint uses
+   before evaluating.
 4. **Run a pilot:** `python scripts/train.py --steps 1500 --n-embd 128 --n-layer 4
    --n-head 4 --bs 16 --seed 0` then `python scripts/eval_ckpt.py`. `eval_ckpt.py` loads
    the saved checkpoint by default (the `stage1.pt`/`stage1.json` artifacts produced by
@@ -4536,10 +4789,20 @@ flag it.
 - **Mutation testing.** Generating deliberately-broken programs and checking that the
   hidden-test suite catches them, to measure how discriminating the tests are.
 
-- **pass@1.** The fraction of evaluation prompts for which the model's (greedily
-  decoded) program passes all hidden tests.
+- **pass@1.** The fraction of evaluation records for which the model's **single
+  temperature-0.8 sampled** program passes all of that record's hidden tests (see
+  "Sampled decoding" above). One fresh sample is drawn per evaluation record; the fixed
+  observed score is a property of the checkpoint, the sampled outputs, the record
+  weights, the tests, and the decoding settings — not just of the dataset.
 
-- **Primitive.** A single, non-composite operation (e.g. `add`, `abs_of`, `list_sum`).
+- **Primitive.** A single atom in the *generator's* operation set — e.g. `add`, `abs_of`,
+  `list_sum`, `max_of`. It is an **atomic generator entry**, not a structurally
+  indivisible program: a "primitive" operation's reference program may itself contain
+  sub-expressions (for example the pilot's `cond_abs_max` computes a max of absolute
+  values and is genuinely composite). When we say the model trained on "primitives only,"
+  we mean it trained on the *named generator operations* as atomic teacher tasks, not
+  that each reference program was syntactically indivisible. See the operation dictionary
+  in Chapter 16 for which entries are composite.
 
 - **Sandbox / Gate A.** The software layer that runs generated programs and rejects any
   that use a construct outside an allowlist (e.g. `import`, `eval`), before they run.

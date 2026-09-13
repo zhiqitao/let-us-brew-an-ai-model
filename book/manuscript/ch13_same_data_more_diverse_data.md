@@ -70,8 +70,11 @@ models behaved completely differently.
   the narrow task (0.500) but was completely brittle to any surface change (0.000). It
   learned the few phrasings it was given and nothing about the *idea*.
 - **High diversity:** in-distribution **1.000**, surface **1.000**. The model mastered
-  the task *and* held up perfectly under surface change. It learned the actual
-  operation, not a phrasing.
+  the task and held up perfectly under the surface change we applied. What this
+  establishes (see the coverage caveat below) is broad **coverage** of the surfaces that
+  were in its training family set; it does not by itself prove generalization to a
+  wording family it never saw. We say "covers more alternate surfaces," not "learned the
+  operation as an abstract idea."
 
 That is a swing from 0.500/0.000 to 1.000/1.000 — all from changing *how* the examples
 varied, not *how many* there were. The same count. The same model. Only the diversity
@@ -122,14 +125,20 @@ generalization to unseen surfaces") is not fully established by this experiment 
 ### This chapter vs. Chapter 15: two different "surface" tests
 
 It is easy to blur these two, so let us keep them apart. Both test surface change, but
-they answer different questions:
+they answer different questions. As two labeled notes:
 
-| | Chapter 13 (this chapter) | Chapter 15 (Stage 3) |
-|---|---------------------------|----------------------|
-| Training wording | minimal (few families) or high (all families, both id-sets) | all-but-the-last family per op |
-| Test surface | same family set the model trained on (coverage) | the **held-out last family** the model never saw |
-| What 1.000 / 0.000 means | coverage of surfaces *within* the training family | generalization to a wording family *excluded* from training |
-| Valid conclusion | high diversity covers more surface | narrow training fails on a genuinely unseen family |
+**CHAPTER 13: ALTERNATE-SURFACE COVERAGE**
+- **Training:** a narrow pool or a broad pool (all families, both identifier-sets).
+- **Evaluation:** the same alternate-surface test, with the pool's families; overlap
+  differs by condition.
+- **Finding:** the broader pool performs better on covered surfaces.
+- **Not established:** transfer to a never-seen wording family by the broader model.
+
+**CHAPTER 15: EXCLUDED-FAMILY EVALUATION**
+- **Training:** specified families, with one family excluded per operation.
+- **Evaluation:** that excluded family, on the scored data.
+- **Finding:** the reported samples yielded zero complete-test successes.
+- **Scope:** the novelty audit and the denominator must match the scored run.
 
 The Chapter 15 result is a genuine held-out-family test (the novelty audit in Appendix C
 reports train × held-out-wording prompt overlap of **0**, so the held-out wording family

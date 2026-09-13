@@ -79,45 +79,41 @@ def save(fig, name):
 def fig_apparatus():
     """Figure 4.1 -- the laboratory, two clean lanes inside the world boundary."""
     fig, ax = new_fig(w=9.6, h=6.0)
-    ax.add_patch(FancyBboxPatch((4, 4), 92, 84, boxstyle="round,pad=0.02,rounding_size=3",
+    ax.add_patch(FancyBboxPatch((3, 3), 94, 94, boxstyle="round,pad=0.02,rounding_size=3",
                                 fc="#fbfaf6", ec=GREY, lw=1.2, linestyle="--"))
-    ax.text(50, 90, "THE WORLD — a bounded universe we control", ha="center",
+    ax.text(50, 97, "THE WORLD — a bounded universe we control", ha="center",
             va="center", fontsize=10.5, color=INK, fontweight="bold")
 
-    # gate notes in their own clear band (well above the lanes, no flow boxes there)
-    box(ax, 6, 74, 44, 9, "GATE B (input): an off-scope request is rejected\nbefore the model sees it.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
-    box(ax, 54, 74, 40, 9, "GATE A (output): a program outside the whitelist\nis refused before running.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
-
     # TRAINING lane
-    ax.text(6, 69, "TRAINING", ha="left", fontsize=8, fontweight="bold", color=BLUE)
-    box(ax, 8, 54, 22, 11, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
-    box(ax, 36, 54, 26, 11, "PROMPT +\nREFERENCE", fc=BLUE, fs=8)
-    box(ax, 68, 54, 20, 11, "STUDENT\n0.9M", fc=ORANGE, fs=8, tc="white")
-    arrow(ax, 30, 59, 36, 59)
-    arrow(ax, 62, 59, 68, 59)
-    ax.text(52, 50, "→ training only", ha="center", fontsize=6.8, color=BLUE, style="italic")
+    ax.text(6, 88, "TRAINING", ha="left", fontsize=8, fontweight="bold", color=BLUE)
+    box(ax, 8, 72, 22, 11, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
+    box(ax, 36, 72, 26, 11, "PROMPT +\nREFERENCE", fc=BLUE, fs=8)
+    box(ax, 68, 72, 20, 11, "STUDENT\n0.9M", fc=ORANGE, fs=8, tc="white")
+    arrow(ax, 30, 77.5, 36, 77.5)
+    arrow(ax, 62, 77.5, 68, 77.5)
+    ax.text(52, 68, "→ training only", ha="center", fontsize=6.8, color=BLUE, style="italic")
 
     # EVALUATION lane
-    ax.text(6, 46, "EVALUATION", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
-    box(ax, 8, 32, 22, 11, "NL SPEC\n(new)", fc=BLUE, fs=8)
-    box(ax, 36, 32, 26, 11, "STUDENT\ngenerates", fc=ORANGE, fs=8, tc="white")
-    box(ax, 68, 32, 20, 11, "JUDGE", fc=PURPLE, fs=8)
-    arrow(ax, 30, 37, 36, 37)
-    arrow(ax, 62, 37, 68, 37)
+    ax.text(6, 64, "EVALUATION", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
+    box(ax, 8, 50, 22, 11, "REQUESTS\n(familiar prompts,\nnew inputs)", fc=BLUE, fs=6.8)
+    box(ax, 36, 50, 26, 11, "STUDENT\ngenerates", fc=ORANGE, fs=8, tc="white")
+    box(ax, 68, 50, 16, 11, "JUDGE", fc=PURPLE, fs=8)
+    arrow(ax, 30, 55.5, 36, 55.5)
+    arrow(ax, 62, 55.5, 68, 55.5)
 
-    # hidden tests box below judge, feeding up into the judge
-    box(ax, 68, 14, 20, 11, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE, fs=7)
-    arrow(ax, 78, 25, 78, 32)   # up into judge
+    # hidden tests box below the judge, feeding up into the judge
+    box(ax, 66, 34, 18, 11, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE, fs=7)
+    arrow(ax, 75, 45, 75, 50)
 
-    # verdict node after/right of the judge
-    box(ax, 90, 32, 8, 11, "VERDICT\npass/fail", fc="#dff0e3", ec=GREEN, fs=6.5, tc=GREEN)
-    arrow(ax, 88, 37, 90, 37, color=GREEN)
+    # verdict node after/right of the judge, INSIDE the boundary
+    box(ax, 88, 50, 9, 11, "VERDICT\npass/fail", fc="#dff0e3", ec=GREEN, fs=6.5, tc=GREEN)
+    arrow(ax, 84, 55.5, 88, 55.5, color=GREEN)
 
     # bottom: explanation caption on the LEFT half, call-out on the RIGHT half
-    box(ax, 6, 2, 52, 10,
-        "Only the prompt + reference enter training; the hidden tests\ngo to the judge, never to the model. The judge runs the model's\ngenerated program against those tests.",
+    box(ax, 6, 16, 52, 12,
+        "Only the prompt + reference enter training; the hidden tests go to the judge,\nnever to the model. The judge runs the model's generated program against those\ntests. Prompt novelty differs by split: see the novelty audit in Appendix C.",
         fc="#fbfaf6", ec=PURPLE, fs=7.2, tc=INK)
-    box(ax, 62, 2, 34, 10, "the model is the instrument;\nthe experiment is the subject",
+    box(ax, 62, 16, 34, 12, "the model is the instrument;\nthe experiment is the subject\n(the gates sit outside this view)",
         fc="#fbfaf6", ec=INK, fs=8, tc=INK)
     save(fig, "fig_apparatus.png")
 
@@ -137,22 +133,26 @@ def fig_two_gates():
     arrow(ax, 42, 52, 48, 52, color=INK)
     arrow(ax, 66, 52, 72, 52, color=INK)
     arrow(ax, 88, 52, 92, 52, color=GREEN)
-    # yes/no labels at each gate decision point
-    ax.text(23, 49, "no", ha="center", fontsize=7, color=RED, style="italic")
-    ax.text(23, 55, "yes", ha="center", fontsize=7, color=GREEN, style="italic")
-    ax.text(69, 49, "no", ha="center", fontsize=7, color=RED, style="italic")
-    ax.text(69, 55, "yes", ha="center", fontsize=7, color=GREEN, style="italic")
-    # rejection branches at GATE B (not at the request), and the accepted path
-    # continues through the gates. Gate A rejection branches at Gate A.
-    arrow(ax, 34, 44, 34, 30, color=RED)          # Gate B rejection drops down
-    arrow(ax, 80, 44, 80, 30, color=RED)          # Gate A rejection drops down
-    box(ax, 24, 12, 20, 14, "REJECTED at Gate B\n(before the model\nis consulted)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
-    box(ax, 70, 12, 20, 14, "REJECTED at Gate A\n(program refused\nbefore running)", fc="#f6dede", ec=RED, fs=7.5, tc=RED)
-    note(ax, 26, 70, "is this request one of the\ndesigned tasks? (yes/no)", fs=8, color=RED)
-    note(ax, 72, 70, "is this program inside\nthe whitelist? (yes/no)", fs=8, color=RED)
-    note(ax, 30, 15, "off-scope request → declined\nbefore it reaches the model", fs=7, color=RED)
-    note(ax, 76, 15, "disallowed construct → program\nrefused before it runs", fs=7, color=RED)
-    note(ax, 10, 84, "Gate A prevents the program being\naccepted/executed, not the model\nfrom emitting text; Gate B was NOT\nin the reported surface/human tests.",
+
+    # rejection branches drop down from each gate (downward exit)
+    arrow(ax, 34, 44, 34, 34, color=RED)          # Gate B rejection drops down
+    arrow(ax, 80, 44, 80, 34, color=RED)          # Gate A rejection drops down
+    box(ax, 24, 16, 20, 14, "REJECTED at\nGate B", fc="#f6dede", ec=RED, fs=8, tc=RED)
+    box(ax, 70, 16, 20, 14, "REJECTED at\nGate A", fc="#f6dede", ec=RED, fs=8, tc=RED)
+
+    # yes/no labels ON THE OUTGOING branches: "no" on the downward rejection edge,
+    # "yes" on the rightward accepted edge past each gate.
+    ax.text(34, 39, "no", ha="center", va="bottom", fontsize=8, color=RED, style="italic", fontweight="bold")
+    ax.text(45, 55, "yes", ha="center", va="bottom", fontsize=8, color=GREEN, style="italic", fontweight="bold")
+    ax.text(80, 39, "no", ha="center", va="bottom", fontsize=8, color=RED, style="italic", fontweight="bold")
+    ax.text(69, 55, "yes", ha="center", va="bottom", fontsize=8, color=GREEN, style="italic", fontweight="bold")
+
+    # short, non-overlapping annotations above each gate
+    note(ax, 24, 68, "is this request one of the\ndesigned tasks?", fs=7.5, color=RED)
+    note(ax, 70, 68, "is this program inside\nthe whitelist?", fs=7.5, color=RED)
+    note(ax, 24, 14, "refused before it\nreaches the model", fs=7, color=RED)
+    note(ax, 70, 14, "refused before it\nruns", fs=7, color=RED)
+    note(ax, 4, 90, "Gate A prevents the program being accepted/executed, not the model from\nemitting text; Gate B was NOT in the reported surface/human tests.",
          fs=7, color=INK)
     save(fig, "fig_two_gates.png")
 
@@ -191,43 +191,36 @@ def fig_teacher():
     save(fig, "fig_teacher.png")
 
 def fig_judge():
-    fig, ax = new_fig()
-    ax.text(50, 95, "THE JUDGE: a four-stage funnel", ha="center",
+    fig, ax = new_fig(w=9.2, h=6.4)
+    ax.text(50, 97, "THE JUDGE: a four-stage funnel", ha="center",
             va="center", fontsize=11, fontweight="bold", color=INK)
     stages = [
-        (70, "1. SYNTAX\nparses?", PURPLE),
-        (50, "2. AST / CAPABILITY\nwhitelisted subset?", PURPLE),
-        (30, "3. EXECUTION\nruns cleanly?", PURPLE),
-        (10, "4. SEMANTIC\nmatches expected?", ORANGE),
+        (78, "1. SYNTAX\nparses?", PURPLE),
+        (58, "2. AST / CAPABILITY\nwhitelisted subset?", PURPLE),
+        (38, "3. EXECUTION\nruns cleanly?", PURPLE),
+        (18, "4. SEMANTIC\nmatches expected?", ORANGE),
     ]
-    # fail reasons tied to each stage (so the four NO boxes differ)
     fails = {
-        70: "not Python\n(parse fail)",
-        50: "outside\nwhitelist",
-        30: "crashes /\ntimes out",
-        10: "wrong\noutput",
+        78: "not Python\n(parse fail)",
+        58: "outside\nwhitelist",
+        38: "crashes /\ntimes out",
+        18: "wrong\noutput",
     }
-    # put the stage column on the LEFT half, explicit NO branches on the right.
     for y, lab, c in stages:
         box(ax, 20, y, 38, 14, lab, fc=c, fs=8.5)
-        # "NO -> reject" branch off the right of every stage
         arrow(ax, 58, y + 7, 66, y + 7, color=RED)
         box(ax, 68, y + 2, 24, 10, "NO\n→ %s\n(score 0)" % fails[y],
             fc="#f6dede", ec=RED, fs=6.5, tc=RED)
-        # "YES" tag between stages (except after the last)
-        if y > 10:
-            ax.text(39, y - 1.5, "yes", ha="center", fontsize=6.5, color=GREEN, style="italic")
-    # short clean arrows in the gap between boxes
     for i in range(3):
-        y = 70 - (i * 20)
+        y = 78 - (i * 20)
         arrow(ax, 39, y + 4, 39, y - 2)
-    # final success endpoint after the semantic stage
-    arrow(ax, 20, 10, 20, 5, color=GREEN)
-    box(ax, 66, 1, 26, 10, "ALL FOUR PASS\n→ correct\n(score 1)", fc="#dff0e3", ec=GREEN, fs=7, tc=GREEN)
-    note(ax, 74, 90, "any 'no' → whole program\nrejected, then zero", fs=8, color=RED)
-    box(ax, 18, 1, 42, 7,
-        "Only a program that clears all four gets credit.\nOne number would hide which stage failed.",
-        fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
+        ax.text(39, y - 1.5, "yes", ha="center", fontsize=6.5, color=GREEN, style="italic")
+    ax.text(39, 17, "yes", ha="center", fontsize=6.5, color=GREEN, style="italic")
+    arrow(ax, 39, 18, 39, 12, color=GREEN)
+    box(ax, 12, 1, 54, 9, "ALL FOUR PASS → correct program\n(score 1)", fc="#dff0e3", ec=GREEN, fs=7, tc=GREEN)
+    note(ax, 74, 96, "any 'no' → whole program\nrejected, then zero", fs=8, color=RED)
+    box(ax, 70, 1, 26, 8, "One number would hide\nwhich stage failed.",
+        fc="#fbfaf6", ec=INK, fs=7, tc=INK)
     save(fig, "fig_judge.png")
 
 
@@ -260,40 +253,43 @@ def fig_task():
     """D01 -- WHO SEES WHAT (ch03): the model generates source; Python executes it;
     hidden tests are evaluator-only. Two lanes so the model / execution / tests are
     impossible to conflate."""
-    fig, ax = new_fig(w=9.2, h=5.2)
+    fig, ax = new_fig(w=9.2, h=5.6)
     ax.text(50, 96, "WHO SEES WHAT: the model generates code, Python runs it", ha="center",
             va="center", fontsize=10.5, fontweight="bold", color=INK)
     # TRAINING lane (top)
-    ax.text(8, 84, "TRAINING lane", ha="left", fontsize=8, fontweight="bold", color=BLUE)
-    box(ax, 6, 66, 24, 14, "NL SPEC + REFERENCE\n(the teacher's pair)", fc=BLUE, fs=8)
-    box(ax, 38, 66, 24, 14, "MODEL\n(0.9M, trained)", fc=ORANGE, fs=8, tc="white")
-    arrow(ax, 30, 73, 38, 73)
-    note(ax, 38, 60, "the model learns a mapping\nfrom request to program text", fs=7, color=ORANGE)
+    ax.text(7, 86, "TRAINING lane", ha="left", fontsize=8, fontweight="bold", color=BLUE)
+    box(ax, 7, 70, 26, 13, "NL SPEC + REFERENCE\n(the teacher's pair)", fc=BLUE, fs=8)
+    box(ax, 40, 70, 26, 13, "MODEL\n(0.9M, trained)", fc=ORANGE, fs=8, tc="white")
+    arrow(ax, 33, 76.5, 40, 76.5)
+    note(ax, 40, 66, "learns a mapping\nrequest → program text", fs=7, color=ORANGE)
 
-    # EVALUATION lane (bottom)
-    ax.text(8, 50, "EVALUATION lane", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
-    box(ax, 6, 34, 24, 14, "NL SPEC\n(same prompts, new task IDs)", fc=BLUE, fs=7.5)
-    box(ax, 38, 34, 24, 14, "MODEL\n(generates)", fc=ORANGE, fs=8, tc="white")
-    box(ax, 70, 34, 24, 14, "PYTHON\n(executes the program)", fc=GREEN, fs=8)
-    box(ax, 6, 12, 34, 14, "HIDDEN TESTS\n(inputs + expected)", fc=PURPLE, fs=7.5)
-    box(ax, 42, 12, 22, 14, "TEST INPUTS →\nPYTHON", fc="#e0f0e4", ec=GREEN, fs=7)
-    box(ax, 70, 12, 24, 14, "JUDGE\n(compares outputs)", fc=PURPLE, fs=8)
-    # trained checkpoint transfer (training MODEL -> eval MODEL)
-    arrow(ax, 50, 66, 50, 49, color=ORANGE, lw=1.4)
-    ax.text(52, 58, "trained checkpoint", ha="left", fontsize=7, color=ORANGE, style="italic")
-    arrow(ax, 30, 41, 38, 41)
-    arrow(ax, 62, 41, 70, 41)
-    # test inputs feed execution; expected values feed comparison
-    arrow(ax, 53, 26, 53, 20, color=GREEN)
-    arrow(ax, 40, 26, 40, 20, color=PURPLE)
-    note(ax, 10, 6, "The pilot's 'held-out' test reuses the SAME prompt strings (new task IDs = new input values).\nTest inputs go to Python execution; expected values go to the judge's comparison.\nThe hidden tests are evaluator-only -- they never enter training. Passing establishes\nagreement on these tests, not correctness on every possible input.",
-         fs=7.2, color=INK)
-    constraint = box
-    box(ax, 6, 90, 88, 0, "", fc="none", ec="none", fs=8)
-    # constraints strip
-    box(ax, 6, 88, 88, 6,
-        "PURE FUNCTION · NO I/O · NO NETWORK · NO RANDOM · AST-WHITELISTED",
-        fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
+    # EVALUATION lane (bottom), two rows
+    ax.text(7, 56, "EVALUATION lane", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
+    # row 1: request -> model -> candidate -> python
+    box(ax, 7, 40, 21, 13, "REQUESTS\n(familiar prompts,\nnew inputs)", fc=BLUE, fs=7)
+    box(ax, 32, 40, 21, 13, "TRAINED MODEL\n(generates source)", fc=ORANGE, fs=8, tc="white")
+    box(ax, 57, 40, 21, 13, "CANDIDATE SOURCE\n(the program text)", fc=GREEN, fs=8)
+    box(ax, 82, 40, 15, 13, "PYTHON\nRUNNER\n(executes)", fc="#e9f5eb", ec=GREEN, fs=7, tc=INK)
+    arrow(ax, 28, 46.5, 32, 46.5)
+    arrow(ax, 53, 46.5, 57, 46.5)
+    arrow(ax, 78, 46.5, 82, 46.5)
+    # trained checkpoint transfer (training MODEL -> eval MODEL) - placed to avoid overlap
+    arrow(ax, 53, 70, 53, 55, color=ORANGE, lw=1.4)
+    ax.text(55.5, 62.5, "trained checkpoint", ha="left", fontsize=7, color=ORANGE, style="italic")
+
+    # row 2: test inputs -> python, expected & actual -> comparator
+    box(ax, 7, 22, 30, 12, "TEST INPUTS\n(go to the Python runner)", fc="#eaf2fb", ec=BLUE, fs=7.5, tc=INK)
+    box(ax, 41, 22, 28, 12, "EXPECTED VALUES\n(from the semantics)", fc=PURPLE, fs=7.5)
+    box(ax, 82, 22, 15, 12, "ACTUAL\nVALUES", fc=GREEN, fs=8, tc="white")
+    box(ax, 41, 4, 56, 12, "COMPARATOR — compares the Python output to the\nexpected values and issues the verdict", fc="white", ec=PURPLE, fs=8, tc=INK)
+    # wiring: test inputs -> python runner; expected -> comparator; actual -> comparator
+    arrow(ax, 22, 34, 82, 34, color=BLUE, rad=-0.15)          # test inputs rise to the runner
+    arrow(ax, 69, 22, 69, 16, color=PURPLE)                   # expected -> comparator
+    arrow(ax, 89.5, 22, 89.5, 16, color=GREEN)                # actual -> comparator
+
+    # constraint strip, scoped to candidate execution
+    ax.text(50, 1.5, "CANDIDATE EXECUTION · PURE FUNCTION (no I/O, no network, no random) · AST-WHITELISTED",
+            ha="center", va="center", fontsize=7, color=GREY, style="italic")
     save(fig, "fig_task.png")
 
 
@@ -586,13 +582,13 @@ def fig_coverage():
     ax.add_patch(FancyBboxPatch((6, 30), 34, 6, boxstyle="round,pad=0.02,rounding_size=1",
                                 fc="#eef1f5", ec=GREY, lw=0.8))
     ax.text(23, 33, "the training family set", ha="center", fontsize=6.2, color=GREY, va="center")
-    # model trained on all families
-    for i, fam in enumerate(["fam A", "fam B", "fam C"]):
+    # model trained on all families (illustrative labels only)
+    for i, fam in enumerate(["α", "β", "γ"]):
         x = 8 + i*10
         ax.add_patch(FancyBboxPatch((x, 46), 9, 9, boxstyle="round,pad=0.02,rounding_size=1",
                                     fc="#cfe0f5", ec=INK, lw=0.8))
-        ax.text(x+4.5, 50.5, fam, ha="center", fontsize=6.5, color=INK)
-    ax.text(21, 41, "high-diversity training: sees fam A / B / C", ha="center", fontsize=6.4, color=INK)
+        ax.text(x+4.5, 50.5, fam, ha="center", fontsize=7, color=INK)
+    ax.text(21, 41, "high-diversity training: sees all families (illustrative α / β / γ)", ha="center", fontsize=6.3, color=INK)
     # surface test point (well above the families, not overlapping)
     ax.add_patch(FancyBboxPatch((24, 66), 9, 8, boxstyle="round,pad=0.02,rounding_size=1",
                                 fc="#e0f0e4", ec=GREEN, lw=0.8))
@@ -607,16 +603,16 @@ def fig_coverage():
             fontsize=7.6, fontweight="bold", color=PURPLE)
     ax.add_patch(FancyBboxPatch((58, 20), 32, 64, boxstyle="round,pad=0.02,rounding_size=2",
                                 fc="#fbfaf6", ec=PURPLE, lw=1.0, linestyle="--"))
-    for i, fam in enumerate(["fam A", "fam B", "fam C", "fam D"]):
+    for i, fam in enumerate(["α", "β", "γ", "δ"]):
         fc = "#cfe0f5" if i < 3 else "#f6dede"
         x = 60 + i*7.5
         ax.add_patch(FancyBboxPatch((x, 66), 6.5, 9, boxstyle="round,pad=0.02,rounding_size=1",
                                     fc=fc, ec=INK, lw=0.7))
-        ax.text(x+3.2, 70.5, fam, ha="center", fontsize=6.2, color=INK)
-    ax.text(74, 60, "train on A/B/C, hold out D", ha="center", fontsize=6.4, color=INK)
+        ax.text(x+3.2, 70.5, fam, ha="center", fontsize=7, color=INK)
+    ax.text(74, 60, "train on α/β/γ, hold out δ (illustrative)", ha="center", fontsize=6.3, color=INK)
     ax.add_patch(FancyBboxPatch((64, 40), 20, 9, boxstyle="round,pad=0.02,rounding_size=1",
                                 fc="#f6dede", ec=RED, lw=0.8))
-    ax.text(74, 44.5, "test on family D (never seen)", ha="center", fontsize=6.4, color=RED)
+    ax.text(74, 44.5, "test on family δ (never seen)", ha="center", fontsize=6.4, color=RED)
     ax.text(74, 30, "only this tests generalization\nto an EXCLUDED family", ha="center", fontsize=6.6, color=INK)
     save(fig, "fig_coverage.png")
 
