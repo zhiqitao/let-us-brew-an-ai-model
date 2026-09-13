@@ -31,7 +31,7 @@ say.
 That is a **~33×** increase in parameters from the smallest to the largest. On the
 thing we care about — composition — nothing changed at all.
 
-![Model size vs composition](figures/fig_model_size.png)
+![Model size vs composition (line chart of in-distribution and composition pass@1 across 0.88M/6.5M/10.2M/29.3M; note the runs used different step budgets (1,500/1,000/800/800) and tokenizer training corpora, so this is not a clean size-only comparison)](figures/fig_model_size.png)
 
 ![Illustrative prompts on five selected checkpoints](figures/fig_live_sweep.png)
 

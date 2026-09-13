@@ -14,8 +14,10 @@ flag it.
 > therefore do **not** treat "learner vs. parrot" as a binary — a model can be a genuine
 > learner of the narrow surface task (its in-distribution score is real) and still not be
 > a compositional reasoner. Each claim in the book is scoped to the specific measured
-> behavior (and carries a `[MEASURED]` / `[DERIVED]` label), not to a general
-> "the model is intelligent" assertion.
+> behavior, not to a general "the model is intelligent" assertion. (The four-question
+> capability map in Chapter 22 uses a `[MEASURED]` / `[DERIVED]` notation on the rows it
+> labels; not every claim in the book carries an explicit tag, so read the scoping in the
+> sentence that introduces each number.)
 
 - **AST (Abstract Syntax Tree).** A tree representation of a program's structure,
   stripped of formatting. The sandbox builds an AST of the generated program and
