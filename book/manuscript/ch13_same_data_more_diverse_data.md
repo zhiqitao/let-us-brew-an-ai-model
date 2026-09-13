@@ -170,9 +170,10 @@ boundary). It does **not** show that diversity fixes *compositional* generalizat
 helps a model combine two things it knows is the most natural next experiment, and it
 is called out in the conclusion.
 
-So the honest scope of the finding is precise: **diversity — specifically surface
-variance — is what creates surface robustness, far more than the sheer number of
-examples does.** Whether diversity reaches deeper, into composition, remains open.
+So the honest scope of the finding is precise: **surface diversity improved coverage of
+the alternate surfaces within the tested family set — a coverage result, not transfer to
+a wording family the model never saw.** Whether diversity reaches deeper, into
+composition, remains open.
 
 ## The lesson
 

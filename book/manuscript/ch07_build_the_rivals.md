@@ -25,8 +25,10 @@ interpret the model's score — they do not cap how good a model is allowed to b
 This is a point that deserves to be stated bluntly, because it is easy to overlook: a
 number in isolation is almost meaningless. "The model solved 90% of the problems"
 sounds like a triumph. But if a ten-line lookup table also solved 90%, the model's
-result is not evidence of learning — it is evidence that the task can be solved
-without learning. The baseline is what gives the number its meaning.
+result shows **no demonstrated advantage over that baseline** — it does not prove the
+model has no learned capability, but it does mean we cannot credit the score to
+learning rather than to the task simply being easy. The baseline is what gives the
+number its meaning.
 
 This is the single question the whole book keeps asking:
 

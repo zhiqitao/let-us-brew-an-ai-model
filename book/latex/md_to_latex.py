@@ -121,6 +121,36 @@ def fix_wide_tables(tex_path):
         spec = block.split("\\toprule")[0]
         fracs = [float(x) for x in re.findall(r"p\{([0-9.]+)\\linewidth\}", spec)]
         ncols = len(fracs)
+        # A plain left-aligned colspec (e.g. @{}llll@{}) has no explicit widths;
+        # if it has several columns its natural width overflows a 6x9 page, so
+        # convert it to scaled p-columns.
+        plain_l = re.fullmatch(r"\s*\\begin\{longtable\}\[?\]?\{@?\{\}\{?[^}]*\}\}?\s*", spec) is None
+        n_l = spec.count("l@") + spec.count("@{}l") + spec.count("l}, ")  # rough
+        # Detect a run of plain 'l' (or 'r'/'c') column letters in the colspec.
+        plain_letters = re.findall(r"([lcr])\s*@?\{?\}?\,?\s*", spec)
+        n_plain = len(re.findall(r"[lcr](?:\s*@?\s*|\s*,)", spec)) - 2  # minus the @{} bookends approximate
+        # Simpler: count column letters inside the longtable's own braces. The colspec
+        # lives in the second brace group of \begin{longtable}[...]{...}; but the
+        # colspec itself may contain @{} groups, so capture greedily up to the matching
+        # final brace by balancing on the @{} tokens.
+        lt_re = re.compile(r"\\begin\{longtable\}(\[[^\]]*\])?\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}")
+        lt_m = lt_re.search(block)
+        colspec = lt_m.group(2) if lt_m else spec
+        n_plain_letters = len(re.findall(r"[lcr]", colspec))
+        uses_plain = "p{" not in colspec and n_plain_letters >= 2
+        if uses_plain and n_plain_letters >= 4:
+            # Convert plain letters to p-columns summing to ~0.84, giving the first
+            # column (usually the label/ID column) a wider share so its entries fit on
+            # one line.
+            n = n_plain_letters
+            first_w = 0.30 if n >= 4 else 0.84 / n
+            rest = (0.84 - first_w) / (n - 1) if n > 1 else 0.0
+            widths = [first_w] + [rest] * (n - 1)
+            new_cols = "".join(">{\\raggedright\\arraybackslash}p{%.4f\\linewidth}" % w for w in widths)
+            block = block.replace(colspec, new_cols)
+            # re-read fracs after conversion
+            fracs = [float(x) for x in re.findall(r"p{([0-9.]+)\\linewidth}", block.split("\\toprule")[0])]
+            ncols = len(fracs)
         wide = (ncols >= 7) or (sum(fracs) >= 0.70 and ncols >= 5) or (sum(fracs) >= 0.90)
         if not wide:
             return block
@@ -142,7 +172,7 @@ def fix_wide_tables(tex_path):
         # column past the right margin.
         fracs2 = [float(x) for x in re.findall(r"p\{([0-9.]+)\\linewidth\}", block)]
         if fracs2:
-            target = 0.94   # fractions may sum to ~0.94 and still fit
+            target = 0.84   # fractions may sum to ~0.84; leave room for inter-column padding
             s = sum(fracs2)
             if s > target:
                 scale = target / s

@@ -34,7 +34,7 @@ does not require answering Question 1, and so on.)
 
 | Question | What it asks | Measured result | Status (in this setup) |
 |-------|--------------|-----------------|--------|
-| **Q1 Mem** | Could it be explained by remembering? | task-ID probe 59/60; held-out pair → general program | `[MEASURED]` not literal answer-parrots on familiar prompts; new-prompt transfer **not** tested (pilot reuses training prompts) |
+| **Q1 Mem** | Could it be explained by remembering? | task-ID probe 59/60; held-out pair → general program | `[MEASURED]` not literal answer-parrots on familiar prompts; new-prompt transfer **not** tested (pilot reuses training prompts), and **program memorization remains a fully compatible explanation** (emitting a general program it saw many times) — so the stored-program reading is not excluded |
 | **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here (new *inputs*, familiar prompt) |
 | **Q3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
 | **Q4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |

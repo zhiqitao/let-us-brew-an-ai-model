@@ -92,8 +92,9 @@ Each of these forms a discipline rather than a checklist. The sandbox's allowlis
 blocklist) rejected the disallowed constructs covered by its validator, so a failure could
 more often be attributed to the model rather than to an accident of environment — within
 the constructs the gate covers. The
-judge's execution-based, semantic comparison meant a "correct" answer was objectively
-correct, not merely stylistically close. The mutation suite meant we doubted the judge
+judge's execution-based, semantic comparison meant a "correct" answer was judged correct
+under the stated acceptance rule (it ran and matched the expected output), rather than
+being merely stylistically close. The mutation suite meant we doubted the judge
 before we trusted it. The baseline comparisons meant a number only had meaning relative
 to a simpler machine. And the four-question taxonomy meant we never overstated a result by
 collapsing different kinds of generalization into one score.
@@ -283,14 +284,14 @@ single passing test not distinguish them, and what kind of test does?
 Write down what this does and does *not* establish — name at least two other causes of a
 zero that the result does not rule out, and one thing you could run to distinguish them.
 
-*(Answers: 1. The first is generalization to an excluded family; the second is coverage
-of a surface within the training family. Only the first speaks to a never-seen *family*.
-Note that a genuinely new prompt *within a familiar family* is still a real form of
-in-distribution generalization (a new surface, same computation) — "excluded-family
-transfer" is a stronger and different shift, not the only form of generalization the
-book measures. 2. For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
+*(Answers:* **1.** The first is generalization to an excluded family; the second is
+coverage of a surface within the training family. Only the first speaks to a
+never-seen family. Note that a genuinely new prompt within a familiar family is still a
+real form of in-distribution generalization (a new surface, same computation) —
+"excluded-family transfer" is a stronger and different shift, not the only form of
+generalization the book measures. **2.** For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
 they give `1` and `5`. One test can be satisfied by both programs, so a distinguishing
-test must use a signed input where the two differ. 3. The zero shows that, under this
+test must use a signed input where the two differ. **3.** The zero shows that, under this
 decoding/evaluation procedure, no program passed every hidden test. It does not
 identify the cause (instruction interpretation, syntax generation, length handling,
 coverage, optimization, or a particular held-out operation), is not proof of a general

@@ -34,53 +34,62 @@ the second the **measured outcome** (the evaluation). Where an outcome was **not
 measured for that row we mark it `NT` (not tested) rather than a cross or a dash, because
 "not run" and "failed" are different.
 
-**Table 19.1 — Resource budget, by run**
+**Table 19.1 — Resource budget, by run**. The data column is the **training-record count
+and distinct prompt–program pairs** (where known); it is not the evaluation-set size.
+Where a record/pair count is not separately recorded, we say so rather than borrow an
+evaluation denominator.
 
-| Run (checkpoint, evaluation) | data (records / unique prompt-program pairs) | parameters | steps |
-|------------------------------|----------------------------------------------|------------|-------|
-| Pilot, ten-op familiar-prompt family (stage1, pilot eval) | 1,400 / 21 | 0.88M | 1,500 |
-| Pilot, stage-4 re-eval | 1,400 / 21 | 0.88M | 1,500 |
-| New-identifier robustness | 1,400 / 21 | 0.88M | 1,500 |
-| Surface, exposed (stage3_surface) | 600 | 0.88M | — |
-| Data-scaling, smallest (pool_test) | 540 | 0.88M | — |
-| Data-scaling, largest (pool_test) | 540 | 0.88M | — |
-| Composition exposure (0.88M) | — | 0.88M | 1,500 |
-| Composition exposure (0.88M, diversity) | — | 0.88M | 1,500 |
-| Composition, size sweep | — | 0.9–29.3M | 1,000 / 800 |
-| Continual: A then B (sequential) | 1,400 + 1,400 | 0.88M | 1,400 |
-| Continual: A+B (joint) | 2,800 interleaved | 0.88M | 1,400 |
+| Run | data records / unique pairs | parameters | steps |
+|------------------|-----------------------------|------------|-------|
+| `stage1` | 1,400 / 21 | 0.88M | 1,500 |
+| `stage3_surface` | 600 (10 op × 60) | 0.88M | 1,500 |
+| `data_scaling` (per size) | 100, 300, 1000, 3000 | 0.88M | 800 |
+| `stage4_exposure` | not recorded | 0.88M | 1,500 |
+| `div_minimal` / `div_high` | not recorded | 0.88M | 1,500 |
+| size sweep | not recorded | 0.88M / 6.5M / 10.2M / 29.3M | 1,500 / 1,000 / 800 / 800 |
+| `continual_seq` | 1,400 + 1,400 | 0.88M | 1,400 |
+| `continual_joint` | 2,800 interleaved | 0.88M | 1,400 |
 
-**Table 19.2 — Measured outcomes, by run**
+**Table 19.2 — Measured outcomes, by run** (the neural **MODEL**'s score; baselines are in
+Chapters 15 and 16, not here). Run keys match Table 19.1. `0.350`/`0.000` are the model's
+scores on the new-identifier and reworded splits; `0.875`/`0.683` belong to the
+TEMPLATE/RETRIEVAL baselines and are not the model's.
 
-| Run (checkpoint, evaluation) | in-dist | surface | composes |
-|------------------------------|---------|---------|----------|
-| Pilot, ten-op familiar-prompt family (stage1, pilot eval) | 0.897 | 0.000 (new wording) | NT |
-| Pilot, stage-4 re-eval | 0.900 | NT | NT |
-| New-identifier robustness | 0.900 | 0.350 (new IDs) | NT |
-| Surface, exposed (stage3_surface) | 0.875 | 0.683 | NT |
-| Data-scaling, smallest (pool_test) | 0.100 | — | NT |
-| Data-scaling, largest (pool_test) | 0.641 | — | NT |
-| Composition exposure (0.88M) | 0.900 (in-dist) | — | 0.667 exposed; 0.000 held-out |
-| Composition exposure (0.88M, diversity) | 1.000 (in-dist) | — | 0.550 / 0.592 exposed; 0.000 held-out |
-| Composition, size sweep | — | — | 0.897 / 0.000 (6.5M); 0.000 (10.2M, 29.3M) |
-| Continual: A then B (sequential) | B 0.889 | NT | NT |
-| Continual: A+B (joint) | A 1.000; B 0.889 | NT | NT |
+| Run | in-dist | new IDs | new wording | composes |
+|------------------|---------|---------|-------------|----------|
+| `stage1` | 0.897 | — | — | 0.000* |
+| `stage3_surface` | 0.900 | 0.350 | 0.000 | — |
+| `data_scaling` | 0.100 / 0.098 / 0.300 / 0.641 | — | — | — |
+| `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
+| `div_minimal` | 1.000 | — | — | 0.592 / 0.000 |
+| `div_high` | 1.000 | — | — | 0.550 / 0.000 |
+| size 0.88M | 0.900 | — | — | 0.000 |
+| size 6.5M | 0.897 | — | — | 0.000 |
+| size 10.2M | 0.773 | — | — | 0.000 |
+| size 29.3M | 0.897 | — | — | 0.000 |
+| `continual_seq` | A 1.000→0.000; B 0.889 | — | — | — |
+| `continual_joint` | A 1.000; B 0.889 | — | — | — |
 
-*Legend: `NT` = not tested for that run; `—` = that breakdown was not separately
-reported; a bare number is a measured score. We reserve a cross for an outcome we
-actually measured and that came out negative, and use `NT` when the run did not test that
-question at all. The continual rows test task *retention*, not composition — so their
-"composes?" column is `NT`, and their "surface" column is likewise `NT` because only
-in-distribution accuracy was measured for those runs.*
+*`stage1`'s composes value (0.000) is from the stage-4 re-evaluation of that pilot
+checkpoint. The `div_minimal`/`div_high` and `stage4_exposure` composes values are
+reported as *exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed
+records each); the held-out composite — the transfer test — was 0.000 in every composition
+run, and those held-out candidates failed parsing (Appendix B.10). The continual rows test
+task *retention*, not composition, so their "composes" cell is `—`.*
 
-A few cautions before reading this as a budget. First, the pilot's "1,400 examples" is
-the **ten-operation familiar-prompt family** total, which contained only **21 distinct
+*Legend: `—` = that specific breakdown was not separately reported for that run (or the run
+did not test it). We reserve an explicit `0.000` for outcomes we measured and that came out
+negative, and use `—` when the run did not report that figure.*
+
+A few cautions before reading this as a budget. First, the Stage-1 pilot's "1,400 records"
+is the **ten-operation familiar-prompt family** total, which contained only **21 distinct
 prompt–program pairs**; it is not a measured per-operation data requirement. Second, the
-size sweep changed training budgets and tokenizer, so it is not a size-only intervention.
-Third, the exposed-composite scores varied (0.550, 0.592, 0.667); the held-out composite —
-the transfer test — was **0.000** in every run. We do not know how much data would be
-needed to achieve composition; we only know it was not achieved within the budgets we
-tried.
+size sweep changed training budgets (1,500 / 1,000 / 800 / 800 steps) and tokenizer, so it
+is not a size-only intervention. Third, the exposed-composite scores varied (0.550, 0.592,
+0.667); the held-out composite — the transfer test — was **0.000** in every run, and those
+held-out candidates all failed parsing, so the cause of that zero is unresolved (Chapter 16
+and Appendix B.10). We do not know how much data would be needed to achieve composition;
+we only know it was not achieved within the budgets we tried.
 
 ## What the costs tell us
 
@@ -107,24 +116,28 @@ scaling data or capacity within our tested range.
 Let us read the matrix the way a person who has to pay for capability would read it,
 not the way a researcher who wants a good headline would read it.
 
-- **A ten-operation familiar-prompt family "costs" about 1,400 records and a few
-  minutes.** That is the cheap row. But its surface-generalization test (new wording) was
-  0.000, and composition was not tested for the pilot. So we have bought a capability that
-  works on the prompts it was trained with.
-- **New-identifier robustness** costs the *same* 1,400 records, and still fails (0.350 on
-  new identifiers). We cannot buy this with more of the same from this run.
-- **Composition** is the row that tells the sharpest story. It was marked 0.000 on
-  held-out composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
+- **The ten-operation familiar-prompt family "costs" about 1,400 records and a few
+  minutes.** That is the cheap row. Its in-distribution score was 0.897; the pilot itself
+  did not run a reworded surface test (the Stage-3 surface run did, and scored 0.000 there).
+  So we have bought a capability that works on the prompts it was trained with.
+- **New-identifier and reworded robustness** (the Stage-3 surface run) costs the same
+  1,400-class budget and still fails — the model drops to 0.350 on new identifiers and to
+  0.000 on a reworded instruction. We cannot buy this with more of the same from this run.
+- **Composition** is the row that tells the sharpest story. It was 0.000 on held-out
+  composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
   parameter column alone did not change that in the runs we ran. But the failure cause is
   unresolved (the held-out candidates failed parsing), so this is a recorded negative
-  result, not a demonstrated mechanism.
+  result, not a demonstrated mechanism. The exposed composites (0.550–0.667) also fell
+  short of mastery on the *training-covered* combinations, so the model did not even fully
+  learn those it was shown.
 - **Continual learning** is the most interesting row for a practitioner. Sequential
-  training loses A (final A accuracy 0.000); fitting on A and B jointly keeps A at 1.000
-  with B acquisition unchanged at 0.889. This says a *jointly trained* model retains both
-  tasks, not that replay recovered a lost capability in a deployed model. The same nominal
-  total step budget was used for both, but resource use was not benchmarked, and the true
-  replay-after-A-first design was not run (see Chapter 18). Cost is not always toward
-  "more expense"; the right procedure can make a capability cheaper to *retain*.
+  training loses A (final A accuracy 0.000, measured 1.000 right after phase A); fitting on
+  A and B jointly keeps A at 1.000 with B acquisition unchanged at 0.889. This says a
+  *jointly trained* model retains both tasks, not that replay recovered a lost capability in
+  a deployed model. The same nominal total step budget was used for both, but resource use
+  was not benchmarked, and the true replay-after-A-first design was not run (see Chapter
+  18). Cost is not always toward "more expense"; the right procedure can make a capability
+  cheaper to *retain*.
 
 ## The brewing experience: discovering the hidden cost
 
@@ -149,14 +162,16 @@ build unless we know the generalization cost going in.
 
 The most honest "cost" we measured is the cost of **mistaking surface association for
 grounded capability**. That cost is high: it makes a model that scores 90%
-in-distribution *look* capable while it collapses to 0.000 on any change to the
-surface. In a deployed system, that is precisely the failure that appears late and
-costs the most.
+in-distribution *look* capable while it collapses to 0.000 on a reworded instruction
+(and drops to 0.350 on a new identifier) — a change to the surface. In a deployed
+system, that is precisely the failure that appears late and costs the most.
 
 So the real answer to "what does each capability cost?" is: the easy-to-see cost
 (data, parameters, steps) is small and scales predictably; the hard-to-see cost —
 making the capability actually generalize and compose — is where the true expense
-lies, and at this scale it is simply not purchasable with more of the same resource.
+lies, and at this scale it was **not achieved** within the budgets we tried (we do not
+claim it is unpurchasable in principle; we only report that our tested budgets did not
+reach it).
 
 And there is a bright spot in the matrix worth holding onto. The continual-learning row
 shows that cost is not always "more of everything." Under the same nominal step budget, the

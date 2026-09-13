@@ -211,10 +211,11 @@ We split the six composite operations: the model was trained on **three** of the
 | Split | pass@1 |
 |-------|--------|
 | In-distribution (held-out primitives) | 1.000 |
-| Exposed composites (seen in training) | **0.667** |
+| Exposed composites (seen in training) | **0.667** (n=120) |
 | **Held-out composites (never seen)** | **0.000** |
 
-The model learns the *specific* composites it was shown — 0.667 on the exposed ones.
+The model learns the *specific* composites it was shown — 0.667 on the exposed ones
+(over 120 exposed composite records).
 (That 0.667 is itself a partial score: even on the three composites it trained on, the
 model did not reach 1.000, so a single exposed aggregate of 0.667 does not establish
 that every one of those operations was individually mastered.) But it still scores a
@@ -225,9 +226,12 @@ That is the answer, scoped carefully: **under the interventions we tested, expos
 not yield successful transfer to held-out composites.** Seeing *some* combinations did not
 produce a general "combine two operations" behavior in the partitions we tried. One
 plausible reading is that the model learned `abs_add` as another familiar pairing rather
-than as a *composition* of `abs` and `add` — but the held-out composite candidates we
-recorded all failed parsing before semantic evaluation, so we cannot establish that
-mechanism. The observed zero is real; *why* it is zero has competing explanations.
+than as a *composition* of `abs` and `add` — but the held-out composite candidates from
+the composition-exposure run that we recorded all failed parsing before semantic
+evaluation, so we cannot establish that mechanism. (Appendix B.10 reports that
+syntax_rate = 0.0 for that run's held-out composites; we do not extend that parsing
+finding to other size checkpoints, whose recorded stage rates we did not analyze the same
+way.) The observed zero is real; *why* it is zero has competing explanations.
 
 This closes off the naive fix ("just add composites to the data") *for the partitions and
 budgets we tested*. Composition here is not a matter of having seen a combination —

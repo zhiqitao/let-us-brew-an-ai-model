@@ -142,9 +142,12 @@ would be suspect. So the very first thing we do is not run any experiment at all
 We build a conformance suite of 31 cases: programs that use each allowed construct and
 must pass, plus programs that use each disallowed construct (`import`, `eval`, `class`,
 `try`, comprehensions, lambdas, arbitrary attribute access) and must all be rejected.
-A sandbox that only permits things is easy; a sandbox that also *correctly refuses*
-everything outside its grammar is the real achievement — and that is what we verify
-before we trust a single number it produces.
+A sandbox that only permits things is easy; a sandbox that also *correctly refuses* the
+disallowed constructs it knows is the real achievement — and that is what our 31-case
+conformance run checks before we trust a single number it produces. (The 31 cases are a
+deliberate conformance sample, not an exhaustive proof that every possible disallowed
+construct is covered; we say "passed its conformance cases," not "verified everything," and
+the validator's scope is the constructs it enumerates.)
 
 This is the first instance of a discipline the book will return to again and again
 (and which we will see was worth it, painfully, in Chapter 10): **before we use a tool to measure something, we verify that the tool measures what we think it does.** Here, the

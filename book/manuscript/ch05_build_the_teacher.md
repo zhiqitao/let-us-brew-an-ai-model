@@ -196,14 +196,14 @@ So the audit has to distinguish three things:
 A 100% TF-IDF classification score shows that operation selection is lexically *easy*
 on that split. It does not by itself establish contamination, and it does not tell us
 the model is exploiting an illegitimate signal — the phrasing is supposed to carry the
-operation. What the audit *should* do — and what our later audits do more carefully —
-is mask the operation-bearing language and ask whether *irrelevant* features still
-predict the target, and also test *held-out template families* and counterfactual
-changes to names or sentence frames. Our finding-001 note is best read as "the wording
-is very predictive of the operation" — which is a property of a clear task, not proof
-of a shortcut. (One implementation note as well: the TF-IDF vectorizer was fit on the
-whole set before cross-validation, which would leak held-out-fold vocabulary. A
-principled version fits the vectorizer inside the CV pipeline.)
+operation. What a stricter audit *should* do is mask the operation-bearing language and ask
+whether *irrelevant* features still predict the target, and also test *held-out template
+families* and counterfactual changes to names or sentence frames — a stronger diagnostic
+than we ran, not one we completed here. Our finding-001 note is best read as "the wording
+is very predictive of the operation" — which is a property of a clear task, not proof of a
+shortcut. (One implementation note as well: the TF-IDF vectorizer was fit on the whole
+set before cross-validation, which would leak held-out-fold vocabulary; a principled
+version fits the vectorizer inside the CV pipeline, as shown in Appendix A.6.)
 
 This is the teacher doing its real job. A dataset generator that only produces data is
 half a tool. One that produces data **and audits it** — asking whether the surface is

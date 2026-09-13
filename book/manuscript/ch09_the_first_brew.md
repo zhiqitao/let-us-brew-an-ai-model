@@ -77,8 +77,12 @@ step 1200   loss 0.019
 step 1499   loss 0.019
 ```
 
-That is a large, clean drop — from 5.84 to 0.019 in 1500 steps. Two things about this
-curve are worth sitting with, because they reveal more than the final number.
+That is a large, clean drop — from 5.84 to about 0.02 in 1500 steps. (The per-step log
+above reads 0.019 at the last step; the recorded final training loss in the experiment
+manifest is 0.0208 — the same quantity reported at slightly different rounding or on a
+different averaging window, both meaning the loss has collapsed to a low floor.) Two
+things about this curve are worth sitting with, because they reveal more than the final
+number.
 
 **First, the shape tells us the *training loop is working*, nothing more.** The
 loss falls steeply in the first 200 steps (5.84 → 0.029), then flattens out near a
@@ -140,9 +144,11 @@ the conditions under which every later claim is true. If we change one and the r
 changes, that tells us something; if we change two and the result changes, we can no
 longer say which one caused it. This is the **one-variable discipline** that governs
 every experiment in the book, and it is why we record the configuration so carefully
-in a manifest alongside every result. A reader should be able to take our numbers,
-run the same configuration, and get the same outcome — and if they cannot, we have
-not done the work, we have only described it.
+in a manifest alongside every result. A reader should be able to take our numbers and run
+the same configuration — and reproduce the *procedure*, not necessarily the identical
+sampled scores (a fresh stochastic rerun under temperature-0.8 sampling may differ slightly,
+and the repository is not yet public; see Appendix C.10). The recording is what makes the
+procedure reproducible, even before scores are confirmed on an independent run.
 
 ## What this chapter establishes
 

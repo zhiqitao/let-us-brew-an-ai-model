@@ -144,7 +144,7 @@ the wording reveals the operation. Note: the vectorizer must be fitted **inside*
 cross-validation folds, not once on the whole dataset, or the model sees the test wording
 during fitting. The corrected form uses a `Pipeline`:
 
-```python
+```
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -155,6 +155,7 @@ clf = Pipeline([
     ("clf", LogisticRegression(max_iter=1000)),
 ])
 X = [t["nl"]["prompt"] for t in tasks]
+y = [t["operation"] for t in tasks]   # the operation label each prompt maps to
 scores = cross_val_score(clf, X, y, cv=5)
 print(f"classifier predicts operation: {scores.mean():.3f}")   # = wording carries operation signal
 ```

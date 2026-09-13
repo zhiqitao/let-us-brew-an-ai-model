@@ -74,16 +74,17 @@ learning arithmetic and then lists in sequence, the model's final A accuracy is 
 when the two are trained together, the final A accuracy is **1.000**, with the same B
 accuracy (0.889) in both. So the *training schedule* – whether the first capability stays
 in the mix while the second is learned – is what differs, and that scheduling difference
-changes the final A outcome. That is a *procedure* finding about final accuracy, regardless
-of which of the two readings above the pre-B measurement supports.
+changes the final A outcome. That is a *procedure* finding about final accuracy, and it
+reinforces the same-run before/after point above: the sequential drop is genuine
+forgetting, not under-acquisition.
 
 **Training A and B together keeps A's final accuracy high.** When A and B are simply trained
 together from the start (interleaved throughout), the model's final A accuracy is a
 perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential. So
-training both from the start keeps A **with no behavioral trade-off** in B. Note that a
-high final A accuracy in the jointly trained model is *not* "retention relative to an
-A-only checkpoint" — there was never an A-only checkpoint; both were trained from the
-start.
+training both from the start keeps A **with no behavioral trade-off** in B. Note that
+this jointly trained model has no separate "after A" point (A and B were trained
+together from the start), so its A accuracy is a final accuracy, not a retention score
+relative to an A-only checkpoint.
 
 One honest note on the term "replay." This design interleaves A and B **from the start**
 — which is really *joint training* on both, not "learn A first, then continue to B

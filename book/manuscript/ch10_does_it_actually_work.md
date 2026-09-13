@@ -121,9 +121,11 @@ across records; and (2) the fixed score is a property of the checkpoint, the sam
 outputs, the record weights, the tests, and the decoding settings (temperature, `max_new`,
 stop policy, NUL truncation), not just of the dataset. A single sample per record does not
 give within-run sampling error, but the repeated records do act as within-prompt
-replicates for the purposes of a familiar-prompt aggregate. The training seed and the
-generation seed are reported separately in the run record, and `max_new` / stop policy /
-extraction rules live in `src/eval/evaluator_runner.py`.
+replicates for the purposes of a familiar-prompt aggregate. The training seed is recorded
+per run; generation does not reset the RNG to a separate value, so it uses the continuing
+RNG state during evaluation unless explicitly reset (Appendix C.6), which is why sampling
+is stochastic rather than exactly seed-reproducible record-for-record. `max_new` / stop
+policy / extraction rules live in `src/eval/evaluator_runner.py`.
 
 | Candidate | syntax | executable | **pass@1** |
 |-----------|--------|-----------|------------|

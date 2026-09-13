@@ -29,9 +29,11 @@ flag it.
   template-matcher and a TF-IDF retriever) used to interpret the model's score. A
   baseline tells us whether the task was already easy for a simpler machine.
 
-- **Canary (held-out probe).** Here, a never-seen prompt used to check whether the
-  model reproduces a stored value or produces a fresh general program. We use the term
-  in the held-out-probe sense, not the classic memorization-canary sense.
+- **Canary (held-out task-record/pair probe).** Here, a held-out prompt-and-answer *pair*
+  (a prompt the model did not see as this exact pair, though its prompt novelty is not
+  independently verified — see Appendix C.7) used to check whether the model reproduces a
+  stored value or produces a general program. We use the term in the held-out-probe
+  sense, not the classic memorization-canary sense.
 
 - **Checkpoint.** A saved copy of the model's weights at a point in training.
 

@@ -73,13 +73,15 @@ locatable knee. Call it a qualitative plateau, and read no more into the exact
 crossover point than the four points support.
 
 This is the shape that matters. It is not a smooth, gentle rise. Under these budgets it
-reads as a flat line, then a climb. That flat-then-steep shape is consistent with the
-model needing a minimum amount of data before it can form *any* reliable association —
-below that, it does not have enough examples to learn the mapping, and adding a couple
-hundred more changes nothing; above it, each additional batch starts paying off. A
-practitioner facing this particular task should treat "a few hundred examples" as too
-small, but we would not oversell the exact crossover as a precisely located knee, because
-it is read from four single runs with no repeated seeds.
+reads as a flat line, then a climb. That flat-then-steep shape is *consistent* with the
+model needing more records before the familiar-task score rises — but we cannot state a
+clean minimum-data requirement, because we did not audit which operations and unique
+prompt–program pairs actually occur in the small (100/300) subsets. A score near 0.10
+across ten operations could reflect restricted operation coverage rather than an
+inability to learn from a few hundred records. So we present this as **four descriptive
+measurements with coverage unresolved**, not as a recommended minimum-data budget for a
+practitioner. We would not oversell the crossover as a precisely located knee either,
+because it is read from four single runs with no repeated seeds.
 
 ## The motif, restated
 
@@ -126,13 +128,17 @@ sometimes conflate here:
   set, under this decoding and evaluation procedure. It is a property of that dataset.
 - **Uncertainty over a target distribution.** If we wanted to say "the model scores
   ~0.64 on new tasks of this type," we'd need a sense of how much 0.641 would vary
-  across different test sets. We do not have that: each size and each data count was
-  trained and evaluated **once**, with one seed, so we cannot put error bars on these
-  points.
+  across different test sets. We report **descriptive scores only**: we did not estimate
+  uncertainty for a defined target prompt distribution, nor did we run multiple training
+  seeds per size, so between-training-seed variability is unknown. (We could in principle
+  analyze conditional sampling uncertainty by examining repeated fresh generations for the
+  same prompts, and designed/grouped evaluation could support other intervals under stated
+  assumptions — but we did not do that here, so we do not claim those either.)
 - **Seed variation.** We ran each condition with a single seed. That does not mean every
-  kind of interval is impossible — it means *seed variance* is unknown. We treat the
-  numbers as measured for the run we did, and as approximate for the underlying
-  capability, rather than as a tight estimate.
+  kind of interval is impossible — it means *seed variance* is unknown, and it does not
+  quantify uncertainty over an arbitrary future prompt distribution. We treat the numbers
+  as measured for the run we did, and as approximate for the underlying capability, rather
+  than as a tight estimate.
 
 A further caution against a naive confidence interval: the test set is not a set of
 independent, uniformly-drawn examples. It comes from one generator, reuses a handful of
@@ -168,8 +174,10 @@ surface-fragile on the reworded test we ran. Composition is a separate question 
 chapter did not measure; we do not yet know whether more data of any kind would help it,
 and we say so rather than assume the answer.
 
-The practical takeaway is thus a two-part answer. To get even the *narrow* score up, more
-examples help *in the range we tried*. But the narrow score is not the hard-won prize. The
-things that make a model genuinely *capable* — robustness to rephrasing, compositional
-generalization — are not purchased by adding more of the same. That is the deeper
-finding, and it is the subject of the next two chapters.
+The practical takeaway is thus a two-part answer, scoped to what this chapter measured.
+To get even the *narrow* score up, more examples help *in the range we tried*. But the
+narrow score is not the hard-won prize. Whether robustness to rephrasing or compositional
+generalization is purchased by data is a separate question: this chapter only measured the
+familiar-task score, so it does **not** answer it. Chapter 13 asks whether more *diverse*
+data buys surface robustness, and Chapter 16 asks about composition — each with its own
+caveats about what it can and cannot show.

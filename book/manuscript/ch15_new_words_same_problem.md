@@ -27,8 +27,10 @@ understands addition, and it is the one we need to test.
 
 To find out, we run the **surface-generalization** test. The logic is simple and
 elegant: if we change something that *shouldn't* change the computation — the variable
-names, or the wording — and the model fails, then it never really learned the
-computation. It learned the phrasing.
+names, or the wording — and the model fails, then its success is **not robust to that
+surface shift**. It is tied to the phrasing it saw. (We are careful about what this
+does and does not show: it demonstrates a lack of robustness to the chosen shift, not
+that no internal semantic representation exists.)
 
 The key is choosing *what* to change. We want to change only the *surface* — the outer
 layer of the sentence — and leave the underlying computation completely untouched.
@@ -77,9 +79,13 @@ The most revealing number isn't the model's collapse — it's what the other two
 ![Surface generalization](figures/fig_surface.png)
 
 *Each pass@1 is over 600 held-out problems per condition (10 operations × 60 records
-each, the scored `stage3_surface` run); so the rates are exact integer fractions over
-600 (e.g. 525/600 = 0.875, 75/600 = 0.125, 410/600 = 0.683). The "new wording" column is
-the Stage-3 held-out wording family; decoding is temperature-0.8 single-sample.*
+each, the scored `stage3_surface` run); so the rates are rounded from the stated counts
+(e.g. 525/600 = 0.875, 75/600 = 0.125, and 410/600 = 0.683 to three decimals). The "new
+wording" column is the Stage-3 held-out wording family — an *intended* held-out-family
+condition; the audit that reported zero exact prompt-string overlap ran on regenerated
+samples with the current generator, not on the original scored files, so historical
+family exclusion is corroborated but not independently verified on the scored artifacts.
+Decoding is temperature-0.8 single-sample.*
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
@@ -89,18 +95,21 @@ is *catastrophic* here (0.000). This is the cleaner reading: identifier changes
 (`a,b` -> `left,right`) left retrieval strong (0.683), but rewording broke both the
 learned model and the retriever.
 
-So the model's 0.900 in-distribution score was largely **phrasing memorization**. It
-had learned "this exact kind of sentence maps to that program." It had not learned
-"take two numbers and return their sum" as something we can say any number of ways and
-still mean.
+So the model's 0.900 in-distribution score was at least partly **tied to the phrasing it
+saw**. It had learned that this kind of sentence maps to that program. Whether it has
+learned anything more general about "take two numbers and return their sum" — something
+we could say any number of ways and still mean — is exactly what the reworded collapse
+tests, and under this shift it did **not** hold. (We do not take the failure as proof of
+the absence of any semantic representation; it shows lack of robustness to the phrasing
+change we applied.)
 
 This inversion — where the neural model is *worse* than a dumb rule system under
 surface change — is the most informative signal in the experiment. It is not a
 competitive defeat; it is a diagnostic revelation. The dumb template system is
-indifferent to exact wording because it never learned to associate wording with
-meaning in the first place; it just recognizes keywords. The neural model, by contrast,
+indifferent to the exact wording because it just matches keywords; it never had to
+bind a meaning to the phrasing at all. The neural model, by contrast, appears to have
 bound the operation to the *particular words*, so when the words change, the binding
-snaps. The model's "learning" was more entangled with surface form than a hard-coded
+snaps. The model's behavior was more entangled with surface form than a hard-coded
 rule's was.
 
 ## The brewing experience

@@ -125,19 +125,22 @@ But the shape is telling. If capacity were the binding constraint, we'd expect a
 all four sizes. The in-distribution scores span 0.773–0.900 across a 33× range. That
 spread (0.773 vs 0.900 at 10.2M vs 0.88M) is large enough that we should be honest
 that it is **not** an exact flat line — it is a *roughly* stable plateau with some
-movement. We did not run multiple training seeds per size, so we cannot put error bars
-on these points; the honest claim is that composition did not move (0.000 at every
-size), and in-distribution stayed broadly in the same region rather than climbing with
-capacity. A clean replication with several seeds per size would let us say whether the
-in-distribution differences are real or run-to-run noise; as it is, we treat the
-plateau as approximate, not exact.
+movement. We did not run multiple training seeds per size, so we did not estimate
+between-training-seed variability for these points; the honest claim is that composition
+did not move (0.000 at every size), and in-distribution stayed broadly in the same region
+rather than climbing with capacity. (We report descriptive scores here; a clean
+replication with several seeds per size would let us say whether the in-distribution
+differences are real or run-to-run noise.) As it is, we treat the plateau as approximate,
+not exact.
 
 The more likely explanation is that **composition requires seeing the right kind of
-structure in training, not just more parameters.** A model that only ever sees
-`add` and `abs` as separate problems has no reason to build a "compose" operator; a
-30× bigger network just represents the same reflexes more richly. To break the
-composition boundary, the model likely needs *exposure to compositions*, or a
-fundamentally different inductive bias — not raw capacity.
+structure in training, not just more parameters** — a hypothesis, not a finding we
+established. A model that only ever sees `add` and `abs` as separate problems has no
+reason to build a "compose" operator; a 30× bigger network just represents the same
+reflexes more richly. To break the composition boundary, the model may need *exposure to
+compositions*, or a fundamentally different inductive bias — not raw capacity. But the
+exposure intervention we ran (Chapter 16) also did not transfer to held-out composites,
+and those candidates failed parsing, so even this hypothesis is not confirmed.
 
 ## The honest side-finding: the 10M "deficit" was an artifact, not a law
 

@@ -37,32 +37,57 @@ reference functions are multi-line in the generator, so treat the sketch as the
 *behavior*, not the byte-for-byte source. Inspect `generator.py` (or the register's
 run record) for the accepted source.
 
-| ID | class | arity | input | mathematical behavior | behavioral sketch (not verbatim source) |
-|----|-------|-------|-------|------------------------|-------------------------------|
-| `add` | primitive | 2 | int, int | `a + b` | `return a + b` |
-| `sub` | primitive | 2 | int, int | `a - b` | `return a - b` |
-| `mul` | primitive | 2 | int, int | `a * b` | `return a * b` |
-| `max_of` | primitive | 2 | int, int | `max(a,b)` | `a if a > b else b` |
-| `min_of` | primitive | 2 | int, int | `min(a,b)` | `a if a < b else b` |
-| `abs_of` | primitive | 1 | int | `abs(a)` | `a if a >= 0 else -a` |
-| `list_sum` | primitive | 1 | list[int] | `sum(xs)` | `sum(xs)` |
-| `list_len` | primitive | 1 | list[int] | `len(xs)` | `len(xs)` |
-| `first_element` | primitive | 1 | list[int] | `xs[0]` | `xs[0]` |
-| `cond_abs_max` | primitive | 2 | int, int | `max(abs(a),abs(b))` | `a if abs(a) >= abs(b) else b` |
-| `abs_add` | **composite** | 2 | int, int | `abs(a) + abs(b)` | `return abs(a) + abs(b)` |
-| `sub_abs` | **composite** | 2 | int, int | `abs(a - b)` | `return abs(a - b)` |
-| `sum_of_abs` | **composite** | 1 | list[int] | sum of elementwise absolute values | `sum(abs(x) for x in xs)` |
-| `max_add` | **composite** | 2 | int, int | `max(a+b, a-b)` | `(a+b) if (a+b) > (a-b) else (a-b)` |
-| `double_first` | **composite** | 1 | list[int] | `2 * xs[0]` | `return 2 * xs[0]` |
-| `len_minus_one` | **composite** | 1 | list[int] | `len(xs) - 1` | `return len(xs) - 1` |
+**Table C.2 — Operation dictionary: identification and types**
 
-**About the "mathematical behavior" column.** The shorthand like `sum(abs(x) for x in xs)`
-describes the *mathematics* the operation computes — it is **not** the sandbox source.
-The sandbox restricts the language, so the actual reference is written as a plain loop
-(the column on the right). We use the two forms deliberately: the left tells a reader
-what the operation *means*, the right shows the program the judge actually references (and
-validates oracle acceptance against). Do not assume the generator-expression form is what
-runs; it is not.
+| ID | class | arity | input |
+|--------------------|---------|-------|-------|
+| `add` | primitive | 2 | int, int |
+| `sub` | primitive | 2 | int, int |
+| `mul` | primitive | 2 | int, int |
+| `max_of` | primitive | 2 | int, int |
+| `min_of` | primitive | 2 | int, int |
+| `abs_of` | primitive | 1 | int |
+| `list_sum` | primitive | 1 | list[int] |
+| `list_len` | primitive | 1 | list[int] |
+| `first_element` | primitive | 1 | list[int] |
+| `cond_abs_max` | primitive | 2 | int, int |
+| `abs_add` | **composite** | 2 | int, int |
+| `sub_abs` | **composite** | 2 | int, int |
+| `sum_of_abs` | **composite** | 1 | list[int] |
+| `max_add` | **composite** | 2 | int, int |
+| `double_first` | **composite** | 1 | list[int] |
+| `len_minus_one` | **composite** | 1 | list[int] |
+
+**Table C.3 — Operation dictionary: mathematical behavior and behavioral sketch**
+
+| ID | mathematical behavior | behavioral sketch (not verbatim source) |
+|--------------------|------------------------|-----------------------------------------|
+| `add` | `a + b` | `return a + b` |
+| `sub` | `a - b` | `return a - b` |
+| `mul` | `a * b` | `return a * b` |
+| `max_of` | `max(a,b)` | `a if a > b else b` |
+| `min_of` | `min(a,b)` | `a if a < b else b` |
+| `abs_of` | `abs(a)` | `a if a >= 0 else -a` |
+| `list_sum` | `sum(xs)` | `sum(xs)` |
+| `list_len` | `len(xs)` | `len(xs)` |
+| `first_element` | `xs[0]` | `xs[0]` |
+| `cond_abs_max` | `max(abs(a),abs(b))` | `abs(a) if abs(a) >= abs(b) else abs(b)` |
+| `abs_add` | `abs(a) + abs(b)` | `return abs(a) + abs(b)` |
+| `sub_abs` | `abs(a - b)` | `return abs(a - b)` |
+| `sum_of_abs` | sum of elementwise absolute values | `sum(abs(x) for x in xs)` |
+| `max_add` | `max(a+b, a-b)` | `(a+b) if (a+b) > (a-b) else (a-b)` |
+| `double_first` | `2 * xs[0]` | `return 2 * xs[0]` |
+| `len_minus_one` | `len(xs) - 1` | `return len(xs) - 1` |
+
+**About the columns.** Neither column is verbatim accepted source. The "mathematical
+behavior" column gives a short formula for what the operation *means*; the "behavioral
+sketch" column gives a readable one-line restatement of the same behavior, using concise
+Python-expressions (e.g. `abs(a) if abs(a) >= abs(b) else abs(b)`) or a generator
+expression (e.g. `sum(abs(x) for x in xs)`) rather than the exact multi-line function the
+judge references. The sandbox restricts the language, so the accepted reference is written
+as a plain loop, not a generator expression; do not assume the one-line sketch is the
+byte-for-byte source that runs. The actual reference programs are in
+`src/data_generator/generator.py` (and the register's run record).
 
 **Preconditions.** `first_element` and `double_first` require a **non-empty list** (they
 index `xs[0]`), so the test generator never feeds them an empty list. `sum_of_abs`,
@@ -82,7 +107,7 @@ values, **not** the absolute value of the list sum.
 
 | Experiment | Run ID | Config (arch / steps / seed / params) | Artifacts (manifest / checkpoint) | Key result |
 |---|---|---|---|---|
-| Stage 1 pilot | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1.json / stage1.pt | in-dist 0.897; loss 5.84→0.019 |
+| Stage 1 pilot | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1.json / stage1.pt | in-dist 0.897; final loss 5.84→0.0208 |
 | Stage 3 surface | `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json / stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
 | Stage 4 composition baseline | `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | (uses pilot ckpt) / stage1.pt | in-dist 0.900; composition 0.000 |
 | Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 · 1000 · 0 · 6,500,352 | stage4_composition_6p5m.json / stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
@@ -258,9 +283,14 @@ run that.
   high-diversity model trained on *all* families × both id-sets, so its 1.000
   surface score is coverage, not generalization to a never-seen family.
   The ch15 surface model, by contrast, trained on *all-but-the-last-family* per
-  operation and was tested on that held-out last family — so its 0.000 is a genuine
-  held-out-family result. These two are different situations and the book keeps them
-  separate.
+  operation and was tested on that held-out last family — so its 0.000 is an
+  **intended** held-out-family result. We qualify "genuine": the audit that reported zero
+  exact prompt-string overlap ran on *regenerated* samples with the current generator,
+  not on the originally scored files, and exact-string disjointness does not by itself
+  prove wording-family exclusion. Historical family exclusion for that scored run was
+  therefore intended and corroborated on regenerated samples, not independently verified
+  on the original scored artifacts. These two (ch13 vs ch15) are different situations and
+  the book keeps them separate.
 - **Conditionals, indexing, loops as isolated operations.** `list_sum`'s reference
   uses a loop and `first_element` uses indexing, but the *task family* does not test
   general loop or indexing competence as standalone operations; those appear only

@@ -121,17 +121,20 @@ For **simple primitives**, on *familiar prompts with fresh execution inputs*, th
 behaves more like a **learner than a fixed literal-retriever**:
 
 - It reproduces training examples (expected — a learner does that too).
-- It passes a task-ID probe (59/60), so it does not merely emit one stored answer per
-  record; it produces a general program that passes *new input values* for a prompt it
-  saw in training.
+- It passes a task-ID probe (59/60), so for a familiar prompt it does not merely emit one
+  stored answer per record; it emits a general program that, when **Python** runs it with
+  fresh execution inputs, produces the correct result. The generalization to new input
+  *values* is performed by the generated program, not by the model re-computing them.
 - On a held-out probe it emits the general program, not a memorized literal — so it did
-  not memorize *answer values*.
+  not memorize *answer values*. (But emitting a general program it saw many times in
+  training is also consistent with program *memorization*, so this does not by itself rule
+  that out.)
 
 So at the level of *individual records with fresh inputs*, the model is not a literal
-parrot. It has formed a program-generating rule for each primitive that transfers to new
-inputs of a familiar prompt. **This is real, but narrow.** Because the pilot reuses the
-same prompt strings in training and test, none of these probes demonstrates transfer to a
-prompt the model never saw. That genuinely-new-prompt question is what the surface and
+value-parrot: it regenerates a general program for a familiar prompt. **This is real,
+but narrow.** Because the pilot reuses the same prompt strings in training and test, none
+of these probes demonstrates transfer to a prompt the model never saw, nor program
+memorization to be absent. That genuinely-new-prompt question is what the surface and
 composition holdouts answer later.
 
 ## The shortcut audit, and the honest boundary
