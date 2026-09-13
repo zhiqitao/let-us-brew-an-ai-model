@@ -99,6 +99,12 @@ and depth, and the registry in Appendix C lists each one's exact configuration):
 **What the model is asked to do.** Each training example is the prompt and the target
 program concatenated as a single token sequence (`prompt + "\n" + reference_code`), and
 the model is trained with standard next-token cross-entropy over that whole sequence.
+(Roughly, at each position the model outputs a *logit* per vocabulary token — an unnormalised
+score — which is turned into a probability, and cross-entropy is a measure of how well
+those predicted probabilities match the actual next token; minimising it over the
+sequence is what "training" means. An *optimizer step* is one update of the weights based
+on the gradient of that loss over a batch, and one full pass over the training set is an
+*epoch*.)
 There is no loss masking that restricts credit to the program positions — the model is
 rewarded for predicting the prompt's continuation (including its own wording) as well as
 the program. Generation uses temperature 0.8 multinomial sampling for `max_new` tokens,

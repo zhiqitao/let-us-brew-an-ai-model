@@ -42,7 +42,7 @@ ACTS = [
         "ch22_the_capability_map.md", "ch25_conclusion.md"]),
 ]
 APPENDIX = [
-    ("The Generator, Every Piece", "appendix_a_generator.md"),
+    ("An Annotated Tour of the Generator", "appendix_a_generator.md"),
     ("The Failure Ledger", "appendix_b_failure_ledger.md"),
     ("The Experiment Registry", "appendix_c_experiment_registry.md"),
     ("Glossary", "appendix_d_glossary.md"),
@@ -332,7 +332,7 @@ SHORT_TITLES = {
     "Same Data, More Diverse Data": "Same Data, More Diverse Data",
     "Build a World We Can Control": "Build a World We Can Control",
     "What Does It Mean to Learn?": "What Does It Mean to Learn?",
-    "The Generator, Every Piece": "The Generator",
+    "An Annotated Tour of the Generator": "The Generator",
     "The Experiment Registry": "The Experiment Registry",
 }
 
