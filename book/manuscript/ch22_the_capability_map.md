@@ -63,14 +63,12 @@ distinction: we only use `NT` when the evaluation *could* have been run but was 
 
 **Panel 1 — code-generation evaluations, by checkpoint**
 
-| Checkpoint | params | familiar prompt | new IDs | excluded wording | covered alt. surface | held-out composite |
-||---|---|---|---|---|---|---|
-| `stage1.pt` (Stage 1 pilot) | 0.88M | 0.897 | — | — | — | 0.000 |
-| `stage3_surface.pt` (Stage 3) | 0.88M | 0.900 | 0.350 | 0.000 | — | — |
-| high-diversity (same count) | 0.88M | 1.000 | — | NT | 1.000 | — |
-| `stage4_6p5m.pt` | 6.5M | 0.897 | — | — | — | 0.000 |
-| `stage4_10m.pt` | 10.2M | 0.773 | — | — | — | 0.000 |
-| `stage4_composition.pt` | 29.3M | 0.897 | — | — | — | 0.000 |
+- **`stage1.pt` (Stage 1 pilot)** — familiar prompt 0.897; held-out composite 0.000.
+- **`stage3_surface.pt` (Stage 3)** — familiar prompt 0.900; new identifiers 0.350; excluded wording 0.000.
+- **high-diversity (same count)** — familiar prompt 1.000; covered alternate surface 1.000; excluded wording NT.
+- **`stage4_6p5m.pt`** — familiar prompt 0.897; held-out composite 0.000.
+- **`stage4_10m.pt`** — familiar prompt 0.773; held-out composite 0.000.
+- **`stage4_composition.pt`** — familiar prompt 0.897; held-out composite 0.000.
 
 Key: the surface-row scores (new identifiers 0.350, excluded wording 0.000) come from the
 **Stage-3 checkpoint**, not the Stage-1 pilot. The composition score for `stage1.pt` is a
@@ -84,18 +82,14 @@ excluded wording family.
 These conditions are not "one bigger model"; they test whether *training content* or
 *schedule* changes the boundary, so they belong in their own panel.
 
-| Condition | params | in-dist | exposed composites | held-out composite |
-|---|---|---|---|---|
-| composition-exposure (stage4_exposure) | 0.88M | 1.000 | 0.667 | 0.000 |
-| composition-diversity (minimal) | 0.88M | 1.000 | 0.592 | 0.000 |
-| composition-diversity (high) | 0.88M | 1.000 | 0.550 | 0.000 |
+- **composition-exposure (`stage4_exposure`)** — in-dist 1.000; exposed composites 0.667; held-out composite 0.000.
+- **composition-diversity (minimal)** — in-dist 1.000; exposed composites 0.592; held-out composite 0.000.
+- **composition-diversity (high)** — in-dist 1.000; exposed composites 0.550; held-out composite 0.000.
 
 **Panel 3 — sequential vs. joint training**
 
-| Protocol | final A accuracy | final B accuracy | true replay-after-A |
-|---|---|---|---|
-| Sequential (A then B) | 0.000 | 0.889 | NT |
-| Joint (A+B from start) | 1.000 | 0.889 | — |
+- **Sequential (A then B)** — final A 0.000, final B 0.889, true replay-after-A NT.
+- **Joint (A+B from start)** — final A 1.000, final B 0.889, true replay-after-A —.
 
 Note the "sequential" A figure: the **final** A accuracy (0.000) is measured after phase B.
 We also measured A **right after phase A** (before B) on the same run — it was **1.000**
