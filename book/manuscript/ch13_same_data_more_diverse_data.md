@@ -25,6 +25,11 @@ the other is varied, any difference in the result is attributable to diversity a
 ## What our experiments hinted
 ![Diversity vs quantity](figures/fig_diversity.png)
 
+*Same example count (1,200) and the same alternate-surface test. The minimal-diversity
+condition's surface test falls outside its narrow training surface → 0.000; the
+high-diversity condition's surface test is within its training family set → 1.000
+(coverage, not transfer to an excluded family; see the caveat below).*
+
 The data-scaling curve (Chapter 11) showed that simply adding *examples* of the same
 sort climbs in-distribution performance — 0.10 at 100, 0.64 at 3000. So more examples
 clearly helped the model fit the pilot task better.

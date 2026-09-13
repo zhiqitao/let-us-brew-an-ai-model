@@ -93,9 +93,9 @@ ax.bar(x+w/2, surf, w, label="alternate-surface test", color="#55A868")
 for xi, v in zip(x-w/2, in_d): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 for xi, v in zip(x+w/2, surf): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.12); ax.set_ylabel("pass@1")
-ax.set_title("Diversity vs quantity (same example count, same alternate-surface test)")
-ax.text(0.5, 1.02, "minimal: test outside its narrow surface → 0.000;  high: surface in its training\nfamily → 1.000 (coverage)", transform=ax.transAxes, ha="center", va="bottom",
-        fontsize=7.5, color="#444444")
+ax.set_title("Diversity vs quantity")
+ax.text(0.5, -0.14, "same example count, same alternate-surface test", transform=ax.transAxes,
+        ha="center", va="top", fontsize=8, color="#444444")
 ax.legend(loc="upper left", frameon=False, fontsize=8); ax.grid(axis="y", alpha=0.3)
 save(fig, "fig_diversity.png")
 
