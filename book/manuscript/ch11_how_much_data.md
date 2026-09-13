@@ -45,9 +45,24 @@ rates are integer fractions over 540 (54/540 = 0.100, 53/540 = 0.098, 162/540 = 
 346/540 = 0.641). Four points describe a trend under these budgets, not a sharp
 threshold.*
 
+One honest caveat about what "more data" means here. Within a single operation family,
+the records we generate share the same prompt→program mapping and differ only in
+hidden-test *input values*; across the whole run, the pilot's 1,400 records contain only
+**21 distinct prompt–program pairs**. So increasing the dataset size from 100 to 3000
+records does **not** give the model 30× more distinct information — it gives it more
+records of mostly the same mappings, and because the per-operation pools are built
+separately and then concatenated, the *selection order* matters. Also, since the step
+count is held fixed, a larger dataset means **fewer passes** over each record, not more
+optimizer exposure. So the curve is best read as "given this coverage and this
+repetition pattern, accuracy rose" rather than "more information bought more accuracy."
+That is part of why Chapter 13 — which genuinely varies the wording families — is the
+proper test of information content, and it is why we do not claim this chapter shows a
+composition result (it measured familiar-task performance only).
+
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
-0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
-this narrow mapping.
+0.10 at 100 examples to 0.64 at 3000. Under these budgets, this narrow mapping needs
+more records to reach a higher score — though, as noted above, the "more data" here is
+more records of a small set of mappings, not more distinct information.
 
 **There is a small-data plateau.** At 100 and 300 examples the model is essentially
 identical (~0.10). The improvement only becomes substantial between 1000 and 3000. So
@@ -149,8 +164,9 @@ training count. It is a different set from the pilot's 300-case test, so these s
 not directly comparable to the pilot's 0.897.
 
 Fourth — and anticipating the rest of the book — even at 3000 examples the model is still
-surface-fragile and non-compositional, because those limits come from the *kind* of data
-and the model's inductive structure, not from the sheer *amount*.
+surface-fragile on the reworded test we ran. Composition is a separate question that this
+chapter did not measure; we do not yet know whether more data of any kind would help it,
+and we say so rather than assume the answer.
 
 The practical takeaway is thus a two-part answer. To get even the *narrow* score up, more
 examples help *in the range we tried*. But the narrow score is not the hard-won prize. The

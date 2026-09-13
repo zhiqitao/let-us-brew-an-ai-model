@@ -218,20 +218,24 @@ The model learns the *specific* composites it was shown — 0.667 on the exposed
 But it still scores a flat **0.000** on the combinations it never saw, even though it
 uses primitives it knows perfectly (in-distribution 1.000).
 
-That is the answer: **exposure does not unlock composition.** Seeing *some*
-combinations does not teach a general "combine two operations" skill. The model
-memorized `abs_add` as if it were *just another primitive*, not as a *composition* of
-`abs` and `add`. It learned the instance, not the operation.
+That is the answer, scoped carefully: **under the interventions we tested, exposure did
+not yield successful transfer to held-out composites.** Seeing *some* combinations did not
+produce a general "combine two operations" behavior in the partitions we tried. One
+plausible reading is that the model learned `abs_add` as another familiar pairing rather
+than as a *composition* of `abs` and `add` — but the held-out composite candidates we
+recorded all failed parsing before semantic evaluation, so we cannot establish that
+mechanism. The observed zero is real; *why* it is zero has competing explanations.
 
-This closes off the naive fix ("just add composites to the data"). Composition here is
-not a matter of having seen a combination — **under everything we have tested**, it does
-not emerge from exposure to a few combinations or from diversifying the phrasing of the
-exposed ones. We are careful about the word "structural": this is a strong empirical
-finding about *this model, this task, this training regime*. It is not a proof that
-tiny models "cannot compose" in general — it is a measurement that, in this setup, the
-tested interventions did not produce composition. Whether some other intervention
-(different optimization, more diverse *combinations* rather than more diverse phrasings
-of the same ones) could unlock it is a separate, open question we have not closed.
+This closes off the naive fix ("just add composites to the data") *for the partitions and
+budgets we tested*. Composition here is not a matter of having seen a combination —
+**under everything we have tested**, it does not emerge from exposure to a few
+combinations or from diversifying the phrasing of the exposed ones. We are careful about
+the word "structural": this is a strong empirical finding about *this model, this task,
+this training regime*. It is not a proof that tiny models "cannot compose" in general — it
+is a measurement that, in this setup, the tested interventions did not produce transfer to
+held-out composites. Whether some other intervention (different optimization, more diverse
+*combinations* rather than more diverse phrasings of the same ones) could produce it is a
+separate, open question we have not closed.
 
 One step further: since diversity was the lever that *did* fix surface robustness
 (Chapter 13), we tested whether *diversifying* the composite exposure unlocks
@@ -240,12 +244,13 @@ composite operations rendered across many phrasings and identifier-sets) and hel
 one composite operation entirely. The result again was a flat **0.000** on the
 held-out operation, whether the exposure was minimally or highly diverse.
 
-So the diversity lever does **not** transfer to composition. Surface diversity
-diversifies the *outer form* of a combination; composition needs something else. This
-points at the one remaining hypothesis: it may be diversity of the *inner structure* —
-not different phrasings of the same five pairings, but many *different* primitive
-pairings — that could teach the general compose-operator. That is the open question
-now, and it is a genuinely different axis from the one we tested.
+So the diversity lever did **not** transfer to composition in this test. Surface
+diversity diversifies the *outer form* of a combination; composition appeared to need
+something else. One plausible hypothesis (not the only one, and not established here) is
+that it may be diversity of the *inner structure* — not different phrasings of the same
+five pairings, but many *different* primitive pairings — that could teach the general
+compose-operator. That is the open question now, and it is a genuinely different axis
+from the one we tested.
 
 ## The honest framing
 
@@ -265,6 +270,7 @@ remains open.
 
 And it sets up the rest of the book in a way that is far more interesting than if the
 model had composed successfully. Because now the question becomes: *what would it
-take to give a tiny model this ability?* More capacity? More data? Different data
-with more structure? That is what the next chapters investigate — and the answer is
-one of the most genuinely surprising things the book finds.
+take to give a tiny model this ability?* Later — in the chapters on how capability
+scales, which already covered capacity and data, and in the continuation-of-learning
+chapter — we revisit whether more capacity, more data, or different data with more
+structure changes the picture.

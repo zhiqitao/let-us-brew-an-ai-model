@@ -27,78 +27,104 @@ works only under conditions the real world will not respect.
 
 ## The cost matrix
 
-Each row is a capability or behavior from our experiments. The first three columns are
-the **resource budget** (data, parameters, steps); the last three are the **measured
-evaluation outcome** (in-distribution accuracy, surface generalization, composition). Keep
-these two groups apart: a resource figure is an input, an outcome is a measurement. Where
-an outcome was **not** measured for that row we mark it `NT` (not tested) rather than a
-cross or a dash, because "not run" and "failed" are different.
+Each row is a **run** from our experiments, identified by its checkpoint and evaluation so
+the provenance is explicit. Because a six-column table is too wide for a 6×9 page, the
+matrix is split into two linked tables: the first is the **resource budget** (the input),
+the second the **measured outcome** (the evaluation). Where an outcome was **not**
+measured for that row we mark it `NT` (not tested) rather than a cross or a dash, because
+"not run" and "failed" are different.
 
-| Capability | data (examples) | parameters | steps | in-dist pass@1 | surface generalizes? | composes? |
-|------------|-----------------|------------|-------|----------------|----------------------|-----------|
-| Single primitive (add, sub, …) | 1400 | 0.88M | 1500 | 0.900 | ✗ (new wording → 0.000) | ✗ |
-| New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | NT |
-| Composition (abs_add, sum_of_abs) | not achieved within tested budgets | 0.9M–29.3M | 1500 | varied by run (exposed) / **0.000** on held-out | ✗ | ✗ (0.000) |
-| Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | NT | NT |
-| Continual: A+B (joint) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | NT | NT |
+**Table 19.1 — Resource budget, by run**
 
-*(The continual rows test task *retention*, not composition — the "composes?" column is `NT`
-for them because composition of A and B was not tested there. The surface column is likewise
-`NT`; only in-distribution accuracy was measured for those runs.)*
+| Run (checkpoint, evaluation) | data (records / unique prompt-program pairs) | parameters | steps |
+|------------------------------|----------------------------------------------|------------|-------|
+| Pilot, ten-op familiar-prompt family (stage1, pilot eval) | 1,400 / 21 | 0.88M | 1,500 |
+| Pilot, stage-4 re-eval | 1,400 / 21 | 0.88M | 1,500 |
+| New-identifier robustness | 1,400 / 21 | 0.88M | 1,500 |
+| Surface, exposed (stage3_surface) | 600 | 0.88M | — |
+| Data-scaling, smallest (pool_test) | 540 | 0.88M | — |
+| Data-scaling, largest (pool_test) | 540 | 0.88M | — |
+| Composition exposure (0.88M) | — | 0.88M | 1,500 |
+| Composition exposure (0.88M, diversity) | — | 0.88M | 1,500 |
+| Composition, size sweep | — | 0.9–29.3M | 1,000 / 800 |
+| Continual: A then B (sequential) | 1,400 + 1,400 | 0.88M | 1,400 |
+| Continual: A+B (joint) | 2,800 interleaved | 0.88M | 1,400 |
 
-*Legend: ✗ = measured and failed; `NT` = not tested for that run; a bare number is a
-measured score. We reserve the cross for an outcome we actually measured and that came out
-negative, and use `NT` when the run did not test that question at all.*
+**Table 19.2 — Measured outcomes, by run**
 
-\*The "exposed" cell is the score on combinations *shown* during training, which varied
-across the exposure and diversity runs (0.550–1.000). The held-out composite — the real
-composition test — is **0.000** in every run. We do not know how much data would be
+| Run (checkpoint, evaluation) | in-dist | surface | composes |
+|------------------------------|---------|---------|----------|
+| Pilot, ten-op familiar-prompt family (stage1, pilot eval) | 0.897 | 0.000 (new wording) | NT |
+| Pilot, stage-4 re-eval | 0.900 | NT | NT |
+| New-identifier robustness | 0.900 | 0.350 (new IDs) | NT |
+| Surface, exposed (stage3_surface) | 0.875 | 0.683 | NT |
+| Data-scaling, smallest (pool_test) | 0.100 | — | NT |
+| Data-scaling, largest (pool_test) | 0.641 | — | NT |
+| Composition exposure (0.88M) | 0.900 (in-dist) | — | 0.667 exposed; 0.000 held-out |
+| Composition exposure (0.88M, diversity) | 1.000 (in-dist) | — | 0.550 / 0.592 exposed; 0.000 held-out |
+| Composition, size sweep | — | — | 0.897 / 0.000 (6.5M); 0.000 (10.2M, 29.3M) |
+| Continual: A then B (sequential) | B 0.889 | NT | NT |
+| Continual: A+B (joint) | A 1.000; B 0.889 | NT | NT |
+
+*Legend: `NT` = not tested for that run; `—` = that breakdown was not separately
+reported; a bare number is a measured score. We reserve a cross for an outcome we
+actually measured and that came out negative, and use `NT` when the run did not test that
+question at all. The continual rows test task *retention*, not composition — so their
+"composes?" column is `NT`, and their "surface" column is likewise `NT` because only
+in-distribution accuracy was measured for those runs.*
+
+A few cautions before reading this as a budget. First, the pilot's "1,400 examples" is
+the **ten-operation familiar-prompt family** total, which contained only **21 distinct
+prompt–program pairs**; it is not a measured per-operation data requirement. Second, the
+size sweep changed training budgets and tokenizer, so it is not a size-only intervention.
+Third, the exposed-composite scores varied (0.550, 0.592, 0.667); the held-out composite —
+the transfer test — was **0.000** in every run. We do not know how much data would be
 needed to achieve composition; we only know it was not achieved within the budgets we
-tried. Marking it "∞" would overstate an unmeasured quantity.
+tried.
 
 ## What the costs tell us
 
-**Capability is cheap; robustness is not.** Learning a single primitive costs ~1400
-examples and a few minutes on a 0.88M model, and it "works" (0.900). So the *apparent*
-cost of a capability is low. But that number is misleading: it measures only
-in-distribution correctness.
+**Capability is cheap; robustness is not.** Learning the ten-op familiar family cost
+~1,400 records and a few minutes on a 0.88M model, and it "works" in-distribution (0.897).
+So the *apparent* cost of a capability is low. But that number is misleading: it measures
+only in-distribution correctness on prompts the model has seen.
 
 **The real cost appears when we ask for generalization.** To make a single primitive
-robust to *surface* change (new identifiers, new wording), the experiments suggest
-the data would need to change substantially — diverse identifiers and wording — not
-just add capacity. And composition is not purchasable at this scale at all: it stayed
-0.000 at 0.88M, 6.5M, 10.2M, and 29.3M.
+robust to *surface* change (new identifiers, new wording), the experiments suggest the data
+would need to change substantially — diverse identifiers and wording — not just add
+capacity. And composition was not achieved at any size we tried: it stayed 0.000 on
+held-out at 0.88M, 6.5M, 10.2M, and 29.3M — though, as Chapter 16 notes, the held-out
+composites all failed parsing, so the cause of that zero is unresolved.
 
 **The cost matrix makes a dangerous pricing error visible.** If we only look at the
-"in-dist pass@1" column, we would conclude capability is nearly free and scale up
-naively. The generalization and composition columns reveal that the cheap number
-hides a much more expensive requirement — robust, compositional capability — which we
-did not achieve by scaling data or capacity within our tested range.
+"in-dist" column, we would conclude capability is nearly free and scale up naively. The
+generalization and composition columns reveal that the cheap number hides a much more
+expensive requirement — robust, compositional capability — which we did not achieve by
+scaling data or capacity within our tested range.
 
 ## The price of each column, read honestly
 
 Let us read the matrix the way a person who has to pay for capability would read it,
 not the way a researcher who wants a good headline would read it.
 
-- **A single primitive "costs" about 1,400 examples and a few minutes.** That is the
-  cheap row, and it is genuinely cheap. But its surface-generalization column says
-  ✗ and its composition column says ✗. So we have bought a capability that works one
-  way, one time.
-- **New-identifier robustness** is the next row. It costs the *same* 1,400 examples,
-  and still fails (0.350 on new IDs). We cannot buy this with more of the same.
-- **Composition** is the row that tells the sharpest story: it is marked
-  "not achieved within tested budgets" for data, and the budget commentary at the
-  bottom spells out that we simply do not know how much data would be needed — it was
-  not achieved in any range we tried. The parameter column spans 0.9M–29.3M, and it
-  made no difference in the runs we ran.
-- **Continual learning** is the most interesting row for a practitioner, because it
-  is the one where the *cost changed at no cost*. Sequential training loses A (0.000
-  final A accuracy); fitting on A and B jointly keeps A at 1.000 with B acquisition
-  unchanged at 0.889. That is, one capability came back with no extra data or compute —
-  just a different training schedule. (We note the actual resource budgets are not
-  fully quantified, and the true replay-after-A-first design was not run; see Chapter
-  18.) Cost is not always toward "more expense"; the right procedure can make a
-  capability cheap.
+- **A ten-operation familiar-prompt family "costs" about 1,400 records and a few
+  minutes.** That is the cheap row. But its surface-generalization test (new wording) was
+  0.000, and composition was not tested for the pilot. So we have bought a capability that
+  works on the prompts it was trained with.
+- **New-identifier robustness** costs the *same* 1,400 records, and still fails (0.350 on
+  new identifiers). We cannot buy this with more of the same from this run.
+- **Composition** is the row that tells the sharpest story. It was marked 0.000 on
+  held-out composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
+  parameter column alone did not change that in the runs we ran. But the failure cause is
+  unresolved (the held-out candidates failed parsing), so this is a recorded negative
+  result, not a demonstrated mechanism.
+- **Continual learning** is the most interesting row for a practitioner. Sequential
+  training loses A (final A accuracy 0.000); fitting on A and B jointly keeps A at 1.000
+  with B acquisition unchanged at 0.889. This says a *jointly trained* model retains both
+  tasks, not that replay recovered a lost capability in a deployed model. The same nominal
+  total step budget was used for both, but resource use was not benchmarked, and the true
+  replay-after-A-first design was not run (see Chapter 18). Cost is not always toward
+  "more expense"; the right procedure can make a capability cheaper to *retain*.
 
 ## The brewing experience: discovering the hidden cost
 
@@ -132,8 +158,10 @@ So the real answer to "what does each capability cost?" is: the easy-to-see cost
 making the capability actually generalize and compose — is where the true expense
 lies, and at this scale it is simply not purchasable with more of the same resource.
 
-And there is a bright spot in the matrix worth holding onto. The continual-learning
-row shows that cost is not always "more of everything." Sometimes, the same inputs,
-the same compute, and the same model buy a capability that was previously lost — for
-free — simply by choosing a better procedure. Cost, like capability, is often about
-*how* we do things, not *how much* we spend.
+And there is a bright spot in the matrix worth holding onto. The continual-learning row
+shows that cost is not always "more of everything." Under the same nominal step budget, the
+*jointly trained* model retained both tasks whereas the sequentially trained one lost A. We
+did not benchmark resource use, and the true replay-after-A-first design was not run, so the
+takeaway is about *schedule*, not about recovering a lost capability for free in a deployed
+model. Cost, like capability, is often about *how* we do things, as well as *how much* we
+spend.

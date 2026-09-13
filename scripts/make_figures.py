@@ -113,16 +113,20 @@ b_acq = [0.889, 0.889]
 x = np.arange(len(labels)); w = 0.28
 # A accuracy before B (sequential only), drawn as a lighter bar beside the final bar
 ax.bar(x-w, a_afterA, w, label="A right after phase A\n(sequential, before B)",
-       color="#9dc1e6")
-ax.bar(x, a_final, w, label="final A-task accuracy", color="#4C72B0")
-ax.bar(x+w, b_acq, w, label="final B-task accuracy", color="#55A868")
+       color="#9dc1e6", hatch="..")
+ax.bar(x, a_final, w, label="final A-task accuracy", color="#4C72B0", hatch="////")
+ax.bar(x+w, b_acq, w, label="final B-task accuracy", color="#55A868", hatch="xx")
 for xi, v in zip(x-w, a_afterA):
     if v and v > 0.001: ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 for xi, v in zip(x, a_final): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 for xi, v in zip(x+w, b_acq): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.15); ax.set_ylabel("pass@1")
 ax.set_title("Task accuracy: sequential vs joint training (measured)")
-ax.legend(loc="upper left", frameon=False, fontsize=7); ax.grid(axis="y", alpha=0.3)
+# Legend outside the axes (below) so it cannot overlap the data/labels, and use
+# markers/hatching as well as color so the chart survives grayscale printing.
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3, frameon=False, fontsize=7)
+ax.grid(axis="y", alpha=0.3)
+fig.tight_layout()
 save(fig, "fig_continual.png")
 
 # ---- 6. Live behavior sweep: illustrative prompts on selected checkpoints ----

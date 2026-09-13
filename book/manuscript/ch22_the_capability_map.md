@@ -255,11 +255,18 @@ as valuable as any model number:
 ## The boundary, in one line
 
 > **A small model learns narrow, individual mappings well and generalizes them across
-> instances, but its knowledge is surface-tied and non-compositional — and within the
-> tested range, neither more parameters nor more data turns that into robust,
-> compositional capability. (We also tested a scheduling change — sequential vs. joint
-> training — but that experiment measured retention of *separately learned* task
-> groups, not composition, so it does not speak to the composition boundary.)**
+> instances, but its knowledge is surface-tied. Under the recorded training and decoding
+> settings, the tested checkpoints produced no successful held-out composite completions;
+> the exposure run's held-out candidates all failed parsing, so the cause remains
+> unresolved. The data-count sweep measured familiar-task performance only. Broader surface
+> training improved coverage, not demonstrated transfer to excluded wording families.**
+>
+> (Size and data scaling are two separate levers, and neither was shown to turn surface
+> coverage into compositional capability: the size sweep changed training budgets and
+> tokenizer, so it is not a size-only intervention, and the data-count sweep did not
+> evaluate composition at all. We also tested a scheduling change — sequential vs. joint
+> training — but that measured retention of *separately learned* task groups, not
+> composition, so it likewise does not speak to the composition boundary.)
 
 ## Why the map is the deliverable
 

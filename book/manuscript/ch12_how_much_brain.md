@@ -35,12 +35,12 @@ thing we care about — composition — nothing changed at all.
 
 ![Illustrative prompts on five selected checkpoints](figures/fig_live_sweep.png)
 
-The first figure is the measured pass@1 grid; the second walks five selected
-checkpoints through a battery of *illustrative* prompts — one prompt per case — and
-records whether each produced a working program. On the two familiar requests every
-checkpoint writes correct code; on a reworded request and a new combination, none
-does; on an out-of-scope request (which is not really a task from their training)
-none of them declines — the model just writes noise, which is exactly why Gate B
+The first figure is a **line chart** of the measured pass@1 across the four model sizes;
+the second walks five selected checkpoints through a battery of *illustrative* prompts —
+one prompt per case — and records whether each produced a working program. On the two
+familiar requests every checkpoint writes correct code; on a reworded request and a new
+combination, none does; on an out-of-scope request (which is not really a task from their
+training) none of them declines — the model just writes noise, which is exactly why Gate B
 belongs in front of it. The pattern across these *illustrative* prompts is striking: on
 the two familiar requests every checkpoint writes correct code, while on the reworded
 request and the new combination none does, and on the out-of-scope request none of them

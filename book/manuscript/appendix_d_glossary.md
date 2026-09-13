@@ -49,11 +49,11 @@ flag it.
 
 - **Sampled decoding (what the book's numbers use).** The evaluation calls
   `model.generate` with no temperature override, so it uses the model's default
-  **temperature-0.8 multinomial sampling** — a single stochastic sample per prompt,
-  not greedy/argmax. Because it is one sample per prompt (not a distribution over many),
-  we report it as **single-sample execution accuracy / sampled pass@1**, and we do not
-  attach error bars for sampling variability: with one sample per prompt there is no
-  within-run estimate of that variability. The worked examples are the same
+  **temperature-0.8 multinomial sampling** — a single stochastic sample per record,
+  not greedy/argmax. Because it is one draw per record, a single record gives no
+  within-*record* estimate of sampling variability, and the repeated records across a run
+  are not a perfect distribution over all possible draws. We therefore report it as
+  **single-sample execution accuracy / sampled pass@1**. The worked examples are the same
   single-sample output.
 
 - **Hidden tests.** Input/expected-output pairs used to grade a generated program. In
@@ -81,7 +81,7 @@ flag it.
   values and is genuinely composite). When we say the model trained on "primitives only,"
   we mean it trained on the *named generator operations* as atomic teacher tasks, not
   that each reference program was syntactically indivisible. See the operation dictionary
-  in Chapter 16 for which entries are composite.
+  in Appendix C (the experiment registry) for which entries are composite.
 
 - **Sandbox / Gate A.** The software layer that runs generated programs and rejects any
   that use a construct outside an allowlist (e.g. `import`, `eval`), before they run.
@@ -97,10 +97,11 @@ flag it.
   "held out" varies by split: the **pilot** split reuses the same 21 prompt strings in
   train/val/test (the test records differ only in hidden-test *input values*), while the
   **surface** and **composition** splits keep a genuinely new prompt wording or
-  operation family out of training (train × holdout prompt overlap is 0, per the
-  novelty audit in Appendix C). So "held out" in this book is not a single thing: each
-  split's novelty axis (new prompt vs. new input values vs. new operation) is stated
-  explicitly where it matters.
+  operation family out of training (train × holdout exact prompt-string overlap is
+  reported as 0, per the novelty audit in Appendix C — an audit run on *regenerated*
+  samples and checking exact strings, not wording-family membership). So "held out" in
+  this book is not a single thing: each split's novelty axis (new prompt vs. new input
+  values vs. new operation) is stated explicitly where it matters.
 
 - **Validator / Gate B.** The software layer that sits in front of the model and
   declines any incoming request that is not in the designed scope, before the model

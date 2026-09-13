@@ -24,7 +24,9 @@ experiments separate cleanly into what the model **can** do and what it **cannot
 
 **It can learn, and it learns well — within a narrow regime.** On individual operations,
 the model reliably maps a natural-language spec to correct Python, reaching **~0.90
-pass@1** in-distribution on a 0.88M parameter model. It produces general programs for
+pass@1** in-distribution on a 0.88M parameter model (the pilot under its own evaluation
+scored 0.897; the stage-4 re-evaluation of the same pilot checkpoint measured 0.900 —
+different evaluation sets, both reported). It produces general programs for
 *fresh inputs of a prompt it saw in training* — a task-ID probe passes 59/60 and a
 held-out pair yields the general program, not a memorized literal. That is genuine,
 if narrow: it is **not** transfer to a genuinely new request, because the pilot's test
@@ -226,9 +228,10 @@ them — the task and scale here are far smaller — so we make no claim of comp
 them; the citations place the book's questions in context.
 
 - **Compositional generalization.** Lake & Baroni, *Generalization without Systematicity:
-  On the Compositional Skills of Sequence-to-Sequence Recurrent Networks*, ICML 2018.
-  Introduced the **SCAN** benchmark, which probes exactly the "new combination of known
-  pieces" question (the book's Question 4) and found seq2seq models largely fail it.
+  On the Compositional Skills of Sequence-to-Sequence Recurrent Networks*, ICML 2018 —
+  arXiv:1711.00350, https://arxiv.org/abs/1711.00350. Introduced the **SCAN** benchmark,
+  which probes exactly the "new combination of known pieces" question (the book's
+  Question 4) and found seq2seq models largely fail it.
 - Kim & Linzen, *COGS: A Compositional Generalization Challenge based on Semantic
   Interpretation*, EMNLP 2020, pp. 9087-9105 — https://aclanthology.org/2020.emnlp-main.731/
   . COGS is a **semantic-parsing / compositional-generalization** dataset (fragments
@@ -242,20 +245,24 @@ them; the citations place the book's questions in context.
   *executing* a program against tests is a sharper evaluation than comparing text.
 - **Shortcut learning and spurious correlation.** Geirhos, Jacobsen, Michaelis, Zemel,
   Brendel, Bethge, & Wichmann, *Shortcut Learning in Deep Neural Networks*, Nature
-  Machine Intelligence 2020. The conceptual framework for asking "did the model learn
-  the task, or a shortcut to it?" — the question the book's surface test (Question 3)
-  and lexical diagnostic address directly.
+  Machine Intelligence 2(11):665-673, 2020 — DOI 10.1038/s42256-020-00257-z,
+  https://doi.org/10.1038/s42256-020-00257-z. The conceptual framework for asking "did
+  the model learn the task, or a shortcut to it?" — the question the book's surface test
+  (Question 3) and lexical diagnostic address directly.
 - **Continual learning and catastrophic forgetting.** McCloskey & Cohen, *Catastrophic
   Interference in Connectionist Networks: The Sequential Learning Problem*, in *Psychology
   of Learning and Motivation*, pp. 109-165, 1989 — https://doi.org/10.1016/S0079-7421(08)60536-8
   . (The original
   forgetting result); and Kirkpatrick et al., *Overcoming Catastrophic Forgetting in
-  Neural Networks*, PNAS 2017 (elastic weight consolidation, a rehearsal-free
-  alternative). These frame the book's sequential vs. joint training result.
+  Neural Networks*, PNAS 114(13):3521-3526, 2017 — DOI 10.1073/pnas.1611835114,
+  https://doi.org/10.1073/pnas.1611835114 (elastic weight consolidation, a
+  rehearsal-free alternative). These frame the book's sequential vs. joint training
+  result.
 - **Mutation testing of test suites.** Jia & Harman, *An Analysis and Survey of the
-  Development of Mutation Testing*, IEEE TSE 2011. The practice of seeding faults to
-  measure a test suite's ability to catch them — the basis of the book's judge
-  red-teaming in Chapter 17.
+  Development of Mutation Testing*, IEEE Transactions on Software Engineering
+  37(5):649-678, 2011 — DOI 10.1109/TSE.2010.62, https://doi.org/10.1109/TSE.2010.62. The
+  practice of seeding faults to measure a test suite's ability to catch them — the basis
+  of the book's judge red-teaming in Chapter 17.
 
 ## Three short exercises
 

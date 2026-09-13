@@ -13,7 +13,7 @@ word and replace it with something we can actually see.
 We trained a small decoder-only transformer on 1,400 generated tasks: the model reads
 a natural-language specification and must produce the reference Python program. The
 trained model is tiny — **884,224 parameters** (0.88M), of which 53,632 are the
-embedding and 830,592 are the actual computation. It saw 1,500 gradient steps on a
+embedding and 830,592 are the non-embedding weights. It saw 1,500 gradient steps on a
 batch of 16, reaching a training loss of **0.0208**.
 
 We then asked it to solve 300 **held-out** test tasks, and scored each generated

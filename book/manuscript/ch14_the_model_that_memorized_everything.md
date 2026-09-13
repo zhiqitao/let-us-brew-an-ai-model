@@ -70,8 +70,8 @@ general program that passes *new inputs* for a *familiar* prompt.
 
 **Test 3 — the canary.** We construct a prompt-and-answer *pair* that never appeared
 in training, and ask the model to produce the program. If the model outputs the
-general program (e.g. `return a + b`), it is doing the computation. If it outputs some
-fixed literal or garbage, it might be memorizing something else.
+general program (e.g. `return a + b`), it is producing a program for an unseen pair; if it
+outputs some fixed literal or garbage, it might be memorizing something else.
 
 The canary is a sharp probe, and it is worth explaining what it does and does not
 show. A canary is a deliberately-placed, never-seen example that we plant precisely to

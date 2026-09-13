@@ -121,7 +121,7 @@ def fix_wide_tables(tex_path):
         spec = block.split("\\toprule")[0]
         fracs = [float(x) for x in re.findall(r"p\{([0-9.]+)\\linewidth\}", spec)]
         ncols = len(fracs)
-        wide = (ncols >= 7) or (sum(fracs) >= 0.70 and ncols >= 5)
+        wide = (ncols >= 7) or (sum(fracs) >= 0.70 and ncols >= 5) or (sum(fracs) >= 0.90)
         if not wide:
             return block
         # <name>.ext  ->  <name>\allowbreak.ext  (split at the period)
@@ -135,6 +135,21 @@ def fix_wide_tables(tex_path):
         # ".pt", i.e. the Artifacts column) a larger share. We do this by
         # widening the column that appears just before the Key result column.
         block = rebalance_artifact_col(block)
+        # Scale the relative column widths so the whole table (columns + the
+        # inter-column \\tabcolsep padding) fits the text block. N p-columns of
+        # width w_i*\\linewidth occupy sum(w_i)*\\linewidth + 2(N+1)\\tabcolsep.
+        # Leave a little slack so long unbreakable cells don't nudge the last
+        # column past the right margin.
+        fracs2 = [float(x) for x in re.findall(r"p\{([0-9.]+)\\linewidth\}", block)]
+        if fracs2:
+            target = 0.94   # fractions may sum to ~0.94 and still fit
+            s = sum(fracs2)
+            if s > target:
+                scale = target / s
+                block = re.sub(
+                    r"p\{([0-9.]+)\\linewidth\}",
+                    lambda m: "p{%.4f\\linewidth}" % (float(m.group(1)) * scale),
+                    block)
         return "\\begingroup\\footnotesize\n" + block + "\\endgroup"
     new = tbl_re.sub(repl, tex)
     if new != tex:

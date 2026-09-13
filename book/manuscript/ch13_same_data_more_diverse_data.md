@@ -145,11 +145,15 @@ they answer different questions. As two labeled notes:
 - **Finding:** the reported samples yielded zero complete-test successes.
 - **Scope:** the novelty audit and the denominator must match the scored run.
 
-The Chapter 15 result is a genuine held-out-family test (the novelty audit in Appendix C
-reports train × held-out-wording prompt overlap of **0**, so the held-out wording family
-never appears in training). The Chapter 13 result is a coverage demonstration. Only
-Chapter 15 speaks to generalization to a *never-seen* wording; Chapter 13 shows diversity
-widens the covered surface.
+The Chapter 15 result is a held-out-family test, with an important provenance note: the
+Appendix C novelty audit reports **zero exact prompt-string overlap** between the training
+split and the held-out wording family, but that audit was run on **regenerated samples**
+with the current generator, not on the originally scored files. Zero string overlap also
+does not by itself prove the *family* was excluded — construction intent and a regenerated
+diagnostic corroborate that the family was meant to be held out, but we did not
+independently verify exclusion on the historical scored artifacts. The Chapter 13 result,
+by contrast, is a coverage demonstration. Only Chapter 15 speaks to generalization to a
+*never-seen* wording; Chapter 13 shows diversity widens the covered surface.
 
 ![Coverage is not a held-out family test](figures/fig_coverage.png)
 

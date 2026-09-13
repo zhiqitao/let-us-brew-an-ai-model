@@ -137,28 +137,40 @@ def generate_hidden_tests(sem, rng=None, count=8):
     return tests[:count]
 ```
 
-## 5. The leakage audit
+## 5. The operation-classification audit
 
-Finally, the generator is checked. The audit trains a trivial classifier to see
-whether the wording leaks the operation:
+Finally, the generator is checked. The audit trains a trivial classifier to see whether
+the wording reveals the operation. Note: the vectorizer must be fitted **inside** the
+cross-validation folds, not once on the whole dataset, or the model sees the test wording
+during fitting. The corrected form uses a `Pipeline`:
 
-```
-vec = TfidfVectorizer()
-X = vec.fit_transform([t["nl"]["prompt"] for t in tasks])
-clf = LogisticRegression(max_iter=1000)
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+
+clf = Pipeline([
+    ("vec", TfidfVectorizer()),
+    ("clf", LogisticRegression(max_iter=1000)),
+])
+X = [t["nl"]["prompt"] for t in tasks]
 scores = cross_val_score(clf, X, y, cv=5)
-print(f"classifier predicts operation: {scores.mean():.3f}")   # high = strong overlap; see note below
+print(f"classifier predicts operation: {scores.mean():.3f}")   # = wording carries operation signal
 ```
 
-When we ran this on the first pilot renderer, it printed **1.000** — the wording
-perfectly predicted the operation. It is important to read this correctly: much of that
-is **task signal, not leakage**. The prompt must name the operation ("sum", "absolute
-value"), so a classifier can trivially recover it from the wording; that is the task
-being solvable as stated, not a defect. The audit's real purpose is to catch the
-*opposite* problem — where some *other* accidental cue (a duplicated example, a leaked
-hidden-test value, an identifier that reveals the answer) is what drives the score. So
-we treat a high score as a flag to inspect *which* words drive it, not as proof of
-leakage by itself.
+When we first ran the equivalent diagnostic on the original pilot renderer, it printed
+**1.000** — the wording perfectly predicted the operation. It is important to read this
+correctly: much of that is **task signal, not leakage**. The prompt must name the
+operation ("sum", "absolute value"), so a classifier can trivially recover it from the
+wording; that is the task being solvable as stated, not a defect. So the high score
+measures **how separable the operations are by wording** — i.e. whether the prompt reads
+as a clean task spec — and we should not call it a "leakage" measure or equate it with
+"overlap." The audit's real purpose is to catch the *opposite* problem — where some
+*other* accidental cue (a duplicated example, a leaked hidden-test value, an identifier
+that reveals the answer) drives the score. We therefore treat the vocabulary separability
+as a first check and separately inspect for duplicated examples and accidental cues,
+rather than reading one number as proof of leakage.
 
 ## How to run it
 

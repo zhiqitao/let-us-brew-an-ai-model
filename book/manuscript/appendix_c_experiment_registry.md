@@ -304,9 +304,12 @@ reproducibility *confirmation* until an independent run reproduces them.
 
 1. **Clone the companion repository** and check out the `v20261001` tag.
 2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). The
-   project depends on `torch` and the standard library; we did not ship a
-   `requirements.txt` (the repo has none), so install the pinned torch version
-   explicitly, e.g. `pip install torch==2.14.0` (CPU wheel) in your environment.
+   training and evaluation core depends on `torch` and the standard library; the
+   *printed audits and diagnostics* additionally use `scikit-learn` (and the figure
+   scripts use `matplotlib`), so treat those as separate groups. We did not ship a
+   single `requirements.txt`, so pin the versions explicitly, e.g.
+   `pip install torch==2.14.0 scikit-learn matplotlib` (CPU wheels) in a clean
+   environment.
 3. **Prepare the data & tokenizer.** Generate the dataset files under
    `artifacts/datasets/` (e.g. `python scripts/generate_data.py`), then train the
    tokenizer. The pilot tokenizer is built inside `scripts/train.py` (via

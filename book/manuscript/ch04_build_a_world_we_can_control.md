@@ -23,8 +23,10 @@ That is exactly what we do with the model. It writes Python, and we need to run 
 Python safely and deterministically, while deciding precisely what it is *allowed* to
 do. The model could, in principle, write a program that reads files, connects to a
 network, or deletes things. It has no reason to — but we are not relying on its good
-intentions. We are building a world where those actions are *impossible*, not just
-discouraged.
+intentions. We build a restricted world where the *disallowed constructs covered by our
+validator* are rejected, not where every harmful program is made impossible: the sandbox
+rejects the constructs it knows to disallow, and it is a teaching evaluator, not a
+hostile-code security boundary.
 
 The deeper reason is that a controlled world makes the *experiment* clean. If the
 model's program could do anything — read a file, check the time, generate a random
@@ -174,13 +176,15 @@ built one of them:
 
 **Gate A — the output gate (the sandbox).** Already described above: the AST allowlist
 rejects any generated program that uses a construct outside the whitelist, before it
-runs. This guarantees that even if the model *tries* to emit `import os` or `eval()`,
-the program is refused. Gate A is a hard gate on the *syntax* of what the model
-*produces* — it is deterministic and airtight for the constructs it covers. Two
+runs. This means that if the model *tries* to emit `import os` or `eval()`, the command
+is refused. Gate A is a hard gate on the *syntax* of what the model
+*produces* — it is deterministic for the constructs it covers. Two
 qualifications: it bounds the *shape* of allowed programs, not their resource use or
 their adversarial resistance (an allowed program could still, in principle, loop or
 consume memory), and it is not production-grade isolation. As a scoping mechanism for
-this experiment it is sufficient; as a security sandbox it would not be.
+this experiment it is sufficient; as a security sandbox it would not be. Anyone who wants
+to try the execution steps described later should do so in a disposable, unprivileged,
+resource-limited environment with no sensitive files or network access.
 
 **Gate B — the input gate (the request validator).** This is the gate we build for the
 other half. It sits *in front of* the model and decides, from the incoming

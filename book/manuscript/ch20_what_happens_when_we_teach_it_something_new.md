@@ -128,10 +128,12 @@ weights are like that muscle — the gradient signal from new examples keeps pus
 them, and if nothing pulls them back toward the old behavior, the old behavior
 erases. Joint training is simply making sure the old examples are still in the rotation.
 
-The lesson generalizes directly: when a new capability is added to a model, *how* it
-is done matters more than any property of the model itself. If the new task is allowed
-to dominate the gradient signal and the old data is removed, the old capability
-collapses. If old and new stay interleaved, the model can hold both.
+The lesson generalizes with a scope caveat: in this experiment, *how* the task was
+introduced (interleaved vs. sequenced) determined whether the earlier capability was
+retained. That is a finding about **one schedule comparison**, not proof that procedure
+always matters more than the model. If the new task is allowed to dominate the gradient
+signal and the old data is removed, the old capability collapses; if old and new stay
+interleaved, the model can hold both.
 
 ## Reframing a common assumption
 

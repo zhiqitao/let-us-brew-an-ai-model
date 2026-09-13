@@ -14,12 +14,14 @@ reflex tied to specific words, and it'll break the moment the same thing is said
 different way.
 
 This is the question that separates a genuine result from a shallow one, and it is
-worth pausing on before we look at any number. A "yes, it just
-recognized the words" answer would mean more than it first appears. It would mean that every high score the model
-achieved — every impressive in-distribution number — was not evidence of learning at
-all. It was evidence of association. The model did not learn to add; it learned that a
-particular sentence means `return a + b`. That is a completely different claim, and it
-is the one we need to test.
+worth pausing on before we look at any number. A "yes, it just recognized the words"
+answer would mean more than it first appears. It would mean that every high score the
+model achieved — every impressive in-distribution number — was evidence of *association*
+with the phrasing, not evidence that it can regenerate the intended program. The model
+did not write the arithmetic itself — Python executes that when the program runs; what the
+model does is *emit source code* that stores the answer, and it learned that a particular
+sentence corresponds to `return a + b`. That is a different claim from saying it
+understands addition, and it is the one we need to test.
 
 ## The design: change what shouldn't matter
 
@@ -121,9 +123,10 @@ understanding of what we had built.
    **Why it fits:** the model tied training phrasings to code.
    **Control:** held one whole phrasing style out of training, tested on it.
    **Result:** 0.000.
-   **Ruled out:** that the model is grounded in the computation.
-   **Still open:** is it the wording pattern or the new vocabulary? Need a
-   surface-control to separate them.
+   **Ruled out:** that this model's success is *robust* to the chosen phrasing shift.
+   **Still open:** whether the failure reflects purely surface association or the new
+   vocabulary/wording pattern; and note that failure under one rewording does not, by
+   itself, establish that there is no internal semantic representation.
 
 2. **Suspected cheat: name memorization.**
    **Why it fits:** trained on `a,b`, maybe it hardwired those labels.
@@ -178,22 +181,27 @@ each by whether it asks for a **primitive** operation (1–10) or a **composite*
 15. "Double the first item in the list."
 16. "Return one less than the length of the list."
 
-**A note on the 11–16 label, because it is not uniform.** Only requests 12–16 map to the
-**six genuinely held-out composite operations** (`abs_add`, `sub_abs`, `sum_of_abs`,
-`max_add`, `double_first`, `len_minus_one`). Request 11 ("larger of the two, but as a
-positive number") maps to `cond_abs_max` — an operation that *is in the named* generator
-training pool (the pilot's primitive set) even though it is structurally composite. So
-request 11 is a case of a **familiar operation in new phrasing**, not held-out composite
-behavior. We therefore keep the "composite" label as shorthand but read requests 11–16 as
-a mixture: 11 tests new phrasing of a seen (but composite) op, and 12–16 test genuinely
-held-out composite tasks. The outcome (0/16) is the same either way, but the
-interpretation of *why* differs.
+**A note on the 11–16 label, because it is not uniform.** Only requests 12–16 map to
+**five genuinely held-out composite operations**, and note that `max_add` is *not*
+represented among them — there is no `max_add` request in this set. Requests 12–16 cover
+`abs_add`, `sub_abs`, `sum_of_abs`, `double_first`, and `len_minus_one`. Request 11
+("larger of the two, but as a positive number") maps to `cond_abs_max` — an operation that
+*is in the named* generator training pool (the pilot's primitive set) even though it is
+structurally composite. So request 11 is a case of a **familiar operation in new
+phrasing**, not held-out composite behavior. We therefore keep the "composite" label as
+shorthand but read requests 11–16 as a mixture: 11 tests new phrasing of a seen (but
+composite) op, and 12–16 test genuinely held-out composite tasks. Likewise, requests 1–10
+do not cover ten distinct primitives: two of them ("total" and "add these") both ask for
+addition, so they cover **nine** distinct operation IDs. The outcome (0/16) is the same
+either way, but the interpretation of *why* differs.
 
-Against the pilot checkpoint, the model solved **0 of 16**. Breaking it out, it solved
-**0 of 10 primitive** requests and **0 of 6 composite** requests. Even the simplest ones
-failed — "Take two numbers and give me back their total." produced malformed code;
-"Tell me which of these two is the bigger one." produced `def solve(a): return a a a
-+ a - b`. None produced a valid program.
+Against the pilot checkpoint, the model solved **0 of 16**. Read by training exposure,
+that is **0 of 11 requests asking for seen operations** (requests 1–10, which cover nine
+distinct primitive operation IDs with addition counted twice, plus request 11, which
+rephrases the seen `cond_abs_max`) and **0 of 5 genuinely held-out composite requests**
+(requests 12–16). Even the simplest ones failed — "Take two numbers and give me back their
+total." produced malformed code; "Tell me which of these two is the bigger one." produced
+`def solve(a): return a a a + a - b`. None produced a valid program.
 
 One of these needs an explicit caveat because it is genuinely **ambiguous** on its own.
 Request 11, "Return the larger of the two, but as a positive number," could mean
