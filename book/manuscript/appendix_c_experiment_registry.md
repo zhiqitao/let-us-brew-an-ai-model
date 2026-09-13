@@ -270,7 +270,7 @@ Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.p
 
 **Publication status: honest disclosure.** As of this writing the companion repository
 has a release tag **`v20261001`**, created for this book and pointing at release commit
-**`b40c95a7bbefcb400ca08cb340e9b67b4cfc4cd3`** (full hash), but the repository is **not yet
+**`6e46426aaba29adfceacfe00560add35ed26c5cd`** (full hash), but the repository is **not yet
 published at a public URL**. We therefore cannot yet give a reader a working link, and we
 do not want to pretend otherwise. We cite the **full commit hash**, not just the tag,
 because a Git tag is a movable reference and is not by itself immutable — the commit hash
