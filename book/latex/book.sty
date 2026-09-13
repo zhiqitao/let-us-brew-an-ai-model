@@ -179,6 +179,21 @@
 \titleformat*{\subsection}{\bfseries}
 \titleformat*{\subsubsection}{\itshape}
 \titlelabel{\thetitle.\hspace{1em}}
+% Do not hyphenate chapter/part display headings (long single words like "Conclusion"
+% or "Everything" otherwise break across lines). Set high hyphen penalties inside the
+% title format applied by titlesec.
+\titleformat{\part}[display]{\Huge\bfseries\centering\hyphenpenalty=10000\exhyphenpenalty=10000}{\textsc{part}~\thepart.}{1.5cm}{}[\vskip1.5cm]
+\titleformat{\chapter}[display]{\huge\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000}{\textsc{chapter}~\thechapter.}{1.5cm}{}[\vskip1.5cm]
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\bfseries}
+\titleformat*{\subsubsection}{\itshape}
+\titlelabel{\thetitle.\hspace{1em}}
+% Pull generous stretch into paragraphs so widow/orphan lines can be absorbed.
+\emergencystretch=1.5em
+% Keep section headings with at least the first following lines (avoid a heading
+% stranded at the bottom of a page).
+\usepackage{needspace}
+\newcommand{\keepsec}{\needspace{3\baselineskip}}
 
 % ---- Figures and tables ----
 \usepackage{graphicx}

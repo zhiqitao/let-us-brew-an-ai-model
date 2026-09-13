@@ -277,10 +277,18 @@ def wrap_figures(tex_path):
         if c:
             cap = c.group(1).strip()
         if not cap:
-            cap = re.search(r"alt=\{([^}]*)\}", opts).group(1).strip()
+            cap = re.search(r"alt=\\{([^}]*)\\}", opts).group(1).strip()
+        # Short form for the List of Figures (LOF) so a long caption does not wrap
+        # across several LOF lines. Registered via \captionof{figure}[short]{long}.
+        short = SHORT_FIG_CAPTIONS.get(path)
+        if short:
+            return (
+                "\\begin{center}\\begin{minipage}{\\linewidth}\\centering\\includegraphics[%s]{%s}\\\\\n"
+                "\\captionof{figure}[%s]{%s}\\end{minipage}\\end{center}" % (opts, path, short, cap)
+            )
         return (
-            "\\begin{center}\\includegraphics[%s]{%s}\\\\"
-            "\\captionof{figure}{%s}\\end{center}" % (opts, path, cap)
+            "\\begin{center}\\begin{minipage}{\\linewidth}\\centering\\includegraphics[%s]{%s}\\\\\n"
+            "\\captionof{figure}{%s}\\end{minipage}\\end{center}" % (opts, path, cap)
         )
     new = pat.sub(repl, tex)
     # Handle bare inline \pandocbounded{\includegraphics[alt={Cap}]{...}} that pandoc
@@ -291,8 +299,8 @@ def wrap_figures(tex_path):
     def repl2(m):
         opts, cap, path = m.group(1), m.group(2).strip(), m.group(3)
         return (
-            "\\begin{center}\\includegraphics[%s]{%s}\\\\"
-            "\\captionof{figure}{%s}\\end{center}" % (opts, path, cap)
+            "\\begin{center}\\begin{minipage}{\\linewidth}\\centering\\includegraphics[%s]{%s}\\\\"
+            "\\captionof{figure}{%s}\\end{minipage}\\end{center}" % (opts, path, cap)
         )
     new = pat2.sub(repl2, new)
     if new != tex:
@@ -364,6 +372,16 @@ SHORT_TITLES = {
     "What Does It Mean to Learn?": "What Does It Mean to Learn?",
     "An Annotated Tour of the Generator": "The Generator",
     "The Experiment Registry": "The Experiment Registry",
+}
+
+# Short forms for the List of Figures (LOF): a long caption otherwise wraps across
+# several LOF lines (the full caption still appears beneath the figure). Registered
+# via \captionof{figure}[short]{long}.
+SHORT_FIG_CAPTIONS = {
+    "figures/fig_model_size.png": "Model size vs composition",
+    "figures/fig_diversity.png": "Diversity vs quantity",
+    "figures/fig_continual.png": "Sequential vs joint training",
+    "figures/fig_apparatus.png": "The whole apparatus",
 }
 
 def fix_verbatim(path):
