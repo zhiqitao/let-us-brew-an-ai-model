@@ -119,6 +119,7 @@ values, **not** the absolute value of the list sum.
 | Continual learning | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | Composition exposure | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
 | Composition diversity | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
+| Quantity vs diversity | `diversity` | 128/4/4 · 900 · 1200 · 884,224 | diversity.json / — | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 |
 
 ## The scaling run: an honesty note on "same protocol"
 

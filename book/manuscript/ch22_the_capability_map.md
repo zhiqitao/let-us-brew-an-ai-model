@@ -1,4 +1,4 @@
-# 22. The Capability Map
+# 20. The Capability Map
 
 We have run a small, disciplined set of experiments and measured a coherent boundary.
 Rather than a list of results, let us draw the **capability map**: one picture that

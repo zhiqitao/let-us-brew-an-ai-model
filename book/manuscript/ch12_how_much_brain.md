@@ -4,9 +4,10 @@ When a model disappoints us, the instinctive response is: *make it bigger.* More
 parameters, more capacity, more "brain." If a small model can't combine what it knows,
 surely a larger one can.
 
-This chapter tests that instinct directly. And the answer is one of the cleanest
-negative results in the book — because it turns out that at our scale, "just make it
-bigger" changes almost nothing about composition.
+This chapter tests that instinct directly. And the answer is a striking and consistent
+negative result — because it turns out that at our scale, "just make it bigger" changes
+almost nothing about composition. (As §12.3 notes, this was not a perfectly single-variable
+sweep, but the composition result held at every size we ran — see §12.1.)
 
 ## The setup
 

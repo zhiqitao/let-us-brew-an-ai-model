@@ -1,4 +1,4 @@
-# 23. The Model Wasn't the Point: A Conclusion
+# 21. The Model Wasn't the Point: A Conclusion
 
 We began with a question that sounded technical: *can a small language model learn to
 solve programming tasks?* The answer we got was more interesting and less about the

@@ -1,4 +1,4 @@
-# 21. The Cost of Capability
+# 19. The Cost of Capability
 
 We've measured what the model can do and where it breaks. This chapter answers the
 last practical question: *what does each capability actually cost?*

@@ -1910,9 +1910,10 @@ When a model disappoints us, the instinctive response is: *make it bigger.* More
 parameters, more capacity, more "brain." If a small model can't combine what it knows,
 surely a larger one can.
 
-This chapter tests that instinct directly. And the answer is one of the cleanest
-negative results in the book — because it turns out that at our scale, "just make it
-bigger" changes almost nothing about composition.
+This chapter tests that instinct directly. And the answer is a striking and consistent
+negative result — because it turns out that at our scale, "just make it bigger" changes
+almost nothing about composition. (As §12.3 notes, this was not a perfectly single-variable
+sweep, but the composition result held at every size we ran — see §12.1.)
 
 ## The setup
 
@@ -3164,7 +3165,7 @@ recorded that we paid it, rather than merely asserting that we are trustworthy.
 
 ---
 
-# 20. What Happens When We Teach It Something New?
+# 18. What Happens When We Teach It Something New?
 
 Every chapter so far has asked how the model handles one task. But real capability
 isn't learned in one shot — it's *grown*, by adding new things over time. That raises
@@ -3227,13 +3228,14 @@ the start.*
 This is as clean a result as this book produced.
 
 **A note on what "0.000" does and does not show.** We measured the sequential run's A
-accuracy **right after phase A and again after phase B** on the same trajectory. The
-pre-B A accuracy was **1.000**; after learning B, the same run's A accuracy fell to
-**0.000**. So the sequential zero is not a case of "A was never acquired" — A was
-acquired to 1.000 and then lost. This is a **same-run before/after** measurement (the
-sequential pipeline re-run with an intermediate A evaluation right after phase A and
-before any B exposure; see Appendix C.8), which is what supports reading the sequential
-drop as genuine forgetting of learned A competence rather than under-acquisition.
+accuracy **right after phase A and again after phase B** along the same training
+trajectory. The pre-B A accuracy was **1.000**; after learning B, A fell to **0.000**. So
+the sequential zero is not a case of "A was never acquired" — A was acquired to 1.000 and
+then lost. This is a **same-trajectory before/after** measurement, taken on a dedicated
+re-run of the sequential pipeline with an intermediate A evaluation inserted right after
+phase A and before any B exposure (Appendix C.8; also captured in the `continual_preB`
+manifest) — which is what supports reading the sequential drop as genuine forgetting of
+learned A competence rather than under-acquisition.
 
 **Sequential training produces a much lower final A accuracy than joint training.** After
 learning arithmetic and then lists in sequence, the model's final A accuracy is **0.000**;
@@ -3338,9 +3340,10 @@ to always measure *both* the new and the old.
 This is a controlled, reproducible demonstration that the *training schedule* affects final
 task accuracy: the same workload produces a 0.000 final A accuracy when learned sequentially
 and a 1.000 final A accuracy when learned jointly, with identical B accuracy in both. The
-same-run pre-B measurement (Appendix C.8) confirms the sequential drop is genuine forgetting:
-A was 1.000 right after phase A and fell to 0.000 after B, so it was acquired and then lost
-rather than never learned. We make no resource-cost claim: both protocols used the same
+same-trajectory pre-B measurement (a dedicated re-run, Appendix C.8) confirms the
+sequential drop is genuine forgetting: A was 1.000 right after phase A and fell to 0.000
+after B, so it was acquired and then lost rather than never learned. We make no
+resource-cost claim: both protocols used the same
 example set and step budget, and we did not quantify compute precisely.
 
 What makes it feel like a real discovery is that the right answer was sitting in a
@@ -3354,7 +3357,7 @@ change to the way we were already working.
 
 ---
 
-# 21. The Cost of Capability
+# 19. The Cost of Capability
 
 We've measured what the model can do and where it breaks. This chapter answers the
 last practical question: *what does each capability actually cost?*
@@ -3544,7 +3547,7 @@ spend.
 
 ---
 
-# 22. The Capability Map
+# 20. The Capability Map
 
 We have run a small, disciplined set of experiments and measured a coherent boundary.
 Rather than a list of results, let us draw the **capability map**: one picture that
@@ -3872,7 +3875,7 @@ precisely is that it tells us *where* to look next.
 
 ---
 
-# 23. The Model Wasn't the Point: A Conclusion
+# 21. The Model Wasn't the Point: A Conclusion
 
 We began with a question that sounded technical: *can a small language model learn to
 solve programming tasks?* The answer we got was more interesting and less about the
@@ -4719,6 +4722,7 @@ values, **not** the absolute value of the list sum.
 | Continual learning | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | Composition exposure | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
 | Composition diversity | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
+| Quantity vs diversity | `diversity` | 128/4/4 · 900 · 1200 · 884,224 | diversity.json / — | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 |
 
 ## The scaling run: an honesty note on "same protocol"
 

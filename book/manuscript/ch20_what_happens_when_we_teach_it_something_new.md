@@ -1,4 +1,4 @@
-# 20. What Happens When We Teach It Something New?
+# 18. What Happens When We Teach It Something New?
 
 Every chapter so far has asked how the model handles one task. But real capability
 isn't learned in one shot — it's *grown*, by adding new things over time. That raises
@@ -61,13 +61,14 @@ the start.*
 This is as clean a result as this book produced.
 
 **A note on what "0.000" does and does not show.** We measured the sequential run's A
-accuracy **right after phase A and again after phase B** on the same trajectory. The
-pre-B A accuracy was **1.000**; after learning B, the same run's A accuracy fell to
-**0.000**. So the sequential zero is not a case of "A was never acquired" — A was
-acquired to 1.000 and then lost. This is a **same-run before/after** measurement (the
-sequential pipeline re-run with an intermediate A evaluation right after phase A and
-before any B exposure; see Appendix C.8), which is what supports reading the sequential
-drop as genuine forgetting of learned A competence rather than under-acquisition.
+accuracy **right after phase A and again after phase B** along the same training
+trajectory. The pre-B A accuracy was **1.000**; after learning B, A fell to **0.000**. So
+the sequential zero is not a case of "A was never acquired" — A was acquired to 1.000 and
+then lost. This is a **same-trajectory before/after** measurement, taken on a dedicated
+re-run of the sequential pipeline with an intermediate A evaluation inserted right after
+phase A and before any B exposure (Appendix C.8; also captured in the `continual_preB`
+manifest) — which is what supports reading the sequential drop as genuine forgetting of
+learned A competence rather than under-acquisition.
 
 **Sequential training produces a much lower final A accuracy than joint training.** After
 learning arithmetic and then lists in sequence, the model's final A accuracy is **0.000**;
@@ -172,9 +173,10 @@ to always measure *both* the new and the old.
 This is a controlled, reproducible demonstration that the *training schedule* affects final
 task accuracy: the same workload produces a 0.000 final A accuracy when learned sequentially
 and a 1.000 final A accuracy when learned jointly, with identical B accuracy in both. The
-same-run pre-B measurement (Appendix C.8) confirms the sequential drop is genuine forgetting:
-A was 1.000 right after phase A and fell to 0.000 after B, so it was acquired and then lost
-rather than never learned. We make no resource-cost claim: both protocols used the same
+same-trajectory pre-B measurement (a dedicated re-run, Appendix C.8) confirms the
+sequential drop is genuine forgetting: A was 1.000 right after phase A and fell to 0.000
+after B, so it was acquired and then lost rather than never learned. We make no
+resource-cost claim: both protocols used the same
 example set and step budget, and we did not quantify compute precisely.
 
 What makes it feel like a real discovery is that the right answer was sitting in a
