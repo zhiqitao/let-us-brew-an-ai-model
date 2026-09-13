@@ -216,7 +216,10 @@ nothing for the deep one.
   (the model memorizes the seen combinations at 0.667 but stays at 0.000 on held-out
   ones); and (b) diversifying the *surface* of the composite exposure (many phrasings ×
   id-sets) also leaves the held-out composite at **0.000**. So it is neither a "just
-  show it combinations" fix nor a "diversify the phrasing" fix.
+  show it combinations" fix nor a "diversify the phrasing" fix. Two caveats: the
+  held-out composite candidates all **failed parsing** before semantic evaluation, so
+  the *cause* of that zero is unresolved (it is a recorded negative, not a demonstrated
+  mechanism), and the data-scaling sweep did not evaluate composition at all.
 - The one lever we have **not** isolated is diversity of the *inner structure* — many
   *different* primitive pairings rather than different phrasings of the same few. That
   is the remaining open experiment.

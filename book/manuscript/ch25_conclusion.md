@@ -89,8 +89,9 @@ four-question taxonomy that refuses to collapse everything into one number — t
 actual achievements here.
 
 Each of these forms a discipline rather than a checklist. The sandbox's allowlist (not a
-blocklist) meant the model could never do something we did not intend, so a failure
-could always be attributed to the model rather than to an accident of environment. The
+blocklist) rejected the disallowed constructs covered by its validator, so a failure could
+more often be attributed to the model rather than to an accident of environment — within
+the constructs the gate covers. The
 judge's execution-based, semantic comparison meant a "correct" answer was objectively
 correct, not merely stylistically close. The mutation suite meant we doubted the judge
 before we trusted it. The baseline comparisons meant a number only had meaning relative

@@ -3689,7 +3689,10 @@ nothing for the deep one.
   (the model memorizes the seen combinations at 0.667 but stays at 0.000 on held-out
   ones); and (b) diversifying the *surface* of the composite exposure (many phrasings ×
   id-sets) also leaves the held-out composite at **0.000**. So it is neither a "just
-  show it combinations" fix nor a "diversify the phrasing" fix.
+  show it combinations" fix nor a "diversify the phrasing" fix. Two caveats: the
+  held-out composite candidates all **failed parsing** before semantic evaluation, so
+  the *cause* of that zero is unresolved (it is a recorded negative, not a demonstrated
+  mechanism), and the data-scaling sweep did not evaluate composition at all.
 - The one lever we have **not** isolated is diversity of the *inner structure* — many
   *different* primitive pairings rather than different phrasings of the same few. That
   is the remaining open experiment.
@@ -3885,8 +3888,9 @@ four-question taxonomy that refuses to collapse everything into one number — t
 actual achievements here.
 
 Each of these forms a discipline rather than a checklist. The sandbox's allowlist (not a
-blocklist) meant the model could never do something we did not intend, so a failure
-could always be attributed to the model rather than to an accident of environment. The
+blocklist) rejected the disallowed constructs covered by its validator, so a failure could
+more often be attributed to the model rather than to an accident of environment — within
+the constructs the gate covers. The
 judge's execution-based, semantic comparison meant a "correct" answer was objectively
 correct, not merely stylistically close. The mutation suite meant we doubted the judge
 before we trusted it. The baseline comparisons meant a number only had meaning relative
@@ -4600,20 +4604,20 @@ values, **not** the absolute value of the list sum.
 
 ## Registry
 
-| Experiment | Run ID | Arch (emb/L/H) | Steps | Seed | Model params | Artifacts (manifest / checkpoint) | Key result |
-|---|---|---|---|---|---|---|---|
-| Stage 1 pilot | `stage1_seed0` | 128/4/4 | 1500 | 0 | 884,224 | stage1.json / stage1.pt | in-dist 0.897; loss 5.84→0.019 |
-| Stage 3 surface | `stage3_surface` | 128/4/4 | 1500 | 0 | 884,224 | stage3_surface.json / stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
-| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 | 1500 | 0 | 884,224 | (uses pilot ckpt) / stage1.pt | in-dist 0.900; composition 0.000 |
-| Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 | 1000 | 0 | 6,500,352 | stage4_composition_6p5m.json / stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
-| Stage 4 — 10.2M | `stage4_10m` | 288/10/8 | 800 | 0 | 10,195,776 | stage4_composition_10m.json / stage4_10m.pt | in-dist 0.773; composition 0.000 |
-| Stage 4 — 29.3M | `stage4_29m` | 448/12/8 | 800 | 0 | 29,290,240 | stage4_composition.json / stage4_composition.pt | in-dist 0.897; composition 0.000 |
-| Data scaling | `data_scaling` | 128/4/4 | 800 | 0 | 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
-| Quantity vs diversity | `diversity` | 128/4/4 | 900 | 0 | 884,224 | diversity.json / — | minimal 0.500/0.000; high 1.000/1.000 |
-| Memorization | `memorization` | 128/4/4 | 1500 | 0 | 884,224 | memorization.json / — | 59/60 held-out; canary → general program |
-| Continual learning | `continual` | 128/4/4 | 700+700 | 0 | 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
-| Composition exposure | `composition_exposure_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
-| Composition diversity | `composition_diversity_pilot` | 128/4/4 | 1500 | 0 | 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
+| Experiment | Run ID | Config (arch / steps / seed / params) | Artifacts (manifest / checkpoint) | Key result |
+|---|---|---|---|---|
+| Stage 1 pilot | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1.json / stage1.pt | in-dist 0.897; loss 5.84→0.019 |
+| Stage 3 surface | `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json / stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
+| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | (uses pilot ckpt) / stage1.pt | in-dist 0.900; composition 0.000 |
+| Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 · 1000 · 0 · 6,500,352 | stage4_composition_6p5m.json / stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
+| Stage 4 — 10.2M | `stage4_10m` | 288/10/8 · 800 · 0 · 10,195,776 | stage4_composition_10m.json / stage4_10m.pt | in-dist 0.773; composition 0.000 |
+| Stage 4 — 29.3M | `stage4_29m` | 448/12/8 · 800 · 0 · 29,290,240 | stage4_composition.json / stage4_composition.pt | in-dist 0.897; composition 0.000 |
+| Data scaling | `data_scaling` | 128/4/4 · 800 · 0 · 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
+| Quantity vs diversity | `diversity` | 128/4/4 · 900 · 0 · 884,224 | diversity.json / — | minimal 0.500/0.000; high 1.000/1.000 |
+| Memorization | `memorization` | 128/4/4 · 1500 · 0 · 884,224 | memorization.json / — | 59/60 held-out; canary → general program |
+| Continual learning | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
+| Composition exposure | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
+| Composition diversity | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
 
 ## The scaling run: an honesty note on "same protocol"
 
