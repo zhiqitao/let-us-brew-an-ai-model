@@ -15,7 +15,7 @@ flag it.
 > learner of the narrow surface task (its in-distribution score is real) and still not be
 > a compositional reasoner. Each claim in the book is scoped to the specific measured
 > behavior, not to a general "the model is intelligent" assertion. (The four-question
-> capability map in Chapter 22 uses a `[MEASURED]` / `[DERIVED]` notation on the rows it
+> capability map in Chapter 20 uses a `[MEASURED]` / `[DERIVED]` notation on the rows it
 > labels; not every claim in the book carries an explicit tag, so read the scoping in the
 > sentence that introduces each number.)
 

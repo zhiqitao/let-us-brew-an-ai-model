@@ -2787,7 +2787,10 @@ Let us read this carefully, because the meaning is subtle.
 On the primitive operations it saw, the model scores **0.900 in aggregate** — that is
 the pass@1 averaged over all the primitive operations in the split, not a claim that
 every single primitive hits 0.900 individually (we did not publish a per-operation
-breakdown, so the aggregate should not be read as per-primitive accuracy). But on the
+breakdown, so the aggregate should not be read as per-primitive accuracy). (This 0.900 is
+the composition run's in-distribution score on primitives; the pilot's first pass scored
+0.897 on its own held-out split — see Chapter 10 and the cost table, so the two
+"familiar-prompt" figures are two measurements, not a discrepancy.) But on the
 composite operations, it scores **0.000** with the same aggregate reading. Not 0.1, not
 "sometimes," not "close." Zero. The model never produced a correct program for any
 composite operation it saw, even though every composite is a combination of primitives
@@ -4988,7 +4991,7 @@ flag it.
 > learner of the narrow surface task (its in-distribution score is real) and still not be
 > a compositional reasoner. Each claim in the book is scoped to the specific measured
 > behavior, not to a general "the model is intelligent" assertion. (The four-question
-> capability map in Chapter 22 uses a `[MEASURED]` / `[DERIVED]` notation on the rows it
+> capability map in Chapter 20 uses a `[MEASURED]` / `[DERIVED]` notation on the rows it
 > labels; not every claim in the book carries an explicit tag, so read the scoping in the
 > sentence that introduces each number.)
 
