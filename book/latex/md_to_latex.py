@@ -395,7 +395,7 @@ def fix_verbatim(path):
     with open(path, encoding="utf-8") as f:
         t = f.read()
     t = t.replace("\\begin{verbatim}",
-                  "\\begin{Verbatim}[breaklines=true, breakanywhere=true, fontsize=\\small]")
+                  "\\needspace{6\\baselineskip}\\begin{Verbatim}[breaklines=true, breakanywhere=true, fontsize=\\small]")
     t = t.replace("\\end{verbatim}", "\\end{Verbatim}")
     with open(path, "w", encoding="utf-8") as f:
         f.write(t)

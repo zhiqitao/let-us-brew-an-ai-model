@@ -2319,9 +2319,9 @@ program to write).
 
 | Case | Prompt (model input) | Target program | Hidden tests | New to the model input? |
 |------|----------------------|----------------|--------------|-------------------------|
-| **1. New task ID, same prompt + program** | same | same | different | **No** — only the evaluator's hidden-test *values* change; this is NOT a new model example |
-| **2. New prompt, same target program** | different | same | same | **Yes** — a new surface, same computation; a genuinely new model input |
-| **3. Unseen program structure** | different | different | different | **Yes** — new input AND new target structure (composing pieces never combined) |
+| **1. New task ID, same prompt + program** | same | same | different | **No** — only the hidden-test *values* change; not a new model example |
+| **2. New prompt, same target program** | different | same | same | **Yes** — new surface, same computation |
+| **3. Unseen program structure** | different | different | different | **Yes** — new input AND new structure |
 
 So "new" is not one thing. A new *task ID* that only changes the hidden-test values is
 new to the *evaluator*, not to the model. A genuinely new *prompt* within a familiar
@@ -3581,12 +3581,22 @@ Recall the four questions from Chapter 2. Here is what we measured for each, on 
 ~0.9M model. (This is a checklist of *questions*, not a ranking — answering Question 2
 does not require answering Question 1, and so on.)
 
-| Question | What it asks | Measured result | Status (in this setup) |
-|-------|--------------|-----------------|--------|
-| **Q1 Mem** | Could it be explained by remembering? | task-ID probe 59/60; held-out pair → general program | `[MEASURED]` not literal answer-parrots on familiar prompts; new-prompt transfer **not** tested (pilot reuses training prompts), and **program memorization remains a fully compatible explanation** (emitting a general program it saw many times) — so the stored-program reading is not excluded |
-| **Q2 Dist** | Does it work on new instances of the same task? | In-distribution 0.900 | `[MEASURED]` yes — here (new *inputs*, familiar prompt) |
-| **Q3 Surf** | Does it survive superficial change? | *Narrowly-trained model:* new wording → 0.000; new identifiers → 0.350. *Diversity-trained model (same count):* **1.000 / 1.000** — but the strong form ("generalizes to a never-seen family") is not established, since the surface test's family & identifiers were present in the diverse pool | `[MEASURED]` — brittle when trained narrowly; diverse training covers more surfaces (generalization to a truly-held-out family untested) |
-| **Q4 Struct** | Can it compose known pieces in unseen ways? | 0.000 (baselines also 0.000) | `[MEASURED]` no — in this regime |
+**Question 1 — Memory.** *Can it be explained by remembering?* **Measured:** task-ID probe
+59/60; held-out pair → general program. **Status:** `[MEASURED]` — not a literal
+answer-parrot on familiar prompts; new-prompt transfer untested, and program memorization
+is not excluded (see below).
+
+**Question 2 — Distribution.** *Does it work on new instances of the same task?*
+**Measured:** in-distribution 0.900. **Status:** `[MEASURED]` — yes, here (new *inputs*,
+familiar prompt).
+
+**Question 3 — Surface.** *Does it survive superficial change?* **Measured:** narrow —
+new wording 0.000, new identifiers 0.350; diverse — 1.000 / 1.000. **Status:** `[MEASURED]`
+— brittle when trained narrowly; diverse training covers more surfaces (a truly-held-out
+family untested).
+
+**Question 4 — Structure.** *Can it compose known pieces in unseen ways?* **Measured:**
+0.000 (baselines also 0.000). **Status:** `[MEASURED]` — no, in this regime.
 
 ### The evidence, keyed by checkpoint
 
@@ -3602,8 +3612,8 @@ distinction: we only use `NT` when the evaluation *could* have been run but was 
 
 **Panel 1 — code-generation evaluations, by checkpoint**
 
-| Checkpoint | params | familiar prompt | new identifiers | excluded wording | covered alternate surface | held-out composite |
-|---|---|---|---|---|---|---|
+| Checkpoint | params | familiar prompt | new IDs | excluded wording | covered alt. surface | held-out composite |
+||---|---|---|---|---|---|---|
 | `stage1.pt` (Stage 1 pilot) | 0.88M | 0.897 | — | — | — | 0.000 |
 | `stage3_surface.pt` (Stage 3) | 0.88M | 0.900 | 0.350 | 0.000 | — | — |
 | high-diversity (same count) | 0.88M | 1.000 | — | NT | 1.000 | — |

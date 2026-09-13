@@ -38,9 +38,9 @@ program to write).
 
 | Case | Prompt (model input) | Target program | Hidden tests | New to the model input? |
 |------|----------------------|----------------|--------------|-------------------------|
-| **1. New task ID, same prompt + program** | same | same | different | **No** — only the evaluator's hidden-test *values* change; this is NOT a new model example |
-| **2. New prompt, same target program** | different | same | same | **Yes** — a new surface, same computation; a genuinely new model input |
-| **3. Unseen program structure** | different | different | different | **Yes** — new input AND new target structure (composing pieces never combined) |
+| **1. New task ID, same prompt + program** | same | same | different | **No** — only the hidden-test *values* change; not a new model example |
+| **2. New prompt, same target program** | different | same | same | **Yes** — new surface, same computation |
+| **3. Unseen program structure** | different | different | different | **Yes** — new input AND new structure |
 
 So "new" is not one thing. A new *task ID* that only changes the hidden-test values is
 new to the *evaluator*, not to the model. A genuinely new *prompt* within a familiar
