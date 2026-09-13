@@ -414,12 +414,6 @@ def render_book_tex(build_lines):
 \\begin{{titlepage}}
 \\thispagestyle{{empty}}
 \\centering
-\\includegraphics[height=0.98\\textheight,keepaspectratio]{{figures/fig_cover.pdf}}
-\\end{{titlepage}}
-
-\\begin{{titlepage}}
-\\thispagestyle{{empty}}
-\\centering
 \\vspace*{{3cm}}
 {{\\Huge\\bfseries Let Us Brew an AI Model\\par}}
 \\vspace{{1.5cm}}
