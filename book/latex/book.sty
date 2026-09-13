@@ -45,8 +45,13 @@
 % breakanywhere lets a very long code token (no spaces) still wrap instead of
 % overflowing the 6x9 text block.
 \usepackage{fancyvrb}
-\renewenvironment{verbatim}{\Verbatim[breaklines=true, breakanywhere=true,
-    fontsize=\small]}{\endVerbatim}
+% fvextra provides the breaklines/breakanywhere keys for Verbatim (needed for long
+% code lines to wrap instead of overflowing the 6x9 text block). It is loaded so that
+% the generated chapter files can use \begin{Verbatim}[breaklines=true,...].
+\usepackage{fvextra}
+% (verbatim is rerouted to a breaking Verbatim in the generated book.tex preamble,
+% because a package-level DefineVerbatimEnvironment does not reliably enable
+% breaklines for pandoc's plain \begin{verbatim} in this document.)
 
 % Make escaped underscores breakable so long run IDs / filenames wrap instead of
 % overflowing the 6x9 text block. Only relaxes long-token breaking; never forces.

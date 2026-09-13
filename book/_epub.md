@@ -966,7 +966,7 @@ machines, our **rivals**, and why they are the most important comparison in the 
 ![The rivals](figures/fig_rivals.png)
 
 The template and the retrieval baseline are *sanity checks*, not a score ceiling. Our
-model is the question mark in the middle: it has to clear them to be worth anything,
+model is drawn next to them for comparison: it has to clear them to be worth anything,
 but beating a baseline is never a bad result — it just needs to be interpreted
 correctly.
 
@@ -1660,6 +1660,10 @@ it is what makes the resulting curve a *claim* rather than a coincidence.
 ## What it tells us
 ![Data scaling](figures/fig_data_scaling.png)
 
+*Every point is one run on a common held-out test set (one `pool_test`, 60 records per
+op, reused across sizes); four points describe a trend under these budgets, not a
+sharp threshold.*
+
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
 0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
 this narrow mapping.
@@ -1815,8 +1819,12 @@ records whether each produced a working program. On the two familiar requests ev
 checkpoint writes correct code; on a reworded request and a new combination, none
 does; on an out-of-scope request (which is not really a task from their training)
 none of them declines — the model just writes noise, which is exactly why Gate B
-belongs in front of it. The pattern is unmistakable: the green columns are the
-entire extent of what any of them learned.
+belongs in front of it. The pattern across these *illustrative* prompts is striking: on
+the two familiar requests every checkpoint writes correct code, while on the reworded
+request and the new combination none does, and on the out-of-scope request none of them
+declines — the model just writes noise. (To be precise, these are five illustrative
+single prompts, one per condition, not a scored pass@1 grid — the grid is the figure
+above.)
 
 ### What the models actually say
 
@@ -2155,15 +2163,22 @@ principle, and it is why every meaningful test in this book uses held-out data.
 But "new" is not one thing. Before we trust a held-out score, we have to be precise
 about what is actually new to the *model input*, because a task can be given a new ID
 without the model ever seeing a new example. The table below separates the three
-things that all get loosely called "a new task."
+things that all get loosely called "a new task," and it keeps prompt novelty separate
+from target-program novelty (a different prompt is not the same thing as a different
+program to write).
 
-![One task, three meanings of new](figures/fig_three_meanings.png)
+| Case | Prompt (model input) | Target program | Hidden tests | New to the model input? |
+|------|----------------------|----------------|--------------|-------------------------|
+| **1. New task ID, same prompt + program** | same | same | different | **No** — only the evaluator's hidden-test *values* change; this is NOT a new model example |
+| **2. New prompt, same target program** | different | same | same | **Yes** — a new surface, same computation; a genuinely new model input |
+| **3. Unseen program structure** | different | different | different | **Yes** — new input AND new target structure (composing pieces never combined) |
 
-Only a change to the model's input (a new prompt, or a new target structure) counts as
-a genuinely new example for the model. A new task ID that merely changes the hidden
-tests is new to the *evaluator*, not to the model. So when we say "the model never saw
-this," we mean the model-visible prompt was new — and where that is not verified, we
-flag it rather than assume it.
+So "new" is not one thing. A new *task ID* that only changes the hidden-test values is
+new to the *evaluator*, not to the model. A genuinely new *prompt* within a familiar
+family is new to the *model input* (and is a real in-distribution generalization test). A
+new *target structure* is new to the *target* as well. When the book says "the model
+never saw this," we mean the model-visible prompt was new — and where that is not
+verified, we flag it rather than assume it.
 
 ## Three tests
 
@@ -2357,6 +2372,10 @@ computation is identical in all three cases.
 
 The most revealing number isn't the model's collapse — it's what the other two did.
 ![Surface generalization](figures/fig_surface.png)
+
+*Each pass@1 is over 100 held-out problems per condition; the "new wording" column is
+the Stage-3 genuine held-out wording family (train × holdout prompt overlap = 0, see
+the novelty audit in Appendix C), and decoding is temperature-0.8 single-sample.*
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the

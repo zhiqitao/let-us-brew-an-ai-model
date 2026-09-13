@@ -74,6 +74,10 @@ computation is identical in all three cases.
 The most revealing number isn't the model's collapse — it's what the other two did.
 ![Surface generalization](figures/fig_surface.png)
 
+*Each pass@1 is over 100 held-out problems per condition; the "new wording" column is
+the Stage-3 genuine held-out wording family (train × holdout prompt overlap = 0, see
+the novelty audit in Appendix C), and decoding is temperature-0.8 single-sample.*
+
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
 surrounding phrasing. The **retrieval baseline** also falls (0.125) — it too had

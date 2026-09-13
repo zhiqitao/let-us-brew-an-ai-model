@@ -39,6 +39,10 @@ it is what makes the resulting curve a *claim* rather than a coincidence.
 ## What it tells us
 ![Data scaling](figures/fig_data_scaling.png)
 
+*Every point is one run on a common held-out test set (one `pool_test`, 60 records per
+op, reused across sizes); four points describe a trend under these budgets, not a
+sharp threshold.*
+
 **More data clearly helps in-distribution.** pass@1 climbs as the dataset grows, from
 0.10 at 100 examples to 0.64 at 3000. The model needs substantial data to learn even
 this narrow mapping.

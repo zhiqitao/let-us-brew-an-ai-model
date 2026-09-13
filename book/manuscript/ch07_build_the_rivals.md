@@ -9,7 +9,7 @@ machines, our **rivals**, and why they are the most important comparison in the 
 ![The rivals](figures/fig_rivals.png)
 
 The template and the retrieval baseline are *sanity checks*, not a score ceiling. Our
-model is the question mark in the middle: it has to clear them to be worth anything,
+model is drawn next to them for comparison: it has to clear them to be worth anything,
 but beating a baseline is never a bad result — it just needs to be interpreted
 correctly.
 

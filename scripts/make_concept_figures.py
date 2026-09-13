@@ -78,45 +78,46 @@ def save(fig, name):
 # =========================================================================
 def fig_apparatus():
     """Figure 4.1 -- the laboratory, two clean lanes inside the world boundary."""
-    fig, ax = new_fig(w=9.6, h=5.8)
-    ax.add_patch(FancyBboxPatch((4, 4), 92, 88, boxstyle="round,pad=0.02,rounding_size=3",
+    fig, ax = new_fig(w=9.6, h=6.0)
+    ax.add_patch(FancyBboxPatch((4, 4), 92, 84, boxstyle="round,pad=0.02,rounding_size=3",
                                 fc="#fbfaf6", ec=GREY, lw=1.2, linestyle="--"))
     ax.text(50, 90, "THE WORLD — a bounded universe we control", ha="center",
             va="center", fontsize=10.5, color=INK, fontweight="bold")
 
-    # gate notes in their own clear band (above the lanes, no flow boxes there)
-    box(ax, 6, 78, 44, 9, "GATE B (input): an off-scope request is rejected\nbefore the model sees it.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
-    box(ax, 56, 78, 38, 9, "GATE A (output): a program outside the whitelist\nis refused before running.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
+    # gate notes in their own clear band (well above the lanes, no flow boxes there)
+    box(ax, 6, 74, 44, 9, "GATE B (input): an off-scope request is rejected\nbefore the model sees it.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
+    box(ax, 54, 74, 40, 9, "GATE A (output): a program outside the whitelist\nis refused before running.", fc="#f6dede", ec=RED, fs=6.8, tc=RED)
 
     # TRAINING lane
-    ax.text(6, 73, "TRAINING", ha="left", fontsize=8, fontweight="bold", color=BLUE)
-    box(ax, 26, 68, 20, 11, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
-    box(ax, 52, 68, 24, 11, "PROMPT +\nREFERENCE", fc=BLUE, fs=8)
-    box(ax, 80, 68, 16, 11, "STUDENT\n0.9M", fc=ORANGE, fs=8, tc="white")
-    arrow(ax, 46, 73, 52, 73)
-    arrow(ax, 76, 73, 80, 73)
-    ax.text(64, 64, "→ training only", ha="center", fontsize=6.8, color=BLUE, style="italic")
+    ax.text(6, 69, "TRAINING", ha="left", fontsize=8, fontweight="bold", color=BLUE)
+    box(ax, 8, 54, 22, 11, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=8)
+    box(ax, 36, 54, 26, 11, "PROMPT +\nREFERENCE", fc=BLUE, fs=8)
+    box(ax, 68, 54, 20, 11, "STUDENT\n0.9M", fc=ORANGE, fs=8, tc="white")
+    arrow(ax, 30, 59, 36, 59)
+    arrow(ax, 62, 59, 68, 59)
+    ax.text(52, 50, "→ training only", ha="center", fontsize=6.8, color=BLUE, style="italic")
 
     # EVALUATION lane
-    ax.text(6, 55, "EVALUATION", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
-    box(ax, 26, 48, 20, 11, "NL SPEC\n(new)", fc=BLUE, fs=8)
-    box(ax, 52, 48, 24, 11, "STUDENT\ngenerates", fc=ORANGE, fs=8, tc="white")
-    box(ax, 80, 48, 16, 11, "JUDGE", fc=PURPLE, fs=8)
-    arrow(ax, 46, 53, 52, 53)
-    arrow(ax, 76, 53, 80, 53)
+    ax.text(6, 46, "EVALUATION", ha="left", fontsize=8, fontweight="bold", color=PURPLE)
+    box(ax, 8, 32, 22, 11, "NL SPEC\n(new)", fc=BLUE, fs=8)
+    box(ax, 36, 32, 26, 11, "STUDENT\ngenerates", fc=ORANGE, fs=8, tc="white")
+    box(ax, 68, 32, 20, 11, "JUDGE", fc=PURPLE, fs=8)
+    arrow(ax, 30, 37, 36, 37)
+    arrow(ax, 62, 37, 68, 37)
 
-    # hidden tests box below judge, feeding up
-    box(ax, 66, 26, 30, 14, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE, fs=8)
-    arrow(ax, 88, 40, 88, 48)   # up into judge (at x=88, judge spans 80-96)
+    # hidden tests box below judge, feeding up into the judge
+    box(ax, 68, 14, 20, 11, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE, fs=7)
+    arrow(ax, 78, 25, 78, 32)   # up into judge
 
-    # verdict below judge's right
-    ax.text(88, 22, "→ VERDICT\npass / fail", ha="center", fontsize=7, color=PURPLE, style="italic")
+    # verdict node after/right of the judge
+    box(ax, 90, 32, 8, 11, "VERDICT\npass/fail", fc="#dff0e3", ec=GREEN, fs=6.5, tc=GREEN)
+    arrow(ax, 88, 37, 90, 37, color=GREEN)
 
     # bottom: explanation caption on the LEFT half, call-out on the RIGHT half
-    box(ax, 6, 8, 50, 12,
+    box(ax, 6, 2, 52, 10,
         "Only the prompt + reference enter training; the hidden tests\ngo to the judge, never to the model. The judge runs the model's\ngenerated program against those tests.",
         fc="#fbfaf6", ec=PURPLE, fs=7.2, tc=INK)
-    box(ax, 60, 8, 34, 12, "the model is the instrument;\nthe experiment is the subject",
+    box(ax, 62, 2, 34, 10, "the model is the instrument;\nthe experiment is the subject",
         fc="#fbfaf6", ec=INK, fs=8, tc=INK)
     save(fig, "fig_apparatus.png")
 
@@ -170,8 +171,8 @@ def fig_teacher():
     fig, ax = new_fig(w=9.0, h=5.0)
     ax.text(50, 95, "THE TEACHER: one semantic record, three artefacts",
             ha="center", va="center", fontsize=10.5, fontweight="bold", color=INK)
-    # semantic record box
-    box(ax, 34, 66, 32, 16, "SEMANTIC RECORD\nop=add, ins=2 nums,\naggr=sum", fc=GREEN, fs=8.5)
+    # semantic record box — use the real record fields (operation / args / output_type)
+    box(ax, 34, 66, 32, 16, "SEMANTIC RECORD\noperation=add\nargs=[a:int, b:int]\noutput_type=int", fc=GREEN, fs=8.5)
     for dx in (21, 50, 79):
         arrow(ax, 50, 66, dx, 52)
     # three artefacts
@@ -308,7 +309,7 @@ def fig_rivals():
     box(ax, 70, 62, 24, 18, "OUR MODEL\n0.88M", fc=ORANGE, fs=9)
     note(ax, 6, 48, "a fixed hand-written\npattern. A sanity floor.", fs=8, color=INK)
     note(ax, 39, 48, "copies the closest\nmemory. A sanity check.", fs=8, color=INK)
-    note(ax, 71, 48, "the actual question:\ndoes it clear both?", fs=8, color=INK)
+    note(ax, 71, 48, "the actual question:\ndoes it beat them?", fs=8, color=INK)
     box(ax, 6, 14, 88, 18,
         "The baselines are sanity checks, not a score ceiling. A result is truthful\nif we know which baseline already solves it and whether the model adds anything.",
         fc="#fbfaf6", ec=INK, fs=9, tc=INK)
@@ -351,22 +352,28 @@ def fig_brain():
 
 def fig_brew():
     """Figure 9.1 -- the brew loop, distinguishing training from the frozen final audit."""
-    fig, ax = new_fig(w=9.2, h=5.2)
-    ax.text(50, 95, "THE BREW LOOP", ha="center", va="center", fontsize=11,
+    fig, ax = new_fig(w=9.4, h=5.6)
+    ax.text(50, 96, "THE BREW LOOP", ha="center", va="center", fontsize=11,
             fontweight="bold", color=INK)
-    # training side
-    box(ax, 8, 66, 26, 16, "GENERATE DATA\n(semantic-first)", fc=GREEN, fs=8.5)
-    box(ax, 42, 66, 26, 16, "TRAIN\nfixed step budget\n(e.g. 1500 steps)", fc=ORANGE, fs=8)
-    arrow(ax, 34, 74, 42, 74)
-    # dev evaluation feeds iteration
-    box(ax, 76, 66, 22, 16, "DEV EVALUATE\n(informs iteration)", fc=PURPLE, fs=7.5)
-    arrow(ax, 68, 74, 76, 74)
-    # frozen final audit (separate, not part of the loop)
-    box(ax, 42, 36, 26, 16, "FROZEN FINAL AUDIT\n(one-time, on the\nnever-moved test set)", fc=BLUE, fs=7.5)
-    arrow(ax, 55, 66, 55, 52)
-    note(ax, 74, 44, "the frozen audit runs once\non the held-out test; it is NOT\nfed back to change training.", fs=7.0, color=INK)
+    # --- DEV LOOP (top): generate -> train -> dev evaluate (-> back to generate) ---
+    box(ax, 8, 70, 26, 14, "GENERATE DATA\n(semantic-first)", fc=GREEN, fs=8.5)
+    box(ax, 40, 70, 26, 14, "TRAIN\nfixed step budget\n(e.g. 1500 steps)", fc=ORANGE, fs=8)
+    box(ax, 72, 70, 22, 14, "DEV EVALUATE\n(informs iteration)", fc=PURPLE, fs=7.5)
+    arrow(ax, 34, 77, 40, 77)
+    arrow(ax, 66, 77, 72, 77)
+    # dev feedback edge: a separate loop above the boxes, back to GENERATE DATA
+    arrow(ax, 83, 84, 21, 84, color=PURPLE, lw=1.2)
+    arrow(ax, 21, 84, 21, 76, color=PURPLE, lw=1.2)
+    ax.text(51, 88, "dev feedback: what we measure (loss / dev score) shapes the next round of data & hyperparams.",
+            ha="center", fontsize=7, color=PURPLE, style="italic")
+
+    # --- FROZEN FINAL AUDIT (bottom, separate lane) ---
+    box(ax, 40, 40, 26, 14, "FROZEN FINAL AUDIT\n(one-time, on the\nnever-moved test set)", fc=BLUE, fs=7.5)
+    arrow(ax, 53, 70, 53, 56, color=BLUE)
+    note(ax, 72, 44, "the frozen audit runs once\non the held-out test; it is NOT\nfed back to change training.", fs=7.0, color=INK)
     note(ax, 8, 44, "the dev loop that iterates is separate\nfrom the one-time final audit.", fs=7.5, color=INK, ha="center")
-    note(ax, 8, 16, "each dev pass feeds the next: what we measure shapes what we generate;\nbut the final numbers come from a single frozen audit, not an adaptive one.",
+
+    note(ax, 8, 18, "each dev pass feeds the next: what we measure shapes what we generate;\nbut the final numbers come from a single frozen audit, not an adaptive one.",
          fs=7.5, color=INK, ha="center")
     save(fig, "fig_brew.png")
 

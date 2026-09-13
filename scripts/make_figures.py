@@ -57,8 +57,8 @@ model = [0.900, 0.350, 0.000]; template = [0.800, 0.800, 0.875]; retrieval = [1.
 C_MODEL, C_TEMPLATE, C_RETRIEVAL = "#4C72B0", "#55A868", "#C44E52"
 x = np.arange(len(labels)); w = 0.25
 ax.bar(x-w, model, w, label="MODEL", color=C_MODEL)
-ax.bar(x, template, w, label="TEMPLATE", color=C_TEMPLATE)
-ax.bar(x+w, retrieval, w, label="RETRIEVAL", color=C_RETRIEVAL)
+ax.bar(x, template, w, label="TEMPLATE", color=C_TEMPLATE, hatch="//")
+ax.bar(x+w, retrieval, w, label="RETRIEVAL", color=C_RETRIEVAL, hatch="xx")
 for xi, v in zip(x-w, model): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=7)
 for xi, v in zip(x, template): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=7)
 for xi, v in zip(x+w, retrieval): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=7)
@@ -79,19 +79,22 @@ ax.set_xticks(sizes); ax.set_xticklabels([labelsize[s] for s in sizes])
 ax.set_ylim(0, 1.05); ax.set_title("Data scaling (measured, one seed)"); ax.grid(alpha=0.3)
 save(fig, "fig_data_scaling.png")
 
-# ---- 4. Diversity vs quantity (measured) ----
-# Rename the dual legend precisely; annotate that high-diversity = COVERAGE (the
-# review's D02 point), and show the 0.000 explicitly.
+# ---- 4. Diversity vs quantity (measured) ---- 
+# The shared evaluation is the same "alternate surface" test under both conditions.
+# For the minimal condition the test shifts identifiers AND family; for the high-diversity
+# condition the surface is within the training family (so its 1.000 is coverage of a seen
+# surface). Name the evaluation neutrally and annotate the overlap difference per condition.
 fig, ax = plt.subplots()
 labels = ["minimal diversity", "high diversity"]
 in_d = [0.500, 1.000]; surf = [0.000, 1.000]
 x = np.arange(len(labels)); w = 0.3
 ax.bar(x-w/2, in_d, w, label="in-distribution", color="#4C72B0")
-ax.bar(x+w/2, surf, w, label="surface (coverage)", color="#55A868")
+ax.bar(x+w/2, surf, w, label="alternate-surface test", color="#55A868")
 for xi, v in zip(x-w/2, in_d): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 for xi, v in zip(x+w/2, surf): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.12); ax.set_ylabel("pass@1")
-ax.set_title("Diversity vs quantity (same example count; surface = coverage)")
+ax.set_title("Diversity vs quantity (same example count, same alternate-surface test)\n"
+             "minimal: test is outside its narrow surface → 0.000; high: surface is in its training family → 1.000 (coverage)")
 ax.legend(loc="upper left", frameon=False, fontsize=8); ax.grid(axis="y", alpha=0.3)
 save(fig, "fig_diversity.png")
 
@@ -138,14 +141,19 @@ ax.set_yticks(np.arange(len(models))); ax.set_yticklabels(models, fontsize=8)
 for i in range(len(models)):
     for j in range(len(cases)):
         v = data[i, j]
-        mark = "\u2713" if v == 1 else ("\u2717" if v == 0 else "x")
-        ax.text(j, i, mark, ha="center", va="center", color="white", fontsize=11, fontweight="bold")
-ax.set_title("Illustrative prompts on five selected checkpoints\n(one prompt per case; green=correct, red=no valid program)")
+        if v == 1:
+            mark, col = "\u2713", "white"
+        elif v == 0:
+            mark, col = "\u2717", "white"
+        else:  # out-of-scope: NOT scored, use a neutral dash (not an X that implies failure)
+            mark, col = "\u2013", "#666666"
+        ax.text(j, i, mark, ha="center", va="center", color=col, fontsize=11, fontweight="bold")
+ax.set_title("Illustrative prompts on five selected checkpoints\n(one prompt per case; green=correct, red=no valid program, \u2013=out of scope, unscored)")
 ax.set_ylabel("checkpoint (params)")
 import matplotlib.patches as mpatches
 ax.legend(handles=[mpatches.Patch(color="#55A868", label="correct program"),
                    mpatches.Patch(color="#C44E52", label="no valid program"),
-                   mpatches.Patch(color="#bbbbbb", label="out of scope (not a task)")],
+                   mpatches.Patch(color="#bbbbbb", label="out of scope (unscored, not a task)")],
           loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=3, fontsize=8)
 fig.tight_layout()
 save(fig, "fig_live_sweep.png")

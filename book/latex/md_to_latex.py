@@ -321,6 +321,24 @@ SHORT_TITLES = {
     "The Experiment Registry": "The Experiment Registry",
 }
 
+def fix_verbatim(path):
+    """Rewrite pandoc's plain \\begin{verbatim} into fancyvrb's Verbatim with
+    long-line wrapping.
+
+    fancyvrb's Verbatim supports breaklines/breakanywhere; the plain pandoc
+    'verbatim' environment does not honour them reliably when redefined via
+    renewenvironment, so we emit Verbatim directly with the wrapping options.
+    """
+    with open(path, encoding="utf-8") as f:
+        t = f.read()
+    t = t.replace("\\begin{verbatim}",
+                  "\\begin{Verbatim}[breaklines=true, breakanywhere=true, fontsize=\\small]")
+    t = t.replace("\\end{verbatim}", "\\end{Verbatim}")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(t)
+
+
+
 def convert_chapter(fn, mapping, outbase):
     txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
     # strip the H1 chapter title (book.tex supplies \chapter{title})
@@ -341,6 +359,7 @@ def convert_chapter(fn, mapping, outbase):
     if r.returncode != 0:
         print("pandoc fail %s: %s" % (outbase, r.stderr[-300:]))
     fix_colspec(out); fix_figure_width(out); wrap_figures(out); fix_wide_tables(out)
+    fix_verbatim(out)
     return out
 
 def main():
@@ -486,7 +505,7 @@ We set the scope deliberately narrow, and we repeat it throughout. All the resul
   \item \textbf{Run it yourself if you like.} The scripts, configs, and a release tag are in the companion repository (see Appendix C). On this CPU-only setup, the pilot trains in minutes; the larger models take longer.
 \end{itemize}
 
-The honest payoff is not ``small models are inadequate. It is a precise map of where the boundary sits under our tests --- and the many ways a promising-looking number can be an artifact of how we measured it."""
+The honest payoff is not ``small models are inadequate.'' It is a precise map of where the boundary sits under our tests --- and the many ways a promising-looking number can be an artifact of how we measured it."""
 
 if __name__ == "__main__":
     main()
