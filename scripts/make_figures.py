@@ -108,16 +108,16 @@ fig, ax = plt.subplots()
 labels = ["sequential\n(A then B)", "joint\n(A+B)"]
 # group 1 = A-task accuracy (final), split into before-B and after-B for sequential
 a_final = [0.000, 1.000]
-a_afterA = [1.000, None]   # sequential only: A measured right after phase A
+a_afterA = [1.000, 0.0]   # sequential only: A measured right after phase A (joint: 0 hides it)
 b_acq = [0.889, 0.889]
 x = np.arange(len(labels)); w = 0.28
 # A accuracy before B (sequential only), drawn as a lighter bar beside the final bar
-ax.bar(x-w, a_afterA if a_afterA[0] is not None else [0,0], w, label="A right after phase A\n(sequential, before B)",
+ax.bar(x-w, a_afterA, w, label="A right after phase A\n(sequential, before B)",
        color="#9dc1e6")
 ax.bar(x, a_final, w, label="final A-task accuracy", color="#4C72B0")
 ax.bar(x+w, b_acq, w, label="final B-task accuracy", color="#55A868")
 for xi, v in zip(x-w, a_afterA):
-    if v is not None: ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
+    if v and v > 0.001: ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 for xi, v in zip(x, a_final): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 for xi, v in zip(x+w, b_acq): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
 ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.15); ax.set_ylabel("pass@1")
