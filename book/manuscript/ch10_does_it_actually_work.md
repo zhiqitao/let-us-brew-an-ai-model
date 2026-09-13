@@ -27,6 +27,17 @@ surface/composition holdouts, whose prompts genuinely never appear in training).
 the moment of truth for the whole apparatus: everything we built — the world, the
 teacher, the judge, the rivals — converges on this measurement.
 
+| Quantity | Training | Pilot test |
+|---|---:|---:|
+| Records | 1,400 | 300 |
+| Prompt strings | 21 | 21 |
+| Test prompts also seen | n/a | 21 of 21 |
+| What changes at test | n/a | task ID, inputs |
+
+A key distinction to keep straight: the numerical inputs go to **Python** (the model's
+program is executed on them), while the **language model** receives only the prompt string.
+So a new task ID changes what the *judge* feeds the program, not what the *model* sees.
+
 ## One task, end to end
 
 The cleanest way to see what the judge does is to follow one task from prompt to

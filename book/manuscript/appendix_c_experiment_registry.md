@@ -131,6 +131,21 @@ training runs.
 
 ## Denominator and uniqueness notes
 
+- **Decoding and extraction settings (run record).** Sampled decoding is
+  temperature-0.8 single-sample, one fresh `model.generate` call **per evaluation
+  record** (`src/eval/evaluator_runner.py`: `for t in tasks: candidate_fn(t)`), so records
+  that share a prompt string still each get an independent draw (no output is cached or
+  reused). The generation call passes only `max_new`; the temperature and sampling come
+  from `src/model/gpt.py`'s default (0.8, `torch.multinomial`). Extraction truncates the
+  decoded sequence at the first NUL byte (the model pads with `\x00`). The training seed
+  is recorded per run; generation uses the same RNG state unless reset, so we report the
+  training seed and note sampling is stochastic. `max_new`, stop policy, token-ID
+  mapping, and the exact extraction rules live in `evaluator_runner.py`/`gpt.py` and are
+  part of each run's environment, not re-derived per publication. Because the pilot test
+  reuses only 21 prompt strings over 300 records, a single sample per record gives
+  within-prompt replicates for the familiar-prompt aggregate, but does **not** give a
+  per-prompt success-probability estimate for a brand-new prompt.
+
 - **pass@1 denominators.** The pilot used 300 held-out test **records** (1,400 train /
   300 val / 300 test), drawn from only **21 distinct prompt strings** (see the novelty
   audit; the test prompts are not new). Stage 4 used 300 held-out primitives for

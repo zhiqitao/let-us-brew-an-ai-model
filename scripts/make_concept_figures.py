@@ -185,8 +185,10 @@ def fig_teacher():
     # drift note in a clear call-out box at the bottom (no overlap, fully contained)
     box(ax, 6, 6, 88, 16,
         "Semantic-first: the program, task, and tests all derive from ONE record.\n"
-        "This reduces drift, but does not make disagreement impossible — renderer\n"
-        "bugs or shared assumptions can still make all three consistently wrong.",
+        "This reduces drift, but is not a guarantee — and the tests being\n"
+        "independently implemented does not mean the oracle is independently\n"
+        "validated. Renderer bugs or a shared wrong assumption can still make all\n"
+        "three consistently wrong.",
         fc="#fbfaf6", ec=GREEN, fs=8, tc=INK)
     save(fig, "fig_teacher.png")
 
@@ -241,12 +243,8 @@ def fig_ladder():
     ]
     for y, lab, _k, c in levels:
         box(ax, 6, y, 88, 14, lab, fc=c, fs=8.5)
-    # side tag: the order is a checklist, not an ascent of trust
-    note(ax, 6, 5, "Report these separately. Success on one does not establish success on another:\n"
-          "a model can pass Q2 but fail Q3 and Q4, and a Q4 success alone does not rule out\n"
-          "every memorization explanation (a well-audited novel-structure success constrains\n"
-          "some, but not all, of them).",
-         fs=7.5, color=INK)
+    # compact footer; the fuller qualification lives in the chapter text
+    note(ax, 6, 5, "Report these separately — passing one question does not establish the next.", fs=8, color=INK)
     save(fig, "fig_ladder.png")
 
 def fig_task():
@@ -324,30 +322,26 @@ def fig_brain():
     box(ax, 4, 70, 20, 14, "TOKENS\n(291 vocab)", fc=BLUE, fs=8)
     box(ax, 31, 70, 18, 14, "EMBED\ntok=291×128\npos=128×128", fc=BLUE, fs=7.5)
     box(ax, 56, 70, 20, 14, "4 BLOCKS\ncausal attention\nMLP 128→512→128", fc=ORANGE, fs=7.5)
-    box(ax, 82, 70, 16, 14, "OUTPUT\n291 logits\n→ token", fc=GREEN, fs=7.5)
+    box(ax, 82, 70, 16, 14, "OUTPUT\n291 logits\n→ sampled token", fc=GREEN, fs=7.5)
     arrow(ax, 24, 77, 31, 77)
     arrow(ax, 49, 77, 56, 77)
     arrow(ax, 76, 77, 82, 77)
-    autoref = "p(t+1)"  # autoregressive feedback label
-    ax.text(50, 88, "autoregressive: each predicted token is fed back as the next input",
+    # autoregressive feedback loop routed BELOW the block (high-contrast, avoids the title)
+    arrow(ax, 90, 70, 90, 46, color=INK, lw=1.2, style="-|>", ls="--")
+    arrow(ax, 90, 46, 8, 46, color=INK, lw=1.2, ls="--")
+    arrow(ax, 8, 46, 8, 70, color=INK, lw=1.2, style="-|>", ls="--")
+    ax.text(49, 42, "the sampled output token is fed back as the next input",
             ha="center", fontsize=7.5, color=INK, style="italic")
-    # autoregressive feedback loop (dashed, above the boxes, output -> back to input)
-    arrow(ax, 90, 80, 90, 92, color=GREY, lw=1.1, style="-|>", ls="--")
-    arrow(ax, 90, 92, 12, 92, color=GREY, lw=1.1, ls="--")
-    arrow(ax, 12, 92, 12, 80, color=GREY, lw=1.1, style="-|>", ls="--")
-    ax.text(51, 95, "the output token is fed back as the next input",
-            ha="center", fontsize=7, color=GREY, style="italic")
-    # key dimensions notes
-    note(ax, 4, 60, "parameters: 884,224 total (53,632 embedding\n+ 830,592 non-embedding). 4 layers × 4 heads, \nn_embd=128, block_size=128.", fs=7.2, color=INK)
-    note(ax, 4, 30, "small enough to train on one CPU core,\nbut with real (causal) self-attention.", fs=7.5, color=INK)
-    box(ax, 56, 26, 42, 24, "everything is measured: the same\narchitecture, just wider / deeper\n(6.5M, 10.2M, 29.3M).\n\nThe generated program is written by the\noutput head; a separate AST allowlist\ngates what is allowed to run.",
+    # key dimensions note
+    note(ax, 4, 64, "parameters: 884,224 total (53,632 embedding\n+ 830,592 non-embedding). 4 layers × 4 heads,\nn_embd=128, block_size=128, temperature-0.8\nsampled decoding.", fs=7.2, color=INK)
+    box(ax, 56, 26, 42, 22, "same architecture, just wider / deeper\nfor the size sweep (6.5M, 10.2M, 29.3M).",
         fc="#fbfaf6", ec=INK, fs=7.5, tc=INK)
     box(ax, 4, 6, 94, 14, "This is the instrument. The experiment is the subject — the book is about what\nthe model learns, not about how big it is.",
         fc="#fbfaf6", ec=INK, fs=8.5, tc=INK)
     save(fig, "fig_brain.png")
 
 def fig_brew():
-    """Figure 9.1 -- the brew loop, distinguishing training from the frozen final audit."""
+    """Figure 9.1 -- the brew loop, distinguishing training from the final audit."""
     fig, ax = new_fig(w=9.4, h=5.6)
     ax.text(50, 96, "THE BREW LOOP", ha="center", va="center", fontsize=11,
             fontweight="bold", color=INK)
@@ -363,14 +357,14 @@ def fig_brew():
     ax.text(51, 88, "dev feedback: what we measure (loss / dev score) shapes the next round of data & hyperparams.",
             ha="center", fontsize=7, color=PURPLE, style="italic")
 
-    # --- FROZEN FINAL AUDIT (bottom, separate lane) ---
-    box(ax, 40, 40, 26, 14, "FROZEN FINAL AUDIT\n(one-time, on the\nnever-moved test set)", fc=BLUE, fs=7.5)
+    # --- FINAL AUDIT (bottom, separate lane) ---
+    box(ax, 36, 40, 34, 14, "FINAL AUDIT\n(one report on the\nfrozen test records)", fc=BLUE, fs=7.5)
     arrow(ax, 53, 70, 53, 56, color=BLUE)
-    note(ax, 72, 44, "the frozen audit runs once\non the held-out test; it is NOT\nfed back to change training.", fs=7.0, color=INK)
-    note(ax, 8, 44, "the dev loop that iterates is separate\nfrom the one-time final audit.", fs=7.5, color=INK, ha="center")
+    note(ax, 72, 44, "recommended workflow: the final audit runs once\non the frozen records and is NOT fed back to\nchange training. (In our runs the pilot test records\nreused the training prompt strings -- see the novelty\naudit -- so 'frozen' refers to the record list, not to\ngenuinely-seen-new prompts.)", fs=6.6, color=INK)
+    note(ax, 8, 44, "the dev loop that iterates is separate\nfrom the one-time final audit.", fs=7.2, color=INK, ha="center")
 
-    note(ax, 8, 18, "each dev pass feeds the next: what we measure shapes what we generate;\nbut the final numbers come from a single frozen audit, not an adaptive one.",
-         fs=7.5, color=INK, ha="center")
+    note(ax, 8, 18, "each dev pass feeds the next: what we measure shapes what we generate;\nbut the headline numbers come from a single frozen audit, not an adaptive one.",
+         fs=7.2, color=INK, ha="center")
     save(fig, "fig_brew.png")
 
 def fig_capability_map():

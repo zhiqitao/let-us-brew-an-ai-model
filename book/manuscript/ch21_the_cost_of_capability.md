@@ -27,17 +27,28 @@ works only under conditions the real world will not respect.
 
 ## The cost matrix
 
-Each row is a capability or behavior from our experiments; the columns are the
-measurable costs — data, parameters, training steps, and — decisively — the
-*generalization* cost.
+Each row is a capability or behavior from our experiments. The first three columns are
+the **resource budget** (data, parameters, steps); the last three are the **measured
+evaluation outcome** (in-distribution accuracy, surface generalization, composition). Keep
+these two groups apart: a resource figure is an input, an outcome is a measurement. Where
+an outcome was **not** measured for that row we mark it `NT` (not tested) rather than a
+cross or a dash, because "not run" and "failed" are different.
 
 | Capability | data (examples) | parameters | steps | in-dist pass@1 | surface generalizes? | composes? |
 |------------|-----------------|------------|-------|----------------|----------------------|-----------|
 | Single primitive (add, sub, …) | 1400 | 0.88M | 1500 | 0.900 | ✗ (new wording → 0.000) | ✗ |
-| New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | — |
+| New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | NT |
 | Composition (abs_add, sum_of_abs) | not achieved within tested budgets | 0.9M–29.3M | 1500 | varied by run (exposed) / **0.000** on held-out | ✗ | ✗ (0.000) |
-| Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | — | ✗ (A forgotten) |
-| Continual: A+B (joint) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | — | ✗ |
+| Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | NT | NT |
+| Continual: A+B (joint) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | NT | NT |
+
+*(The continual rows test task *retention*, not composition — the "composes?" column is `NT`
+for them because composition of A and B was not tested there. The surface column is likewise
+`NT`; only in-distribution accuracy was measured for those runs.)*
+
+*Legend: ✗ = measured and failed; `NT` = not tested for that run; a bare number is a
+measured score. We reserve the cross for an outcome we actually measured and that came out
+negative, and use `NT` when the run did not test that question at all.*
 
 \*The "exposed" cell is the score on combinations *shown* during training, which varied
 across the exposure and diversity runs (0.550–1.000). The held-out composite — the real

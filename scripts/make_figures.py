@@ -102,17 +102,27 @@ save(fig, "fig_diversity.png")
 # ---- 5. Continual learning (measured) ----
 # Rename to sequential vs JOINT training (the review's R08/D05 point); label the
 # joint condition as final task accuracy, not "retention".
+# Add the sequential A-after-phase-A measurement (1.000) so the before/after drop is
+# visible in one chart (Appendix C.8).
 fig, ax = plt.subplots()
-labels = ["sequential", "joint (A+B)"]
-a_ret = [0.000, 1.000]; b_acq = [0.889, 0.889]
-x = np.arange(len(labels)); w = 0.3
-ax.bar(x-w/2, a_ret, w, label="final A-task accuracy", color="#4C72B0")
-ax.bar(x+w/2, b_acq, w, label="final B-task accuracy", color="#55A868")
-for xi, v in zip(x-w/2, a_ret): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
-for xi, v in zip(x+w/2, b_acq): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
-ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.10); ax.set_ylabel("pass@1")
-ax.set_title("Final task accuracy: sequential vs joint training (measured)")
-ax.legend(loc="upper left", frameon=False, fontsize=8); ax.grid(axis="y", alpha=0.3)
+labels = ["sequential\n(A then B)", "joint\n(A+B)"]
+# group 1 = A-task accuracy (final), split into before-B and after-B for sequential
+a_final = [0.000, 1.000]
+a_afterA = [1.000, None]   # sequential only: A measured right after phase A
+b_acq = [0.889, 0.889]
+x = np.arange(len(labels)); w = 0.28
+# A accuracy before B (sequential only), drawn as a lighter bar beside the final bar
+ax.bar(x-w, a_afterA if a_afterA[0] is not None else [0,0], w, label="A right after phase A\n(sequential, before B)",
+       color="#9dc1e6")
+ax.bar(x, a_final, w, label="final A-task accuracy", color="#4C72B0")
+ax.bar(x+w, b_acq, w, label="final B-task accuracy", color="#55A868")
+for xi, v in zip(x-w, a_afterA):
+    if v is not None: ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
+for xi, v in zip(x, a_final): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
+for xi, v in zip(x+w, b_acq): ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=8)
+ax.set_xticks(x); ax.set_xticklabels(labels); ax.set_ylim(0, 1.15); ax.set_ylabel("pass@1")
+ax.set_title("Task accuracy: sequential vs joint training (measured)")
+ax.legend(loc="upper left", frameon=False, fontsize=7); ax.grid(axis="y", alpha=0.3)
 save(fig, "fig_continual.png")
 
 # ---- 6. Live behavior sweep: illustrative prompts on selected checkpoints ----

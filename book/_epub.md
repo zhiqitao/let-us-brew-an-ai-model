@@ -1468,6 +1468,17 @@ surface/composition holdouts, whose prompts genuinely never appear in training).
 the moment of truth for the whole apparatus: everything we built — the world, the
 teacher, the judge, the rivals — converges on this measurement.
 
+| Quantity | Training | Pilot test |
+|---|---:|---:|
+| Records | 1,400 | 300 |
+| Prompt strings | 21 | 21 |
+| Test prompts also seen | n/a | 21 of 21 |
+| What changes at test | n/a | task ID, inputs |
+
+A key distinction to keep straight: the numerical inputs go to **Python** (the model's
+program is executed on them), while the **language model** receives only the prompt string.
+So a new task ID changes what the *judge* feeds the program, not what the *model* sees.
+
 ## One task, end to end
 
 The cleanest way to see what the judge does is to follow one task from prompt to
@@ -3111,12 +3122,17 @@ the data, or the optimizer — it must be the schedule. That makes any differenc
 find a *procedure* finding, exactly the thing we want to isolate.
 
 ## The result
-![Final task accuracy: sequential versus joint training](figures/fig_continual.png)
+![Task accuracy: sequential versus joint training, with the sequential A-before-B measurement](figures/fig_continual.png)
 
-| Protocol | **A accuracy (final)** | **B accuracy (final)** |
-|----------|-----------------|-------------------|
-| **sequential** | **0.000** | 0.889 |
-| **joint** | **1.000** | 0.889 |
+| Protocol | **A right after phase A** | **A accuracy (final)** | **B accuracy (final)** |
+|----------|---------------------------|-----------------|-------------------|
+| **sequential** | **1.000** | **0.000** | 0.889 |
+| **joint** | — (A+B trained together) | **1.000** | 0.889 |
+
+*The sequential "A right after phase A" (1.000) is measured on the same run, right after
+phase A and before any B exposure (Appendix C.8); the final is measured after phase B.
+The joint model has no separate "after A" point because A and B are trained together from
+the start.*
 
 This is as clean a result as this book produced.
 
@@ -3274,17 +3290,28 @@ works only under conditions the real world will not respect.
 
 ## The cost matrix
 
-Each row is a capability or behavior from our experiments; the columns are the
-measurable costs — data, parameters, training steps, and — decisively — the
-*generalization* cost.
+Each row is a capability or behavior from our experiments. The first three columns are
+the **resource budget** (data, parameters, steps); the last three are the **measured
+evaluation outcome** (in-distribution accuracy, surface generalization, composition). Keep
+these two groups apart: a resource figure is an input, an outcome is a measurement. Where
+an outcome was **not** measured for that row we mark it `NT` (not tested) rather than a
+cross or a dash, because "not run" and "failed" are different.
 
 | Capability | data (examples) | parameters | steps | in-dist pass@1 | surface generalizes? | composes? |
 |------------|-----------------|------------|-------|----------------|----------------------|-----------|
 | Single primitive (add, sub, …) | 1400 | 0.88M | 1500 | 0.900 | ✗ (new wording → 0.000) | ✗ |
-| New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | — |
+| New identifier robustness | 1400 | 0.88M | 1500 | 0.900 | ✗ (0.350 on new IDs) | NT |
 | Composition (abs_add, sum_of_abs) | not achieved within tested budgets | 0.9M–29.3M | 1500 | varied by run (exposed) / **0.000** on held-out | ✗ | ✗ (0.000) |
-| Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | — | ✗ (A forgotten) |
-| Continual: A+B (joint) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | — | ✗ |
+| Continual: A then B (sequential) | 1400+1400 | 0.88M | 1400 | B: 0.889 | NT | NT |
+| Continual: A+B (joint) | 2800 interleaved | 0.88M | 1400 | A: 1.000, B: 0.889 | NT | NT |
+
+*(The continual rows test task *retention*, not composition — the "composes?" column is `NT`
+for them because composition of A and B was not tested there. The surface column is likewise
+`NT`; only in-distribution accuracy was measured for those runs.)*
+
+*Legend: ✗ = measured and failed; `NT` = not tested for that run; a bare number is a
+measured score. We reserve the cross for an outcome we actually measured and that came out
+negative, and use `NT` when the run did not test that question at all.*
 
 \*The "exposed" cell is the score on combinations *shown* during training, which varied
 across the exposure and diversity runs (0.550–1.000). The held-out composite — the real
@@ -4527,6 +4554,21 @@ model evaluated on unseen composite operations; the large-model runs are separat
 training runs.
 
 ## Denominator and uniqueness notes
+
+- **Decoding and extraction settings (run record).** Sampled decoding is
+  temperature-0.8 single-sample, one fresh `model.generate` call **per evaluation
+  record** (`src/eval/evaluator_runner.py`: `for t in tasks: candidate_fn(t)`), so records
+  that share a prompt string still each get an independent draw (no output is cached or
+  reused). The generation call passes only `max_new`; the temperature and sampling come
+  from `src/model/gpt.py`'s default (0.8, `torch.multinomial`). Extraction truncates the
+  decoded sequence at the first NUL byte (the model pads with `\x00`). The training seed
+  is recorded per run; generation uses the same RNG state unless reset, so we report the
+  training seed and note sampling is stochastic. `max_new`, stop policy, token-ID
+  mapping, and the exact extraction rules live in `evaluator_runner.py`/`gpt.py` and are
+  part of each run's environment, not re-derived per publication. Because the pilot test
+  reuses only 21 prompt strings over 300 records, a single sample per record gives
+  within-prompt replicates for the familiar-prompt aggregate, but does **not** give a
+  per-prompt success-probability estimate for a brand-new prompt.
 
 - **pass@1 denominators.** The pilot used 300 held-out test **records** (1,400 train /
   300 val / 300 test), drawn from only **21 distinct prompt strings** (see the novelty
