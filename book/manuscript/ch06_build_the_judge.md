@@ -109,10 +109,12 @@ The most important step is treating the judge as something that must be *vetted*
 **mutate** the reference solution into deliberately-broken versions and ask:
 *does the judge catch them?*
 
-We generate mutants such as: `+` → `-`, `>` → `>=`, remove the `return`, swap the
-arguments, off-by-one a loop boundary, use the wrong variable. Then we run each mutant
-through the hidden tests. A good test suite **rejects** an obviously-wrong mutant. A
-weak test suite lets it pass.
+We generate mutants such as: `+` → `-`, `>` → `>=`, remove the `return`. The shipped
+recipe list is all text substitutions — arithmetic and comparison operator flips,
+`and`/`or` swaps, and removing the `return`; swapping arguments, off-by-one loop
+boundaries, and wrong-variable edits are design-stage candidates we do not run here.
+Then we run each mutant through the hidden tests. A good test suite **rejects** an
+obviously-wrong mutant. A weak test suite lets it pass.
 
 The mutation score — the fraction of wrong mutants the tests catch — is a measure of
 how much we can trust the judge on *the cases it is designed for*. An obviously-broken

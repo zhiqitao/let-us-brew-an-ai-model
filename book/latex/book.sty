@@ -10,7 +10,12 @@
 % ---- Mathematics (\text, \mathrm, aligned display math) ----
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{microtype}
+% protrusion=false: microtype's protrusion deliberately shifts the last glyph of a
+% line (punctuation, hyphens, mono-token tails) past \hsize into the margin, which
+% put 17 monospace/token spans 2.0-4.1pt beyond the 324pt text block's right edge
+% (F-002). TeX reports no Overfull for it, so break opportunities cannot counteract
+% it; with protrusion off every span ends within the text block.
+\usepackage[protrusion=false]{microtype}
 
 % Text serif font (professional book face present on the system)
 \IfFontExistsTF{Linux Libertine O}{%

@@ -158,6 +158,12 @@ def fix_wide_tables(tex_path):
         block = re.sub(
             r"([A-Za-z0-9_]+)[.](json|pt|py|txt|npz)",
             lambda m: m.group(1) + "\\allowbreak." + m.group(2), block)
+        # Arrow cells (e.g. the registry's 'final loss 5.84→0.0208.') hold an
+        # unbreakable 'a→b' token wider than the cell, so it protrudes past the
+        # right text edge. Let the cell break on either side of the arrow.
+        block = re.sub(r"(?<!\\allowbreak)(→)(?!\\allowbreak)",
+                       r"\1\\allowbreak ", block)
+        block = re.sub(r"(?<!\\allowbreak )(→)", r"\\allowbreak \1", block)
         # For the experiment-registry-type table the Artifacts column (holding the
         # long manifest/checkpoint filenames) needs more width than the narrow
         # numeric columns. Rebalance the colspec: shrink the short numeric columns
@@ -473,23 +479,40 @@ def fix_label_column(tex_path):
 
 
 def breakable_texttt_paths(tex_path):
-    """Allow long monospaced path/CLI tokens in \\texttt{...} to break at '/' and '.'
-    so justified prose does not stretch into rivers of whitespace around an
-    unbreakable token (Underfull \\hbox at badness 10000). \\allowbreak is
-    zero-width: it only adds a break opportunity and never changes glyphs, so
-    rendering is identical unless a break is actually taken."""
+    """Allow long monospaced path/CLI tokens in \\texttt{...} to break so justified
+    prose does not push a bare token past the right margin. Break opportunities are
+    inserted before and after every separator/punctuation character in the token
+    set below ('/', '.', '_', '-', '=', ':', ',', '(', ')'), so a token like
+    ``save_path=..`` or ``torch.`` can drop its tail to the next line instead of
+    protruding into the margin (previously only after '/' and '.', which left bare
+    tokens such as 'torch.' or 'requirements.' unbreakable at their tail).
+    \\allowbreak is zero-width: it only adds a break opportunity and never changes
+    glyphs, so rendering is identical unless a break is actually taken. A break is
+    never inserted between a backslash escape and its character (e.g. \\_), and any
+    marker already inserted by an earlier pass is stripped and regenerated here."""
     tex = open(tex_path, encoding="utf-8").read()
+    # '-' is deliberately absent: breaking at hyphens created new edge-ending
+    # fragments (e.g. 'natural-') without fixing any of the flagged tokens.
+    BREAK_CHARS = "/._=:,()→"
+
+    def add_breaks(inner):
+        inner = inner.replace("\\allowbreak ", "").replace("\\allowbreak", "")
+        out = []
+        for i, ch in enumerate(inner):
+            if (i > 0 and inner[i - 1] != "\\"
+                    and (inner[i - 1] in BREAK_CHARS or ch in BREAK_CHARS)):
+                # trailing space terminates the \\allowbreak control word so it is
+                # not absorbed into a following letter; the space is eaten as the
+                # control-word delimiter and never typeset
+                out.append("\\allowbreak ")
+            out.append(ch)
+        return "".join(out)
 
     def repl(m):
         inner = m.group(1)
-        if "/" not in inner and "." not in inner:
+        if not any(c in inner for c in BREAK_CHARS):
             return m.group(0)
-        # insert a break opportunity after each literal '/' and '.'
-        # (trailing space terminates the \allowbreak control word so it is not
-        #  absorbed into a following letter like 'md'; the space is eaten as the
-        #  control-word delimiter and never typeset)
-        inner = re.sub(r"([/.])(?!\\allowbreak)", r"\1\\allowbreak ", inner)
-        return "\\texttt{%s}" % inner
+        return "\\texttt{%s}" % add_breaks(inner)
 
     new = re.sub(r"\\texttt\{([^{}]*)\}", repl, tex)
     if new != tex:
