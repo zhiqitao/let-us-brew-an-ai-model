@@ -124,13 +124,15 @@ or whether something is broken. In this case the model reached near-floor loss w
 fraction of a point.
 
 There is also a genuine practical question that arises during training: **how do we
-know it hasn't crashed mid-run?** We use periodic **training checkpoints** that record
-the state at regular intervals *during* the run, so that a crash at step 1200 loses at
-most the steps since the last save. A single save only at the end of training — say,
-just before evaluation — does **not** protect against a mid-run crash; it only protects
-the completed run. So we keep intermediate checkpoints, not just a final one. This is
-a small discipline, but it has saved us more than once — a training run on this
-hardware takes real time, and we do not want to lose it to an unplanned stop.
+know it hasn't crashed mid-run?** What our training script actually does is a single
+**post-training, pre-evaluation save**: one `torch.save` runs after `train()` returns
+and before evaluation begins, so a crash during evaluation cannot lose a completed
+training run. It does **not** save at intervals *during* the run — a crash at step 1200
+would lose the whole run, and we say so plainly (Chapter 12 recounts an interrupted run
+whose original checkpoint was not preserved). Periodic mid-run checkpoints — saving at
+regular intervals so a crash loses at most the steps since the last save — are the
+obvious hardening step for a production trainer; this book's code does not implement
+them, so we do not claim they exist here, and we do not claim they have saved us a run.
 
 ## The honest caveat
 

@@ -131,8 +131,11 @@ evaluator, baselines, audit, reporting), `tests/`, `configs/`, `experiments/`,
 
 ## 11. Evidence / status taxonomy
 
-Every quantitative claim from a real run is marked **[MEASURED]**; never invent
-numbers. Evidence levels: `[MEASURED]` `[DERIVED]` `[DESIGN]` `[HYPOTHESIS]`
+Evidence labels are used in exactly two places in the manuscript: the Appendix C
+experiment registry and the Chapter 22 capability map. Every other quantitative claim
+carries **no** per-claim in-text label; instead it is scoped in its introducing
+sentence (the run, configuration, or split is named where the number appears). Never
+invent numbers. Evidence levels: `[MEASURED]` `[DERIVED]` `[DESIGN]` `[HYPOTHESIS]`
 `[INTERPRETATION]` `[UNKNOWN]`. Experiment status: `[PLANNED]` `[RUNNING]`
 `[MEASURED]` `[FAILED]` `[REJECTED]` `[SUPERSEDED]`.
 

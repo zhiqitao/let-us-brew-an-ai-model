@@ -12,14 +12,21 @@ earlier ones pass:
 2. **AST / Capability Pass** — the program's AST is entirely within the whitelisted
    capability subset (see `python_capability_v0_1.md`).
 3. **Execution Pass** — the program compiles and executes without error under
-   restricted globals.
+   restricted globals. *Recorded quantity:* the implementation records this stage as
+   **executable** when the program passes at least one hidden test (or has no hidden
+   tests) — `execution_ok = tests_passed > 0 or len(hidden_tests) == 0` in
+   `src/evaluator/evaluator.py` — i.e. "produced at least one correct output," not
+   merely "ran without error" (matching Chapter 6 and the metric below).
 4. **Semantic Pass** — for each hidden test, the program's output equals the expected
    output under the semantic comparator.
 
 ## 2. Metrics
 
 - **syntax success rate** — fraction of candidates that parse.
-- **executable success rate** — fraction that execute without runtime error.
+- **executable success rate** — fraction of candidates recorded as executable: those
+  that pass **at least one hidden test** (or have no hidden tests), matching
+  `execution_ok` in `src/evaluator/evaluator.py` and the book's Chapter 6 definition —
+  not merely the fraction that run without error.
 - **hidden-test pass rate** — fraction of individual hidden tests passed.
 - **problem-level success rate (pass@1)** — fraction of problems where the single
   generated program passes **all** hidden tests under temperature-0.8 single-sample

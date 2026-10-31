@@ -168,7 +168,11 @@ The honest map points at specific next experiments, not vague "more data / bigge
 
 One planned direction is **widening the capability spec** — giving the model more Python
 (loops, indexing, richer structures) and re-measuring. We did **not** run a full sweep of
-"add more Python and re-measure" in this book. What we did measure is that the
+"add more Python and re-measure" in this book; nor did we test **program length and
+complexity** (no evaluation on longer or more structurally complex programs — an
+untested axis, not a measured 0) or **expressivity beyond the tested operations**
+(Python features, built-ins, or idioms outside the fixed operation set), both listed
+under Appendix C's "What is NOT tested." What we did measure is that the
 composition failure is not explained by a simple missing-token deficit: the model wrote
 valid programs for the primitive operations, whose tokens it clearly knew. But that does
 **not** prove the model has full *nested* syntax competence — the observed failures were
