@@ -402,6 +402,102 @@ def fix_verbatim(path):
 
 
 
+def fix_result_table(tex_path):
+    """Convert the small ch13 diversity result longtable (plain @{}lll@{} colspec)
+    into a non-breaking centered tabular.
+
+    The longtable sits immediately after the \\section{The measured result} heading
+    and its intro paragraph. longtable's page-split machinery, interacting with the
+    section's keep-with-next (\\needspace) at that page boundary, drops the heading
+    and intro and misplaces the rows (clipped at the top edge). A plain tabular is a
+    single unbreakable box, so heading + intro + table stay together on one page."""
+    tex = open(tex_path, encoding="utf-8").read()
+    pat = re.compile(
+        r"\\begin\{longtable\}\[\]\{(@\{\}lll@\{\})\}(.*?)\\end\{longtable\}", re.S)
+
+    def repl(m):
+        spec, body = m.group(1), m.group(2)
+        if "minimal diversity" not in body:
+            return m.group(0)          # only the ch13 result table
+        body = body.lstrip("\n")
+        body = body.replace("\\noalign{}", "")
+        body = re.sub(r"\\endhead\s*", "", body)
+        body = re.sub(r"\\bottomrule\s*\\endlastfoot\s*", "", body)
+        body = body.rstrip() + "\n\\bottomrule\n"
+        return ("\\begin{center}\n\\begin{tabular}{%s}\n%s"
+                "\\end{tabular}\n\\end{center}" % (spec, body))
+
+    new = pat.sub(repl, tex)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
+def fix_label_column(tex_path):
+    """Widen the first (label) column of the ch16 result longtable whose first
+    column holds the long unbreakable word 'Compositional', which overflowed 7.4pt
+    into the adjacent 0.000 value column (Overfull \\hbox + text bbox collision).
+    The width is taken from the last (numeric) column so the table's total width
+    is unchanged."""
+    tex = open(tex_path, encoding="utf-8").read()
+    pat = re.compile(r"(\\begin\{longtable\}.*?\\end\{longtable\})", re.S)
+
+    def repl(m):
+        block = m.group(1)
+        if "Compositional (unseen combos)" not in block:
+            return block
+        fracs = re.findall(r"p\{([0-9.]+)\\linewidth\}", block)
+        if len(fracs) < 2:
+            return block
+        old0, oldlast = float(fracs[0]), float(fracs[-1])
+        new0 = 0.19
+        if new0 <= old0:
+            return block
+        newlast = oldlast - (new0 - old0)
+        if newlast <= 0.05:
+            return block
+        first_tok = "p{%s\\linewidth}" % fracs[0]
+        block = block.replace(first_tok, "p{%.4f\\linewidth}" % new0, 1)
+        last_tok = "p{%s\\linewidth}" % fracs[-1]
+        idx = block.rfind(last_tok)
+        block = (block[:idx] + "p{%.4f\\linewidth}" % newlast
+                 + block[idx + len(last_tok):])
+        return block
+
+    new = pat.sub(repl, tex)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
+def breakable_texttt_paths(tex_path):
+    """Allow long monospaced path/CLI tokens in \\texttt{...} to break at '/' and '.'
+    so justified prose does not stretch into rivers of whitespace around an
+    unbreakable token (Underfull \\hbox at badness 10000). \\allowbreak is
+    zero-width: it only adds a break opportunity and never changes glyphs, so
+    rendering is identical unless a break is actually taken."""
+    tex = open(tex_path, encoding="utf-8").read()
+
+    def repl(m):
+        inner = m.group(1)
+        if "/" not in inner and "." not in inner:
+            return m.group(0)
+        # insert a break opportunity after each literal '/' and '.'
+        # (trailing space terminates the \allowbreak control word so it is not
+        #  absorbed into a following letter like 'md'; the space is eaten as the
+        #  control-word delimiter and never typeset)
+        inner = re.sub(r"([/.])(?!\\allowbreak)", r"\1\\allowbreak ", inner)
+        return "\\texttt{%s}" % inner
+
+    new = re.sub(r"\\texttt\{([^{}]*)\}", repl, tex)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
 def convert_chapter(fn, mapping, outbase):
     txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
     # strip the H1 chapter title (book.tex supplies \chapter{title})
@@ -423,6 +519,9 @@ def convert_chapter(fn, mapping, outbase):
         print("pandoc fail %s: %s" % (outbase, r.stderr[-300:]))
     fix_colspec(out); fix_figure_width(out); wrap_figures(out); fix_wide_tables(out)
     fix_verbatim(out)
+    fix_result_table(out)
+    fix_label_column(out)
+    breakable_texttt_paths(out)
     return out
 
 def main():
