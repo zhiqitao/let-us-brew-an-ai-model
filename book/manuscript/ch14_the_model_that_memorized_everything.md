@@ -173,7 +173,7 @@ that exposes it — is worth more than any single accuracy number.
 A note on vocabulary, so nothing is smuggled in: in this book "memorization" stays
 reserved for Question 1 (Memorization), and Question 3 (Surface) remains a separate,
 separately measured question — the two are never merged into a single evaluation, here
-or in Chapter 22. We use "surface-tied association" for the second outcome precisely
+or in Chapter 20. We use "surface-tied association" for the second outcome precisely
 so the word "memorization" is not stretched to cover it.
 
 What this tells us is that there are at least two different outcomes here, and they

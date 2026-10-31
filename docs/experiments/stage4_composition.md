@@ -1,6 +1,11 @@
 # Experiment — Stage 4 Structural / Compositional Generalization
 
-Status: `[MEASURED]` — real run, manifest at `artifacts/manifests/stage4_composition.json`.
+Status: `[MEASURED]` — real run. The surviving manifest for this **0.88M** evaluation is
+`artifacts/manifests/stage4_scaling.json` (ckpt `artifacts/checkpoints/stage1.pt`, pilot
+tokenizer, `comp_per_op=40`, `sample=60`). `artifacts/manifests/stage4_composition.json`
+and `artifacts/checkpoints/stage4_composition.pt` are **not** this run's artifacts — they
+are the **29.3M** run (n_embd=448, n_layer=12, 800 steps, in-distribution 0.8967); see the
+Reproduce note below.
 
 ## Setup
 - **Train** on PRIMITIVE operations only (add, sub, mul, max_of, min_of, abs_of,
@@ -22,6 +27,11 @@ Status: `[MEASURED]` — real run, manifest at `artifacts/manifests/stage4_compo
 | **MODEL** | **0.900** | **0.000** |
 | TEMPLATE  | 0.800 | 0.000 |
 | RETRIEVAL | 1.000 | 0.000 |
+
+**Traceability (Appendix C.5).** The manifest-backed in-distribution pass@1 for this
+0.88M evaluation is **0.9167** (n=60, `artifacts/manifests/stage4_scaling.json`); the
+**0.900** quoted above and in the body chapters is not backed by a surviving manifest.
+The composition **0.000** is what the manifest and the quoted value agree on.
 
 ## Interpretation
 
@@ -63,5 +73,8 @@ accuracy but **fails completely (0%)** when asked to combine them in unseen ways
 ```bash
 python scripts/run_composition.py --steps 1500 --n-embd 128 --n-layer 4 --n-head 4 --seed 0
 ```
-Saved model: `artifacts/checkpoints/stage4_composition.pt`; manifest:
-`artifacts/manifests/stage4_composition.json`.
+With its default `--out`/`--tag`, this command writes `artifacts/checkpoints/stage4_composition.pt`
+and `artifacts/manifests/stage4_composition.json` — but those two existing files are the
+**29.3M** run's artifacts (n_embd=448, n_layer=12, 800 steps, in-distribution 0.8967), so pass
+`--out`/`--tag` to avoid overwriting them. The 0.88M composition evaluation that survives is
+recorded in `artifacts/manifests/stage4_scaling.json` (ckpt `artifacts/checkpoints/stage1.pt`).

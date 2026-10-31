@@ -80,7 +80,7 @@ Here is the result, and it is unambiguous:
 
 | Test | MODEL | TEMPLATE | RETRIEVAL |
 |------|-------|----------|-----------|
-| In-distribution (primitives) | 0.900 | 0.800 | 1.000 |
+| In-distribution (primitives) | 0.900 ($see$ Appendix C.5) | 0.800 | 1.000 |
 | **Compositional (unseen combos)** | **0.000** | **0.000** | **0.000** |
 
 Let us read this carefully, because the meaning is subtle.
@@ -123,7 +123,7 @@ failure under this setup, not a proof that composition is impossible.
 This is the cleanest negative result in the book, and it is the book's central
 finding. Let us unpack it.
 
-The model scores **0.900 in aggregate** on the primitive operations it saw, and **0.000**
+The model scores **0.900 in aggregate** ($see$ Appendix C.5) on the primitive operations it saw, and **0.000**
 on the composites it never saw. To unpack: on the primitives the aggregate is high, but
 we did not publish a per-operation breakdown, so we do not say "it *knows* `abs` at 0.900
 and `add` at 0.900" as individual facts — we say the *family* of primitives is largely
