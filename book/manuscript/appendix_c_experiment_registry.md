@@ -175,9 +175,11 @@ The large-model runs are separate training runs.
 
 - **pass@1 denominators.** The pilot used 300 held-out test **records** (1,400 train /
   300 val / 300 test), drawn from only **21 distinct prompt strings** (see the novelty
-  audit; the test prompts are not new). Stage 4 used 300 held-out primitives for
-  in-distribution and 240 composite tasks (6 ops × 40) for composition; the judge then
-  scores each. The data-scaling rows share a single common held-out test set (one
+  audit; the test prompts are not new). Stage 4's large-model runs (6.5M, 10.2M,
+  29.3M) used 300 held-out primitives for in-distribution and 240 composite tasks
+  (6 ops × 40) for composition; the 0.88M Stage-4 baseline (`stage4_scaling.json`)
+  instead used `sample=60` for both its in-distribution and composition evaluations
+  (its reported rates are 1/60 multiples); the judge then scores each. The data-scaling rows share a single common held-out test set (one
   `pool_test`, 540 records = 10 ops × 54 after the per-op split, generated once and reused
   across every size), so the training-size comparison in that run is against the *same*
   held-out set. (It is a different set from the pilot's 300-record test, so the
@@ -297,7 +299,9 @@ run that.
 - **Conditionals, indexing, loops as isolated operations.** `list_sum`'s reference
   uses a loop and `first_element` uses indexing, but the *task family* does not test
   general loop or indexing competence as standalone operations; those appear only
-  inside specific composites.
+  inside other operations' reference programs (primitives and composites alike —
+  conditionals in `max_of`/`min_of`/`abs_of`/`cond_abs_max`, the loop in `list_sum`,
+  indexing in `first_element`), never as standalone tasks.
 - **Composition beyond ~30M** (and the true "structural vs. above-our-ceiling"
   question) is not tested — the CPU lab becomes impractical beyond that.
 - **A true replay-after-A-first** continual-learning design (vs the joint-training

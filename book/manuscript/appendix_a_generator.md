@@ -67,8 +67,9 @@ def make_semantics(operation, rng, id_set="letters"):
 *This is the pilot's condensed type-dispatch excerpt, so it marks only the three
 pilot list-operations as list-input. It is **not** the full dictionary* — the composite
 list operations (`sum_of_abs`, `double_first`, `len_minus_one`) also take a list but are
-built by the composition path, not this `make_semantics` branch (which is called for
-`OPERATIONS` only). For the complete per-operation input types see the operation
+built by the composition path, not this condensed excerpt; the shipped
+`make_semantics` itself serves both `OPERATIONS` and `COMPOSITE_OPERATIONS`. For the
+complete per-operation input types see the operation
 dictionary in Appendix C, which lists every operation's arity, input type, and
 `class`.
 
@@ -155,7 +156,7 @@ clf = Pipeline([
     ("clf", LogisticRegression(max_iter=1000)),
 ])
 X = [t["nl"]["prompt"] for t in tasks]
-y = [t["operation"] for t in tasks]   # the operation label each prompt maps to
+y = [t["semantics"]["operation"] for t in tasks]   # the operation label each prompt maps to
 scores = cross_val_score(clf, X, y, cv=5)
 print(f"classifier predicts operation: {scores.mean():.3f}")   # = wording carries operation signal
 ```

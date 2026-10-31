@@ -176,7 +176,7 @@ strictly-controlled size-only comparison.
 
 | Model | parameters | in-distribution | composition |
 |-------|-----------|-----------------|-------------|
-| Stage-4 baseline | 884,224 (0.88M) | 0.900 ($see$ Appendix C.5) | **0.000** |
+| Stage-4 baseline | 884,224 (0.88M) | 0.900 (see Appendix C.5) | **0.000** |
 | Scaling | 6,500,352 (6.5M) | 0.897 | **0.000** |
 | 10M point | 10,195,776 (10.2M) | 0.773 | **0.000** |
 | 30M point | 29,290,240 (29.3M) | 0.897 | **0.000** |

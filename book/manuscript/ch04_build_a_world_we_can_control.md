@@ -90,13 +90,10 @@ in the world, and not by something else that drifted.
 
 ## Resource and determinism policy
 
-Beyond what is allowed syntactically, we also control *how* the program may run. This
-is the second half of making the world trustworthy:
+Beyond what is allowed syntactically, we also control *how complex* the program may
+be. This is the second half of making the world trustworthy:
 
-- maximum AST depth and node count (a program can only be so complex),
-- maximum nesting,
-- a hard execution timeout (a program that loops forever is a failed program),
-- recursion protection,
+- maximum AST depth (24) and node count (200) — a program can only be so complex,
 - float-comparison tolerance (because `0.1 + 0.2` is not exactly `0.3`),
 - **no randomness, no time, no environment access.**
 
@@ -105,6 +102,14 @@ must always produce the same output. If it does not, the experiment is contamina
 We cannot tell whether a failure means "the model didn't learn this" or "the program
 rolled the dice." By making the world deterministic, we eliminate that ambiguity
 entirely. The book's every later claim rests on this.
+
+One honesty note on that list: the spec also designs a maximum nesting depth, a hard
+execution timeout (a program that loops forever is a failed program), and recursion
+protection, but the shipped sandbox enforces none of the three — they exist in the
+code only as unused constants, and validation checks AST depth and node count alone.
+We did not enforce a runtime timeout or recursion cap, so an allowed program could
+still loop or consume memory. That is exactly the resource-use qualification Gate A
+carries below: the gate bounds the *shape* of allowed programs, not their resource use.
 
 ## The pipeline
 

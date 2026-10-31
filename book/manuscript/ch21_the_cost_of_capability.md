@@ -37,7 +37,10 @@ measured for that row we mark it `NT` (not tested) rather than a cross or a dash
 **Table 19.1 — Resource budget, by run**. The data column is the **training-record count
 and distinct prompt–program pairs** (where known); it is not the evaluation-set size.
 Where a record/pair count is not separately recorded, we say so rather than borrow an
-evaluation denominator.
+evaluation denominator. The continual rows count generated tasks, derived from
+`run_continual.py` at `n_per=70` (per `continual.json`): capability A is 5 operations
+(350 tasks), capability B is 3 operations (210 tasks), and the joint run interleaves
+all 560 — the 1,400 in the steps column is the separate 700 + 700 step budget.
 
 | Run | data records / unique pairs | parameters | steps |
 |------------------|-----------------------------|------------|-------|
@@ -47,8 +50,8 @@ evaluation denominator.
 | `stage4_exposure` | not recorded | 0.88M | 1,500 |
 | `compdiv_minimal` / `compdiv_high` | not recorded | 0.88M | 1,500 |
 | size sweep | not recorded | 0.88M / 6.5M / 10.2M / 29.3M | 1,500 / 1,000 / 800 / 800 |
-| `continual_seq` | 1,400 + 1,400 | 0.88M | 1,400 |
-| `continual_joint` | 2,800 interleaved | 0.88M | 1,400 |
+| `continual_seq` | 350 + 210 | 0.88M | 1,400 |
+| `continual_joint` | 560 interleaved | 0.88M | 1,400 |
 
 **Table 19.2 — Measured outcomes, by run** (the neural **MODEL**'s score; baselines are in
 Chapters 15 and 16, not here). Run keys match Table 19.1. `0.350`/`0.000` are the model's
@@ -63,7 +66,7 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
 | `compdiv_minimal` | 1.000 | — | — | 0.592 / 0.000 |
 | `compdiv_high` | 1.000 | — | — | 0.550 / 0.000 |
-| size 0.88M | 0.900 ($see$ Appendix C.5) | — | — | 0.000 |
+| size 0.88M | 0.900 (see Appendix C.5) | — | — | 0.000 |
 | size 6.5M | 0.897 | — | — | 0.000 |
 | size 10.2M | 0.773 | — | — | 0.000 |
 | size 29.3M | 0.897 | — | — | 0.000 |
