@@ -94,7 +94,8 @@ the composition run's in-distribution score on primitives; the pilot's first pas
 "familiar-prompt" figures are two measurements, not a discrepancy.) But on the
 composite operations, it scores **0.000** with the same aggregate reading. Not 0.1, not
 "sometimes," not "close." Zero. The model never produced a correct program for any
-composite operation it saw, even though every composite is a combination of primitives
+composite operation it was asked — the composites were held out, so it never saw them —
+even though every composite is a combination of primitives
 the aggregate shows it largely knows.
 
 And here is the *instructive* baseline check: the baselines fail too. The retrieval
@@ -132,8 +133,10 @@ compositions that must chain them together go nowhere. It cannot take the output
 primitive and feed it into another in the simplest combination we asked, even though every
 piece of that combination is in the family it largely solved.
 
-This is the deep meaning of "surface-tied" that we began to glimpse in Chapter 15.
-It is not merely that the model is sensitive to wording. It is that, in this task and
+This is a structural failure in its own right — stated on its own terms, not as a
+deeper instance of the surface-tiedness we saw in Chapter 15. The Level-4 observation
+is simply this: the model scores 0.000 on composite operations built from primitives it
+largely solves, so in this task and
 regime, the model's knowledge behaves as if it is **flat and associative**, not
 **structured and compositional**. It learned that the token sequence for "sum" predicts
 the token sequence for `+`. It did not behave as if it had learned a general
@@ -141,6 +144,12 @@ the token sequence for `+`. It did not behave as if it had learned a general
 way the composition test requires. We say "behaves as if" deliberately: this is an
 observation about what the model produces under our evaluations, not a claim about
 its internal representation.
+
+It is tempting to read the Level-3 and Level-4 failures as one mechanism seen twice —
+surface-tiedness "all the way down." We label that reading explicitly: it is a separate
+interpretation, a hypothesis about a shared mechanism that our experiments did not test.
+Q3 (Surface) and Q4 (Composition) are measured as different questions, and nothing here
+collapses one into the other.
 
 This distinction is why we built the four-question generalization taxonomy in the first
 place and why we refused to collapse everything into one number. If we had only

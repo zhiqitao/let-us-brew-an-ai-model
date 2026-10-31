@@ -190,7 +190,7 @@ budgets, we did not reach).
 
 Two honest notes on the grid. First, in-distribution scores sit in a healthy plateau
 (0.773–0.900) across all four sizes — capacity neither helped nor hurt the narrow task.
-(One 10.2M reading of 0.383 turned out to be a training-run artifact.) Second,
+(One 10.2M reading of 0.383 was a training-run artifact — judged by interpretation, since the original checkpoint was not preserved and the cause was not forensically confirmed.) Second,
 in-distribution performance is **not** a monotonic ladder that predicts the deep
 boundary: the models that reached 0.900 in-distribution scored 0.000 on composition,
 exactly like the one that reached 0.773. Capacity that helps the shallow score does

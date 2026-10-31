@@ -107,9 +107,9 @@ values, **not** the absolute value of the list sum.
 
 | Experiment | Run ID | Config (arch / steps / seed / params) | Artifacts (manifest / checkpoint) | Key result |
 |---|---|---|---|---|
-| Stage 1 pilot | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1.json / stage1.pt | in-dist 0.897; final loss 5.84→0.0208 |
+| Stage 1 pilot | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1_results.json / stage1.pt | in-dist 0.897; final loss 5.84→0.0208. Note: `stage1.json` preserves the pre-fix 0.000 evaluation referenced by Appendix B.1 |
 | Stage 3 surface | `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json / stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
-| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | (uses pilot ckpt) / stage1.pt | in-dist 0.900; composition 0.000 |
+| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | stage4_scaling.json (ckpt stage1.pt) / stage1.pt | in-dist 0.9167 (n=60); composition 0.000 |
 | Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 · 1000 · 0 · 6,500,352 | stage4_composition_6p5m.json / stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
 | Stage 4 — 10.2M | `stage4_10m` | 288/10/8 · 800 · 0 · 10,195,776 | stage4_composition_10m.json / stage4_10m.pt | in-dist 0.773; composition 0.000 |
 | Stage 4 — 29.3M | `stage4_29m` | 448/12/8 · 800 · 0 · 29,290,240 | stage4_composition.json / stage4_composition.pt | in-dist 0.897; composition 0.000 |
@@ -144,14 +144,17 @@ tokenizer it was trained with.
 
 ## The composition baseline: where the 0.88M number lives
 
-The book's "Stage-4 baseline" (0.88M, in-dist 0.900, composition 0.000) comes from
-evaluating the **pilot checkpoint** (`stage1.pt`) on the composition split — not from
+The book's "Stage-4 baseline" (0.88M, composition 0.000) comes from evaluating the
+**pilot checkpoint** (`stage1.pt`) on the composition split — not from
 `stage4_composition.json`. That manifest, despite being named "stage4_composition",
-is actually the **29.3M** run (n_embd=448, n_layer=12). So the small-model and
-large-model composition numbers come from different artifacts, and the registry above
-separates them explicitly. The 0.88M composition result should be read as the pilot
-model evaluated on unseen composite operations; the large-model runs are separate
-training runs.
+is actually the **29.3M** run (n_embd=448, n_layer=12). The surviving manifest that
+records this evaluation — `artifacts/manifests/stage4_scaling.json` (ckpt `stage1.pt`,
+pilot tokenizer, `comp_per_op=40`, `sample=60`) — gives the MODEL's in-distribution
+pass@1 as **0.9167** (n=60) with composition **0.000**. The value **0.900** quoted for
+this baseline in the body chapters is not backed by a surviving manifest; the
+manifest-backed in-distribution figure for this evaluation is **0.9167**, and the
+robust, load-bearing result is the composition **0.000**, which the two agree on.
+The large-model runs are separate training runs.
 
 ## Denominator and uniqueness notes
 
@@ -305,6 +308,18 @@ run that.
   accepted (see Chapter 17). What is **not** tested is whether the judge accepts an
   *alternative-but-correct* program that differs from the reference in some other way
   (not a mutation of it) — that is a distinct question beyond a mutation report.
+- **Increased Python expressivity beyond the tested operations.** The experiments
+  exercise only the fixed operation set; whether the model handles Python features,
+  built-ins, or idioms outside that set is **untested** — no measurement was made, so
+  this is an open surface, not a measured 0.
+- **Longer / more complex programs (program length & complexity).** Programs beyond
+  the length and structural complexity of the tested tasks are **untested**; we ran no
+  evaluation on longer or more complex programs, so there is no score here — this is
+  an untested axis, not a measured 0.
+- **Generalization axes other than the four questions.** The generalization probes
+  cover four axes — memorization, distributional, surface, and structural. Any other
+  generalization axis is **untested**; we report no result for axes outside those four,
+  which means untested rather than measured at 0.
 
 ## Reproducibility & the companion repository
 

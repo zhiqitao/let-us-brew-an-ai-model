@@ -98,20 +98,29 @@ structural/compositional → Stage 5 increased Python expressivity → Stage 6
 length/complexity → Stage 7 continual learning / retention. The model may stop
 climbing; the stopping point is itself a result.
 
-## 9. Book structure — eight acts, 23–24 chapters
+## 9. Book structure — seven parts, 21 chapters + 4 appendices (as implemented)
 
-- **Act I — The Question** (Ch1 "Let us brew", Ch2 "What does it mean to learn?",
+- **Part I — The Question** (Ch1 "Let us brew", Ch2 "What does it mean to learn?",
   Ch3 "Give the model one job")
-- **Act II — Build the Laboratory** (Ch4 world/spec/sandbox, Ch5 teacher, Ch6 judge,
-  Ch7 baselines)
-- **Act III — The First Brew** (Ch8 smallest brain, Ch9 first brew, Ch10 does it work?)
-- **Act IV — How Capability Scales** (Ch11 data, Ch12 capacity, Ch13 diversity)
-- **Act V — Catching the Model Cheating** (Ch14 memorization, Ch15 surface, Ch16
+- **Part II — Build the Laboratory** (Ch4 build a world we can control, Ch5 build the
+  teacher, Ch6 build the judge, Ch7 build the rivals)
+- **Part III — The First Brew** (Ch8 the smallest brain, Ch9 the first brew, Ch10 does
+  it actually work?)
+- **Part IV — How Capability Scales** (Ch11 how much data, Ch12 how much brain, Ch13
+  same data, more diverse data)
+- **Part V — Catching the Model Cheating** (Ch14 memorization, Ch15 surface, Ch16
   composition, Ch17 red-team the judge)
-- **Act VI — Give It More Python** (Ch18 capability expansion, Ch19 ladder revisited)
-- **Act VII — Break It** (Ch20 continual learning, Ch21 cost of capability)
-- **Act VIII — What Did We Learn?** (Ch22 capability map, Ch23 what small models can
-  learn, Ch24 the model wasn't the point)
+- **Part VI — Break It** (Ch18 continual learning, Ch19 cost of capability)
+- **Part VII — What Did We Learn?** (Ch20 the capability map, Ch21 the model wasn't the
+  point: a conclusion)
+
+Plus four appendices: A an annotated tour of the generator, B the failure ledger,
+C the experiment registry, D glossary.
+
+**Note on ability-ladder stages 5–6:** the originally planned Act "Give It More
+Python" (increased Python expressivity / more Python, and length & complexity —
+ladder stages 5 and 6) was folded into future work because no experiment measured
+them; those stages are not part of the implemented book.
 
 ## 10. Core artifacts & repository layout
 
@@ -155,7 +164,10 @@ semantic dataset generation; objective executable evaluation; shortcut audit;
 template + retrieval baselines; four-level generalization taxonomy; capability
 ladder; narrow continual-learning experiment; explicit negative-result policy;
 reproducibility requirements; one-variable discipline; ~10M–100M model scale;
-23–24-chapter / eight-act book; laboratory built before large-scale experimentation.
+23–24-chapter / eight-act book" is superseded by the implemented 7-part / 21-chapter
+/ 4-appendix structure (see §9 above), with the later capability-ladder stages folded
+into future work because no experiment measured them; laboratory built before
+large-scale experimentation.
 
 **Experimental (to be determined by runs):** exact model sizes, architecture,
 tokenizer, Python capability boundaries, dataset sizes beyond pilot, training

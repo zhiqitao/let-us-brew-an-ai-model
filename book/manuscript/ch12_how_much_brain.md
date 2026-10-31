@@ -151,16 +151,17 @@ models. That looked like "bigger is worse." We flagged it as an open question ra
 than a rule.
 
 But when we retrained the 10.2M point with the **same config and seed** (on a clean
-run, avoiding the CPU-dispatch crash that had interrupted the original training), it
-measured **0.773** — squarely in the healthy plateau family. The original run's
+run), it measured **0.773** — squarely in the healthy plateau family. The original run's
 checkpoint had a **syntax rate of just 0.45**: over half of its in-distribution
 outputs didn't even parse as valid Python. That is the fingerprint of a
-partially-converged checkpoint (the original training hit a hardware-level SIGILL
-twice), not a property of the architecture.
+partially-converged checkpoint. We judge the earlier 0.383 to have been a training-run
+interruption **almost certainly** — but the original checkpoint was not preserved, so we
+cannot forensically confirm the cause, and we note the hardware-level SIGILL reported in
+our logs as the likely culprit rather than a confirmed one.
 
 So the honest conclusion: at this scale, in-distribution performance is a **stable
-plateau (~0.9)**, and the earlier 0.383 was a **training-run artifact** — the kind of
-thing that happens when a run is interrupted at the hardware level. It is not
+plateau (~0.9)** — with the explicit caveat that "the 0.383 was an interrupted-run
+artifact" is our interpretation, not a forensically confirmed cause. It is not
 evidence that "bigger is worse." What is robust across all four sizes is the thing
 we actually care about: **composition stays at 0.000** no matter the capacity.
 

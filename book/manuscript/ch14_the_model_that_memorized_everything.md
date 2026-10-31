@@ -166,15 +166,22 @@ differently.
 Detecting "memorization" is not a simple yes/no. The useful question is not *"did it
 memorize?"* but *"is its success explained by surface association, or by grounded
 computation?"* Our probes show a clear answer for this model: it escapes example-
-memorization but is caught by surface-memorization. That distinction — and the test
+memorization but is caught by surface-tied association (phrasing association). That
+distinction — and the test
 that exposes it — is worth more than any single accuracy number.
 
-What this tells us is that "memorization" is not a single thing. There are at least
-two kinds, and they have very different implications. The model did *not* memorize
+A note on vocabulary, so nothing is smuggled in: in this book "memorization" stays
+reserved for Question 1 (Memorization), and Question 3 (Surface) remains a separate,
+separately measured question — the two are never merged into a single evaluation, here
+or in Chapter 22. We use "surface-tied association" for the second outcome precisely
+so the word "memorization" is not stretched to cover it.
+
+What this tells us is that there are at least two different outcomes here, and they
+have very different implications. The model did *not* memorize
 answer values — a held-out probe yields a general program, not a literal. But it also
 did not demonstrate transfer to a genuinely new prompt, and its success is confined to
 the phrasing it saw. So rather than placing it on a single "memorize → learn" ladder, the
 honest statement is more modest: it reliably regenerates correct general programs for
 familiar prompts, and we have *not* verified whether it would do the same for a prompt it
-had never seen. Distinguishing these kinds of memorization, and being explicit about
-which one we are looking at, is part of the experiment.
+had never seen. Distinguishing Q1 memorization from Q3 surface-tiedness, and being
+explicit about which one we are looking at, is part of the experiment.

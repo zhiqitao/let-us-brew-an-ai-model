@@ -57,8 +57,9 @@ prevents forgetting," not "replay-after-A-first does."
 
 Relatedly, "replay prevents it with zero cost" is too broad. The table shows **equal B
 acquisition** (0.889 in both), not zero storage, compute, or data-retention cost.
-The joint model is trained on roughly twice the distinct examples and takes a longer
-training run; it is a *behavioral* wash on B, not a *free* difference. And a behavioral
+Both protocols used the same example set (the same A/B pools) and the same total step
+budget (700 + 700 = 1400 steps); it is a *behavioral* wash on B, not a *free*
+difference. And a behavioral
 A-retention score of 0.000 does not establish that the old capability was literally
 erased from the weights — it establishes that, behaviorally, the model no longer solves
 A. Those are different claims.

@@ -11,7 +11,7 @@ Status: `[MEASURED]` — real run, documented manifest at `artifacts/manifests/s
   loss **0.0208**; ~514s on CPU.
 - **Evaluator:** hidden tests, semantic comparator, mutation-tested.
 
-## Result — problem-level pass@1 (deterministic/greedy) on the test set
+## Result — problem-level pass@1 (temperature-0.8 single-sample sampled decoding) on the test set
 
 | Candidate   | syntax | executable | **pass@1** |
 |-------------|--------|-----------|------------|

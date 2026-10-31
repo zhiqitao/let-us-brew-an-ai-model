@@ -185,9 +185,14 @@ generalization*, is not a lack of more records (quantity does raise in-distribut
 Chapter 11), but a lack of data *diversity* (and, deeper, a lack of the structural kind of
 data needed for composition — see Chapter 16).
 
-The practical implication is genuinely surprising and useful: a practitioner who cannot
+The practical implication is worth stating, with its scope attached: in one run, on one
+task, a practitioner who cannot
 acquire more data can often get a large improvement just by *diversifying* the data
 they already have. Re-phrasing the same examples, varying the identifiers, and
 spreading across template families can turn a brittle 0.500/0.000 model into one that
-covers 1.000/1.000 of the tested surfaces — with zero additional data. That is the kind
-of result that changes how a dataset would actually be built.
+covers 1.000/1.000 of the tested surfaces — with zero additional data. Read that
+1.000/1.000 narrowly, in the same breath as we report it: it is a single-seed coverage
+result for surfaces *within the tested family set* on this one task, and transfer to an
+unseen wording family was not demonstrated. That is the kind
+of result that changes how a dataset would actually be built — as a measured,
+single-run lead worth re-testing, not universal practitioner advice.

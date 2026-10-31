@@ -37,8 +37,10 @@ reuses training prompt strings.
 1. **It anchors to phrasing, not meaning.** Change the variable names (`a,b` →
    `left,right`) and it drops to 0.35; change the wording (same computation, different
    words) and it falls to **0.000** — below both baselines. The external reality check
-   confirmed it: a human-written test set scored **0/16**, because the model learned a
-   *template*, not the *task*.
+   confirmed it: a human-written test set scored **0/16** — **0/11** on requests built
+   from operations the model had seen (a phrasing/surface failure) and **0/5** on
+   genuinely held-out composite requests (a structural failure, expected separately) —
+   because the model learned a *template*, not the *task*.
 
 2. **It cannot compose what it knows.** Train on `abs` and `add` separately, then ask
    for `abs_add` — it scores **0.000**. The baselines also collapse to 0.000, so the
@@ -183,9 +185,10 @@ programmer, and we will not pretend otherwise. What we *did* build is the means 
 precisely and honestly, what a small model can and cannot learn — and we got an answer
 worth having:
 
-> A small model learns narrow tasks well, but its knowledge is surface-tied and
-> non-compositional; more capacity (0.88M→29.3M) does not change the compositional
-> limit. Whether more *data* would is a question we did not test.
+> The small model in this brew — 0.88M→29.3M decoder-only transformers on our
+> NL-to-Python task — learns narrow tasks well; in our tests its knowledge was
+> surface-tied and non-compositional, and more capacity (0.88M→29.3M) did not change
+> the compositional limit. Whether more *data* would is a question we did not test.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,
 audit shortcuts, preserve failures — are the durable part. That is the method worth

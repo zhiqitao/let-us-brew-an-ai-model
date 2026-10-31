@@ -69,12 +69,12 @@ the same kind of change: a **strict comparison flipped to a non-strict one** (`>
 these are **semantically equivalent** to the reference. Be careful with the wording here:
 the predicates differ — `a >= b` is True and `a > b` is False when `a == b` — but the
 *enclosing max/min function* returns the same value in both cases, because at the tie the
-equal branch and the (now-reached) outer branch yield the same number. We built a small
-equivalence check and confirmed it matched on the bounded integer domain we enumerated
-(and, for these tie-only mutants, a short case analysis establishes the equivalence over
-the integer domain: the operator differs only at equality, and both branches return equal
-values there). So they are *not* six missed defects; they are six tie-breaking
-equivalences.
+equal branch and the (now-reached) outer branch yield the same number. For these tie-only
+mutants a short case analysis establishes the equivalence over the integer domain: the
+operator differs only at equality, and both branches return equal values there. We did not
+build and run a general equivalence checker; the equivalence rests on this case analysis,
+scoped to the strict→non-strict tie-breaking mutants we observed. So they are *not* six
+missed defects; they are six tie-breaking equivalences.
 
 This is the important nuance worth spelling out: *a surviving **equivalent**
 mutant is not a missed error.* The mutation score therefore does **not** mean "the test

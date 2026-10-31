@@ -169,10 +169,11 @@ Third, the comparison is against a *common* held-out set within the run (one
 training count. It is a different set from the pilot's 300-case test, so these scores are
 not directly comparable to the pilot's 0.897.
 
-Fourth — and anticipating the rest of the book — even at 3000 examples the model is still
-surface-fragile on the reworded test we ran. Composition is a separate question that this
-chapter did not measure; we do not yet know whether more data of any kind would help it,
-and we say so rather than assume the answer.
+Fourth — and anticipating the rest of the book — the reworded-wording experiment
+(Chapter 15) found the trained model surface-fragile on held-out rewordings, so a higher
+familiar-task score does not by itself indicate surface robustness. Composition is a
+separate question that this chapter did not measure; we do not yet know whether more data
+of any kind would help it, and we say so rather than assume the answer.
 
 The practical takeaway is thus a two-part answer, scoped to what this chapter measured.
 To get even the *narrow* score up, more examples help *in the range we tried*. But the

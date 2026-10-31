@@ -97,11 +97,15 @@ composition), which produced the real findings above.
 ## 6. The human-written test set: 0/16
 
 **What happened.** The trained model solved **0/16** naturally-phrased human prompts —
-even simple "add two numbers" phrased as a person would.
+even simple "add two numbers" phrased as a person would. Read by training exposure, that is
+**0 of 11** requests for operations the model had seen (phrasing/surface failures) and
+**0 of 5** genuinely held-out composite requests (a structural failure from a separate
+cause; see Chapter 15).
 
-**What we learned.** This is the external, real-world corroboration of the surface
-finding. The model learned a *template*, not the *task*. The moment a real user phrases
-a request differently, it fails.
+**What we learned.** The **surface** reading is corroborated by the **0/11**: the model
+learned a *template*, not the *task*, and fails when a real user rephrases a request. The
+**0/5** composites are a separate, expected outcome (those operations were never shown) and
+are not surface evidence; we do not fold them into the surface claim.
 
 **Action.** Recorded as an external sanity check; it sharpens the book's honest
 conclusion.

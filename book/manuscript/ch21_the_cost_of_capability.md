@@ -73,8 +73,11 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 *`stage1`'s composes value (0.000) is from the stage-4 re-evaluation of that pilot
 checkpoint. The `stage4_exposure` and `compdiv_*` composes values are reported as
 *exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed records
-each); the held-out composite — the transfer test — was 0.000 in every composition run,
-and those held-out candidates failed parsing (Appendix B.10). The continual rows test
+each); the held-out composite — the transfer test — was 0.000, and for the run where we
+analyzed it (the composition-exposure run, Appendix B.10) the held-out candidates failed
+parsing before semantic evaluation. We do not extend that parsing finding to the other
+size checkpoints, whose recorded stage rates we did not analyze the same way. The
+continual rows test
 task *retention*, not composition, so their "composes" cell is `—`. Note that the
 `compdiv_*` rows (both in-dist 1.000, composes 0.592/0.550) are the **composition-
 diversity** intervention runs from Chapter 16/Appendix C (`composition_diversity_pilot`,
@@ -91,10 +94,14 @@ is the **ten-operation familiar-prompt family** total, which contained only **21
 prompt–program pairs**; it is not a measured per-operation data requirement. Second, the
 size sweep changed training budgets (1,500 / 1,000 / 800 / 800 steps) and tokenizer, so it
 is not a size-only intervention. Third, the exposed-composite scores varied (0.550, 0.592,
-0.667); the held-out composite — the transfer test — was **0.000** in every run, and those
-held-out candidates all failed parsing, so the cause of that zero is unresolved (Chapter 16
-and Appendix B.10). We do not know how much data would be needed to achieve composition;
-we only know it was not achieved within the budgets we tried.
+0.667); the held-out composite — the transfer test — was **0.000** at every size we tried.
+For the run where we analyzed stage rates (the composition-exposure run, Appendix B.10) the
+held-out candidates failed parsing before semantic evaluation; we do not extend that to the
+other size checkpoints, whose recorded stage rates we did not analyze the same way, and the
+0.88M baseline has a different recorded profile (0.183 of held-out candidates parsed, none
+executable). So the cause of that zero is unresolved across the size sweep (Chapter 16). We
+do not know how much data would be needed to achieve composition; we only know it was not
+achieved within the budgets we tried.
 
 ## What the costs tell us
 
@@ -107,8 +114,10 @@ only in-distribution correctness on prompts the model has seen.
 robust to *surface* change (new identifiers, new wording), the experiments suggest the data
 would need to change substantially — diverse identifiers and wording — not just add
 capacity. And composition was not achieved at any size we tried: it stayed 0.000 on
-held-out at 0.88M, 6.5M, 10.2M, and 29.3M — though, as Chapter 16 notes, the held-out
-composites all failed parsing, so the cause of that zero is unresolved.
+held-out at 0.88M, 6.5M, 10.2M, and 29.3M. As Chapter 16 notes, the parsing finding applies
+only to the composition-exposure run; we did not analyze the other size checkpoints' stage
+rates the same way, and the 0.88M baseline has a different recorded profile. So the cause
+of that zero is unresolved.
 
 **The cost matrix makes a dangerous pricing error visible.** If we only look at the
 "in-dist" column, we would conclude capability is nearly free and scale up naively. The
@@ -131,10 +140,11 @@ not the way a researcher who wants a good headline would read it.
 - **Composition** is the row that tells the sharpest story. It was 0.000 on held-out
   composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
   parameter column alone did not change that in the runs we ran. But the failure cause is
-  unresolved (the held-out candidates failed parsing), so this is a recorded negative
-  result, not a demonstrated mechanism. The exposed composites (0.550–0.667) also fell
-  short of mastery on the *training-covered* combinations, so the model did not even fully
-  learn those it was shown.
+  unresolved — the parsing finding applies to the composition-exposure run only, and we did
+  not analyze the other size checkpoints' stage rates the same way — so this is a recorded
+  negative result, not a demonstrated mechanism. The exposed composites (0.550–0.667) also
+  fell short of mastery on the *training-covered* combinations, so the model did not even
+  fully learn those it was shown.
 - **Continual learning** is the most interesting row for a practitioner. Sequential
   training loses A (final A accuracy 0.000, measured 1.000 right after phase A); fitting on
   A and B jointly keeps A at 1.000 with B acquisition unchanged at 0.889. This says a
