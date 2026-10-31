@@ -67,12 +67,16 @@ we can hold it in our heads, large enough to express real programming:
 - arithmetic: `+ - * / // % **`
 - comparisons, boolean operators
 - `if / elif / else`, `for`, `while`, `break`, `continue`, `pass`
-- lists, indexing, slicing
-- a small set of built-ins: `abs, min, max, sum, len, range, int, float, round`
+- lists, indexing, slicing, and the list methods `append`, `count`, `index`, `pop`
+- a small set of built-ins — eleven in total: `abs, min, max, sum, len, range, int,
+  float, round, list, sorted`
 - simple `def` functions
 
-Everything else is rejected: imports, file I/O, network, subprocess, `eval`/`exec`,
-`class`, `try/except`, arbitrary attribute access, comprehensions, lambdas. We do not
+This list is a summary; the authoritative whitelist is §6 of
+`python_capability_v0_1.md` and `ALLOWED_BUILTINS` in `src/sandbox/sandbox.py`, which
+agree with each other. Everything else is rejected: imports, file I/O, network,
+subprocess, `eval`/`exec`, `class`, `try/except`, arbitrary attribute access (beyond
+the whitelisted list methods), comprehensions, lambdas. We do not
 include these because they are dangerous; we exclude them because they are not needed
 for the task we are testing, and because each one we add makes the world bigger and
 harder to reason about. A smaller world is a *better* world for this book, because
@@ -139,12 +143,15 @@ allowed something disallowed, or failed to be deterministic — every score in t
 would be suspect. So the very first thing we do is not run any experiment at all. We
 **test the world itself.**
 
-We build a conformance suite of 31 cases: programs that use each allowed construct and
-must pass, plus programs that use each disallowed construct (`import`, `eval`, `class`,
-`try`, comprehensions, lambdas, arbitrary attribute access) and must all be rejected.
+We build a conformance suite of 15 cases: three programs that use allowed constructs
+and must run (a plain function, a loop, a conditional), plus twelve that must be
+rejected — ten disallowed constructs (`import`, `from`-import, `eval`, `class`, `open`,
+`__import__`, `try`, conditional expressions, comprehensions, lambdas), a syntax error,
+and a program that is not a single function. The suite is
+`tests/sandbox/test_sandbox.py`, and it runs with `pytest tests/sandbox/test_sandbox.py`.
 A sandbox that only permits things is easy; a sandbox that also *correctly refuses* the
-disallowed constructs it knows is the real achievement — and that is what our 31-case
-conformance run checks before we trust a single number it produces. (The 31 cases are a
+disallowed constructs it knows is the real achievement — and that is what our 15-case
+conformance run checks before we trust a single number it produces. (The 15 cases are a
 deliberate conformance sample, not an exhaustive proof that every possible disallowed
 construct is covered; we say "passed its conformance cases," not "verified everything," and
 the validator's scope is the constructs it enumerates.)
@@ -202,7 +209,8 @@ otherwise it is refused. Just as the sandbox says "these are the only forms of p
 that exist," Gate B says "these are the only forms of request that exist."
 
 **One clarification on how we used it.** Gate B was built late in the investigation,
-after the surface (Chapters 13–15) and human-written evaluations. Those evaluations
+after the diversity, memorization and surface experiments (Chapters 13–15) and the
+human-written evaluations. Those evaluations
 ran the model **directly, without Gate B in front of it** — precisely so that a
 low score could be attributed unambiguously to the *model*, not to a request filter
 that had quietly declined the caller. For the surface and human tests, the model saw

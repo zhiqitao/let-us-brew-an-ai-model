@@ -1,0 +1,26 @@
+{
+  "source": "qwen38 deep pass (deleg_bcde5b90) partial/completed",
+  "note": "Cross-confirms MiMo Pass E. Part V + structural completed; Parts I/II/III/IV & appendices interrupted (no findings delivered).",
+  "dispositions": [
+    {
+      "id": "BREW-P5-001",
+      "finds": "ch17 built-and-run equivalence check claim",
+      "disposition": "ALREADY FIXED (PE-02): ch17 now states equivalence rests on case analysis; appendix_c inherits fix. Qwen independently case-verified the conclusion is correct."
+    },
+    {
+      "id": "BREW-STRUCT-001",
+      "finds": "design BOOK_DESIGN 8-act/23-24ch stale",
+      "disposition": "ALREADY FIXED (PE-15): BOOK_DESIGN \u00a79/\u00a714 reconciled to 7-part/21-chapter; stages 5-6 folded to future work."
+    },
+    {
+      "id": "BREW-STRUCT-002",
+      "finds": "'Give It More Python' gap",
+      "disposition": "CONFIRMED HONESTLY SCOPED (option b), not a content defect => no change; validates no fabricated chapters."
+    },
+    {
+      "id": "BREW-STRUCT-003",
+      "finds": "Stage 6 length/complexity not explicitly scoped in book",
+      "disposition": "COVERED (PE-06): Appendix C NOT-tested now names longer/more-complex programs as untested."
+    }
+  ]
+}

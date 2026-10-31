@@ -40,7 +40,7 @@ one we can reason about.
 
 For the pilot, the configuration is small and honest:
 
-- vocabulary: ~291 tokens (a compact BPE trained on the task corpus),
+- vocabulary: 291 tokens (a compact BPE trained on the task corpus),
 - hidden dimension: 128,
 - layers: 4,
 - attention heads: 4,
@@ -140,7 +140,11 @@ learned anything, predicts the next token uniformly, so its loss should be close
 natural log of the vocabulary size — here, about log(291) ≈ 5.67. When we actually ran
 it, the initial loss was **5.84**, reassuringly close. That is what a model that knows
 nothing looks like, and it is the baseline every later, lower number is measured
-against.
+against. One provenance note, which Chapter 9 makes explicit: only the *final*
+training loss — **0.0208** — is machine-recorded in the experiment manifest
+(`artifacts/manifests/stage1.json`). The initial 5.84 and the intermediate curve values
+quoted in Chapter 9 come from the printed training log, and should be read as
+illustrative of the curve rather than as manifest-recorded figures.
 
 ## Why it's small
 

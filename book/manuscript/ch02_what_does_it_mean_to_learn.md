@@ -61,17 +61,24 @@ combined?" and they must be reported separately.
 example, an exact constant, a familiar phrase, a near-duplicate. *Question: could this
 just be remembering?*
 
-**Question 2 — Same task, new examples.** The model works on a new instance of the same
-kind of problem. *Question: does it work on problems it hasn't seen before?*
+**Question 2 — Distributional generalization (same task, new examples).** The model
+works on a new instance of the same kind of problem. *Question: does it work on
+problems it hasn't seen before?*
 
-**Question 3 — Same problem, different surface.** The computation is identical, but the
-*outer layer* changes: new numbers, new variable names, reworded instruction,
-harmless distractors. *Question: does it survive changes that shouldn't matter?*
+**Question 3 — Surface generalization (same problem, different surface).** The
+computation is identical, but the *outer layer* changes: new numbers, new variable
+names, reworded instruction, harmless distractors. *Question: does it survive changes
+that shouldn't matter?*
 
-**Question 4 — New combination.** The model must combine pieces it knows into something
-that never appeared in training. It learned A, B, and C separately — can it do A
-*sandwiched inside* B, or A followed by C? *Question: can it put things together, or
-only repeat what it already saw?*
+**Question 4 — Structural generalization (new combination).** The model must combine
+pieces it knows into something that never appeared in training. It learned A, B, and C
+separately — can it do A *sandwiched inside* B, or A followed by C? *Question: can it
+put things together, or only repeat what it already saw?*
+
+Those four headings are the book's canonical level names, in order: **Memorization**,
+**Distributional generalization**, **Surface generalization**, **Structural
+generalization**. We use these names from here on so that every later experiment can be
+filed under exactly one of them.
 
 **A rule we'll follow strictly:** never mash these four into one number. A model that
 scores 90% on familiar problems and 0% on a reworded version has not "generalized" —

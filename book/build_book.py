@@ -20,6 +20,27 @@ FINAL = os.path.join(HERE, "let-us-brew-an-ai-model-v20261001.pdf")
 COVER = os.path.join(HERE, "figures", "fig_cover.pdf")
 
 
+def _merge(cover, interior, final):
+    """Merge the full-bleed cover as page 1, preserving the interior's outline and
+    setting document metadata. pdfunite discards the outline; a pymupdf merge does not."""
+    import pymupdf
+    src = pymupdf.open(interior)
+    toc = [[lvl, title, page + 1] for (lvl, title, page) in src.get_toc()]
+    out = pymupdf.open()
+    out.insert_pdf(pymupdf.open(cover))
+    out.insert_pdf(src)
+    out.set_toc(toc)
+    out.set_metadata({
+        "title": "Let Us Brew an AI Model",
+        "author": "Zhiqi Tao",
+        "subject": "What tiny language models can actually learn when given one job",
+        "keywords": "language model, generalization, empirical investigation",
+    })
+    out.save(final)
+    out.close()
+    src.close()
+
+
 def run(cmd, cwd):
     r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if r.returncode != 0:
@@ -43,7 +64,7 @@ def main():
 
     print("== step 3: merge full-bleed cover as page 1 ==")
     interior = os.path.join(LATEX, "book.pdf")
-    run(["pdfunite", COVER, interior, FINAL], HERE)
+    _merge(COVER, interior, FINAL)
     print("final:", FINAL)
 
     # report page count

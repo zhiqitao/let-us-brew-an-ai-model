@@ -178,7 +178,8 @@ reader can see whether a 0.000 is a *syntax collapse* (the model emits garbage) 
 
 Here is precisely what we did and did not record. The *aggregate* stage rates **are**
 available: the running evaluator (`src/eval/evaluator_runner.py`) accumulates, per run,
-`syntax_rate` (fraction that parse), `executable_rate` (fraction that run without error),
+`syntax_rate` (fraction that parse), `executable_rate` (fraction that passed at least one
+hidden test — the evaluator's recorded definition; see Chapter 6),
 and `pass_at_1`. So for each reported run we do know, in aggregate, how many candidates
 parsed and how many executed — and the pilot table in Chapter 10 shows these (0.897
 pass@1, with the syntax/executable rates alongside). The *NUL* narrative in the failure

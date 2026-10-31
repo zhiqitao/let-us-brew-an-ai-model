@@ -295,11 +295,11 @@ separate so it is not read as another trust ladder:
 
 | Rung | Capability | Was it isolated? |
 |------|-----------|------------------|
-| 1 | arithmetic | ✅ measured, ~0.90 in-distribution |
-| 2–3 | variables, conditionals | ✅ variables measured (~0.90); conditionals appear inside the reference for `max_of`/`min_of`/`abs` but were **not isolated** as a standalone task |
+| 1 | arithmetic | yes — measured, ~0.90 in-distribution |
+| 2–3 | variables, conditionals | yes — variables measured (~0.90); conditionals appear inside the reference for `max_of`/`min_of`/`abs` but were **not isolated** as a standalone task |
 | 4–5 | lists, indexing | partially — `list_sum`/`list_len` measured; indexing appears in `first_element`/`double_first` but was **not isolated** |
 | 6 | loops | **not isolated** (no standalone loop operation in the primitives; loops appear only inside `list_sum`'s reference) |
-| 7 | **composition** | ❌ **0.000** — the wall |
+| 7 | **composition** | no — **0.000** — the wall |
 | 8 | simple functions | not isolated (the task is always "write one `solve` function") |
 
 The honest reading is narrow: we measured individual operations well, and composition

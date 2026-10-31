@@ -45,22 +45,41 @@ earlier ones pass. Each stage is a filter, and each exists for a specific reason
 1. **Syntax pass** — does the program parse as valid Python?
 2. **AST / capability pass** — is every node within the whitelisted subset? If the
    program smuggles in an `import`, it is rejected here.
-3. **Execution pass** — does it compile and run without error under the restricted
-   environment?
+3. **Execution pass** — did the program produce at least one correct output? In the
+   implementation this stage is recorded as *executable* when the program passes at
+   least one hidden test (or has no hidden tests), so the recorded quantity is
+   "produced at least one correct output," not merely "ran without error": a program
+   that executes cleanly but fails every hidden test is recorded as *not* executable.
 4. **Semantic pass** — for each hidden test, does the program's output match the
    expected output?
+
+Two honest notes on how this design maps onto the code. **First, stages 1 and 2 are a
+single combined validation gate in the implementation:** the evaluator calls
+`sandbox.validate_source` once — one call that both parses and checks the whitelist —
+and sets `syntax_ok` and `capability_ok` together. So the reported **syntax rate
+includes whitelist/capability rejections** (a program rejected for smuggling in an
+`import` is counted in the syntax rate), and no separate capability rate is computed.
+**Second, stage 3 is coupled to stage 4:** `execution_ok` is derived from the
+hidden-test outcomes (`tests_passed > 0`), which is why "executable" means "passed at
+least one hidden test," as defined above. The four-stage vocabulary is the design's;
+the recorded numbers collapse the first two stages into one gate and tie the third to
+the fourth.
 
 The primary metric is **problem-level hidden-test pass@1**: did the one program
 produced pass *every* hidden test for that problem?
 
 Why four stages rather than one? Because each stage isolates a *different* kind of
-failure, and separating them tells us *why* a program failed. A syntax error is a
-very different problem from a capability violation (the model tried to use something
-outside its world), which is different again from a runtime error (the code ran but
-crashed on a test), which is finally different from a semantic error (the code ran
-but produced the wrong answer). If we collapsed all four into one "it failed," we
+failure, and separating them tells us *why* a program failed. In the design a syntax
+error is a very different problem from a capability violation (the model tried to use
+something outside its world), which is different again from a runtime error (the code
+ran but crashed on a test), which is finally different from a semantic error (the code
+ran but produced the wrong answer). If we collapsed all four into one "it failed," we
 would lose the ability to diagnose. The judge does not just tell us right or wrong; it
-tells us *where* things go wrong, and that diagnostic power is worth keeping.
+tells us *where* things go wrong, and that diagnostic power is worth keeping. The
+honest limit, as noted above: because stages 1 and 2 share one validation call, the
+recorded rates separate *failed validation* from *no correct output* from *all tests
+passed*, but they do not separate syntax failures from capability violations — the
+reported "syntax" rate is really "failed validation."
 
 ## Semantic comparison: don't trust string equality
 

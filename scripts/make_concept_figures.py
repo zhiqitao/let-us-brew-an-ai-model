@@ -199,13 +199,13 @@ def fig_judge():
     stages = [
         (78, "1. SYNTAX\nparses?", PURPLE),
         (58, "2. AST / CAPABILITY\nwhitelisted subset?", PURPLE),
-        (38, "3. EXECUTION\nruns cleanly?", PURPLE),
+        (38, "3. EXECUTION\n≥1 correct output?", PURPLE),
         (18, "4. SEMANTIC\nmatches expected?", ORANGE),
     ]
     fails = {
         78: "not Python\n(parse fail)",
         58: "outside\nwhitelist",
-        38: "crashes /\ntimes out",
+        38: "no correct\noutput",
         18: "wrong\noutput",
     }
     for y, lab, c in stages:
@@ -237,9 +237,9 @@ def fig_ladder():
     ax.text(50, 89, "four distinct questions -- they are not a ladder, and passing one\ndoes not establish the next.", ha="center", va="center", fontsize=8, color=INK)
     levels = [
         (64, "Q1  MEMORIZATION\nCould it just be remembering\na stored answer?", "bar1", "#c44e52"),
-        (46, "Q2  NEW INSTANCES\nDoes it work on new examples\nof the same task?", "bar2", "#dd8452"),
-        (28, "Q3  SURFACE CHANGE\nDoes it survive a change of\nwording or identifiers?", "bar3", "#55a868"),
-        (10, "Q4  NEW COMBINATION\nCan it combine things it knows\nin a way it never saw?", "bar4", "#4c72b0"),
+        (46, "Q2  DISTRIBUTIONAL GENERALIZATION\nDoes it work on new examples\nof the same task?", "bar2", "#dd8452"),
+        (28, "Q3  SURFACE GENERALIZATION\nDoes it survive a change of\nwording or identifiers?", "bar3", "#55a868"),
+        (10, "Q4  STRUCTURAL GENERALIZATION\nCan it combine things it knows\nin a way it never saw?", "bar4", "#4c72b0"),
     ]
     for y, lab, _k, c in levels:
         box(ax, 6, y, 88, 14, lab, fc=c, fs=8.5)

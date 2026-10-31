@@ -13,7 +13,7 @@ own impatience. This chapter is that first batch.
 
 ## The data
 
-1400 generated tasks: a natural-language specification paired with its reference
+1400 training tasks: a natural-language specification paired with its reference
 Python program. The model's job is to read the spec and produce the code. Each task is
 a single semantic record — one idea — rendered three ways (a program, an English
 instruction, a set of hidden tests), so the data is internally consistent by
@@ -22,9 +22,14 @@ subtracts, because both came from the same seed. That said, "same seed" is not a
 guarantee: a wrong semantic record would be wrong in all three renderings at once, so
 the consistency reduces (but does not eliminate) the risk of a prompt/answer mismatch.
 
+The dataset is a three-way split — **1,400 train / 300 validation / 300 test** records,
+the counts recorded in `artifacts/datasets/pilot_manifest.json`. The validation split
+was generated but never used for model selection: `scripts/train.py` loads it and
+evaluates only on the test set, so every number this stage reports is a test-set number.
+
 We hold out a separate 300-record test set. Because the teacher uses a task-ID seed to
 change only the hidden-test *inputs* while the prompt string and reference program stay
-the same, those 300 records **reuse the same 21 prompt strings** as training (see the
+the same, those 300 test records **reuse the same 21 prompt strings** as training (see the
 novelty audit in Appendix C); what is new at test time is the task ID and the
 execution-test values, not the prompt. We state this plainly, because it shapes exactly
 what the pilot's 0.897 does and does not establish: familiar-prompt program generation
@@ -33,7 +38,7 @@ on fresh execution inputs, not generalization to a new request.
 ## The model
 
 The student is a small, deliberately plain decoder-only transformer: 4 layers, hidden
-dimension 128, 4 attention heads, a compact ~291-token vocabulary, and 128-token
+dimension 128, 4 attention heads, a compact 291-token vocabulary, and 128-token
 context. Total **884,224 parameters** — but we report the split honestly, because it
 matters more than the round number: **53,632** are the embeddings (the token and
 positional tables, which store the vocabulary and position), and **830,592** are the
@@ -80,7 +85,11 @@ step 1499   loss 0.019
 That is a large, clean drop — from 5.84 to about 0.02 in 1500 steps. (The per-step log
 above reads 0.019 at the last step; the recorded final training loss in the experiment
 manifest is 0.0208 — the same quantity reported at slightly different rounding or on a
-different averaging window, both meaning the loss has collapsed to a low floor.) Two
+different averaging window, both meaning the loss has collapsed to a low floor.) A
+provenance note: only that final value, **0.0208**, is machine-recorded in the manifest
+(`artifacts/manifests/stage1.json`) — the intermediate values in the log above are
+illustrative, transcribed from the printed training log, and should be read
+accordingly, as a picture of the curve rather than as manifest-verified figures. Two
 things about this curve are worth sitting with, because they reveal more than the final
 number.
 

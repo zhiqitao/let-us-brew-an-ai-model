@@ -27,12 +27,17 @@ surface/composition holdouts, whose prompts genuinely never appear in training).
 the moment of truth for the whole apparatus: everything we built — the world, the
 teacher, the judge, the rivals — converges on this measurement.
 
-| Quantity | Training | Pilot test |
-|---|---:|---:|
-| Records | 1,400 | 300 |
-| Prompt strings | 21 | 21 |
-| Test prompts also seen | n/a | 21 of 21 |
-| What changes at test | n/a | task ID, inputs |
+| Quantity | Training | Validation | Pilot test |
+|---|---:|---:|---:|
+| Records | 1,400 | 300 | 300 |
+| Prompt strings | 21 | 21 | 21 |
+| Test prompts also seen | n/a | 21 of 21 | 21 of 21 |
+| What changes at test | n/a | task ID, inputs | task ID, inputs |
+
+The dataset is a three-way 1,400 train / 300 validation / 300 test split
+(`artifacts/datasets/pilot_manifest.json`). The validation split was recorded but never
+used for model selection — `scripts/train.py` loads it and evaluates only on the test
+set — so every figure in this chapter is a test-set figure.
 
 A key distinction to keep straight: the numerical inputs go to **Python** (the model's
 program is executed on them), while the **language model** receives only the prompt string.
@@ -41,7 +46,8 @@ So a new task ID changes what the *judge* feeds the program, not what the *model
 ## One task, end to end
 
 The cleanest way to see what the judge does is to follow one task from prompt to
-verdict. Here is a real run against the pilot model.
+verdict. Here is a real run against the pilot model — record `add_0036` from the
+scored pilot evaluation (`artifacts/datasets/pilot_test.jsonl`).
 
 **The request.** "Implement solve so that given a and b it returns their sum."
 
@@ -59,25 +65,34 @@ def solve(a, b):
     return a + b
 ```
 
-**The hidden tests** (input/expected pairs) that the judge then runs. This task's suite
-has **eight** cases; here is an **excerpt** of three (a basic, a zero, and a negative
-case). The judge runs all eight and this task **passes — all 8/8**.
+**The hidden tests** (input/expected pairs) that the judge then runs. For this record
+(`add_0036`) the task's suite has **eight** cases; here is an **excerpt** of three (a
+basic, a zero, and a negative case). The judge runs all eight and this task **passes —
+all 8/8**.
 
 | inputs | expected |
 |--------|----------|
-| (87, -98) | -11 |
-| (0, -24) | -24 |
-| (-6, 0) | -6 |
+| (-86, -95) | -181 |
+| (0, -28) | -28 |
+| (-1, -33) | -34 |
 
 The judge runs the model's program on each pair, compares the output with the
 semantic comparator, and reports **pass@1**. This task passes.
 
 Now the informative contrast: a task the model *had not seen*. The teacher's
 composite `abs_add` asks for the sum of the absolute values of two numbers
-(`abs(a) + abs(b)`). The model, which knows both `abs` and `add` individually, was
-fed:
+(`abs(a) + abs(b)`). A provenance note before the examples: the scored pilot evaluation
+runs only on `artifacts/datasets/pilot_test.jsonl`, which contains the 10 primitive
+operations and the 21 training prompt strings — no `abs_add` record and no reworded
+prompt. So neither of the two failures below is an output of that scored run; both are
+**separately-run demo generations** against the pilot model, outside the evaluation set,
+and we label them as such rather than presenting them as pilot-evaluation outputs.
 
-> "Write a function that takes two numbers a and b, takes the absolute value of each,
+The first comes from the live demo battery (`scripts/demo_live_model.py`, archived in
+`docs/experiments/model_sweep_live.md`): the `stage1.pt` checkpoint, which knows both
+`abs` and `add` individually, was fed the composite prompt:
+
+> "Write a function that takes two numbers, a and b, takes the absolute value of each,
 > and returns their sum."
 
 and produced:
@@ -88,21 +103,22 @@ def solve(a, ab
 
 — a truncated, unusable fragment. The generation stopped early. We did not preserve the
 raw token sequence, so we cannot state the precise stop reason from the record (it could
-be the `max_new` limit, an EOS/PAD tie-out, the NUL-byte extraction boundary, or an
-unlucky sampled end). What is clear is that it is an **incomplete extracted candidate whose
+be the `max_new` limit, the NUL-byte extraction boundary, or an unlucky sampled end).
+What is clear is that it is an **incomplete extracted candidate whose
 termination/extraction cause was not preserved** — a partial Python identifier/source
 fragment, not a complete program. Because a termination/extraction defect already changed
 the pilot score once, we flag these as an *incomplete extracted candidate*, and do **not**
 assert a specific internal cause (we cannot, from the record, tell it apart from a genuine
-capability limit). On a genuinely
+capability limit). The second is likewise a separately-run demo generation, not a scored
+pilot record: on a genuinely
 reworded surface ("Return the value obtained by adding together two numbers, denoted
-p and q."), it produced:
+p and q.") — a prompt that is not among the 21 pilot prompt strings — it produced:
 
 ```
 def  a solve(a, b
 ```
 
-again truncated. These two live examples carry the book's whole point: on a familiar
+again truncated. These two demo generations carry the book's whole point: on a familiar
 surface the model writes correct code, and on an unseen surface or a new combination
 it collapses to a fragment. Nothing about the failure required the hidden tests to be
 "unfair" — the invalid fragments were **rejected at parsing** by the judge, before any
@@ -119,19 +135,27 @@ for interpreting it: (1) the evaluator calls the model **once per evaluation rec
 share a prompt string still get **independent** draws — no output is cached or reused
 across records; and (2) the fixed score is a property of the checkpoint, the sampled
 outputs, the record weights, the tests, and the decoding settings (temperature, `max_new`,
-stop policy, NUL truncation), not just of the dataset. A single sample per record does not
+NUL truncation), not just of the dataset. A single sample per record does not
 give within-run sampling error, but the repeated records do act as within-prompt
 replicates for the purposes of a familiar-prompt aggregate. The training seed is recorded
 per run; generation does not reset the RNG to a separate value, so it uses the continuing
 RNG state during evaluation unless explicitly reset (Appendix C.6), which is why sampling
-is stochastic rather than exactly seed-reproducible record-for-record. `max_new` / stop
-policy / extraction rules live in `src/eval/evaluator_runner.py`.
+is stochastic rather than exactly seed-reproducible record-for-record. There is no stop
+policy: `generate` in `src/model/gpt.py` always draws exactly `max_new` tokens (it never
+stops early on EOS or PAD), and extraction truncates at the first NUL byte; the `max_new`
+and extraction rules live in `src/eval/evaluator_runner.py`.
 
-| Candidate | syntax | executable | **pass@1** |
+| Candidate | syntax | executable (≥1 hidden test passed) | **pass@1** |
 |-----------|--------|-----------|------------|
 | **MODEL** | 0.897 | 0.897 | **0.897** |
 | TEMPLATE | 1.000 | 0.900 | 0.800 |
 | RETRIEVAL | 1.000 | 1.000 | **1.000** |
+
+*Reading the columns:* `syntax` is the fraction that passed the judge's combined
+parse-and-whitelist validation (Chapter 6 — whitelist/capability rejections are
+counted here too), and `executable` is the fraction that **produced at least one
+correct output** — passed at least one hidden test — not merely the fraction that ran
+without error.
 
 Three things stand out.
 
@@ -222,9 +246,11 @@ there without learning.
 2. **Suspected shortcut: exact memorization.**
    **Why it could explain it:** the model saw 1,400 examples; maybe it memorized the
    prompt→program pairs.
-   **Control (Ch14):** a probe of 60 pilot records and a held-out probe. On 59/60 it
-   produced a passing general program, and on the held-out probe it emitted the
-   *general* program rather than a memorized literal. **Caveat:** the pilot test
+   **Control (Ch14):** a probe of 60 pilot records plus a canary: **60/60 on the
+   training-record probe** (it reproduced every reference program exactly) and
+   **59/60 on the held-out/task-ID probe** (a passing general program for a fresh task
+   ID), while on the canary probe it emitted the *general* program rather than a
+   memorized literal. **Caveat:** the pilot test
    reuses training prompt strings, so this does **not** establish unseen-prompt
    generalization — it shows the model produces a *general* program (not a memorized
    constant literal) for these records.

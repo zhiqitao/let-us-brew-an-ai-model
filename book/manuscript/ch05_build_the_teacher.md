@@ -3,7 +3,7 @@
 We need data. But not just any data — we need data we can *trust* to be fair, and
 data we can carve up to test the model honestly.
 
-A teacher preparing worksheets for a test is the model. A bad teacher writes twenty
+A teacher preparing worksheets for a test is our model of good practice. A bad teacher writes twenty
 questions that are all the same question with different numbers — the student can
 memorize one template. A good teacher writes questions that look different on the
 surface but test the same idea, so a student who actually learned the idea passes
@@ -203,7 +203,7 @@ than we ran, not one we completed here. Our finding-001 note is best read as "th
 is very predictive of the operation" — which is a property of a clear task, not proof of a
 shortcut. (One implementation note as well: the TF-IDF vectorizer was fit on the whole
 set before cross-validation, which would leak held-out-fold vocabulary; a principled
-version fits the vectorizer inside the CV pipeline, as shown in Appendix A.6.)
+version fits the vectorizer inside the CV pipeline, as shown in Appendix A.5.)
 
 This is the teacher doing its real job. A dataset generator that only produces data is
 half a tool. One that produces data **and audits it** — asking whether the surface is

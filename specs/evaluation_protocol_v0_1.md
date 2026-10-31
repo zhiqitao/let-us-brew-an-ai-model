@@ -22,14 +22,16 @@ earlier ones pass:
 - **executable success rate** — fraction that execute without runtime error.
 - **hidden-test pass rate** — fraction of individual hidden tests passed.
 - **problem-level success rate (pass@1)** — fraction of problems where the single
-  generated program passes **all** hidden tests under deterministic/greedy decoding.
+  generated program passes **all** hidden tests under temperature-0.8 single-sample
+  sampled decoding (one sample per record; `generate(temperature=0.8)` →
+  `torch.multinomial` in `src/model/gpt.py`).
 - **test-level success rate** — fraction of hidden tests passed overall.
 - **generalization gap** — test performance minus in-distribution performance.
 - **shortcut-adjusted performance** — performance after ruling out (or reporting) a
   suspected shortcut (e.g. memorization, template dependence).
 
-**Primary metric:** `problem-level hidden-test pass@1 under deterministic/greedy
-decoding`.
+**Primary metric:** `problem-level hidden-test pass@1 under temperature-0.8
+single-sample sampled decoding`.
 
 `pass@k` may be investigated later but should not become the main result: it changes
 the question from "what can the model produce?" to "can sampling find a correct

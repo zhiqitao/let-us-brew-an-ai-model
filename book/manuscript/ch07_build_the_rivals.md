@@ -107,7 +107,8 @@ that didn't require much learning.
 
 Then, in the surface-generalization chapter, the story inverted. Under a *wording*
 change, the model collapsed to **0.000** while the template system, which recognizes
-keywords and is indifferent to exact wording, stayed at **0.875**. Here the rivals
+keywords and is indifferent to exact wording, rose to **0.875** (from 0.800
+in-distribution). Here the rivals
 were not a ceiling — they were a *floor*, and the model fell through it. That was the
 most informative result of the experiment: it showed that the model's apparent
 capability was tied to exact surface form in a way that even a dumb rule system was

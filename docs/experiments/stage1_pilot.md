@@ -4,7 +4,9 @@ Status: `[MEASURED]` — real run, documented manifest at `artifacts/manifests/s
 
 ## Setup
 - **Task:** natural-language spec → Python program, 10 pilot operations.
-- **Data:** 1400 train / 300 val / 300 test (operation-disjoint splits).
+- **Data:** 1400 train / 300 val / 300 test — not operation-disjoint: all three splits
+  share the same 10 operations and all 21 prompt strings; only the task IDs and
+  hidden-test inputs are new.
 - **Model:** small decoder-only transformer, V=291, n_embd=128, n_layer=4, n_head=4,
   block=128 → **884,224 params** (embedding 53,632 + non-embedding 830,592).
 - **Training:** 1500 steps, bs=16, lr=1e-3, ADAMW, next-token objective; final train
@@ -13,18 +15,24 @@ Status: `[MEASURED]` — real run, documented manifest at `artifacts/manifests/s
 
 ## Result — problem-level pass@1 (temperature-0.8 single-sample sampled decoding) on the test set
 
-| Candidate   | syntax | executable | **pass@1** |
+| Candidate   | syntax | executable (≥1 hidden test passed) | **pass@1** |
 |-------------|--------|-----------|------------|
 | **MODEL**   | 0.897  | 0.897     | **0.897**  |
 | TEMPLATE    | 1.000  | 0.900     | 0.800      |
 | RETRIEVAL   | 1.000  | 1.000     | **1.000**  |
 
+*Column notes: `syntax` is the fraction that passed the evaluator's single combined
+parse + whitelist validation gate (whitelist/capability rejections are counted here);
+`executable` is the fraction that passed at least one hidden test (`execution_ok =
+tests_passed > 0` in `src/evaluator/evaluator.py`), i.e. produced at least one correct
+output — not merely the fraction that ran without error.*
+
 ## Interpretation
 
 1. **Milestone 2 passed: the model learned something.** It beats the hand-written
-   template/rule baseline (0.897 vs 0.800) and produces executable programs 90% of
-   the time. A small model (0.88M params) learns the NL→code mapping on this narrow
-   task.
+   template/rule baseline (0.897 vs 0.800) and produces a program with at least one
+   correct output 90% of the time. A small model (0.88M params) learns the NL→code
+   mapping on this narrow task.
 
 2. **But retrieval dominates (1.000).** Per the pilot go/no-go criteria (§26, option
    C): *retrieval dominates → the task is too easy → force controlled task expansion.*
