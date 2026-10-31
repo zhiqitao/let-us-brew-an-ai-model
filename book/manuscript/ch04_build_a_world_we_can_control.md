@@ -72,8 +72,8 @@ we can hold it in our heads, large enough to express real programming:
   float, round, list, sorted`
 - simple `def` functions
 
-This list is a summary; the authoritative whitelist is §6 of
-`python_capability_v0_1.md` and `ALLOWED_BUILTINS` in `src/sandbox/sandbox.py`, which
+This list is a summary; the authoritative whitelist is §5–§6 of
+`python_capability_v0_1.md` and `ALLOWED_NODES`/`ALLOWED_BUILTINS` in `src/sandbox/sandbox.py`, which
 agree with each other. Everything else is rejected: imports, file I/O, network,
 subprocess, `eval`/`exec`, `class`, `try/except`, arbitrary attribute access (beyond
 the whitelisted list methods), comprehensions, lambdas. We do not
