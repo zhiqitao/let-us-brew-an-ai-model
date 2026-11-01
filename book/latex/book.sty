@@ -54,6 +54,11 @@
 % code lines to wrap instead of overflowing the 6x9 text block). It is loaded so that
 % the generated chapter files can use \begin{Verbatim}[breaklines=true,...].
 \usepackage{fvextra}
+% P1-19: fvextra's default breaksymbolleft prints a tiny math \hookrightarrow glyph
+% IN the code at the start of every wrapped continuation line — an in-band artifact
+% that corrupts "verbatim" JSON/CLI (an arrow spliced into JSON, arrows prefixing
+% wrapped shell comments). Code must wrap with NO in-band glyphs: symbol off.
+\fvset{breaksymbolleft={}}
 % (verbatim is rerouted to a breaking Verbatim in the generated book.tex preamble,
 % because a package-level DefineVerbatimEnvironment does not reliably enable
 % breaklines for pandoc's plain \begin{verbatim} in this document.)
@@ -190,10 +195,17 @@
 \titlelabel{\thetitle.\hspace{1em}}
 % Keep headings with the lines that follow (a heading must never sit alone at the
 % bottom of a page). Saves at least 3 lines for subsequent content.
+% P1-PROD-01: 8\baselineskip reserved a 132pt stretchable block before every
+% section; under \flushbottom that reservation distorted the page-break choice and
+% stranded chapter-opening fragments on a near-blank page (ch14's intro tail alone
+% with the section + table pushed to the next page, plus an orphaned longtable
+% header). 6\baselineskip still guarantees heading + 5 lines of body but breaks
+% cleanly in harness tests (ch14: 30-word stranded page -> flowing page, orphan
+% header gone; ch08 closing page fixed as a side effect).
 \makeatletter
 \let\oldsectionformat\section
 \renewcommand{\section}{%
-  \needspace{8\baselineskip}%
+  \needspace{6\baselineskip}%
   \oldsectionformat}
 \let\oldsubsectionformat\subsection
 \renewcommand{\subsection}{%

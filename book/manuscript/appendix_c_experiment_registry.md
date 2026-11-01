@@ -105,20 +105,45 @@ values, **not** the absolute value of the list sum.
 
 ## Registry
 
-| Experiment | Run ID | Config (arch / steps / seed / params) | Artifacts (manifest / checkpoint) | Key result |
-|---|---|---|---|---|
-| Stage 1 pilot | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1_results.json / stage1.pt | in-dist 0.897; final loss 5.84→0.0208. Note: `stage1.json` preserves the pre-fix 0.000 evaluation referenced by Appendix B.1 |
-| Stage 3 surface | `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json / stage3_surface.pt | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
-| Stage 4 composition baseline | `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | stage4_scaling.json (ckpt stage1.pt) / stage1.pt | in-dist 0.9167 (n=60); composition 0.000 |
-| Stage 4 — 6.5M | `stage4_6p5m` | 256/8/8 · 1000 · 0 · 6,500,352 | stage4_composition_6p5m.json / stage4_6p5m.pt | in-dist 0.897; composition 0.000 |
-| Stage 4 — 10.2M | `stage4_10m` | 288/10/8 · 800 · 0 · 10,195,776 | stage4_composition_10m.json / stage4_10m.pt | in-dist 0.773; composition 0.000 |
-| Stage 4 — 29.3M | `stage4_29m` | 448/12/8 · 800 · 0 · 29,290,240 | stage4_composition.json / stage4_composition.pt | in-dist 0.897; composition 0.000 |
-| Data scaling | `data_scaling` | 128/4/4 · 800 · 0 · 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
-| Quantity vs diversity | `diversity` | 128/4/4 · 900 · 0 · 884,224 | diversity.json / — | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 (1200 examples, fixed across both) |
-| Memorization | `memorization` | 128/4/4 · 1500 · 0 · 884,224 | memorization.json / — | 59/60 held-out; held-out program probe → general program |
-| Continual learning | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
-| Composition exposure | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
-| Composition diversity | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
+The registry is printed as two tables so no column is crushed into a narrow strip on
+the 6x9 page: **Table C.4** pairs each run ID with the question it asked and its
+headline result; **Table C.5** pairs the same run IDs with the configuration and the
+artifacts (manifest and checkpoint) that hold the record. Every value is carried over
+unchanged from the run manifests.
+
+**Table C.4 — Registry: what each run asked and found**
+
+| Run ID | Question (experiment) | Headline result |
+|------------------------|--------------------------|--------------------------------------------------------|
+| `stage1_seed0` | Stage 1 pilot | in-dist 0.897; final loss 5.84→0.0208. Note: `stage1.json` preserves the pre-fix 0.000 evaluation referenced by Appendix B.1 |
+| `stage3_surface` | Stage 3 surface | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
+| `stage4_pilot` | Stage 4 composition baseline | in-dist 0.9167 (n=60); composition 0.000 |
+| `stage4_6p5m` | Stage 4 — 6.5M | in-dist 0.897; composition 0.000 |
+| `stage4_10m` | Stage 4 — 10.2M | in-dist 0.773; composition 0.000 |
+| `stage4_29m` | Stage 4 — 29.3M | in-dist 0.897; composition 0.000 |
+| `data_scaling` | Data scaling | in-dist 0.100→0.641 (100→3000) |
+| `diversity` | Quantity vs diversity | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 (1200 examples, fixed across both) |
+| `memorization` | Memorization | 59/60 held-out; held-out program probe → general program |
+| `continual` | Continual learning | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
+| `composition_exposure_pilot` | Composition exposure | exposed 0.667; held-out 0.000; in-dist 1.000 |
+| `composition_diversity_pilot` | Composition diversity | exposed 0.550-0.592; held-out 0.000 |
+
+**Table C.5 — Registry: configuration and artifacts**
+
+| Run ID | Config (arch / steps / seed / params) | Manifest | Checkpoint |
+|------------------------|----------------------------------|----------------------------------|--------------------------|
+| `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1_results.json | stage1.pt |
+| `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json | stage3_surface.pt |
+| `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | stage4_scaling.json (ckpt stage1.pt) | stage1.pt |
+| `stage4_6p5m` | 256/8/8 · 1000 · 0 · 6,500,352 | stage4_composition_6p5m.json | stage4_6p5m.pt |
+| `stage4_10m` | 288/10/8 · 800 · 0 · 10,195,776 | stage4_composition_10m.json | stage4_10m.pt |
+| `stage4_29m` | 448/12/8 · 800 · 0 · 29,290,240 | stage4_composition.json | stage4_composition.pt |
+| `data_scaling` | 128/4/4 · 800 · 0 · 884,224 | data_scaling.json | — |
+| `diversity` | 128/4/4 · 900 · 0 · 884,224 | diversity.json | — |
+| `memorization` | 128/4/4 · 1500 · 0 · 884,224 | memorization.json | — |
+| `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json | — |
+| `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json | stage4_exposure.pt |
+| `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json | stage4_compdiv_{minimal,high}_diversity_pilot.pt |
 
 ## The scaling run: an honesty note on "same protocol"
 
@@ -367,7 +392,9 @@ until an independent run reproduces them.
    CPU-only environment:
 
    ```bash
-   python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
+   python -m pip install \
+     --index-url https://download.pytorch.org/whl/cpu \
+     torch==2.14.0
    python -m pip install scikit-learn matplotlib
    ```
 

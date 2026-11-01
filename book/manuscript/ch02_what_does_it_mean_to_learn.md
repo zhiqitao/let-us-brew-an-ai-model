@@ -84,6 +84,8 @@ filed under exactly one of them.
 scores 90% on familiar problems and 0% on a reworded version has not "generalized" —
 it memorized the phrasing. One number would hide exactly the thing we care about.
 
+\vspace{-16.5pt}
+
 ## The recurring question: "how did it cheat?"
 
 Because we refuse to trust a single score, every experiment asks the same skeptical

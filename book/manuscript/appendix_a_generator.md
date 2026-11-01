@@ -177,8 +177,10 @@ rather than reading one number as proof of leakage.
 ## How to run it
 
 ```
-python scripts/generate_data.py --n-per-op 200   # writes pilot_train/val/test + manifest
-python scripts/audit.py                          # runs the leakage audit
+python scripts/generate_data.py --n-per-op 200
+# writes pilot_train/val/test + manifest
+python scripts/audit.py
+# runs the leakage audit
 ```
 
 That's the teacher. It's not magic — it's a controlled generator, audited for

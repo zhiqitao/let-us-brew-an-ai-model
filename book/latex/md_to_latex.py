@@ -407,6 +407,72 @@ def fix_verbatim(path):
         f.write(t)
 
 
+def _strip_tok_macros(s):
+    """Unwrap \\XxxTok{...} (pandoc syntax-highlighting wrappers) with
+    balanced-brace scanning, returning the raw code text."""
+    while True:
+        m = re.search(r"\\[A-Za-z]+Tok\{", s)
+        if not m:
+            return s
+        start = m.start(); i = m.end(); depth = 1
+        while i < len(s) and depth:
+            c = s[i]
+            if c == "\\":
+                i += 2; continue
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+            i += 1
+        s = s[:start] + s[m.end():i - 1] + s[i:]
+
+
+def _unescape_code(s):
+    """Undo the LaTeX escaping pandoc applies inside highlighted code spans."""
+    for a, b in (("\\textgreater{}", ">"), ("\\textless{}", "<"),
+                 ("\\textasciitilde{}", "~"), ("\\textasciicircum{}", "^"),
+                 ("{-}", "-"), ("\\_", "_"), ("\\%", "%"), ("\\#", "#"),
+                 ("\\&", "&"), ("\\$", "$"), ("\\{", "{"), ("\\}", "}"),
+                 ("\\@", "@"), ("\\^", "^"), ("\\~", "~")):
+        s = s.replace(a, b)
+    s = s.replace("\\textbackslash{}", "\\")   # last: its output must not be re-escaped
+    return s
+
+
+def fix_shaded_blocks(tex_path):
+    """P1-19: pandoc renders language-tagged fenced blocks as
+    \\begin{Shaded}\\begin{Highlighting}[] ... \\end{Highlighting}\\end{Shaded}.
+    book.sty defines Highlighting as an empty environment and the *Tok macros as
+    plain text, so that block typesets as JUSTIFIED SERIF PROSE: pandoc's literal
+    '[]' optional argument is printed, separate shell commands merge into one
+    stretched paragraph, and tokens wrap at arbitrary spaces -- not a faithful
+    listing. Rewrite such blocks into the same breaking Verbatim used for plain
+    fences: strip the *Tok wrappers, unescape LaTeX specials, keep the real
+    newlines, and wrap in Verbatim[breaklines,breakanywhere] so the code wraps
+    with no in-band glyphs and prints exactly the source characters."""
+    tex = open(tex_path, encoding="utf-8").read()
+    pat = re.compile(
+        r"\\begin\{Shaded\}\s*\\begin\{Highlighting\}(?:\[\])?\s*(.*?)\s*"
+        r"\\end\{Highlighting\}\s*\\end\{Shaded\}", re.S)
+
+    def repl(m):
+        body = _unescape_code(_strip_tok_macros(m.group(1)))
+        lines = [ln.rstrip() for ln in body.split("\n")]
+        while lines and not lines[0]:
+            lines.pop(0)
+        while lines and not lines[-1]:
+            lines.pop()
+        return ("\\needspace{6\\baselineskip}\\begin{Verbatim}[breaklines=true, "
+                "breakanywhere=true, fontsize=\\small]\n"
+                + "\n".join(lines) + "\n\\end{Verbatim}")
+
+    new = pat.sub(repl, tex)
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
 
 def fix_result_table(tex_path):
     """Convert the small ch13 diversity result longtable (plain @{}lll@{} colspec)
@@ -508,13 +574,65 @@ def breakable_texttt_paths(tex_path):
             out.append(ch)
         return "".join(out)
 
-    def repl(m):
-        inner = m.group(1)
+    def mbox_short_tokens(inner):
+        """P1-19: TeX may break a line after any explicit hyphen, so an inline
+        CLI flag such as ``--n-embd`` split as ``-`` / ``-n-embd`` across lines,
+        and version tokens split as ``torch==`` / ``2.14.0``. Wrap every short
+        space-separated token of inline code in \\mbox so it prints as one
+        unbreakable run; the line then breaks at the surrounding spaces, which is
+        always faithful. Tokens longer than 30 chars keep their \\allowbreak
+        points (added below) so a long path/URL can still wrap instead of
+        overflowing the 6x9 text block. Pandoc escapes code spaces as ``\\ ``;
+        the separator (backslash included) is kept outside the mbox."""
+        parts = re.split(r"(\\ | )", inner)   # separators kept in the result
+        out = []
+        for idx, p in enumerate(parts):
+            if idx % 2 == 0 and p and len(p) <= 30 and "\\mbox" not in p:
+                out.append("\\mbox{%s}" % p)
+            else:
+                out.append(p)
+        return "".join(out)
+
+    def repl(inner, in_tbl=False):
+        # Table cells (longtable p-columns) are only ~60-90pt wide: an \mbox'd
+        # token would overflow the column instead of wrapping (a 27-char run ID
+        # printed straight through the next column), so inside tables keep the
+        # wrap-at-\allowbreak behaviour and mbox only in prose.
+        if not in_tbl:
+            inner = mbox_short_tokens(inner)
         if not any(c in inner for c in BREAK_CHARS):
-            return m.group(0)
+            return "\\texttt{%s}" % inner
         return "\\texttt{%s}" % add_breaks(inner)
 
-    new = re.sub(r"\\texttt\{([^{}]*)\}", repl, tex)
+    # Balanced-brace scan so spans containing {\...} (e.g. \textgreater{}) are
+    # covered too; the old [^{}]* pattern silently skipped them.
+    table_ranges = [(m.start(), m.end()) for m in
+                    re.finditer(r"\\begin\{longtable\}.*?\\end\{longtable\}", tex, re.S)]
+    out = []
+    pos = 0
+    while True:
+        m = re.search(r"\\texttt\{", tex[pos:])
+        if not m:
+            out.append(tex[pos:])
+            break
+        start = pos + m.start()
+        i = pos + m.end()
+        depth = 1
+        while i < len(tex) and depth:
+            c = tex[i]
+            if c == "\\":
+                i += 2
+                continue
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+            i += 1
+        inner = tex[pos + m.end():i - 1]
+        out.append(tex[pos:start])
+        out.append(repl(inner, any(a <= start < b for a, b in table_ranges)))
+        pos = i
+    new = "".join(out)
     if new != tex:
         open(tex_path, "w", encoding="utf-8").write(new)
         return True
@@ -542,9 +660,20 @@ def convert_chapter(fn, mapping, outbase):
         print("pandoc fail %s: %s" % (outbase, r.stderr[-300:]))
     fix_colspec(out); fix_figure_width(out); wrap_figures(out); fix_wide_tables(out)
     fix_verbatim(out)
+    fix_shaded_blocks(out)
     fix_result_table(out)
     fix_label_column(out)
     breakable_texttt_paths(out)
+    if outbase == "appD":
+        # P1-PROD-01 (glossary tail): the Glossary ran 4.45 pages and ended on a
+        # conspicuous half-empty final page (one bullet + tail, ~55% whitespace).
+        # Set the glossary body 5% tighter (leading only; the \chapter heading is
+        # supplied by book.tex outside this group, so it is unaffected) so the
+        # entries consolidate onto full pages. Harness-verified: last page goes
+        # from 143 words / 45% fill to 242 words / 72% fill, 5 pages -> 4.
+        t = open(out, encoding="utf-8").read()
+        open(out, "w", encoding="utf-8").write(
+            "{\\linespread{0.95}\\selectfont\n" + t + "\n}")
     return out
 
 def main():
