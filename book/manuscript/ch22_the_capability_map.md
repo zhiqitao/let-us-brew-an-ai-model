@@ -176,7 +176,7 @@ strictly-controlled size-only comparison.
 
 | Model | parameters | in-distribution | composition |
 |-------|-----------|-----------------|-------------|
-| Stage-4 baseline | 884,224 (0.88M) | 0.900 (see Appendix C.5) | **0.000** |
+| Stage-4 baseline | 884,224 (0.88M) | 0.9167 (n=60; see Appendix C.5) | **0.000** |
 | Scaling | 6,500,352 (6.5M) | 0.897 | **0.000** |
 | 10M point | 10,195,776 (10.2M) | 0.773 | **0.000** |
 | 30M point | 29,290,240 (29.3M) | 0.897 | **0.000** |
@@ -189,11 +189,11 @@ not a proof that capacity *cannot* (there may be a threshold, or different train
 budgets, we did not reach).
 
 Two honest notes on the grid. First, in-distribution scores sit in a healthy plateau
-(0.773–0.900) across all four sizes — capacity neither helped nor hurt the narrow task.
+(0.773–0.9167) across all four sizes — capacity neither helped nor hurt the narrow task.
 (One 10.2M reading of 0.383 was a training-run artifact — judged by interpretation, since the original checkpoint was not preserved and the cause was not forensically confirmed.) Second,
 in-distribution performance is **not** a monotonic ladder that predicts the deep
-boundary: the models that reached 0.900 in-distribution scored 0.000 on composition,
-exactly like the one that reached 0.773. Capacity that helps the shallow score does
+boundary: the model that reached 0.9167 in-distribution scored 0.000 on composition,
+exactly like the ones that reached 0.897 and 0.773. Capacity that helps the shallow score does
 nothing for the deep one.
 
 ## What's measured vs. what's unknown

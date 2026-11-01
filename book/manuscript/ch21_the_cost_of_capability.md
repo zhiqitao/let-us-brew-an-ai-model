@@ -66,7 +66,7 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
 | `compdiv_minimal` | 1.000 | — | — | 0.592 / 0.000 |
 | `compdiv_high` | 1.000 | — | — | 0.550 / 0.000 |
-| size 0.88M | 0.900 (see Appendix C.5) | — | — | 0.000 |
+| size 0.88M | 0.9167 (n=60; see Appendix C.5) | — | — | 0.000 |
 | size 6.5M | 0.897 | — | — | 0.000 |
 | size 10.2M | 0.773 | — | — | 0.000 |
 | size 29.3M | 0.897 | — | — | 0.000 |

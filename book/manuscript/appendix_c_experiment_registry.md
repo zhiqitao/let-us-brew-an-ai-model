@@ -115,7 +115,7 @@ values, **not** the absolute value of the list sum.
 | Stage 4 — 29.3M | `stage4_29m` | 448/12/8 · 800 · 0 · 29,290,240 | stage4_composition.json / stage4_composition.pt | in-dist 0.897; composition 0.000 |
 | Data scaling | `data_scaling` | 128/4/4 · 800 · 0 · 884,224 | data_scaling.json / — | in-dist 0.100→0.641 (100→3000) |
 | Quantity vs diversity | `diversity` | 128/4/4 · 900 · 0 · 884,224 | diversity.json / — | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 (1200 examples, fixed across both) |
-| Memorization | `memorization` | 128/4/4 · 1500 · 0 · 884,224 | memorization.json / — | 59/60 held-out; canary → general program |
+| Memorization | `memorization` | 128/4/4 · 1500 · 0 · 884,224 | memorization.json / — | 59/60 held-out; held-out program probe → general program |
 | Continual learning | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json / — | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | Composition exposure | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json / stage4_exposure.pt | exposed 0.667; held-out 0.000; in-dist 1.000 |
 | Composition diversity | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json / stage4_compdiv_{minimal,high}_diversity_pilot.pt | exposed 0.550-0.592; held-out 0.000 |
@@ -150,10 +150,14 @@ The book's "Stage-4 baseline" (0.88M, composition 0.000) comes from evaluating t
 is actually the **29.3M** run (n_embd=448, n_layer=12). The surviving manifest that
 records this evaluation — `artifacts/manifests/stage4_scaling.json` (ckpt `stage1.pt`,
 pilot tokenizer, `comp_per_op=40`, `sample=60`) — gives the MODEL's in-distribution
-pass@1 as **0.9167** (n=60) with composition **0.000**. The value **0.900** quoted for
-this baseline in the body chapters is not backed by a surviving manifest; the
-manifest-backed in-distribution figure for this evaluation is **0.9167**, and the
-robust, load-bearing result is the composition **0.000**, which the two agree on.
+pass@1 as **0.9167** (n=60) with composition **0.000**. An earlier draft quoted
+**0.900** for this baseline in the body chapters; that value is not backed by a
+surviving manifest, so the body tables, the surrounding prose, and Figure 12.1 now
+publish the manifest-backed **0.9167** (n=60) as the canonical Stage-4 baseline figure.
+Two other familiar-prompt numbers stay separate and unchanged: the pilot's **0.897** over
+its own 300-record test, and the Stage-3 surface run's **0.900** in-distribution
+(`stage3_surface.json`) — three evaluations with different denominators. The
+robust, load-bearing result is the composition **0.000**, which the values agree on.
 The large-model runs are separate training runs.
 
 ## Denominator and uniqueness notes
@@ -252,7 +256,7 @@ overlap.
 
 **The 59/60 probe — separate, and novelty-unverified.** This is a distinct task-ID-level
 probe on the pilot (Chapter 14). It is **not** covered by the novelty audit above, and the
-audit does **not** verify that the 60 probe prompts (or the canary) were new to the model —
+audit does **not** verify that the 60 probe prompts (or the held-out program probe) were new to the model —
 they may well reuse training prompt strings, since the pilot test set reuses all 21. So we
 cannot claim the 59/60 probe established unseen-prompt generalization; we can only say it
 reported how many of those 60 records produced a general program. We treat it as a scoped
@@ -331,33 +335,51 @@ Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.p
 `run_composition_exposure.py`, `run_composition_diversity.py`, `run_surface.py`,
 `run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`).
 
-**Publication status: honest disclosure.** As of this writing the companion repository
-has a release tag **`v20261001`**, created for this book and pointing at release commit
-**`6e46426aaba29adfceacfe00560add35ed26c5cd`** (full hash), but the repository is **not yet
-published at a public URL**. We therefore cannot yet give a reader a working link, and we
-do not want to pretend otherwise. We cite the **full commit hash**, not just the tag,
-because a Git tag is a movable reference and is not by itself immutable — the commit hash
-identifies the exact tree. When it is published, the repository URL and an errata page
-address will be added here and on the copyright page.
+**Publication status.** The companion repository is published at
+`https://github.com/zhiqitao/let-us-brew-an-ai-model` and carries a release tag
+**`v20261001`** pointing at release commit **`6e46426aaba29adfceacfe00560add35ed26c5cd`**
+(full hash). We cite the **full commit hash**, not just the tag, because a Git tag is a
+movable reference and is not by itself immutable. The repository ships the experiment
+code, the run manifests under `artifacts/manifests/`, and the scored dataset files under
+`artifacts/datasets/`. The trained checkpoints are large and are **not** included
+(regenerable via `train.py` from the recorded config and seed); raw per-candidate
+generations were not archived. So an external reader can reproduce the pipeline and
+check the reported numbers against the shipped manifests, but a checkpoint-level re-run
+of the exact training runs requires re-training from the recorded configuration.
 
-This means an *external* reader cannot fully reproduce the pilot **right now** — that is a
-real limitation of the current draft, and we label it as such rather than claim it is
-reproducible today. What follows is the exact path, so that once the repository is
-published the steps are verbatim. We make a clear distinction between (a) the originally
-scored experiment, whose files are preserved in this repository, and (b) a freshly
-reproduced rerun, which may differ; none of the numbers in this book should be read as a
-reproducibility *confirmation* until an independent run reproduces them.
+This means an *external* reader can run the pipeline and check the reported numbers
+against the shipped manifests, but cannot do a checkpoint-level re-run of the exact
+training runs without re-training from the recorded configuration. We make a clear
+distinction between (a) the originally scored experiment, whose data files and manifests
+are preserved in this repository, and (b) a freshly reproduced rerun, which may differ;
+none of the numbers in this book should be read as a reproducibility *confirmation*
+until an independent run reproduces them.
 
-**The quick start (once the repository is available):**
+**The quick start:**
 
 1. **Clone the companion repository** and check out the `v20261001` tag.
 2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). The
    training and evaluation core depends on `torch` and the standard library; the
    *printed audits and diagnostics* additionally use `scikit-learn` (and the figure
-   scripts use `matplotlib`), so treat those as separate groups. We did not ship a
-   single `requirements.txt`, so pin the versions explicitly, e.g.
-   `pip install torch==2.14.0 scikit-learn matplotlib` (CPU wheels) in a clean
-   environment.
+   scripts use `matplotlib`), so treat those as separate groups. Install the CPU-only
+   torch build from the official CPU wheel index — on Linux a bare
+   `pip install torch==2.14.0` can select a CUDA build, so the index flag matters for a
+   CPU-only environment:
+
+   ```bash
+   python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
+   python -m pip install scikit-learn matplotlib
+   ```
+
+   We did not ship a lockfile, and the exact `scikit-learn`/`matplotlib` versions used
+   for the printed audits were not recorded, so only `torch` is pinned above; after a
+   known-good install, capture the whole environment with
+   `python -m pip freeze > requirements.lock` and keep it with the run record. The same
+   CPU index URL also serves the macOS and Windows CPU wheels (keep `--index-url` there
+   too); a CUDA-enabled Linux install should omit `--index-url` and take the default
+   wheels. We ran only the Linux CPU lab described under **Runtime**, so treat the
+   command above as *that* platform's recipe and add OS-specific recipes as they are
+   verified — one transcript does not cover every platform.
 3. **Prepare the data & tokenizer.** Generate the dataset files under
    `artifacts/datasets/` (e.g. `python scripts/generate_data.py`), then train the
    tokenizer. The pilot tokenizer is built inside `scripts/train.py` (via

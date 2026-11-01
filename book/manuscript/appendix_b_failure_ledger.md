@@ -178,12 +178,17 @@ reader can see whether a 0.000 is a *syntax collapse* (the model emits garbage) 
 
 Here is precisely what we did and did not record. The *aggregate* stage rates **are**
 available: the running evaluator (`src/eval/evaluator_runner.py`) accumulates, per run,
-`syntax_rate` (fraction that parse), `executable_rate` (fraction that passed at least one
-hidden test — the evaluator's recorded definition; see Chapter 6),
+`syntax_rate` (the fraction that pass the evaluator's **combined parse + capability
+allowlist validation** — in `src/evaluator/evaluator.py` the `syntax_ok` flag is set only
+when `sandbox.validate_source` succeeds, and that call checks parsing *and* the AST
+allowlist, so it is not a pure parse rate), `executable_rate` (fraction that passed at
+least one hidden test — the evaluator's recorded definition, `execution_ok =
+tests_passed > 0`; see Chapter 6),
 and `pass_at_1`. So for each reported run we do know, in aggregate, how many candidates
-parsed and how many executed — and the pilot table in Chapter 10 shows these (0.897
+passed combined validation and how many passed at least one test — and the pilot table in
+Chapter 10 shows these (0.897
 pass@1, with the syntax/executable rates alongside). The *NUL* narrative in the failure
-ledger is exactly such a case: the intermediate syntax score is what exposed the
+ledger is exactly such a case: the intermediate validation score is what exposed the
 truncation problem.
 
 What we did **not** record is the **per-candidate first-failure stage** — i.e. for each
@@ -200,34 +205,48 @@ stage rates but not a per-candidate stage-resolved audit trail.
 
 **The aggregate counts do leave a useful trace.** Even without per-candidate records, we
 can build a coarse stage breakdown from the cumulative stage rates, because they share the
-same denominator (the number of evaluation records):
+same denominator (the number of evaluation records). The three recorded signals are named
+here by what they actually measure; in the saved manifests they appear under their
+historical keys `syntax_rate`, `executable_rate`, and `pass_at_1`:
 
 ```
-parse failures              = N − parsed
-post-parse / pre-execution  = parsed − executable
-executed but test-failing   = executable − all_tests_pass
-successes                   = all_tests_pass
+combined-validation failures     = N − validation_pass
+validated, but no test passed   = validation_pass − at_least_one_test_pass
+partial passes (≥1 but not all) = at_least_one_test_pass − all_tests_pass
+successes                       = all_tests_pass
 ```
 
-Note the middle category combines *capability* failures with *runtime* failures unless
-those were saved separately, so we do **not** split it. Applying this to the pilot's
-`stage1` run: the MODEL's syntax, executable, and pass rates were all 0.897 (over the
-300-record test). Since `parsed = executable = all_tests_pass`, the recorded pilot failures
-were **all at the parsing stage** — the model either produced a parseable program (and
-then it executed and passed), or it produced something that did not parse. This corroborates
-the fragment evidence in Chapter 10, and it is precisely why we insist on the aggregate
+(`validation_pass` = passed combined parse + capability validation = the manifest's
+`syntax_rate`; `at_least_one_test_pass` = the manifest's `executable_rate`;
+`all_tests_pass` = `pass_at_1`.) Note the second category combines *runtime* failures
+with programs that ran cleanly but answered **every** case incorrectly, unless those were
+saved separately, so we do **not** split it; the third category is programs that passed
+at least one but not all hidden tests, which is narrower than "executed but wrong."
+Applying this to the pilot's `stage1` run: the MODEL's validation, at-least-one-test,
+and all-tests rates were all 0.897 (over the 300-record test). Since
+`validation_pass = at_least_one_test_pass = all_tests_pass`, all **31/300** of the
+pilot's non-passing candidates failed the evaluator's **combined syntax-and-capability
+validation** — and because pure parsing was not logged separately from allowlist
+rejection, these aggregate rates do **not** isolate invalid Python syntax from a
+capability reject. We therefore do not say the failures were "all at the parsing stage";
+the supported statement is the combined-validation one. It is consistent with the
+fragment evidence in Chapter 10, and it is precisely why we insist on the aggregate
 stage rates being reported alongside pass@1.
 
 We recommend the same check for the composite runs before attributing their 0.000 to a
 *semantic* failure. We applied it: for the `composition_exposure` run's held-out
 composites, the MODEL's **syntax_rate = 0.0**, executable_rate = 0.0, and pass@1 = 0.0.
 So the composite 0.000 is **not** a record of programs that parsed, ran, and were then
-rejected by the semantic comparator — it is a record of candidates that **never even
-parsed**. The dominant recorded failure is at *generation/parsing*, not at the semantic
-comparison. This is a substantive qualification of any "semantic failure" reading of the
-composition result: what we measured is an aggregate zero, and its recorded failures
-were all pre-execution. (We do not claim the *only* cause is parsing — the cause of the
-unparseable output is not resolved — only that the recorded stage rate puts the failure
+rejected by the semantic comparator — it is a record of candidates that **never passed
+the combined parse + capability validation gate** (and, since pure parsing was not logged
+separately, we cannot say how many of those were invalid Python versus allowlist
+rejects). The dominant recorded failure is at *generation/validation*, before execution,
+not at the semantic comparison. This is a substantive qualification of any "semantic
+failure" reading of the composition result: what we measured is an aggregate zero, and
+its recorded failures
+were all pre-execution. (We do not claim the *only* cause is generation or validation —
+the cause of the validation-rejecting output is not resolved — only that the recorded
+stage rate puts the failure
 before the semantic comparison, so "the model understood the pieces but could not combine
 them" is **not** supported by these aggregate counts alone.)
 

@@ -11,7 +11,9 @@ sweep, but the composition result held at every size we ran — see §12.1.)
 
 ## The setup
 
-We train **four** models on the same primitive-only training set across a ~33× range of
+We train **four** models on the same training set of the **ten seen operation IDs** (the
+generator's operational "primitive" pool — with the caveat that `cond_abs_max` is
+structurally composite, per Chapter 16) across a ~33× range of
 capacity, and test each on (a) in-distribution held-out primitives (new instances of the
 training prompts, per the novelty audit in Appendix C) and (b) the held-out composite
 operations. To be precise about it, this is **not** a single-variable sweep:
@@ -24,7 +26,7 @@ say.
 
 | Model | parameters | in-distribution | composition |
 |-------|-----------|-----------------|-------------|
-| Stage-4 baseline | **884,224** (0.88M) | 0.900 (see Appendix C.5) | **0.000** |
+| Stage-4 baseline | **884,224** (0.88M) | 0.9167 (n=60; see Appendix C.5) | **0.000** |
 | Scaling | **6,500,352** (6.5M) | 0.897 | **0.000** |
 | 10M point | **10,195,776** (10.2M) | 0.773 | **0.000** |
 | 30M point | **29,290,240** (29.3M) | 0.897 | **0.000** |
@@ -99,7 +101,7 @@ Going from ~0.9M to 29.3M parameters:
 - **Composition is 0.000 at every size we ran.** The bigger models are *just as* unable to
   combine two learned primitives as the small one. Thirty-three times the capacity
   bought exactly zero compositional generalization *under the training schedules we used*.
-- **In-distribution is a roughly stable plateau** (0.773–0.900) — capacity neither
+- **In-distribution is a roughly stable plateau** (0.773–0.9167) — capacity neither
   clearly helped nor hurt the narrow task; it just never helped compose. (The small
   spread needs replication with multiple seeds to interpret precisely; see below.)
 
@@ -123,8 +125,8 @@ ability to compose in our evaluations.
 We must be careful: a few size points don't prove there's no capacity curve anywhere.
 But the shape is telling. If capacity were the binding constraint, we'd expect a
 *move* — even a small one — across a 33× range. We see none: composition is 0.000 at
-all four sizes. The in-distribution scores span 0.773–0.900 across a 33× range. That
-spread (0.773 vs 0.900 at 10.2M vs 0.88M) is large enough that we should be honest
+all four sizes. The in-distribution scores span 0.773–0.9167 across a 33× range. That
+spread (0.773 vs 0.9167 at 10.2M vs 0.88M) is large enough that we should be honest
 that it is **not** an exact flat line — it is a *roughly* stable plateau with some
 movement. We did not run multiple training seeds per size, so we did not estimate
 between-training-seed variability for these points; the honest claim is that composition
@@ -146,7 +148,7 @@ and those candidates failed parsing, so even this hypothesis is not confirmed.
 ## The honest side-finding: the 10M "deficit" was an artifact, not a law
 
 There was a wrinkle we recorded and almost smoothed over. The **10.2M** model
-originally measured **0.383** in-distribution — below the 0.897–0.900 of the smaller
+originally measured **0.383** in-distribution — below the 0.897–0.9167 of the smaller
 models. That looked like "bigger is worse." We flagged it as an open question rather
 than a rule.
 

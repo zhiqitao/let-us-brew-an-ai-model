@@ -31,12 +31,6 @@ flag it.
   template-matcher and a TF-IDF retriever) used to interpret the model's score. A
   baseline tells us whether the task was already easy for a simpler machine.
 
-- **Canary (held-out task-record/pair probe).** Here, a held-out prompt-and-answer *pair*
-  (a prompt the model did not see as this exact pair, though its prompt novelty is not
-  independently verified — see Appendix C.7) used to check whether the model reproduces a
-  stored value or produces a general program. We use the term in the held-out-probe
-  sense, not the classic memorization-canary sense.
-
 - **Checkpoint.** A saved copy of the model's weights at a point in training.
 
 - **Composite operation.** An operation that is a combination of two primitives the
@@ -60,6 +54,17 @@ flag it.
   **single-sample execution accuracy / sampled pass@1**. The worked examples are the same
   single-sample output.
 
+- **Held-out.** Kept out of training and used for an evaluation. Which axis is held out
+  differs by split — prompt string, wording family, operation ID, or (in the pilot) only
+  the hidden-test input values — so the book states the axis wherever "held out" carries
+  a claim; see "Train/val/test split" below.
+
+- **Held-out program probe (formerly called a "canary").** Here, a held-out prompt-and-answer *pair*
+  (a prompt the model did not see as this exact pair, though its prompt novelty is not
+  independently verified — see Appendix C.7) used to check whether the model reproduces a
+  stored value or produces a general program. We use the term in the held-out-probe
+  sense, not the classic memorization-canary sense.
+
 - **Hidden tests.** Input/expected-output pairs used to grade a generated program. In
   this book they are evaluator-only artifacts: they never enter training.
 
@@ -71,6 +76,12 @@ flag it.
 
 - **Mutation testing.** Generating deliberately-broken programs and checking that the
   hidden-test suite catches them, to measure how discriminating the tests are.
+
+- **New IDs ("new task IDs").** Where the book says *new IDs* — e.g. the pilot's
+  held-out test — it means new **task/test/execution IDs**: records whose hidden-test
+  *input values* differ while the prompt string and target program stay the same. It does
+  **not** mean new *variable identifier names*, which is the separate Stage-3 "new
+  identifiers" surface test (`a,b` → `left,right`).
 
 - **pass@1.** The fraction of evaluation records for which the model's **single
   temperature-0.8 sampled** program passes all of that record's hidden tests (see

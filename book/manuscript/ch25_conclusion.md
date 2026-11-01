@@ -25,8 +25,8 @@ experiments separate cleanly into what the model **can** do and what it **cannot
 **It can learn, and it learns well — within a narrow regime.** On individual operations,
 the model reliably maps a natural-language spec to correct Python, reaching **~0.90
 pass@1** in-distribution on a 0.88M parameter model (the pilot under its own evaluation
-scored 0.897; the stage-4 re-evaluation of the same pilot checkpoint measured 0.900
-(see Appendix C.5) —
+scored 0.897; the stage-4 re-evaluation of the same pilot checkpoint measured 0.9167
+(n=60; see Appendix C.5) —
 different evaluation sets, both reported). It produces general programs for
 *fresh inputs of a prompt it saw in training* — a task-ID probe passes 59/60 and a
 held-out pair yields the general program, not a memorized literal. That is genuine,

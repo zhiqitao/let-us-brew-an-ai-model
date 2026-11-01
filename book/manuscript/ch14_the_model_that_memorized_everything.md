@@ -68,27 +68,31 @@ strings in training and test, this does **not** establish generalization to a pr
 model never saw (see the novelty audit in Appendix C); it shows the model produces a
 general program that passes *new inputs* for a *familiar* prompt.
 
-**Test 3 — the canary.** We construct a prompt-and-answer *pair* that never appeared
+**Test 3 — the held-out program probe.** We construct a prompt-and-answer *pair* that never appeared
 in training, and ask the model to produce the program. If the model outputs the
 general program (e.g. `return a + b`), it is producing a program for an unseen pair; if it
 outputs some fixed literal or garbage, it might be memorizing something else.
 
-The canary is a sharp probe, and it is worth explaining what it does and does not
-show. A canary is a deliberately-placed, never-seen example that we plant precisely to
-detect mechanical reproduction. If the model were *memorizing literal answer values*,
+The held-out program probe is a sharp probe, and it is worth explaining what it does and
+does not show. What it is: a deliberately-constructed, never-seen prompt–program pair
+that we build precisely to detect mechanical reproduction. (We deliberately do **not**
+call it a "canary": a canary
+in the memorization sense is a distinctive example *planted in training* and later tested
+for regurgitation, and we did not run that experiment — see the note below.) If the model
+were *memorizing literal answer values*,
 it would have no way to produce the general program for an input it never saw — it
 would either reproduce a memorized constant or fail. When it instead emits
 `def solve(a,b): return a+b`, it is not reproducing a stored *value*; it is producing a
 general program.
 
-Two things the canary does **not** settle. First, it is a held-out *pair*, so it
+Two things the held-out program probe does **not** settle. First, it is a held-out *pair*, so it
 demonstrates the model emits a general program for a prompt/pair combination we did not
 train on — evidence the model does not just reproduce stored constant *values*. It is
 not proof that it has "understood" the arithmetic; the model emits `return a + b`, it does
 not execute the addition (Python does). What the model learns is a request-to-program
-mapping. (Calling this a "canary" with its memorization connotation is really a
-*held-out-probe* result, not the classic memorization canary, which instead plants a
-distinctive training example and measures whether it is later reproduced.)
+mapping. (This is a *held-out-probe* result, not a classic memorization canary, which
+instead plants a distinctive training example and measures whether it is later
+reproduced.)
 
 Second, emitting the general program does not rule out a learned *classifier* that picks
 among a small set of stored programs — the retrieval baseline shows such a store can
@@ -112,7 +116,7 @@ On a 60-example sample:
   reference program exactly. (Expected for a well-fit learner.)
 - **Fresh-instance generalization (task-ID probe):** 59/60 — for a familiar prompt with a
   *new task ID / new input values*, it produces a passing general program.
-- **Canary (held-out pair):** the model emits the **general program** (`def solve(a,b): return a+b`),
+- **Held-out program probe (held-out pair):** the model emits the **general program** (`def solve(a,b): return a+b`),
   not a memorized constant.
 
 ## What this tells us — a nuanced answer
@@ -150,7 +154,7 @@ So the refined picture is:
 
 | | What the model does |
 |---|---|
-| Memorize exact answer *values*? | **No** — canary produces a general program, not a literal |
+| Memorize exact answer *values*? | **No** — the held-out program probe produces a general program, not a literal |
 | Memorize the prompt→program mapping for a *handful* of stored programs? | **Not excluded** — retrieval baseline shows a selectable store already solves the pilot |
 | Produce a general program that passes *new inputs* for a familiar prompt? | **Yes** — 59/60 on the task-ID probe |
 | Ground the computation independent of wording? | **No** — collapses on new wording; see Chapter 15 |

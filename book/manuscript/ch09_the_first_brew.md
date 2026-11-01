@@ -40,11 +40,12 @@ on fresh execution inputs, not generalization to a new request.
 The student is a small, deliberately plain decoder-only transformer: 4 layers, hidden
 dimension 128, 4 attention heads, a compact 291-token vocabulary, and 128-token
 context. Total **884,224 parameters** — but we report the split honestly, because it
-matters more than the round number: **53,632** are the embeddings (the token and
-positional tables, which store the vocabulary and position), and **830,592** are the
-non-embedding weights. The embeddings are trainable representations, not a static lookup —
-but a tiny model's parameter count is often dominated by them, and we never want a "0.9M
-parameter model" claim to hide that most of its parameters live there.
+matters more than the round number: **53,632 (6.1%)** are in the token and positional
+embedding tables, and **830,592 (93.9%)** are elsewhere. The embeddings are trainable
+representations, not a static lookup. Reporting both figures prevents confusion about
+where this model's parameters are allocated — for this configuration the embedding share
+is modest, not a majority (embedding-dominated regimes arise with much larger
+vocabularies, which is not this model).
 
 ## The training process, step by step
 
@@ -104,7 +105,12 @@ upcoming evaluations, not the loss curve, have to settle.
 
 **Second, the *final* value is not the interesting number.** A loss of 0.019 means the
 model can predict the next token of the *training* sequence almost perfectly. That
-tells us it fits the training data — and nothing more. This is the book's recurring
+tells us it fits the training data — and nothing more. One qualifier belongs on the
+number itself: there is no completion-only loss mask (Chapter 8), so this loss is
+averaged over *prompt and program* tokens together — the prompts are short and highly
+repetitive, and a low value partly reflects easy prompt-token prediction. No
+code-token-only training loss was recorded, so ~0.02 should be read as full-sequence
+fit, not as a clean measure of code-completion fit alone. This is the book's recurring
 motif, and it is worth saying loudly: **a falling training loss, and even a very low
 one, is not evidence of learning.** It is evidence of fitting. The distinction is the
 entire point of the experiment.

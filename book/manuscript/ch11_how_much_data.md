@@ -158,7 +158,8 @@ We only ran each count once, so we cannot pin an exact inflection. Four points d
 knee at 3000."
 
 Second, the number is for a **multi-operation dataset**, not a per-operation
-requirement. The run trains on all ten primitive operations mixed together (the pool is
+requirement. The run trains on all **ten seen operation IDs** (the operational "primitive"
+pool; `cond_abs_max` is structurally composite — Chapter 16) mixed together (the pool is
 built per-operation and then concatenated). So "the model reached 0.641" is the aggregate
 over the whole 3000-record, multi-operation pool — it does **not** mean every individual
 operation needed 3000 examples, nor that one operation on its own requires 3000. The

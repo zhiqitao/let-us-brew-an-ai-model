@@ -246,10 +246,10 @@ there without learning.
 2. **Suspected shortcut: exact memorization.**
    **Why it could explain it:** the model saw 1,400 examples; maybe it memorized the
    prompt→program pairs.
-   **Control (Ch14):** a probe of 60 pilot records plus a canary: **60/60 on the
+   **Control (Ch14):** a probe of 60 pilot records plus a held-out program probe: **60/60 on the
    training-record probe** (it reproduced every reference program exactly) and
    **59/60 on the held-out/task-ID probe** (a passing general program for a fresh task
-   ID), while on the canary probe it emitted the *general* program rather than a
+   ID), while on the held-out program probe it emitted the *general* program rather than a
    memorized literal. **Caveat:** the pilot test
    reuses training prompt strings, so this does **not** establish unseen-prompt
    generalization — it shows the model produces a *general* program (not a memorized

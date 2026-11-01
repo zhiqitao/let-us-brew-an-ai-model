@@ -32,11 +32,14 @@ def save(fig, name):
 # equally-spaced categorical plot that implies a meaningful size-response slope).
 fig, ax = plt.subplots()
 params = [0.88e6, 6.5e6, 10.2e6, 29.3e6]        # exact parameter counts
-in_dist = [0.900, 0.897, 0.773, 0.897]
+# 0.88M baseline in-distribution = 0.9167 (n=60), the manifest-backed value in
+# artifacts/manifests/stage4_scaling.json (Appendix C.5) — canonical, not 0.900.
+in_dist = [0.9167, 0.897, 0.773, 0.897]
+in_dist_labels = ["0.9167", "0.897", "0.773", "0.897"]
 comp    = [0.000, 0.000, 0.000, 0.000]
 ax.plot(params, in_dist, "o-", color="#4C72B0", lw=2, ms=8, label="in-distribution")
 ax.plot(params, comp,    "s-", color="#C44E52", lw=2, ms=8, label="composition")
-for xi, v in zip(params, in_dist): ax.annotate(f"{v:.3f}", (xi, v), textcoords="offset points", xytext=(0, 6), ha="center", fontsize=8, color="#4C72B0")
+for xi, v, t in zip(params, in_dist, in_dist_labels): ax.annotate(t, (xi, v), textcoords="offset points", xytext=(0, 6), ha="center", fontsize=8, color="#4C72B0")
 for xi, v in zip(params, comp):    ax.annotate(f"{v:.3f}", (xi, v), textcoords="offset points", xytext=(0, 8), ha="center", fontsize=8, color="#C44E52", fontweight="bold")
 ax.set_xscale("log")
 ax.set_xticks(params); ax.set_xticklabels(["0.88M", "6.5M", "10.2M", "29.3M"])

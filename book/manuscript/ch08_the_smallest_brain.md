@@ -105,7 +105,14 @@ on the gradient of that loss over a batch, and one full pass over the training s
 *epoch*.)
 There is no loss masking that restricts credit to the program positions — the model is
 rewarded for predicting the prompt's continuation (including its own wording) as well as
-the program. Generation uses temperature 0.8 multinomial sampling for `max_new` tokens,
+the program. **Consequence for the numbers we report:** because there is no
+completion-only loss mask, the training loss quoted in this book (the pilot's ~0.02)
+aggregates prompt tokens *and* program tokens over the whole
+`prompt + newline + program` sequence. The prompts are short and highly repetitive, so
+that figure is a full-sequence fit number, **not** a clean measure of code-completion fit
+alone; no code-token-only training or validation loss was recorded, so we qualify the
+aggregate rather than report a split we do not have. Generation uses temperature 0.8
+multinomial sampling for `max_new` tokens,
 with the context window truncated to `block_size` (it reconditions on the sequence so
 far at every step). There is no separate "refuse to answer"
 behavior — the model is trained simply to keep predicting, which is exactly why we
