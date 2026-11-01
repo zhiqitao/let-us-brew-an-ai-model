@@ -218,7 +218,7 @@ def fig_judge():
     widens and the effective point size drops).  Inter-box arrows sit at the
     top of each box (above the label row) so they never overlap the text.
     """
-    fig, ax = new_fig(w=5.0, h=7.4)
+    fig, ax = new_fig(w=5.0, h=5.6)
     # Fill the figure with the axes (new_fig uses matplotlib's default inset
     # margins) so data 0-100 maps to the full 0-5.0in and left-aligned headers
     # do not start ~0.6in in and overflow the right edge (which widened the

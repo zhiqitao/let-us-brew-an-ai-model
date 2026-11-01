@@ -639,6 +639,157 @@ def breakable_texttt_paths(tex_path):
     return False
 
 
+# ---- H19: every explicit http(s) URL becomes a clickable link annotation ----
+# hyperref is already loaded (book.sty) with colorlinks, but pandoc emits bare URLs
+# as plain text and the front matter wraps them in \texttt, so the built PDF carried
+# zero URI annotations. These two passes wrap every URL in \href{clean-target}{text}
+# without changing what is typeset (same glyphs, same break points).
+URL_RE = re.compile(r"https?://[A-Za-z0-9][A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]*")
+
+
+def _trim_url(u):
+    """Drop sentence punctuation that is not part of the URL (keeps balanced
+    parens, so https://doi.org/10.1016/S0079-7421(08)60536-8 survives intact)."""
+    while u and u[-1] in ".,;:":
+        u = u[:-1]
+    while u.endswith(")") and u.count(")") > u.count("("):
+        u = u[:-1]
+    return u
+
+
+def _plain_url(s):
+    """Recover the literal URL from a \\texttt body decorated by
+    breakable_texttt_paths (\\allowbreak markers, \\mbox wrappers, escapes)."""
+    s = s.replace("\\allowbreak ", "").replace("\\allowbreak", "")
+    while "\\mbox{" in s:
+        s2 = re.sub(r"\\mbox\{([^{}]*)\}", r"\1", s)
+        if s2 == s:
+            break
+        s = s2
+    for esc, ch in (("\\_", "_"), ("\\-", "-"), ("\\/", "/"), ("\\%", "%"),
+                    ("\\#", "#"), ("\\&", "&"), ("\\$", "$")):
+        s = s.replace(esc, ch)
+    return s
+
+
+def _skip_group(s, i):
+    """i indexes the '{' opening a group; return the index just past its '}'."""
+    depth = 0
+    n = len(s)
+    while i < n:
+        c = s[i]
+        if c == "\\":
+            i += 2
+            continue
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return i
+
+
+def _linkify_verbatim(tex):
+    """Linkify URLs inside code listings.
+
+    A command cannot be executed inside verbatim, so for exactly the listings that
+    contain a URL we turn on fancyvrb's commandchars, escape the listing's literal
+    backslashes (shell line continuations) to \\textbackslash, and \\href the URL.
+    The displayed text is unchanged, so the listing renders identically. A listing
+    whose backslashes are anything other than line continuations is left untouched
+    rather than risk corrupting it.
+    """
+    pat = re.compile(r"(\\begin\{Verbatim\})(\[[^\]]*\])?(.*?)(\\end\{Verbatim\})", re.S)
+    out = []
+    pos = 0
+    for m in pat.finditer(tex):
+        opts = m.group(2) or ""
+        body = m.group(3)
+        out.append(tex[pos:m.start()])
+        pos = m.end()
+        if not URL_RE.search(body) or "commandchars" in opts:
+            out.append(m.group(0))
+            continue
+        if re.search(r"\\(?![ \n\r])", body):
+            out.append(m.group(0))     # real control sequence: leave it alone
+            continue
+        body = body.replace("\\", "\\textbackslash")
+        body = URL_RE.sub(lambda w: "\\href{%s}{%s}" % (_trim_url(w.group(0)),
+                                                        w.group(0)), body)
+        inner = opts[1:-1].strip()
+        newopts = "[commandchars=\\\\\\{\\}" + (", " + inner if inner else "") + "]"
+        out.append(m.group(1) + newopts + body + m.group(4))
+    out.append(tex[pos:])
+    return "".join(out)
+
+
+def _linkify_prose(tex):
+    """Wrap bare URLs and URL-bearing \\texttt spans in \\href, left to right,
+    skipping \\href/\\url arguments and whole Verbatim listings untouched."""
+    cmd_re = re.compile(r"\\begin\{Verbatim\}|\\(texttt|href|url)\{|https?://")
+    out = []
+    i = 0
+    while True:
+        m = cmd_re.search(tex, i)
+        if not m:
+            out.append(tex[i:])
+            break
+        out.append(tex[i:m.start()])
+        if m.group(0) == "\\begin{Verbatim}":
+            end = tex.find("\\end{Verbatim}", m.end())
+            end = len(tex) if end < 0 else end + len("\\end{Verbatim}")
+            out.append(tex[m.start():end])
+            i = end
+            continue
+        if m.group(1) is None:                      # bare URL
+            m2 = URL_RE.match(tex, m.start())
+            raw = m2.group(0)
+            # never link a URL that lives in a TeX comment
+            line_start = tex.rfind("\n", 0, m.start()) + 1
+            if re.search(r"(?<!\\)%", tex[line_start:m.start()]):
+                out.append(raw)
+            else:
+                out.append("\\href{%s}{%s}" % (_trim_url(raw), raw))
+            i = m2.end()
+            continue
+        name = m.group(1)
+        j = _skip_group(tex, m.end() - 1)
+        if name == "href":                          # already a link: copy both args
+            k = _skip_group(tex, j)
+            out.append(tex[m.start():k])
+            i = k
+            continue
+        if name == "url":
+            out.append(tex[m.start():j])
+            i = j
+            continue
+        inner = tex[m.end():j - 1]                  # \texttt{...}
+        # breakable_texttt_paths may have spliced \allowbreak into the URL, so
+        # detect on the cleaned form but typeset the original span unchanged.
+        plain = _plain_url(inner).strip()
+        murl = URL_RE.match(plain)
+        if murl and _trim_url(plain) == _trim_url(murl.group(0)):
+            out.append("\\href{%s}{\\texttt{%s}}" % (_trim_url(plain), inner))
+        else:
+            out.append(tex[m.start():j])
+        i = j
+        continue
+    return "".join(out)
+
+
+def linkify_urls(tex_path):
+    """H19: turn every explicit https/http URL in this .tex file into a link
+    annotation. Returns True when the file changed."""
+    tex = open(tex_path, encoding="utf-8").read()
+    new = _linkify_prose(_linkify_verbatim(tex))
+    if new != tex:
+        open(tex_path, "w", encoding="utf-8").write(new)
+        return True
+    return False
+
+
 def convert_chapter(fn, mapping, outbase):
     txt = open(os.path.join(MANU, fn), encoding="utf-8").read()
     # strip the H1 chapter title (book.tex supplies \chapter{title})
@@ -664,6 +815,7 @@ def convert_chapter(fn, mapping, outbase):
     fix_result_table(out)
     fix_label_column(out)
     breakable_texttt_paths(out)
+    linkify_urls(out)          # H19: https URLs -> clickable \href annotations
     if outbase == "appD":
         # P1-PROD-01 (glossary tail): the Glossary ran 4.45 pages and ended on a
         # conspicuous half-empty final page (one bullet + tail, ~55% whitespace).
@@ -674,6 +826,19 @@ def convert_chapter(fn, mapping, outbase):
         t = open(out, encoding="utf-8").read()
         open(out, "w", encoding="utf-8").write(
             "{\\linespread{0.95}\\selectfont\n" + t + "\n}")
+    if outbase == "ch17":
+        # B03 (empty-page audit): Chapter 17's closing paragraph spilled its last
+        # 2 lines onto a near-empty final page (28 words, ~6% fill) right before the
+        # Part VI divider. The strand is caused by the \needspace{6\baselineskip}
+        # guard in front of section 17.4, which ejects the page 34pt early, so the
+        # tail cannot be pulled back by rebreaking alone. 2% tighter leading inside
+        # this chapter only (same mechanism as the appD glossary fix above; the
+        # \chapter heading is supplied by book.tex outside this group, so it is
+        # unaffected) reabsorbs the tail: chapter closes on a full page and no
+        # numbered body page stays under 40 words.
+        t = open(out, encoding="utf-8").read()
+        open(out, "w", encoding="utf-8").write(
+            "{\\linespread{0.98}\\selectfont\n" + t + "\n}")
     return out
 
 def main():
@@ -714,6 +879,7 @@ def main():
     # Emit book.tex with frontmatter (title/copyright/toc/figures) + mainmatter.
     book = render_book_tex(build_lines)
     open(os.path.join(LATEX, "book.tex"), "w", encoding="utf-8").write(book)
+    linkify_urls(os.path.join(LATEX, "book.tex"))   # H19: front-matter repo URLs
     print("wrote book.tex; chapters:", len(chapters_out), "appendices:", ap)
 
 def render_book_tex(build_lines):

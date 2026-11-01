@@ -1,0 +1,753 @@
+{
+  "audit_id": "B04_original_holdout_novelty_audit",
+  "generated_by": "scripts/run_original_novelty_audit.py",
+  "generated_at_utc": "2026-11-01T16:06:25+00:00",
+  "provenance": {
+    "originals_archived": false,
+    "limitation": "The historically scored Stage-3/Stage-4 train/test files were never written to disk: run_surface.py and run_composition.py build their splits in memory from the generator plus a seed and persist only the score manifest. This audit is therefore run on DETERMINISTICALLY REGENERATED splits built from the recorded config/seed by executing the scoring scripts' own split code (AST-extracted, not re-implemented). It is not an audit of an archived original file, because no such file exists. make_task is a pure function of (operation, task_id, seed, id_set, family) through random.Random(seed), so the regeneration is exact for a given generator source; the cross-check below states whether that source is the scoring-time one.",
+    "method": [
+      "read seed/n_per/comp_per_op from the manifests the scoring runs wrote",
+      "AST-extract build_tasks from scripts/run_surface.py and the split statements from scripts/run_composition.py, then execute them",
+      "regenerate splits, hash record sets, compute overlap",
+      "re-run the same split code against the generator blob at the manifest commit (git show <commit>:src/data_generator/generator.py) and compare"
+    ],
+    "recorded_configs": {
+      "stage3_surface": {
+        "manifest": "artifacts/manifests/stage3_surface.json",
+        "seed": 0,
+        "n_per": 60,
+        "id_set": "letters",
+        "families": "holdout_last",
+        "identifier_holdout": "words, seed+5000"
+      },
+      "stage4_composition": {
+        "manifest": "artifacts/manifests/stage4_composition.json",
+        "seed": 0,
+        "comp_per_op": 40,
+        "n_per_op": 200,
+        "n_per_op_source": "literal in run_composition.py (not a CLI arg; not in the manifest)",
+        "id_set": "letters"
+      }
+    },
+    "source_provenance": {
+      "stage3_surface": {
+        "manifest_path": "artifacts/manifests/stage3_surface.json",
+        "manifest_commit": "22a858c83072a2775d7ae8b36cdab6f87512cc80",
+        "manifest_commit_date": "2026-09-08",
+        "files": {
+          "scripts/run_surface.py": {
+            "current_sha256": "d2b5a81fed601890a9a8997e8f8992d86e6c5565d12d67e8da2ded103df0e004",
+            "sha256_at_manifest_commit": "d2b5a81fed601890a9a8997e8f8992d86e6c5565d12d67e8da2ded103df0e004",
+            "identical_at_scoring_time": true,
+            "last_commit": "22a858c 2026-09-08 Stage 3: surface generalization - model anchored to surface form, not meaning"
+          },
+          "src/data_generator/generator.py": {
+            "current_sha256": "e2c6bb4f6255da13e9e987042258180d9d42c0d6c2fb5f792ec94caa0b76e585",
+            "sha256_at_manifest_commit": "b5461e58b8b6fd9c14a7ea165de1a4e2f9de250ac9ca2537d7a01f33dbe1cc22",
+            "identical_at_scoring_time": false,
+            "last_commit": "1540603 2026-09-11 Round-2 publication review: reconcile registry/configs, fix abs_add oracle, publish mutation + dedup results, soften overclaims"
+          },
+          "src/nl_renderer/renderer.py": {
+            "current_sha256": "32671d9ab6b8bc38ad633806efa22ebaad81e578fa6f6bdcd1f39d420d5b1c24",
+            "sha256_at_manifest_commit": "32671d9ab6b8bc38ad633806efa22ebaad81e578fa6f6bdcd1f39d420d5b1c24",
+            "identical_at_scoring_time": true,
+            "last_commit": "0cef1e6 2026-09-07 Stage 4: structural/compositional generalization - measured boundary"
+          },
+          "src/program_generator/generator.py": {
+            "current_sha256": "6f7f218d5d7b0c1e26f03f2884dbaa5914bb39b06785396868a7797953ce085c",
+            "sha256_at_manifest_commit": "6f7f218d5d7b0c1e26f03f2884dbaa5914bb39b06785396868a7797953ce085c",
+            "identical_at_scoring_time": true,
+            "last_commit": "0cef1e6 2026-09-07 Stage 4: structural/compositional generalization - measured boundary"
+          },
+          "src/test_generator/generator.py": {
+            "current_sha256": "a336c186d28b011e4cec7592eda9d34111c554783a125c89a84e22fdd54b8eea",
+            "sha256_at_manifest_commit": "a336c186d28b011e4cec7592eda9d34111c554783a125c89a84e22fdd54b8eea",
+            "identical_at_scoring_time": true,
+            "last_commit": "0cef1e6 2026-09-07 Stage 4: structural/compositional generalization - measured boundary"
+          }
+        }
+      },
+      "stage4_composition": {
+        "manifest_path": "artifacts/manifests/stage4_composition.json",
+        "manifest_commit": "fa15893f1bf0d00bb143a16f57011f77f66b7bc1",
+        "manifest_commit_date": "2026-09-09",
+        "files": {
+          "scripts/run_composition.py": {
+            "current_sha256": "70c6692e1417fbd6274418c8890870f9eb199ddd577796459bbe898162639438",
+            "sha256_at_manifest_commit": "e7b9085f1502ae69a90f7d4a579cef31a124664e829be9ba6bdd78266e2fd0c3",
+            "identical_at_scoring_time": false,
+            "last_commit": "3d48045 2026-09-11 Live model sweep: retrain 6.5M + 10.2M checkpoints and sweep all 5 trained models"
+          },
+          "src/data_generator/generator.py": {
+            "current_sha256": "e2c6bb4f6255da13e9e987042258180d9d42c0d6c2fb5f792ec94caa0b76e585",
+            "sha256_at_manifest_commit": "b5461e58b8b6fd9c14a7ea165de1a4e2f9de250ac9ca2537d7a01f33dbe1cc22",
+            "identical_at_scoring_time": false,
+            "last_commit": "1540603 2026-09-11 Round-2 publication review: reconcile registry/configs, fix abs_add oracle, publish mutation + dedup results, soften overclaims"
+          },
+          "src/nl_renderer/renderer.py": {
+            "current_sha256": "32671d9ab6b8bc38ad633806efa22ebaad81e578fa6f6bdcd1f39d420d5b1c24",
+            "sha256_at_manifest_commit": "32671d9ab6b8bc38ad633806efa22ebaad81e578fa6f6bdcd1f39d420d5b1c24",
+            "identical_at_scoring_time": true,
+            "last_commit": "0cef1e6 2026-09-07 Stage 4: structural/compositional generalization - measured boundary"
+          },
+          "src/program_generator/generator.py": {
+            "current_sha256": "6f7f218d5d7b0c1e26f03f2884dbaa5914bb39b06785396868a7797953ce085c",
+            "sha256_at_manifest_commit": "6f7f218d5d7b0c1e26f03f2884dbaa5914bb39b06785396868a7797953ce085c",
+            "identical_at_scoring_time": true,
+            "last_commit": "0cef1e6 2026-09-07 Stage 4: structural/compositional generalization - measured boundary"
+          },
+          "src/test_generator/generator.py": {
+            "current_sha256": "a336c186d28b011e4cec7592eda9d34111c554783a125c89a84e22fdd54b8eea",
+            "sha256_at_manifest_commit": "a336c186d28b011e4cec7592eda9d34111c554783a125c89a84e22fdd54b8eea",
+            "identical_at_scoring_time": true,
+            "last_commit": "0cef1e6 2026-09-07 Stage 4: structural/compositional generalization - measured boundary"
+          }
+        }
+      }
+    },
+    "scoring_time_source_crosscheck": {
+      "stage3_surface": {
+        "manifest_path": "artifacts/manifests/stage3_surface.json",
+        "generator_blob_sha256_at_manifest_commit": "b5461e58b8b6fd9c14a7ea165de1a4e2f9de250ac9ca2537d7a01f33dbe1cc22",
+        "generator_current_sha256": "e2c6bb4f6255da13e9e987042258180d9d42c0d6c2fb5f792ec94caa0b76e585",
+        "generator_blob_identical": false,
+        "model_visible_content_vs_scoring_time_source": {
+          "train": {
+            "records_current": 600,
+            "records_at_manifest": 600,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          },
+          "in_distribution": {
+            "records_current": 600,
+            "records_at_manifest": 600,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          },
+          "held_out_wording_family": {
+            "records_current": 480,
+            "records_at_manifest": 480,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          },
+          "held_out_identifiers_words": {
+            "records_current": 600,
+            "records_at_manifest": 600,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          }
+        },
+        "status": "run"
+      },
+      "stage4_composition": {
+        "manifest_path": "artifacts/manifests/stage4_composition.json",
+        "generator_blob_sha256_at_manifest_commit": "b5461e58b8b6fd9c14a7ea165de1a4e2f9de250ac9ca2537d7a01f33dbe1cc22",
+        "generator_current_sha256": "e2c6bb4f6255da13e9e987042258180d9d42c0d6c2fb5f792ec94caa0b76e585",
+        "generator_blob_identical": false,
+        "model_visible_content_vs_scoring_time_source": {
+          "train": {
+            "records_current": 1400,
+            "records_at_manifest": 1400,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          },
+          "val": {
+            "records_current": 300,
+            "records_at_manifest": 300,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          },
+          "test": {
+            "records_current": 300,
+            "records_at_manifest": 300,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          },
+          "composition_holdout": {
+            "records_current": 240,
+            "records_at_manifest": 240,
+            "prompts_identical": true,
+            "programs_identical": true,
+            "families_identical": true,
+            "operations_identical": true,
+            "record_json_identical": false,
+            "record_json_identical_ignoring_semantics_output_type": true,
+            "only_record_difference": "semantics.output_type"
+          }
+        },
+        "status": "run"
+      }
+    }
+  },
+  "stage3_surface": {
+    "splits": {
+      "train": {
+        "split": "train",
+        "records": 600,
+        "sha256_canonical_record_set": "850da42710892b407c6684ffd5bfcc66740cb2c2f3c78a54ffb9cde52a244a96",
+        "sha256_prompt_program_pair_set": "23acebdf5f23d7ca16b28b38cf829e3e8410cb70a7add160818e92feef5710e3",
+        "sha256_task_id_set": "5a55279ebfed4afbc2ff6ecd7fd2f37d96cd611fcf0340b0c32343dbc3f7fa30",
+        "distinct_prompts": 13,
+        "distinct_prompt_program_pairs": 13,
+        "template_family_ids": [
+          "_a",
+          "_b",
+          "_list_a",
+          "_unary_a"
+        ],
+        "operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "letters"
+        ]
+      },
+      "in_distribution": {
+        "split": "in_distribution",
+        "records": 600,
+        "sha256_canonical_record_set": "5b2783f2f4f43f7717c9f931992c91829a601486e91406c2090de8840afa7c61",
+        "sha256_prompt_program_pair_set": "23acebdf5f23d7ca16b28b38cf829e3e8410cb70a7add160818e92feef5710e3",
+        "sha256_task_id_set": "d678b512afe1941669b0670cd9a53bd311f785e68a346c0cd9afcdcaabcbec9a",
+        "distinct_prompts": 13,
+        "distinct_prompt_program_pairs": 13,
+        "template_family_ids": [
+          "_a",
+          "_b",
+          "_list_a",
+          "_unary_a"
+        ],
+        "operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "letters"
+        ]
+      },
+      "held_out_wording_family": {
+        "split": "held_out_wording_family",
+        "records": 480,
+        "sha256_canonical_record_set": "745a36c3432dc528c79a08073974e9f6171eb338bf3498f92808d7bad0228a00",
+        "sha256_prompt_program_pair_set": "f66c62cb9b7a0a686bfbaa934ad1dfdb7a5b0b3168c67540b99bb4e0e15f4524",
+        "sha256_task_id_set": "86f3312fc8e77a14b8c8da52d155d31686319712474b91e4367948db9b34bde2",
+        "distinct_prompts": 8,
+        "distinct_prompt_program_pairs": 8,
+        "template_family_ids": [
+          "_b",
+          "_c",
+          "_list_b"
+        ],
+        "operation_ids": [
+          "add",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "letters"
+        ]
+      },
+      "held_out_identifiers_words": {
+        "split": "held_out_identifiers_words",
+        "records": 600,
+        "sha256_canonical_record_set": "748cb18471d94669ab36d2bc088c2b3527eaa34282a564dbea79e9df7174e3f1",
+        "sha256_prompt_program_pair_set": "bd9f43e76d9fb0c6ac764eb1cb81526c9c26557d2667edca529e317fff4a9739",
+        "sha256_task_id_set": "d678b512afe1941669b0670cd9a53bd311f785e68a346c0cd9afcdcaabcbec9a",
+        "distinct_prompts": 21,
+        "distinct_prompt_program_pairs": 21,
+        "template_family_ids": [
+          "_a",
+          "_b",
+          "_c",
+          "_list_a",
+          "_list_b",
+          "_unary_a"
+        ],
+        "operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "words"
+        ]
+      }
+    },
+    "train_vs_holdout": {
+      "train_vs_held_out_wording_family": {
+        "train_records": 600,
+        "holdout_records": 480,
+        "exact": {
+          "prompt_overlap": 0,
+          "template_family_overlap": 1,
+          "program_overlap": 8,
+          "operation_overlap": 8,
+          "prompt_program_pair_overlap": 0
+        },
+        "normalized": {
+          "prompt_overlap_case_punct_whitespace_insensitive": 0,
+          "program_overlap_whitespace_insensitive": 8
+        },
+        "shared_template_family_ids": [
+          "_b"
+        ],
+        "shared_operation_ids": [
+          "add",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "shared_composite_operation_ids": []
+      },
+      "train_vs_held_out_identifiers_words": {
+        "train_records": 600,
+        "holdout_records": 600,
+        "exact": {
+          "prompt_overlap": 0,
+          "template_family_overlap": 4,
+          "program_overlap": 0,
+          "operation_overlap": 10,
+          "prompt_program_pair_overlap": 0
+        },
+        "normalized": {
+          "prompt_overlap_case_punct_whitespace_insensitive": 0,
+          "program_overlap_whitespace_insensitive": 0
+        },
+        "shared_template_family_ids": [
+          "_a",
+          "_b",
+          "_list_a",
+          "_unary_a"
+        ],
+        "shared_operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "shared_composite_operation_ids": []
+      },
+      "train_vs_in_distribution": {
+        "train_records": 600,
+        "holdout_records": 600,
+        "exact": {
+          "prompt_overlap": 13,
+          "template_family_overlap": 4,
+          "program_overlap": 10,
+          "operation_overlap": 10,
+          "prompt_program_pair_overlap": 13
+        },
+        "normalized": {
+          "prompt_overlap_case_punct_whitespace_insensitive": 13,
+          "program_overlap_whitespace_insensitive": 10
+        },
+        "shared_template_family_ids": [
+          "_a",
+          "_b",
+          "_list_a",
+          "_unary_a"
+        ],
+        "shared_operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "shared_composite_operation_ids": []
+      }
+    },
+    "disjointness": {
+      "claim": "held-out WORDING family: for every operation, the held-out template family and every held-out prompt string are absent from that operation's training records (identifier set deliberately stays 'letters' so only wording changes).",
+      "train_and_holdout_prompts_disjoint": true,
+      "train_and_holdout_prompts_disjoint_after_normalization": true,
+      "train_and_holdout_prompt_program_pairs_disjoint": true,
+      "train_and_holdout_families_disjoint_per_operation": true,
+      "held_out_identifiers_share_no_prompt_with_train": true,
+      "held_out_identifiers_share_no_prompt_with_train_after_normalization": true,
+      "held_out_identifiers_share_no_program_with_train": true,
+      "held_out_identifiers_use_word_identifiers_only": true,
+      "train_uses_letter_identifiers_only": true
+    },
+    "findings": {
+      "global_template_family_id_overlap": {
+        "count": 1,
+        "ids": [
+          "_b"
+        ],
+        "per_operation_overlap": {},
+        "explanation": "Template-family IDs name the renderer function and are shared across operations, so the bare ID is not globally unique: `_b` is a KEPT (train) family for the 3-family operations (add/sub/mul) and the HELD-OUT family for the 2-family operations (max_of/min_of). The hold-out is disjoint per operation -- no operation's held-out wording appears in that operation's training records -- and the model-visible prompt strings are globally disjoint (0 exact, 0 normalized). The precise claim is therefore 'held-out (operation, wording) combination with globally disjoint prompt strings', not 'a wording template never rendered for any operation'."
+      },
+      "program_overlap_with_wording_holdout": {
+        "count": 8,
+        "normalized_count": 8,
+        "explanation": "EXPECTED, not a novelty violation: the wording hold-out varies only the NL template, so the same operation with the same letter identifiers yields the same reference program. The claim under test is wording novelty, not program novelty. (The identifier hold-out, by contrast, shares 0 programs with train.)"
+      },
+      "operation_overlap_with_wording_holdout": {
+        "count": 8,
+        "ids": [
+          "add",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "explanation": "EXPECTED: a wording hold-out keeps the operation set fixed; only the template family changes."
+      },
+      "identifier_holdout_family_overlap": {
+        "count": 4,
+        "ids": [
+          "_a",
+          "_b",
+          "_list_a",
+          "_unary_a"
+        ],
+        "explanation": "EXPECTED: run_surface.py builds the new-identifier test with families='all' -- it is an identifier hold-out, not a wording hold-out. Prompts and programs are both disjoint from train."
+      },
+      "in_distribution_is_a_control_not_a_holdout": {
+        "prompt_overlap": 13,
+        "explanation": "EXPECTED: the in-distribution test reuses train wording on fresh seeds; it is the control, not a novelty claim."
+      },
+      "task_ids_are_not_unique_across_splits": {
+        "in_distribution_and_identifier_holdout_share_task_id_set": true,
+        "explanation": "task_id values repeat across splits (both id-splits use the '<op>_id<i>' scheme), so a novelty audit keyed on task_id would be misleading; this audit keys on prompt / program / family content."
+      }
+    }
+  },
+  "stage4_composition": {
+    "splits": {
+      "train": {
+        "split": "train",
+        "records": 1400,
+        "sha256_canonical_record_set": "0c3f368efd68bf024eb12f8d9c18e97241485221d77274cbff7b6353483e49d9",
+        "sha256_prompt_program_pair_set": "5ba46d440666dd3daa1c6fe1cb3415990495922900b746ad38f7f702c6789c16",
+        "sha256_task_id_set": "b39dca56d7be009145b6f0b047e5d7905b227cac7ee2d1102189741e92f726f1",
+        "distinct_prompts": 21,
+        "distinct_prompt_program_pairs": 21,
+        "template_family_ids": [
+          "_a",
+          "_b",
+          "_c",
+          "_list_a",
+          "_list_b",
+          "_unary_a"
+        ],
+        "operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "letters"
+        ]
+      },
+      "val": {
+        "split": "val",
+        "records": 300,
+        "sha256_canonical_record_set": "c547e461d29f5820832522901311b7d6e2bdcfd88574904af2f6827b35e799a3",
+        "sha256_prompt_program_pair_set": "756c0fc43ff0ab5170dca3548e7fa47ee5e2f5478217a413425d79475bd83737",
+        "sha256_task_id_set": "f08141736e0d6d7bd854e1477bee8ed2cd9ec01617974447b662d6732dc7937b",
+        "distinct_prompts": 21,
+        "distinct_prompt_program_pairs": 21,
+        "template_family_ids": [
+          "_a",
+          "_b",
+          "_c",
+          "_list_a",
+          "_list_b",
+          "_unary_a"
+        ],
+        "operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "letters"
+        ]
+      },
+      "test": {
+        "split": "test",
+        "records": 300,
+        "sha256_canonical_record_set": "38a5072f01b027d55c69be144863ea187fc86bd1f2be4cc3ef59976b4d0ab825",
+        "sha256_prompt_program_pair_set": "789777ef277d75563ac4ef719174ad50f1bb7a7480bab0af440d35492358a263",
+        "sha256_task_id_set": "9de8b9ad247b549c87ab106bd1bea9ec2fa81ac6f3e676a6d2eb6617dd7a8e79",
+        "distinct_prompts": 21,
+        "distinct_prompt_program_pairs": 21,
+        "template_family_ids": [
+          "_a",
+          "_b",
+          "_c",
+          "_list_a",
+          "_list_b",
+          "_unary_a"
+        ],
+        "operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "composite_operation_ids": [],
+        "identifier_sets": [
+          "letters"
+        ]
+      },
+      "composition_holdout": {
+        "split": "composition_holdout",
+        "records": 240,
+        "sha256_canonical_record_set": "37f83390abe422ca15fddee0ce608cc52e06d674308b8f3857071a386d821ccd",
+        "sha256_prompt_program_pair_set": "38b9ba398a92b50f73ff6e66818e2dc48823c07ab6cdcb396794c5eb4ddbb63f",
+        "sha256_task_id_set": "abbed0584229ac8b228ac8c8125e50a95a27ca61848f50139175661445bcbfee",
+        "distinct_prompts": 6,
+        "distinct_prompt_program_pairs": 6,
+        "template_family_ids": [
+          "_comp_add_abs",
+          "_comp_double_first",
+          "_comp_len_minus_one",
+          "_comp_max_add",
+          "_comp_sub_abs",
+          "_comp_sum_abs"
+        ],
+        "operation_ids": [
+          "abs_add",
+          "double_first",
+          "len_minus_one",
+          "max_add",
+          "sub_abs",
+          "sum_of_abs"
+        ],
+        "composite_operation_ids": [
+          "abs_add",
+          "double_first",
+          "len_minus_one",
+          "max_add",
+          "sub_abs",
+          "sum_of_abs"
+        ],
+        "identifier_sets": [
+          "letters"
+        ]
+      }
+    },
+    "train_vs_holdout": {
+      "train_vs_composition_holdout": {
+        "train_records": 1400,
+        "holdout_records": 240,
+        "exact": {
+          "prompt_overlap": 0,
+          "template_family_overlap": 0,
+          "program_overlap": 0,
+          "operation_overlap": 0,
+          "prompt_program_pair_overlap": 0
+        },
+        "normalized": {
+          "prompt_overlap_case_punct_whitespace_insensitive": 0,
+          "program_overlap_whitespace_insensitive": 0
+        },
+        "shared_template_family_ids": [],
+        "shared_operation_ids": [],
+        "shared_composite_operation_ids": []
+      },
+      "train_vs_test": {
+        "train_records": 1400,
+        "holdout_records": 300,
+        "exact": {
+          "prompt_overlap": 21,
+          "template_family_overlap": 6,
+          "program_overlap": 10,
+          "operation_overlap": 10,
+          "prompt_program_pair_overlap": 21
+        },
+        "normalized": {
+          "prompt_overlap_case_punct_whitespace_insensitive": 21,
+          "program_overlap_whitespace_insensitive": 10
+        },
+        "shared_template_family_ids": [
+          "_a",
+          "_b",
+          "_c",
+          "_list_a",
+          "_list_b",
+          "_unary_a"
+        ],
+        "shared_operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "shared_composite_operation_ids": []
+      },
+      "train_vs_val": {
+        "train_records": 1400,
+        "holdout_records": 300,
+        "exact": {
+          "prompt_overlap": 21,
+          "template_family_overlap": 6,
+          "program_overlap": 10,
+          "operation_overlap": 10,
+          "prompt_program_pair_overlap": 21
+        },
+        "normalized": {
+          "prompt_overlap_case_punct_whitespace_insensitive": 21,
+          "program_overlap_whitespace_insensitive": 10
+        },
+        "shared_template_family_ids": [
+          "_a",
+          "_b",
+          "_c",
+          "_list_a",
+          "_list_b",
+          "_unary_a"
+        ],
+        "shared_operation_ids": [
+          "abs_of",
+          "add",
+          "cond_abs_max",
+          "first_element",
+          "list_len",
+          "list_sum",
+          "max_of",
+          "min_of",
+          "mul",
+          "sub"
+        ],
+        "shared_composite_operation_ids": []
+      }
+    },
+    "disjointness": {
+      "claim": "composition hold-out: composite operations never appear in train (operation-disjoint by construction), so no prompt, program or operation can be shared.",
+      "train_and_holdout_operations_disjoint": true,
+      "train_contains_no_composite_operation": true,
+      "holdout_contains_only_composite_operations": true,
+      "train_and_holdout_prompts_disjoint": true,
+      "train_and_holdout_programs_disjoint": true,
+      "train_and_holdout_prompts_disjoint_after_normalization": true,
+      "train_and_holdout_prompt_program_pairs_disjoint": true,
+      "train_and_holdout_template_families_disjoint": true,
+      "test_split_is_primitive_in_distribution": true
+    },
+    "findings": {
+      "note": "The composite hold-out uses its own renderer families (_comp_*), so it is disjoint from train on every axis measured: operation, family, prompt, program and prompt-program pair."
+    }
+  },
+  "assertions": {
+    "checked": 18,
+    "failed": [],
+    "all_disjointness_assertions_hold": true
+  }
+}

@@ -262,7 +262,15 @@ These checks run `scripts/run_dedup_audit.py`, which rebuilds a smaller sample (
 per op for surface, 100 train / 60 composite for composition) with the *current* generator
 and writes `artifacts/manifests/dedup_audit.json`. They report train × holdout **exact
 prompt-string overlap = 0** for the held-out wording family and for the composite
-holdout. We want to be clear about the limits of this: a regenerated reproduction can
+holdout. A fuller audit (`scripts/run_original_novelty_audit.py`; report
+`docs/reviews/loop/original_novelty_audit.md`) regenerates the exact scored splits using
+the scorer's own split code (AST-extracted from the scoring scripts) at the recorded seed
+and per-op counts, and confirms: train × held-out exact prompt, prompt–program-pair,
+family, and operation overlap are all **0** for the Stage-4 composition holdout (the six
+composite operations appear only there), and the Stage-3 wording-family holdout is
+prompt-disjoint (program overlap is expected, since a wording-only holdout keeps the same
+operations and letter identifiers); **18/18** disjointness assertions pass. We want to be
+clear about the limits of this: a regenerated reproduction can
 test the current generator's behavior; it does **not** by itself prove that the original
 scored Stage-3/Stage-4 files had the same membership (the original runs used larger
 per-op counts — 60 per op for the scored Stage-3 surface run, 240 composite records for
