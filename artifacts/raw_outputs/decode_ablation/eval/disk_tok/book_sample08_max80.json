@@ -1,0 +1,3611 @@
+{
+ "setting": "book_sample08_max80",
+ "max_new": 80,
+ "nul_truncation": true,
+ "tasks": {
+  "heldout": [
+   {
+    "task_id": "max_add_0000",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0001",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0002",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0003",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0004",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0005",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0006",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0007",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0008",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0009",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0010",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0011",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0012",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0013",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0014",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0015",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0016",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0017",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0018",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0019",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0020",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0021",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0022",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0023",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0024",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0025",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0026",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0027",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0028",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0029",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0030",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0031",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0032",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0033",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0034",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0035",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0036",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0037",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0038",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "max_add_0039",
+    "op": "max_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "double_first_0000",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0001",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0002",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0003",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return \n    return a,\\0^",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "double_first_0004",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0005",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0006",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0007",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0008",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0009",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0010",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0011",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return \n    return a,\\0^",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "double_first_0012",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0013",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return \n    return a,\\0^",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "double_first_0014",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0015",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0016",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0017",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0018",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0019",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0020",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0021",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0022",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0023",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0024",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0025",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0026",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0027",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return ifn\n    a,;\n  return return   a,(a,)  b):",
+    "raw_len_chars": 101
+   },
+   {
+    "task_id": "double_first_0028",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "total return \n    return a,\\0^",
+    "raw_len_chars": 95
+   },
+   {
+    "task_id": "double_first_0029",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0030",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0031",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0032",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0033",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0034",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0035",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return \n    return a,\\0^",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "double_first_0036",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0037",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0038",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "return a,\\0^",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "double_first_0039",
+    "op": "double_first",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "> return \n    return a,\\0^",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0000",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n s(a,)",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "len_minus_one_0001",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0002",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0003",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n      a, return b):",
+    "raw_len_chars": 101
+   },
+   {
+    "task_id": "len_minus_one_0004",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  - x - b):",
+    "raw_len_chars": 82
+   },
+   {
+    "task_id": "len_minus_one_0005",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0006",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):",
+    "raw_len_chars": 93
+   },
+   {
+    "task_id": "len_minus_one_0007",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0008",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0009",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0010",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n      return return a,) functionorb):",
+    "raw_len_chars": 113
+   },
+   {
+    "task_id": "len_minus_one_0011",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0012",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0013",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return b):a, a, a,x solve(a, a,\n -  return b):",
+    "raw_len_chars": 105
+   },
+   {
+    "task_id": "len_minus_one_0014",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n       return a,\n    return b):",
+    "raw_len_chars": 106
+   },
+   {
+    "task_id": "len_minus_one_0015",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0016",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n      return return b):",
+    "raw_len_chars": 105
+   },
+   {
+    "task_id": "len_minus_one_0017",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n       return a,\n    return b):",
+    "raw_len_chars": 106
+   },
+   {
+    "task_id": "len_minus_one_0018",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0019",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n       return a,\n    return b):",
+    "raw_len_chars": 106
+   },
+   {
+    "task_id": "len_minus_one_0020",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n       return a,\n    return b):",
+    "raw_len_chars": 106
+   },
+   {
+    "task_id": "len_minus_one_0021",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0022",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0023",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n      return return b):",
+    "raw_len_chars": 105
+   },
+   {
+    "task_id": "len_minus_one_0024",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  + len(a)fn(a,)",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "len_minus_one_0025",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n s(a,)",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "len_minus_one_0026",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0027",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0028",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functionora,;\n      a, total >   +  b):",
+    "raw_len_chars": 100
+   },
+   {
+    "task_id": "len_minus_one_0029",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0030",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n s(a,)",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "len_minus_one_0031",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n       return a,\n    return b):",
+    "raw_len_chars": 106
+   },
+   {
+    "task_id": "len_minus_one_0032",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0033",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n functiono a,;\n      a, total >   +  b):",
+    "raw_len_chars": 100
+   },
+   {
+    "task_id": "len_minus_one_0034",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n s(a,)",
+    "raw_len_chars": 86
+   },
+   {
+    "task_id": "len_minus_one_0035",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0036",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0037",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "len_minus_one_0038",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return \n len(a)f a,b):a,\\0^",
+    "raw_len_chars": 94
+   },
+   {
+    "task_id": "len_minus_one_0039",
+    "op": "len_minus_one",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 3
+    },
+    "code": "e  return len(a)fn(a,)",
+    "raw_len_chars": 91
+   }
+  ],
+  "exposed": [
+   {
+    "task_id": "abs_add_0000",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0001",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0002",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0003",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0004",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0005",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0006",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0007",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0008",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0009",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0010",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0011",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0012",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0013",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0014",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0015",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0016",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0017",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0018",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0019",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0020",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0021",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0022",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0023",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0024",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0025",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0026",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0027",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0028",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0029",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0030",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0031",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0032",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0033",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0034",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0035",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0036",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0037",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0038",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "abs_add_0039",
+    "op": "abs_add",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sub_abs_0000",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0001",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0002",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0003",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0004",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0005",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0006",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0007",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0008",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, return b):\n  return a,b):s(a, a, b):)",
+    "raw_len_chars": 106
+   },
+   {
+    "task_id": "sub_abs_0009",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0010",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0011",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0012",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0013",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0014",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0015",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0016",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0017",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0018",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0019",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0020",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0021",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0022",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0023",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0024",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0025",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0026",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0027",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0028",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0029",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0030",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0031",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0032",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0033",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0034",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0035",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0036",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0037",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0038",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sub_abs_0039",
+    "op": "sub_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 7
+    },
+    "code": "e solve(a, b,\n    return a, - b):",
+    "raw_len_chars": 96
+   },
+   {
+    "task_id": "sum_of_abs_0000",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0001",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0002",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return len(a) return a,\ne b):\n return - return a,\n a,",
+    "raw_len_chars": 110
+   },
+   {
+    "task_id": "sum_of_abs_0003",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0004",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0005",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0006",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0007",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0008",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0009",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0010",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0011",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0012",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > 0\n  total b):\n return it na a,;\n        it x = 1\n            total > total + (a,x)\n return return return b):",
+    "raw_len_chars": 126
+   },
+   {
+    "task_id": "sum_of_abs_0013",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > 0\n  - b):\n return return return a,;\n b):",
+    "raw_len_chars": 105
+   },
+   {
+    "task_id": "sum_of_abs_0014",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > 0\n  b):\n   return it na a,;\n        it x = 1\n            total > total + (-x)\n return return return b):",
+    "raw_len_chars": 121
+   },
+   {
+    "task_id": "sum_of_abs_0015",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0016",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0017",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0018",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0019",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0020",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0021",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > 0\n  total b):)",
+    "raw_len_chars": 91
+   },
+   {
+    "task_id": "sum_of_abs_0022",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return a, 0\n  total x  return it na a,\n return total",
+    "raw_len_chars": 107
+   },
+   {
+    "task_id": "sum_of_abs_0023",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0024",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0025",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0026",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0027",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0028",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return a, 0\n  b):)\n   return b):",
+    "raw_len_chars": 95
+   },
+   {
+    "task_id": "sum_of_abs_0029",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0030",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > 0\n  b):\\> total return ifn a,;\n return",
+    "raw_len_chars": 103
+   },
+   {
+    "task_id": "sum_of_abs_0031",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0032",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0033",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0034",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0035",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > 0\n  b):^",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0036",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0037",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0038",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return b):",
+    "raw_len_chars": 87
+   },
+   {
+    "task_id": "sum_of_abs_0039",
+    "op": "sum_of_abs",
+    "category": "parse_fail",
+    "detail": {
+     "empty": false,
+     "no_solve": false,
+     "runtime_error_all": false,
+     "wrong_output": false,
+     "tests_passed": 0,
+     "tests_total": 5
+    },
+    "code": "return > return a,b):\n functionor return ifn a,;\n        it x + b):",
+    "raw_len_chars": 110
+   }
+  ]
+ }
+}

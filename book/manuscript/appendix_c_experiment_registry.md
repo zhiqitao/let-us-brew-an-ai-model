@@ -430,6 +430,24 @@ until an independent run reproduces them.
 5. **Expected artifacts:** the run's manifest (e.g. `stage1.json`) and checkpoint
    (`stage1.pt`) under `artifacts/manifests/` and `artifacts/checkpoints/`.
 
+**Tokenizer provenance: the `comp_tok.json` clobber.** The composition tokenizer
+file `artifacts/tokenizer/comp_tok.json` (gitignored) was overwritten by a later
+experiment (`run_composition_diversity.py`) *after* the composition-exposure
+checkpoint had been trained; the overwritten vocab differed from that checkpoint's
+training vocab at 75 of 291 indices. The scored composition results are unaffected —
+they were computed at scoring time with the correct tokenizer held in memory — but a
+naive re-evaluation that loads the clobbered on-disk file collapses *both* the exposed
+and held-out sets to a spurious 0.000 under every decode setting (the condition is
+recorded in the decode-ablation report's appendix, `docs/reviews/loop/decode_ablation.md`,
+and in `artifacts/manifests/decode_ablation.json`). Reproducing any composition eval
+therefore requires reconstructing the exact training tokenizer: `train_tokenizer` is
+deterministic, so retraining it over the exposure corpus reproduces the training vocab
+exactly — which is what `scripts/run_decode_ablation.py` does, and what we used to
+regenerate `comp_tok.json`, so the on-disk file again matches the 291-token training
+vocab. The general rule stands regardless: equal vocabulary sizes (291) do **not**
+imply equal token-ID mappings, so a checkpoint must be evaluated with the tokenizer it
+was trained with.
+
 **Runtime.** These are *our* hardware-specific times, not a promise for yours: roughly
 5-10 minutes per 1500-step pilot training on a single-core CPU; larger models
 (6.5M-29.3M) take substantially longer (minutes to low tens of minutes each). The

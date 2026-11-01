@@ -254,6 +254,25 @@ syntax_rate = 0.0 for that run's held-out composites; we do not extend that pars
 finding to other size checkpoints, whose recorded stage rates we did not analyze the same
 way.) The observed zero is real; *why* it is zero has competing explanations.
 
+To narrow those explanations, we ran a decode/termination ablation on the
+composition-exposure checkpoint (report `docs/reviews/loop/decode_ablation.md`,
+manifest `artifacts/manifests/decode_ablation.json`). We re-decoded the same
+held-out and exposed splits under seven settings — greedy and temperature-0.8
+sampled decoding at `max_new` 64/128/256, plus the book's own T=0.8 /
+`max_new`=80 procedure — and scored both the usual NUL-truncating extraction and
+an alternative that keeps all post-NUL content. The held-out 0.000 persists
+under every one of them: 0/120 held-out generations begin with `def solve`
+(they collapse into NUL padding, median first-NUL token 8), while under the
+identical decode the exposed control begins with `def solve` 120/120 and scores
+valid-program rates from 0.667 to 1.000 with pass@1 0.667. So the zero is not a
+decoding, termination, or extraction artifact — the failure is at the first
+generated tokens, upstream of decoding, and the pipeline produces valid,
+passing programs when the composite was seen. Two residuals we keep in view:
+on the exposed control `sum_of_abs` fails 40/40 under every setting, a real
+semantic failure on an operation the model was trained on, and the ablation
+narrows the cause without fully isolating the mechanism — it rules out decoding
+and extraction, not every upstream explanation.
+
 This closes off the naive fix ("just add composites to the data") *for the partitions and
 budgets we tested*. Composition here is not a matter of having seen a combination —
 **under everything we have tested**, it does not emerge from exposure to a few
@@ -289,7 +308,12 @@ no successful held-out composite completion under the interventions we tried.** 
 qualification: the recorded aggregate stage rates for the held-out composites showed
 syntax_rate = 0.0 — the failures were logged before execution — so the **cause** of the
 zero is not resolved by the aggregate (it could be generation/parsing, a length limit,
-optimization, or a capability limit; see Appendix B.10). What we can claim is the
+optimization, or a capability limit; see Appendix B.10). A decode/termination ablation
+has since narrowed that list — the 0.000 persists under greedy and up-to-256-token
+sampled decoding and an alternative NUL extraction, so decoding, generation length, and
+extraction are ruled out and the failure sits at the first generated tokens (see the
+ablation note above) — but the mechanism behind that first-token collapse is still not
+fully isolated. What we can claim is the
 measured outcome and that the interventions we tried did not produce a success. This is
 not a statement about "intelligence" or about "what models will eventually do." It is a
 precise, reproducible measurement of where *this* model's capability stops *here* — and,

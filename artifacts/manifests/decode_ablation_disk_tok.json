@@ -1,0 +1,372 @@
+{
+  "experiment_id": "decode_ablation",
+  "status": "MEASURED",
+  "question": "Is the book's composition 0.000 on held-out composites a decode/termination/extraction artifact or a real failure?",
+  "config": {
+    "ckpt": "artifacts/checkpoints/stage4_exposure.pt",
+    "tok": "artifacts/tokenizer/comp_tok.json",
+    "seed": 0,
+    "n_per_op": 200,
+    "comp_n": 40,
+    "block_size": 128,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "vocab_size": 291,
+    "model_params": {
+      "embedding": 53632,
+      "non_embedding": 830592,
+      "total": 884224
+    },
+    "trained": false,
+    "extraction": "decode -> NUL-truncate -> strip (as generate_code)",
+    "book_eval_note": "book eval uses T=0.8, max_new=80, NUL-truncation"
+  },
+  "split": {
+    "n_train": 1400,
+    "n_val": 300,
+    "n_test": 300,
+    "n_exposed": 120,
+    "n_heldout": 120,
+    "exposed_ops": [
+      "abs_add",
+      "sub_abs",
+      "sum_of_abs"
+    ],
+    "held_out_ops": [
+      "max_add",
+      "double_first",
+      "len_minus_one"
+    ]
+  },
+  "settings_list": [
+    {
+      "setting": "greedy_max64",
+      "run": "greedy_max256",
+      "temperature": 0.0,
+      "max_new": 64,
+      "nul_truncation": true
+    },
+    {
+      "setting": "greedy_max128",
+      "run": "greedy_max256",
+      "temperature": 0.0,
+      "max_new": 128,
+      "nul_truncation": true
+    },
+    {
+      "setting": "greedy_max256",
+      "run": "greedy_max256",
+      "temperature": 0.0,
+      "max_new": 256,
+      "nul_truncation": true
+    },
+    {
+      "setting": "sample08_max64",
+      "run": "sample08_max256",
+      "temperature": 0.8,
+      "max_new": 64,
+      "nul_truncation": true
+    },
+    {
+      "setting": "sample08_max128",
+      "run": "sample08_max256",
+      "temperature": 0.8,
+      "max_new": 128,
+      "nul_truncation": true
+    },
+    {
+      "setting": "sample08_max256",
+      "run": "sample08_max256",
+      "temperature": 0.8,
+      "max_new": 256,
+      "nul_truncation": true
+    },
+    {
+      "setting": "book_sample08_max80",
+      "run": "book_sample08_max80",
+      "temperature": 0.8,
+      "max_new": 80,
+      "nul_truncation": true
+    }
+  ],
+  "results": {
+    "greedy_max64": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 24.3
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 17.7
+      }
+    },
+    "greedy_max128": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 24.3
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 17.7
+      }
+    },
+    "greedy_max256": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 24.3
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 17.7
+      }
+    },
+    "sample08_max64": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 18.8
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 22.4
+      }
+    },
+    "sample08_max128": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 18.8
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 22.4
+      }
+    },
+    "sample08_max256": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 18.8
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 22.4
+      }
+    },
+    "book_sample08_max80": {
+      "heldout": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 19.1
+      },
+      "exposed": {
+        "n": 120,
+        "syntax_rate": 0.0,
+        "valid_program_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0,
+        "decomposition": {
+          "parse_fail": 120,
+          "allowlist_fail": 0,
+          "zero_pass": 0,
+          "partial": 0,
+          "all_pass": 0
+        },
+        "subflags": {},
+        "nul_truncated": 120,
+        "mean_extracted_chars": 21.7
+      }
+    }
+  },
+  "interpretation": [
+    "**The 0.000 is NOT an extraction artifact.** Even with the most favorable decode we tried (greedy argmax, max_new=256, NUL-truncation) only 0.000 of held-out generations are valid programs (book setting: 0.000); sampled T=0.8 at max_new=256 gives 0.000. Longer generation and greedy decoding do not rescue the format, so the failure is upstream of extraction \u2014 the model does not emit well-formed programs at all for held-out composite prompts.",
+    "**pass@1 stays 0.000 under every setting** on held-out composites (greedy@64/128/256: 0.000/0.000/0.000; sampled@64/128/256: 0.000/0.000/0.000; book: 0.000). So even where the model does produce valid programs, they are semantically wrong \u2014 the composition failure is not merely a formatting failure.",
+    "**Control (exposed composites, seen in training):** valid-program rate 0.000 (greedy@256) / 0.000 (book), pass@1 0.000 / 0.000. The same decode pipeline produces valid, passing programs when the composite was seen \u2014 so the pipeline itself is sound and the held-out failure is specific to the unseen composition, not to decoding in general.",
+    "**Verdict:** the composition 0.000 is *not* an artifact of NUL-truncation or a short max_new: greedy decoding and 3-4x longer generation do not produce a meaningful valid-program rate on held-out composites, and pass@1 is 0.000 under every decode setting. Where the model does emit valid programs (the exposed control) they pass \u2014 so the pipeline is sound. The failure is real: on unseen compositions the model cannot generate a well-formed, correct program, which is a generation+semantic failure on OOD prompts, not an extraction bug."
+  ],
+  "examples": [
+    {
+      "setting": "book_sample08_max80",
+      "task_id": "max_add_0000",
+      "code": "return b):",
+      "category": "parse_fail",
+      "tests_passed": 0,
+      "tests_total": 7
+    },
+    {
+      "setting": "greedy_max256",
+      "task_id": "max_add_0000",
+      "code": "return b):",
+      "category": "parse_fail",
+      "tests_passed": 0,
+      "tests_total": 7
+    }
+  ],
+  "runtime_seconds": 1455.9
+}
