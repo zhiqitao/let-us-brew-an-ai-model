@@ -116,7 +116,7 @@
 % onto its own block so a full-width figure never rides on the same line as
 % preceding text and overflows the right margin.
 \newcommand{\pandocbounded}[1]{%
-  \par\noindent\par\noindent\begin{center}\begin{adjustbox}{max width=\textwidth, keepaspectratio}#1\end{adjustbox}\end{center}\par}
+  \par\noindent\par\noindent\begin{center}\begin{adjustbox}{max width=\textwidth, max height=0.82\textheight, keepaspectratio}#1\end{adjustbox}\end{center}\par}
 \def\maxwidth#1{\ifdim#1>\textwidth\textwidth\else#1\fi}
 
 % ---- Adjust spacing ----

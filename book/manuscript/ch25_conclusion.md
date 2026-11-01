@@ -150,29 +150,37 @@ The honest map points at specific next experiments, not vague "more data / bigge
    × id-sets; held-out still 0.000). So the remaining open question is diversity of the
    *inner structure* — exposing the model to many *different* primitive pairings — to
    see whether that teaches a general compose-operator. That is the one lever we have
-   not isolated.
+   not isolated. The experiment to run is a systematic increase in *structural*
+   diversity — the number, nesting, and variety of operator pairings — with disjoint
+   held-out pairing structures and program length and vocabulary matched between
+   training and test, so that structure is the only variable that changes.
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
-   measured 0.773 (a stable plateau, not the earlier 0.383 artifact). A proper
+   measured 0.773 (a stable plateau, not the earlier 0.383 reading). A proper
    training-duration and config sweep at 10M would confirm the plateau is robust.
 3. **Does continuing to scale past 30M shift the boundary?** The grid stops where the
    brew lab's CPU becomes impractical. A larger-scale run (or a GPU) would probe whether
    the composition wall eventually moves.
-4. **Does diversity fix composition?** Diversity fixed the *surface* problem (0.000 →
-   1.000). Whether the *same* lever helps composition is the natural next test of the
-   "structural data" hypothesis.
-5. **Human-style training.** The 0/16 human test set shows the model fails on
+4. **Human-style training.** The 0/16 human test set shows the model fails on
    naturally-phrased prompts. Training on diverse, human-style prompts is the obvious
    path to real usability.
 
 ### A future note on widening the world
 
-One planned direction is **widening the capability spec** — giving the model more Python
-(loops, indexing, richer structures) and re-measuring. We did **not** run a full sweep of
-"add more Python and re-measure" in this book; nor did we test **program length and
-complexity** (no evaluation on longer or more structurally complex programs — an
-untested axis, not a measured 0) or **expressivity beyond the tested operations**
-(Python features, built-ins, or idioms outside the fixed operation set), both listed
-under Appendix C's "What is NOT tested." What we did measure is that the
+One planned direction is **widening the capability spec** — and the wording matters,
+because the sandbox already allows more than the experiments ever measured. The
+allowlist in Chapter 4 already admits `for`/`while` loops, lists, indexing, and
+slicing, so "more Python" does not mean adding those; what is untested is **larger and
+more complex programs built from the existing constructs** — longer programs, deeper
+nesting, more of the allowed vocabulary. **Genuinely new constructs** are a separate
+step again: additional syntax, richer types, and recursion, each admitted under a
+controlled policy and then measured. The distinction to keep straight is
+*sandbox-allowed* (a static property of the validator) versus *experimentally measured*
+(only a narrow set of rungs was ever evaluated — see the syntax inventory in Chapter
+20). We did **not** run a full sweep of "add more Python and re-measure" in this book;
+nor did we test **program length and complexity** (no evaluation on longer or more
+structurally complex programs — an untested axis, not a measured 0) or **expressivity
+beyond the tested operations** (Python features, built-ins, or idioms outside the fixed
+operation set), both listed under Appendix C's "What is NOT tested." What we did measure is that the
 composition failure is not explained by a simple missing-token deficit: the model wrote
 valid programs for the primitive operations, whose tokens it clearly knew. But that does
 **not** prove the model has full *nested* syntax competence — the observed failures were
@@ -292,16 +300,22 @@ single passing test not distinguish them, and what kind of test does?
 Write down what this does and does *not* establish — name at least two other causes of a
 zero that the result does not rule out, and one thing you could run to distinguish them.
 
-*(Answers:* **1.** The first is generalization to an excluded family; the second is
+## Answers to Exercises
+
+**1.** The first is generalization to an excluded family; the second is
 coverage of a surface within the training family. Only the first speaks to a
 never-seen family. Note that a genuinely new prompt within a familiar family is still a
 real form of in-distribution generalization (a new surface, same computation) —
 "excluded-family transfer" is a stronger and different shift, not the only form of
-generalization the book measures. **2.** For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
+generalization the book measures.
+
+**2.** For `a = 2, b = 3` both give `5`; for `a = -3, b = 2`
 they give `1` and `5`. One test can be satisfied by both programs, so a distinguishing
-test must use a signed input where the two differ. **3.** The zero shows that, under this
+test must use a signed input where the two differ.
+
+**3.** The zero shows that, under this
 decoding/evaluation procedure, no program passed every hidden test. It does not
 identify the cause (instruction interpretation, syntax generation, length handling,
 coverage, optimization, or a particular held-out operation), is not proof of a general
 capacity limit, and is not proof that the model "cannot compose" — a per-stage failure
-report or an all-composites control would narrow which cause holds.)*
+report or an all-composites control would narrow which cause holds.

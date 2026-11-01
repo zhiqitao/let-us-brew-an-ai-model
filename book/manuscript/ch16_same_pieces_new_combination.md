@@ -161,9 +161,11 @@ collapses one into the other.
 This distinction is why we built the four-question generalization taxonomy in the first
 place and why we refused to collapse everything into one number. If we had only
 reported "the model scores 0.9167 on this task," we would have given a genuinely
-misleading picture. The model is excellent at what it was shown — and utterly unable
-to combine what it was shown into anything new. Both statements are true, and both
-must be reported.
+misleading picture. The model is excellent at what it was shown — and under this
+checkpoint, decoding, and extraction, no held-out composite candidate passed all of its
+tests. In the audited exposure run those failures occurred before execution, so from
+these counts alone we cannot distinguish a compositional-rule deficit from a decoding,
+extraction, or validity issue. Both statements are true, and both must be reported.
 
 ## The puzzling asymmetry (and why it's a finding, not a bug)
 

@@ -125,8 +125,9 @@ of that zero is unresolved.
 **The cost matrix makes a dangerous pricing error visible.** If we only look at the
 "in-dist" column, we would conclude capability is nearly free and scale up naively. The
 generalization and composition columns reveal that the cheap number hides a much more
-expensive requirement — robust, compositional capability — which we did not achieve by
-scaling data or capacity within our tested range.
+expensive requirement — robust, compositional capability. On that requirement, capacity
+scaling was tested on composition and remained 0.000 at every size we ran; the
+data-count sweep measured familiar-task accuracy only and did not evaluate composition.
 
 ## The price of each column, read honestly
 

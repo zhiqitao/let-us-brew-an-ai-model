@@ -54,11 +54,15 @@ survived.
 
 ## The result
 
-| Test | **MODEL** | TEMPLATE | RETRIEVAL |
-|------|-----------|----------|-----------|
-| Same as training | **0.900** | 0.800 | 1.000 |
-| Same computation, `a,b` → `left,right` | **0.350** | 0.800 | 0.683 |
-| **Same computation, reworded** | **0.000** | 0.875 | 0.125 |
+| Test | **MODEL** | TEMPLATE / RETRIEVAL |
+|----------------------------------------|--------------------|----------------------------------------|
+| Same as training | **0.900** | 0.800 / 1.000 |
+| Same computation, new identifiers | **0.350** | 0.800 / 0.683 |
+| Same computation, reworded | **0.000** | 0.875 / 0.125 |
+
+*The baseline column lists TEMPLATE / RETRIEVAL in that order. The second row changes
+only the variable names, `a,b` → `left,right`; the third row changes only the wording —
+the computation is identical in all three rows.*
 
 Look at what happens when we touch only the *surface*, not the math.
 
@@ -152,11 +156,16 @@ the difference between "the model works" and "the model works when I say it the 
 said it in training" — and it's the most important lesson of the generalization
 chapters.
 
-The sharpest way to state it: the model did not learn *addition*. It learned the
-*word "sum"*. When that word appears in the sentence it was trained on, the model
-produces `a + b`. When the same meaning arrives in different words, the model has no
-idea what to do. And that is the difference between a system that understands and one
-that merely recites.
+The sharpest way to state it, as observed: under this checkpoint, this decoding, and
+this extraction, the model produced `a + b` for the familiar phrasing and no passing
+program for the reworded one — 0.900 falling to 0.000 on an identical computation. One
+reading of that pattern is a hypothesis about the mechanism, not a measurement: that the
+model learned the *word "sum"* rather than addition. When that word appears in the
+sentence it was trained on, the model produces `a + b`; when the same meaning arrives in
+different words, it produced nothing usable. What the counts establish is the behavior —
+a severe surface-robustness failure — not the cause, and they do not rule out an
+internal representation of addition. That is the difference the experiment draws between
+generalizing and merely reciting.
 
 ## The human-written test set: the hardest rewording of all
 

@@ -31,16 +31,22 @@ principle, and it is why every meaningful test in this book uses held-out data.
 
 But "new" is not one thing. Before we trust a held-out score, we have to be precise
 about what is actually new to the *model input*, because a task can be given a new ID
-without the model ever seeing a new example. The table below separates the three
-things that all get loosely called "a new task," and it keeps prompt novelty separate
-from target-program novelty (a different prompt is not the same thing as a different
-program to write).
+without the model ever seeing a new example. The three cases below separate the
+three things that all get loosely called "a new task," and they keep prompt novelty
+separate from target-program novelty (a different prompt is not the same thing as a
+different program to write).
 
-| Case | Prompt (model input) | Target program | Hidden tests | New to the model input? |
-|------|----------------------|----------------|--------------|-------------------------|
-| **1. New task ID, same prompt + program** | same | same | different | **No** — only the hidden-test *values* change; not a new model example |
-| **2. New prompt, same target program** | different | same | same | **Yes** — new surface, same computation |
-| **3. Unseen program structure** | different | different | different | **Yes** — new input AND new structure |
+**Case 1 — New task ID, same prompt + program.** Prompt (model input): same · Target
+program: same · Hidden tests: different. **New to the model input? No** — only the
+hidden-test *values* change; not a new model example.
+
+**Case 2 — New prompt, same target program.** Prompt (model input): different · Target
+program: same · Hidden tests: same. **New to the model input? Yes** — new surface, same
+computation.
+
+**Case 3 — Unseen program structure.** Prompt (model input): different · Target
+program: different · Hidden tests: different. **New to the model input? Yes** — new
+input AND new structure.
 
 So "new" is not one thing. A new *task ID* that only changes the hidden-test values is
 new to the *evaluator*, not to the model. A genuinely new *prompt* within a familiar

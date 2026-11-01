@@ -745,9 +745,9 @@ def render_book_tex(build_lines):
 \\thispagestyle{{empty}}
 {{\\centering\\MakeUppercase{{Copyright \\textcopyright{{}} 2026 Zhiqi Tao}}\\\\[2pt] All rights reserved.\\par}}
 \\vspace{{1.2cm}}
-\\noindent\\textbf{{License.}} This work is licensed under a \\emph{{custom source-available}} license. The \\textbf{{book text, diagrams, and figures}} may be freely read, studied, shared, and redistributed non-commercially with attribution; \\textbf{{commercial republication or sale of the book text requires prior written approval from the author}}. The \\textbf{{code examples and the companion repository}} are provided for you to build on: you may use, adapt, and reuse the code in your own projects, including commercial ones, with attribution, and the book is not an open-source text. For permission, contact Zhiqi Tao (zhiqi.tao@gmail.com).
+\\noindent\\textbf{{License.}} This work is licensed under a \\emph{{custom source-available}} license, set out in full in the \\textbf{{LICENSE}} file at the root of the companion repository, which governs. The \\textbf{{book text, diagrams, and figures}} may be freely read, studied, shared, and redistributed non-commercially with attribution; \\textbf{{commercial republication or sale of the book text requires prior written approval from the author}}. The \\textbf{{code examples and the companion repository}} are released under that same source-available license: you may use, adapt, and reuse the code in your own projects for personal and non-commercial purposes, and redistribute it with attribution, provided the copyright and license notices stay intact; \\textbf{{commercial use of the code, or republication of any part of this work, requires the author's written permission}}. The book is not an open-source text. For permission, contact Zhiqi Tao (zhiqi.tao@gmail.com).
 
-\\noindent\\footnotesize In short: \\emph{{read, study, and share the book text freely (non-commercially); do not sell or republish the text as a product without the author's authorisation. The code examples may be adapted and reused in your own work.}}
+\\noindent\\footnotesize In short: \\emph{{read, study, and share the book text and the code freely for personal, non-commercial use with attribution; do not sell them, or republish this work as a product, without the author's written permission. The LICENSE file in the companion repository governs.}}
 
 \\noindent\\footnotesize The work is provided ``as is'', without warranty of any kind.
 
@@ -761,11 +761,13 @@ the result as the successes.
 \\vspace{{0.8cm}}
 \\noindent\\footnotesize\\textbf{{Companion repository and errata.}} The code,
 scripts, configurations, and checkpoints that reproduce every experiment in this
-book live in the companion repository under the release tag \\texttt{{v20261001}}
-(an annotated release tag on the release commit). As of this edition the repository is not yet
-published at a public URL; the reproduction quick start and the exact release
-identifiers are in Appendix C. An online errata address will be listed here once the
-repository is public; until then, report issues to zhiqi.tao@gmail.com.
+book live in the companion repository, which is public at
+\\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model}} under the release
+tag \\texttt{{v20261001}} on release commit
+\\texttt{{6e46426aaba29adfceacfe00560add35ed26c5cd}} (full hash; the reproduction
+quick start and the exact release identifiers are in Appendix C). To report an error
+or request an erratum, open an issue at
+\\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model/issues}}.
 \\vfill
 \\end{{titlepage}}
 

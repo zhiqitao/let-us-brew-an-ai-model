@@ -56,11 +56,11 @@ writes clean, correct code:
 ```
 # prompt: returns the sum of two numbers
 def solve(a, b):
-    return a + b            # correct — and it runs
+    return a + b
 
 # prompt: returns the product of two numbers
 def solve(a, b):
-    return a * b            # correct — and it runs
+    return a * b
 ```
 
 But the moment we change the surface, or combine two things it knows, the same model
@@ -69,11 +69,14 @@ produces something that isn't even valid Python:
 ```
 # prompt: give back their total
 i solve(a, b:
-        return       return b        # syntax error
+        return       return b
 
 # prompt: absolute value of each, return their sum
-def solve(a, ab                       # syntax error — generation ended early, partial Python identifier/source fragment
+def solve(a, ab
 ```
+
+Neither excerpt is valid Python. The first is a syntax error; in the second, generation
+ended early, leaving a partial Python identifier/source fragment.
 
 And given an out-of-scope request, it does not decline at all — it just writes
 garbage:
@@ -85,8 +88,10 @@ def lenn a.
     nb = abs(b)
     total na > nb:
         return na
-    return                             # syntax error — no refusal, just noise
+    return
 ```
+
+That excerpt is a syntax error, not a refusal — no refusal, just noise.
 
 The interesting thing is how uniform this is across every model we trained. The 29.3M
 model writes the same minimal `return a + b` for the in-distribution phrasing and
@@ -145,7 +150,7 @@ compositions*, or a fundamentally different inductive bias — not raw capacity.
 exposure intervention we ran (Chapter 16) also did not transfer to held-out composites,
 and those candidates failed parsing, so even this hypothesis is not confirmed.
 
-## The honest side-finding: the 10M "deficit" was an artifact, not a law
+## The honest side-finding: the 10M "deficit" was not a law
 
 There was a wrinkle we recorded and almost smoothed over. The **10.2M** model
 originally measured **0.383** in-distribution — below the 0.897–0.9167 of the smaller
@@ -156,14 +161,14 @@ But when we retrained the 10.2M point with the **same config and seed** (on a cl
 run), it measured **0.773** — squarely in the healthy plateau family. The original run's
 checkpoint had a **syntax rate of just 0.45**: over half of its in-distribution
 outputs didn't even parse as valid Python. That is the fingerprint of a
-partially-converged checkpoint. We judge the earlier 0.383 to have been a training-run
-interruption **almost certainly** — but the original checkpoint was not preserved, so we
-cannot forensically confirm the cause, and we note the hardware-level SIGILL reported in
-our logs as the likely culprit rather than a confirmed one.
+partially-converged checkpoint. We suspect the earlier run was incomplete or anomalous —
+the original checkpoint is unavailable for forensic confirmation, so we cannot confirm
+the cause, and we note the hardware-level SIGILL reported in our logs as a possible
+rather than confirmed culprit.
 
 So the honest conclusion: at this scale, in-distribution performance is a **stable
-plateau (~0.9)** — with the explicit caveat that "the 0.383 was an interrupted-run
-artifact" is our interpretation, not a forensically confirmed cause. It is not
+plateau (~0.9)** — with the explicit caveat that the earlier run being incomplete or
+anomalous is our suspicion, not a forensically confirmed cause. It is not
 evidence that "bigger is worse." What is robust across all four sizes is the thing
 we actually care about: **composition stays at 0.000** no matter the capacity.
 
