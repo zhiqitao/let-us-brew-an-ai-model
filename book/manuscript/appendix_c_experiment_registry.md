@@ -362,7 +362,7 @@ Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.p
 
 **Publication status.** The companion repository is published at
 `https://github.com/zhiqitao/let-us-brew-an-ai-model` and carries a release tag
-**`v20261001`** pointing at release commit **`6e46426aaba29adfceacfe00560add35ed26c5cd`**
+**`v20261001`** pointing at release commit **`ae1ec01fc13f51e2e5028202aec02498a6f55688`**
 (full hash). We cite the **full commit hash**, not just the tag, because a Git tag is a
 movable reference and is not by itself immutable. The repository ships the experiment
 code, the run manifests under `artifacts/manifests/`, and the scored dataset files under
