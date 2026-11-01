@@ -764,7 +764,7 @@ scripts, configurations, and checkpoints that reproduce every experiment in this
 book live in the companion repository, which is public at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model}} under the release
 tag \\texttt{{v20261001}} on release commit
-\\texttt{{ae1ec01fc13f51e2e5028202aec02498a6f55688}} (full hash; the reproduction
+\\texttt{{a45a881158ed076f615f6d3bc2e72640dc5cdced}} (full hash; the reproduction
 quick start and the exact release identifiers are in Appendix C). To report an error
 or request an erratum, open an issue at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model/issues}}.
