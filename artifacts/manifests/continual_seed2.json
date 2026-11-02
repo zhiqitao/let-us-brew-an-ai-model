@@ -1,0 +1,22 @@
+{
+  "results": {
+    "sequential": {
+      "A_retention_pass@1": 0.0,
+      "B_acquisition_pass@1": 0.861
+    },
+    "replay": {
+      "A_retention_pass@1": 1.0,
+      "B_acquisition_pass@1": 0.889
+    }
+  },
+  "config": {
+    "steps_a": 600,
+    "steps_b": 600,
+    "n_per": 80,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "seed": 2,
+    "tag": "_seed2"
+  }
+}

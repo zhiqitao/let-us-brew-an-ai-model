@@ -62,3 +62,24 @@ reaches ~1.0 / ~1.0.
 The monotone data-size trend holds across all seeds. The size-3000 absolute differs with the
 step budget (0.641 at 800 steps vs 0.748 at 1000; seed1=seed2=0.748 at 1000), so the robust
 finding is the monotone trend, not a single point.
+
+## Pilot (Stage-1)
+
+| seed | in-dist pass@1 | final loss |
+|------|------|------|
+| 1 | 0.900 | 0.0196 |
+| 2 | 0.900 | 0.0229 |
+
+Reproduces the published pilot in-dist result (~0.90; the book's 0.897). Seed-0's
+`stage1.json` is the pre-fix 0.000 record (see Appendix C.1), not the re-run value.
+
+## Continual-learning
+
+| seed | sequential A-retention | sequential B-acquisition | replay A-retention | replay B-acquisition |
+|------|------|------|------|------|
+| 1 | 0.000 | 0.889 | 1.000 | 0.889 |
+| 2 | 0.000 | 0.861 | 1.000 | 0.889 |
+
+Stable: sequential training catastrophically forgets A (retention 0.0) while
+acquiring B (~0.87-0.89); replay retains A (1.0) and acquires B (0.889). The
+replay-vs-sequential distinction is robust.

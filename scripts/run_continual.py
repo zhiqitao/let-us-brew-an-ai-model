@@ -47,6 +47,7 @@ def main():
     ap.add_argument("--n-layer", type=int, default=4)
     ap.add_argument("--n-head", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
 
@@ -98,7 +99,7 @@ def main():
         print(f"  {mode:11s}  A-retention={results[mode]['A_retention_pass@1']:.3f} "
               f"  B-acquisition={results[mode]['B_acquisition_pass@1']:.3f}")
 
-    mp = os.path.join(ROOT, "artifacts", "manifests", "continual.json")
+    mp = os.path.join(ROOT, "artifacts", "manifests", "continual%s.json" % args.tag)
     os.makedirs(os.path.dirname(mp), exist_ok=True)
     with open(mp, "w") as f:
         json.dump({"results": results, "config": vars(args)}, f, indent=2)

@@ -184,6 +184,15 @@ training example.
 This is exactly the "task too easy" outcome the experimental plan anticipated, and it
 is scientifically useful: it tells us *how to make the next task harder.*
 
+**A note on replication across seeds.** This in-distribution result is not a
+single-seed accident. Fresh trainings under seeds 1 and 2 both scored **0.900**
+in-distribution (final losses 0.0196 and 0.0229), matching the single-seed ~0.90
+reported here (0.897 over the 300-record test; report:
+`docs/reviews/loop/multiseed_replication.md`). One provenance wrinkle worth
+carrying: seed 0's `stage1.json` preserves the pre-fix 0.000 evaluation described
+below, not a re-run value — the seed-0 figure quoted throughout the book is the
+manifest-backed 0.897 in `stage1_results.json`.
+
 ## The moment that broke us (and the evaluator, not the model)
 
 There is a story behind these numbers that is more instructive than the numbers

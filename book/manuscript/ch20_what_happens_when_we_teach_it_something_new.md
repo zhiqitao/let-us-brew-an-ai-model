@@ -110,6 +110,15 @@ than sequenced. That is exactly the procedure finding. We did **not** quantify w
 time or compute precisely enough to claim one schedule is "faster" or "cheaper," so we make
 no such claim here; the measured comparison is final task accuracy, not resource cost.
 
+**A note on replication across seeds.** The replay-vs-sequential distinction
+reproduces under fresh trainings at seeds 1 and 2. Sequential training ends with
+A-retention **0.000 / 0.000** while still acquiring B (**0.889 / 0.861**); the
+interleaved condition (labeled "replay" in this chapter) retains A at
+**1.000 / 1.000** while acquiring B at **0.889 / 0.889** (report:
+`docs/reviews/loop/multiseed_replication.md`). So across seeds, sequential
+forgets A completely while acquiring B (~0.87–0.89), and replay keeps A at 1.0
+while acquiring B just as well — the distinction is not a single-seed artifact.
+
 ## Why this result is so striking
 
 The symmetry is what makes this remarkable. Under sequential training, the model

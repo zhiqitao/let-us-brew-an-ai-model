@@ -390,7 +390,8 @@ until an independent run reproduces them.
 
 **Multi-seed replication.** We have taken a first step toward that confirmation: we
 re-ran the headline experiments — composition exposure, Stage-3 surface, diversity,
-and data scaling — from scratch under seeds 1 and 2 on the documented
+data scaling, the Stage-1 pilot, and the continual-learning runs — from scratch under
+seeds 1 and 2 on the documented
 Python 3.11 environment (`.venv-311`, torch 2.14.0+cpu, `TORCH_DISABLE_AVX2=1`,
 `OMP_NUM_THREADS=2`), each run a fresh training from a different seed. Report:
 `docs/reviews/loop/multiseed_replication.md`.
@@ -445,6 +446,33 @@ the book's 800 steps, seeds 1 and 2 at 1000. The monotone data-size trend holds 
 every seed; only the size-3000 absolute moves with the budget (0.641 at 800 steps vs
 0.748 at 1000, and seed 1 = seed 2 = 0.748 at the same 1000-step budget). The robust
 claim is therefore the monotone trend, not any single point.
+
+**Table C.10 — Pilot (Stage-1) in-distribution across seeds**
+
+| seed | in-dist pass@1 | final loss |
+|------|------|------|
+| 1 | 0.900 | 0.0196 |
+| 2 | 0.900 | 0.0229 |
+
+Both re-run seeds reproduce the published pilot in-distribution result (~0.90; the
+book's 0.897 over the 300-record test). Seed 0 is not listed as a re-run row because
+seed 0's `stage1.json` is the **pre-fix 0.000 record** referenced by Appendix B.1 — the
+pre-NUL-truncation evaluation preserved for the failure ledger — not a re-run value;
+the seed-0 figure quoted throughout the book is the manifest-backed 0.897 in
+`stage1_results.json` (final loss 0.0208).
+
+**Table C.11 — Continual learning across seeds**
+
+| seed | sequential A-retention | sequential B-acquisition | replay A-retention | replay B-acquisition |
+|------|------|------|------|------|
+| 1 | 0.000 | 0.889 | 1.000 | 0.889 |
+| 2 | 0.000 | 0.861 | 1.000 | 0.889 |
+
+"Replay" here is the interleaved-from-the-start condition (the chapter's joint-training
+control), with the same naming caveat as Chapter 18. Stable across seeds: sequential
+training catastrophically forgets A (retention 0.000) while still acquiring B
+(~0.87–0.89), and replay retains A (1.000) while acquiring B (0.889). The
+replay-vs-sequential distinction is robust, not a single-seed artifact.
 
 **Eval-pipeline robustness fixes (no measured value changed).** Two cross-version
 robustness fixes were needed so native re-runs work in the current environment, and

@@ -32,6 +32,7 @@ def main():
     ap.add_argument("--bs", type=int, default=16)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
 
@@ -59,7 +60,7 @@ def main():
     print(f"trained in {train_time:.1f}s; final loss {losses[-1]:.4f}")
 
     # save model + manifest BEFORE evaluation so a crash doesn't lose training.
-    ckpt = os.path.join(ROOT, "artifacts", "checkpoints", "stage1.pt")
+    ckpt = os.path.join(ROOT, "artifacts", "checkpoints", "stage1%s.pt" % args.tag)
     os.makedirs(os.path.dirname(ckpt), exist_ok=True)
     torch.save(m.state_dict(), ckpt)
     print("saved model ->", ckpt)
@@ -84,7 +85,7 @@ def main():
         "evaluator_version": "v0_1",
         "spec_version": "python_capability_v0_1",
     }
-    mp = os.path.join(ROOT, "artifacts", "manifests", "stage1.json")
+    mp = os.path.join(ROOT, "artifacts", "manifests", "stage1%s.json" % args.tag)
     os.makedirs(os.path.dirname(mp), exist_ok=True)
     with open(mp, "w") as f:
         json.dump(manifest, f, indent=2)
