@@ -42,6 +42,7 @@ def main():
     ap.add_argument("--n-layer", type=int, default=4)
     ap.add_argument("--n-head", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
 
@@ -72,7 +73,7 @@ def main():
         print(f"  size {size:5d}: loss={row['final_loss']:.3f} "
               f"pass@1={row['pass_at_1']:.3f} ({row['train_time_s']}s)")
 
-    mp = os.path.join(ROOT, "artifacts", "manifests", "data_scaling.json")
+    mp = os.path.join(ROOT, "artifacts", "manifests", "data_scaling%s.json" % args.tag)
     os.makedirs(os.path.dirname(mp), exist_ok=True)
     with open(mp, "w") as f:
         json.dump({"rows": rows, "config": vars(args)}, f, indent=2)

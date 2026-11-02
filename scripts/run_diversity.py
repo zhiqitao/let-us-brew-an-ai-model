@@ -44,6 +44,7 @@ def main():
     ap.add_argument("--n-head", type=int, default=4)
     ap.add_argument("--n-train", type=int, default=1200)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
 
@@ -101,7 +102,7 @@ def main():
         print(f"  {mode:20s} in-dist={results[mode]['in_dist']:.3f}  "
               f"surface={results[mode]['surface']:.3f}  ({results[mode]['train_time_s']}s)")
 
-    mp = os.path.join(ROOT, "artifacts", "manifests", "diversity.json")
+    mp = os.path.join(ROOT, "artifacts", "manifests", "diversity%s.json" % args.tag)
     os.makedirs(os.path.dirname(mp), exist_ok=True)
     with open(mp, "w") as f:
         json.dump({"results": results, "config": vars(args)}, f, indent=2)

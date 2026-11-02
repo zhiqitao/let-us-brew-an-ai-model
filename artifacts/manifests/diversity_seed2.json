@@ -1,0 +1,23 @@
+{
+  "results": {
+    "minimal_diversity": {
+      "in_dist": 0.5,
+      "surface": 0.0,
+      "train_time_s": 389.3
+    },
+    "high_diversity": {
+      "in_dist": 0.983,
+      "surface": 0.983,
+      "train_time_s": 380.8
+    }
+  },
+  "config": {
+    "steps": 900,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "n_train": 1200,
+    "seed": 2,
+    "tag": "_seed2"
+  }
+}

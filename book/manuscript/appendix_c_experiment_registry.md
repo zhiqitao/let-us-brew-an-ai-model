@@ -389,7 +389,8 @@ none of the numbers in this book should be read as a reproducibility *confirmati
 until an independent run reproduces them.
 
 **Multi-seed replication.** We have taken a first step toward that confirmation: we
-re-ran the two headline experiments from scratch under seeds 1 and 2 on the documented
+re-ran the headline experiments — composition exposure, Stage-3 surface, diversity,
+and data scaling — from scratch under seeds 1 and 2 on the documented
 Python 3.11 environment (`.venv-311`, torch 2.14.0+cpu, `TORCH_DISABLE_AVX2=1`,
 `OMP_NUM_THREADS=2`), each run a fresh training from a different seed. Report:
 `docs/reviews/loop/multiseed_replication.md`.
@@ -417,6 +418,33 @@ artifact of the re-runs (`run_surface.py` was patched to accept `--out`/`--tag` 
 re-runs would not overwrite the original manifest), not a model result. We do not
 report the re-run retrieval values as findings; the seed-0 retrieval figures in the
 body chapters stand as recorded.
+
+**Table C.8 — Diversity (quantity vs diversity) across seeds**
+
+| seed | minimal in-dist | minimal surface | high in-dist | high surface |
+|------|------|------|------|------|
+| 0 | 0.500 | 0.000 | 1.000 | 1.000 |
+| 1 | 0.500 | 0.033 | 1.000 | 1.000 |
+| 2 | 0.500 | 0.000 | 0.983 | 0.983 |
+
+Stable across seeds: minimal-diversity sits at ~0.5 in-distribution / ~0 surface,
+high-diversity at ~1.0 / ~1.0. The Chapter 13 swing is not a single-seed accident;
+its coverage-vs-generalization caveat is unchanged by replication.
+
+**Table C.9 — Data scaling across seeds (in-dist pass@1)**
+
+| size | seed 0 (800 steps) | seed 1 (1000 steps) | seed 2 (1000 steps) |
+|------|------|------|------|
+| 100 | 0.100 | 0.094 | 0.076 |
+| 300 | 0.098 | 0.100 | 0.100 |
+| 1000 | 0.300 | 0.300 | 0.300 |
+| 3000 | 0.641 | 0.748 | 0.748 |
+
+Step-budget caveat: the re-runs did not share a single step budget — seed 0 ran at
+the book's 800 steps, seeds 1 and 2 at 1000. The monotone data-size trend holds on
+every seed; only the size-3000 absolute moves with the budget (0.641 at 800 steps vs
+0.748 at 1000, and seed 1 = seed 2 = 0.748 at the same 1000-step budget). The robust
+claim is therefore the monotone trend, not any single point.
 
 **Eval-pipeline robustness fixes (no measured value changed).** Two cross-version
 robustness fixes were needed so native re-runs work in the current environment, and

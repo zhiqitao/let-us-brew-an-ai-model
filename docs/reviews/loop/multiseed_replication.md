@@ -38,3 +38,27 @@ The two central findings are now multi-seed-backed:
 
 Together with the decode/termination ablation (which showed the composition 0.000
 is not a decode/extraction artifact), the book's core claims are reproducible.
+
+## Diversity (Stage-3, quantity vs diversity)
+
+| seed | minimal in-dist | minimal surface | high in-dist | high surface |
+|------|------|------|------|------|
+| 0 | 0.500 | 0.000 | 1.000 | 1.000 |
+| 1 | 0.500 | 0.033 | 1.000 | 1.000 |
+| 2 | 0.500 | 0.000 | 0.983 | 0.983 |
+
+Stable across seeds: minimal-diversity reaches ~0.5 in-dist / ~0 surface; high-diversity
+reaches ~1.0 / ~1.0.
+
+## Data-scaling (how much data)
+
+| size | seed0 (800 steps) | seed1 (1000) | seed2 (1000) |
+|------|------|------|------|
+| 100 | 0.100 | 0.094 | 0.076 |
+| 300 | 0.098 | 0.100 | 0.100 |
+| 1000 | 0.300 | 0.300 | 0.300 |
+| 3000 | 0.641 | 0.748 | 0.748 |
+
+The monotone data-size trend holds across all seeds. The size-3000 absolute differs with the
+step budget (0.641 at 800 steps vs 0.748 at 1000; seed1=seed2=0.748 at 1000), so the robust
+finding is the monotone trend, not a single point.

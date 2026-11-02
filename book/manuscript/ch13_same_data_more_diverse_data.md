@@ -85,6 +85,22 @@ That is a swing from 0.500/0.000 to 1.000/1.000 — all from changing *how* the 
 varied, not *how many* there were. The same count. The same model. Only the diversity
 differed.
 
+### Multi-seed replication
+
+One run can be a fluke, so we re-ran both conditions from scratch under training
+seeds 1 and 2 (report: `docs/reviews/loop/multiseed_replication.md`):
+
+| Training set | seed 0 | seed 1 | seed 2 |
+|--------------|--------|--------|--------|
+| minimal (in-dist / surface) | 0.500 / 0.000 | 0.500 / 0.033 | 0.500 / 0.000 |
+| high (in-dist / surface) | 1.000 / 1.000 | 1.000 / 1.000 | 0.983 / 0.983 |
+
+The pattern is stable across seeds: minimal diversity sits at ~0.5 in-distribution
+and ~0 on the surface test, high diversity at ~1.0 and ~1.0. The swing is not a
+single-seed accident. The coverage-vs-generalization caveat below is unchanged —
+replication says the effect is repeatable, not that it proves transfer to a
+never-seen wording family.
+
 ## What this really means
 
 This is the book's most visually dramatic finding, and it reframes the whole data
@@ -191,8 +207,9 @@ acquire more data can often get a large improvement just by *diversifying* the d
 they already have. Re-phrasing the same examples, varying the identifiers, and
 spreading across template families can turn a brittle 0.500/0.000 model into one that
 covers 1.000/1.000 of the tested surfaces — with zero additional data. Read that
-1.000/1.000 narrowly, in the same breath as we report it: it is a single-seed coverage
-result for surfaces *within the tested family set* on this one task, and transfer to an
+1.000/1.000 narrowly, in the same breath as we report it: it is a coverage result
+for surfaces *within the tested family set* on this one task — repeatable across
+seeds 0, 1, and 2 (see the multi-seed note above) — and transfer to an
 unseen wording family was not demonstrated. That is the kind
 of result that changes how a dataset would actually be built — as a measured,
 single-run lead worth re-testing, not universal practitioner advice.

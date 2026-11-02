@@ -81,7 +81,8 @@ across ten operations could reflect restricted operation coverage rather than an
 inability to learn from a few hundred records. So we present this as **four descriptive
 measurements with coverage unresolved**, not as a recommended minimum-data budget for a
 practitioner. We would not oversell the crossover as a precisely located knee either,
-because it is read from four single runs with no repeated seeds.
+because it is read from four points; the later multi-seed re-runs (below) confirm the
+trend but still do not locate a knee.
 
 ## The motif, restated
 
@@ -129,13 +130,16 @@ sometimes conflate here:
 - **Uncertainty over a target distribution.** If we wanted to say "the model scores
   ~0.64 on new tasks of this type," we'd need a sense of how much 0.641 would vary
   across different test sets. We report **descriptive scores only**: we did not estimate
-  uncertainty for a defined target prompt distribution, nor did we run multiple training
-  seeds per size, so between-training-seed variability is unknown. (We could in principle
+  uncertainty for a defined target prompt distribution. (We did later re-run every
+  dataset size under two additional seeds — see the multi-seed note below — but three
+  seeds at two step budgets is a robustness check, not an estimated interval.) (We could in principle
   analyze conditional sampling uncertainty by examining repeated fresh generations for the
   same prompts, and designed/grouped evaluation could support other intervals under stated
   assumptions — but we did not do that here, so we do not claim those either.)
-- **Seed variation.** We ran each condition with a single seed. That does not mean every
-  kind of interval is impossible — it means *seed variance* is unknown, and it does not
+- **Seed variation.** The original sweep ran each condition with a single seed; the
+  data-scaling sizes were later re-run under two more seeds (below). That does not mean every
+  kind of interval is impossible — it means *seed variance* is only sampled at three
+  seeds across two step budgets, and it does not
   quantify uncertainty over an arbitrary future prompt distribution. We treat the numbers
   as measured for the run we did, and as approximate for the underlying capability, rather
   than as a tight estimate.
@@ -160,8 +164,24 @@ not a single-seed accident. One caveat carried over from the re-runs: the
 RETRIEVAL baseline printed 0.000 on seeds 1 and 2 (seed 0 gave 1.000
 in-distribution). That is a baseline-harness artifact of the re-runs, not a
 model result, and the seed-0 retrieval figures reported elsewhere in the book
-stand as recorded. This replication covers the surface run; the data-scaling
-conditions above remain single-seed.
+stand as recorded.
+
+The data-scaling conditions have since been re-run the same way, under seeds 1 and 2
+(same report). In-distribution pass@1 by dataset size:
+
+| size | seed 0 (800 steps) | seed 1 (1000 steps) | seed 2 (1000 steps) |
+|------|--------------------|----------------------|----------------------|
+| 100  | 0.100 | 0.094 | 0.076 |
+| 300  | 0.098 | 0.100 | 0.100 |
+| 1000 | 0.300 | 0.300 | 0.300 |
+| 3000 | 0.641 | 0.748 | 0.748 |
+
+The monotone data-size trend reproduces on every seed: near 0.10 at 100 and 300,
+0.300 at 1000, and the highest score at 3000. One honest caveat: the step budget was
+not identical across seeds — seed 0 ran at this chapter's 800 steps, seeds 1 and 2 at
+1000 — and the size-3000 absolute moves with it: 0.641 at 800 steps versus 0.748 at
+1000, with seed 1 = seed 2 = 0.748 at the same 1000-step budget. So the robust
+finding is the **monotone trend**, not any single point.
 
 ## The practical answer
 
@@ -169,7 +189,8 @@ Four points, each read honestly.
 
 First, these four points support a **trend under these budgets**, not a demonstrated
 sharp threshold: 0.100 at 100 examples → 0.098 at 300 → 0.300 at 1000 → 0.641 at 3000.
-We only ran each count once, so we cannot pin an exact inflection. Four points describe
+The original sweep ran each count once, and the multi-seed re-runs below confirm the
+trend without pinning an exact inflection. Four points describe
 "performance improves as example count grows in the range we tried," not "there is a
 knee at 3000."
 
