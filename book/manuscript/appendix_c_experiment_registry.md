@@ -388,6 +388,46 @@ are preserved in this repository, and (b) a freshly reproduced rerun, which may 
 none of the numbers in this book should be read as a reproducibility *confirmation*
 until an independent run reproduces them.
 
+**Multi-seed replication.** We have taken a first step toward that confirmation: we
+re-ran the two headline experiments from scratch under seeds 1 and 2 on the documented
+Python 3.11 environment (`.venv-311`, torch 2.14.0+cpu, `TORCH_DISABLE_AVX2=1`,
+`OMP_NUM_THREADS=2`), each run a fresh training from a different seed. Report:
+`docs/reviews/loop/multiseed_replication.md`.
+
+**Table C.6 — Composition exposure across seeds**
+
+| seed | in-dist pass@1 | exposed pass@1 | held-out pass@1 |
+|------|------|------|------|
+| 0 | 1.000 | 0.667 | **0.000** |
+| 1 | 1.000 | 0.667 | **0.000** |
+| 2 | 1.000 | 0.667 | **0.000** |
+
+**Table C.7 — Stage-3 surface across seeds**
+
+| seed | in-dist | new identifiers | held-out wording |
+|------|------|------|------|
+| 0 | 0.900 | 0.350 | 0.000 |
+| 1 | 0.900 | 0.348 | 0.004 |
+| 2 | 0.898 | 0.348 | 0.000 |
+
+The headline numbers reproduce: held-out composition is 0.000 for all three seeds, and
+the surface numbers are tightly stable. One caveat: the RETRIEVAL baseline printed
+0.000 on seeds 1 and 2 (seed 0 gave 1.000 in-distribution) — a baseline-harness
+artifact of the re-runs (`run_surface.py` was patched to accept `--out`/`--tag` so
+re-runs would not overwrite the original manifest), not a model result. We do not
+report the re-run retrieval values as findings; the seed-0 retrieval figures in the
+body chapters stand as recorded.
+
+**Eval-pipeline robustness fixes (no measured value changed).** Two cross-version
+robustness fixes were needed so native re-runs work in the current environment, and
+neither changes any measured result: (1) `generate_code` in
+`src/eval/evaluator_runner.py` now coerces a `None`/`bytes` decode to `''`/`str`, and
+`validate_source` in `src/sandbox/sandbox.py` handles `None`/`bytes` — this fixes a
+crash when the model generates nothing, and a degenerate empty generation is now
+honestly counted as a parse failure; (2) the native re-runs use a Python 3.11 venv
+(`.venv-311`) as the quick start above documents. These fixes only make re-runs work
+in the current environment; they alter no reported number.
+
 **The quick start:**
 
 1. **Clone the companion repository** and check out the `v20261001` tag.

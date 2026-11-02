@@ -1,0 +1,82 @@
+{
+  "experiment_id": "stage3_surface_seed1",
+  "status": "MEASURED",
+  "model_params": {
+    "total": 884224
+  },
+  "final_train_loss": 0.0275,
+  "config": {
+    "steps": 1500,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "bs": 16,
+    "lr": 0.001,
+    "seed": 1,
+    "n_per": 130,
+    "out": "artifacts/checkpoints/stage3_surface_seed1.pt",
+    "tag": "_seed1"
+  },
+  "results": {
+    "in-distribution": [
+      {
+        "label": "MODEL",
+        "syntax_rate": 0.9,
+        "executable_rate": 0.9,
+        "pass_at_1": 0.9
+      },
+      {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.9,
+        "pass_at_1": 0.8
+      },
+      {
+        "label": "RETRIEVAL",
+        "syntax_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0
+      }
+    ],
+    "new IDENTIFIERS (word names)": [
+      {
+        "label": "MODEL",
+        "syntax_rate": 0.45153846153846156,
+        "executable_rate": 0.4423076923076923,
+        "pass_at_1": 0.3484615384615385
+      },
+      {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.9,
+        "pass_at_1": 0.8
+      },
+      {
+        "label": "RETRIEVAL",
+        "syntax_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0
+      }
+    ],
+    "held-out WORDING (last family)": [
+      {
+        "label": "MODEL",
+        "syntax_rate": 0.25769230769230766,
+        "executable_rate": 0.22788461538461538,
+        "pass_at_1": 0.0038461538461538464
+      },
+      {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.875,
+        "pass_at_1": 0.875
+      },
+      {
+        "label": "RETRIEVAL",
+        "syntax_rate": 0.0,
+        "executable_rate": 0.0,
+        "pass_at_1": 0.0
+      }
+    ]
+  }
+}

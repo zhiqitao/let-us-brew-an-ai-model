@@ -19,6 +19,10 @@ def generate_code(model, tokenizer, prompt, max_new=80, prompt_marker="\n"):
     out = model.generate(ctx, max_new=max_new)
     gen_ids = out[0].tolist()
     code = tokenizer.decode(gen_ids[len(ids):])
+    if isinstance(code, (bytes, bytearray)):
+        code = code.decode("utf-8")
+    if code is None:
+        code = ""
     # Truncate at the first NUL byte (a valid Python program never contains it).
     # The model tends to pad with NUL after producing a complete program.
     nul = code.find("\x00")

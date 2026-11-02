@@ -89,6 +89,12 @@ def validate(ast_node, _depth=0, _count=None):
 
 def validate_source(source):
     """Parse source, then validate the resulting Module AST. Returns the module."""
+    if isinstance(source, (bytes, bytearray)):
+        source = source.decode("utf-8")
+    if source is None:
+        raise SandboxError("empty generated program")
+    if isinstance(source, (bytes, bytearray)):
+        source = source.decode("utf-8")
     try:
         tree = ast.parse(source)
     except SyntaxError as e:

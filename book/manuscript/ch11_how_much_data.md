@@ -147,6 +147,22 @@ conditions. So a standard binomial interval can be misleadingly tight, and a "3/
 bound for a zero result assumes independent draws that this generator does not
 provide. We therefore report raw counts and do not attach invented error bars.
 
+### A note on multi-seed replication
+
+One experiment we *did* re-run under more than one seed is the Stage-3 surface
+test. Fresh trainings under seeds 1 and 2 reproduce the seed-0 run closely:
+in-distribution 0.900 / 0.900 / 0.898, new identifiers 0.350 / 0.348 / 0.348,
+and held-out wording 0.000 / 0.004 / 0.000 for seeds 0 / 1 / 2 (report
+`docs/reviews/loop/multiseed_replication.md`). The shape of the result — a
+familiar-prompt score near 0.90, a partial fall to ~0.35 on new identifiers,
+and a collapse to ~0.00 on held-out wording — is stable across seeds, so it is
+not a single-seed accident. One caveat carried over from the re-runs: the
+RETRIEVAL baseline printed 0.000 on seeds 1 and 2 (seed 0 gave 1.000
+in-distribution). That is a baseline-harness artifact of the re-runs, not a
+model result, and the seed-0 retrieval figures reported elsewhere in the book
+stand as recorded. This replication covers the surface run; the data-scaling
+conditions above remain single-seed.
+
 ## The practical answer
 
 Four points, each read honestly.

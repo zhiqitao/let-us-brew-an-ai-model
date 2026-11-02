@@ -28,3 +28,6 @@ book/latex/chapters/
 .DS_Store
 .vscode/
 .idea/
+
+# Python virtualenvs (any name)
+.venv*/

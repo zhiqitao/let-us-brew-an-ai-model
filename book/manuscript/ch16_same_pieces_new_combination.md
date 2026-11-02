@@ -273,6 +273,18 @@ semantic failure on an operation the model was trained on, and the ablation
 narrows the cause without fully isolating the mechanism — it rules out decoding
 and extraction, not every upstream explanation.
 
+To check that the zero is not a lucky seed, we also re-ran the whole
+composition-exposure experiment from scratch under two more training seeds
+(seeds 1 and 2) on the documented Python 3.11 environment. Both new seeds
+reproduce the seed-0 profile exactly: in-distribution 1.000, exposed composites
+0.667, held-out composites **0.000** — so across seeds 0, 1, and 2 the
+held-out composite pass@1 is 0.000 every time (report
+`docs/reviews/loop/multiseed_replication.md`). The composition result is
+therefore not a single-seed artifact. The same honest framing applies to all
+three runs: the held-out failures occur at the first generated tokens, upstream
+of decoding, so the replication strengthens the measured zero without isolating
+the mechanism behind it.
+
 This closes off the naive fix ("just add composites to the data") *for the partitions and
 budgets we tested*. Composition here is not a matter of having seen a combination —
 **under everything we have tested**, it does not emerge from exposure to a few

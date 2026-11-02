@@ -57,6 +57,8 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n-per", type=int, default=130)
+    ap.add_argument("--out", default=os.path.join(ROOT, "artifacts", "checkpoints", "stage3_surface.pt"))
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
 
@@ -83,7 +85,7 @@ def main():
     t0 = time.time()
     losses = train_fn(m, ds, steps=args.steps, bs=args.bs, lr=args.lr)
     print(f"trained in {time.time()-t0:.1f}s; final loss {losses[-1]:.4f}")
-    ckpt = os.path.join(ROOT, "artifacts", "checkpoints", "stage3_surface.pt")
+    ckpt = args.out
     os.makedirs(os.path.dirname(ckpt), exist_ok=True)
     torch.save(m.state_dict(), ckpt)
     print("saved ->", ckpt)
@@ -95,7 +97,7 @@ def main():
     setups = [("in-distribution", in_dist),
               ("new IDENTIFIERS (word names)", word_id),
               ("held-out WORDING (last family)", held_word)]
-    manifest = {"experiment_id": "stage3_surface", "status": "MEASURED",
+    manifest = {"experiment_id": "stage3_surface" + args.tag, "status": "MEASURED",
                 "model_params": {"total": emb+non_emb},
                 "final_train_loss": round(losses[-1], 4), "config": vars(args),
                 "results": {}}
@@ -108,7 +110,7 @@ def main():
             print(f"    {r['label']:9s} pass@1={r['pass_at_1']:.3f}")
         manifest["results"][label] = results
 
-    mp = os.path.join(ROOT, "artifacts", "manifests", "stage3_surface.json")
+    mp = os.path.join(ROOT, "artifacts", "manifests", "stage3_surface%s.json" % args.tag)
     os.makedirs(os.path.dirname(mp), exist_ok=True)
     with open(mp, "w") as f:
         json.dump(manifest, f, indent=2)
