@@ -28,15 +28,20 @@ conservative, audit-proof form — the wording we adopt after the third external
 > training, even when the resulting program was tested on new input values. That
 > performance alone does not establish generalization to new natural-language requests.
 > Separate evaluations found severe failures under altered wording and when asked for
-> previously untrained program structures. The initial scaling and diversity studies
-> require corrected controls before they can support causal claims about record count
-> or surface diversity. The durable methodological lesson is that a high score must be
-> interpreted through the precise model-visible novelty, the evaluator, the baseline,
-> and the controls used to obtain it.
+> previously untrained program structures. The corrected data-scaling sweep — balanced
+> operation coverage, one fixed tokenizer — is flat at ~0.90 across a 30× range, so
+> record count bought nothing in this regime; the corrected surface factorial collapses
+> to ~0 on new identifiers, on held-out wording, and on both together, so no tested
+> prompt-surface change is survived. The diversity comparison still requires a
+> corrected control before it can support a causal claim about surface diversity. The
+> durable methodological lesson is that a high score must be interpreted through the
+> precise model-visible novelty, the evaluator, the baseline, and the controls used to
+> obtain it.
 
 This wording is deliberately more conservative than the capability map's earlier
-summary, and it remains supportable even before the corrected reruns. Within it, the
-experiments separate into what the model **can** do and what it **cannot**.
+summary, and the corrected reruns have since strengthened it rather than loosened it:
+the data-scaling lever came back flat and the surface collapse came back crisper. Within
+it, the experiments separate into what the model **can** do and what it **cannot**.
 
 **It can learn, and it learns well — within a narrow regime.** On individual operations,
 the model reliably maps a natural-language spec to correct Python, reaching **~0.90
@@ -51,15 +56,17 @@ reuses training prompt strings.
 
 **But it is surface-tied and non-compositional.** The two limits that matter:
 
-1. **It anchors to phrasing, not meaning.** Change the variable names (`a,b` →
-   `left,right`) and it drops to 0.35 — with the caveat that this arm also changed
-   wording-family coverage, so it is a mixed-factor shift, not an identifier-only one
-   (P0-03); change the wording (same computation, different
-   words) and it falls to **0.000** over 480 records — below both baselines. The external reality check
-   confirmed it: a human-written test set scored **0/16** — **0/11** on requests built
-   from operations the model had seen (a phrasing/surface failure) and **0/5** on
-   genuinely held-out composite requests (a structural failure, expected separately) —
-   because the model learned a *template*, not the *task*.
+1. **It anchors to phrasing, not meaning.** In the corrected 2×2 factorial, change only
+   the variable names (`a,b` → `left,right`, wording untouched) and it drops to
+   **0.000–0.005** — 0 to 3 of 600; change only the wording (same computation,
+   different words, identifiers untouched) and it is **0.000 in every seed** — 0 of 480,
+   below both baselines; change both and it is 0.000–0.025. It survives no
+   prompt-surface change we applied, against ~0.90 on the familiar phrasing (the earlier
+   0.35 identifier reading was mixed-factor inflation, P0-03, now superseded). The
+   external reality check confirmed it: a human-written test set scored **0/16** —
+   **0/11** on requests built from operations the model had seen (a phrasing/surface
+   failure) and **0/5** on genuinely held-out composite requests (a structural failure,
+   expected separately) — because the model learned a *template*, not the *task*.
 
 2. **It cannot compose what it knows.** Train on `abs` and `add` separately, then ask
    for `abs_add` — it scores **0.000**. The baselines also collapse to 0.000, so the
@@ -80,10 +87,13 @@ equal-count causal reading is unsupported — the
 proven transfer to a never-seen wording family. So the picture is more than "small models are fragile": *content diversity*
 is a strong lead for widening what a small model handles, pending a corrected
 equal-count rerun. More *capacity* (0.88M→29.3M) also did not lift the
-compositional limit. **We do not claim anything for more *data*:** the data-size sweep
-is confounded with operation coverage (P0-01; evidence table, Chapter 11), so it
-establishes no record-count effect at all, and whether more data would help
-composition is a question we did not test and do not assert.
+compositional limit. **More *data* of the same kind is now measured, and it bought
+nothing:** the corrected, operation-balanced size sweep is flat at ~0.90 from 10 to 300
+examples per operation — a 30× range with no benefit (Chapter 11) — while the original
+rising curve (0.100 → 0.641) was the operation-coverage confound (P0-01), preserved only
+as a labeled flawed historical run in the failure ledger. Whether more data would help
+*composition* is still a question we did not test and do not assert: the corrected sweep
+scored in-distribution only.
 
 **The scaling conclusion is our sharpest negative result.** Composition stays at
 **0.000** across model sizes from 0.88M to 29.3M, under the training schedules we ran.
@@ -179,8 +189,9 @@ The honest map points at specific next experiments, not vague "more data / bigge
    diversity — the number, nesting, and variety of operator pairings — with disjoint
    held-out pairing structures and program length and vocabulary matched between
    training and test, so that structure is the only variable that changes.
-   (Two earlier data levers also need corrected reruns first: the operation-stratified
-   size sweep of P0-01 and the equal-count diversity comparison of P0-02.)
+   (One data lever now has its corrected rerun: the operation-stratified size sweep of
+   P0-01 came back flat, so record count is settled as a null; the equal-count diversity
+   comparison of P0-02 still needs its corrected rerun.)
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
    measured 0.773 (a stable plateau, not the earlier 0.383 reading). A proper
    training-duration and config sweep at 10M would confirm the plateau is robust.
@@ -229,10 +240,12 @@ worth having:
 > NL-to-Python task — frequently produced executable, correct Python for prompt strings
 > that appeared in training, even on new input values; that does not establish
 > generalization to new natural-language requests. In our tests its knowledge was
-> surface-tied and non-compositional, and more capacity (0.88M→29.3M) did not change
-> the compositional limit. The initial data-scaling and diversity studies are confounded
-> (operation coverage; 42-vs-1,200 arms) and require corrected controls before they can
-> support any causal claim about record count or surface diversity.
+> surface-tied and non-compositional: the corrected surface factorial collapses to ~0 on
+> new identifiers, on held-out wording, and on both together, and more capacity
+> (0.88M→29.3M) did not change the compositional limit. The corrected data-scaling sweep
+> is flat at ~0.90 across a 30× range, so record count bought nothing; the diversity
+> comparison remains confounded (42-vs-1,200 arms) and still requires a corrected
+> control before it can support any causal claim about surface diversity.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,
 audit shortcuts, preserve failures — are the durable part. That is the method worth

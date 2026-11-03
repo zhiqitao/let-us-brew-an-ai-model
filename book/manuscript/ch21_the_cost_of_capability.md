@@ -26,13 +26,16 @@ That distinction is the key to reading the results in this chapter. The model ca
 works only under conditions the real world will not respect.
 
 Before the matrix, the conclusion this chapter helps build, in the conservative form we
-now adopt (third external review, 2026-11-02): the model
-frequently produced executable, correct Python for training-seen prompt strings even on
-new input values, but that does not establish generalization to new natural-language
-requests; severe failures appeared under altered wording and on untrained structures;
-and the initial scaling and diversity studies need corrected controls before they can
-support causal claims about record count or surface diversity. Two rows of the matrix
-below are exactly those flawed studies, and we price nothing from them.
+now adopt (third external review, 2026-11-02), strengthened by the corrected reruns: the
+model frequently produced executable, correct Python for training-seen prompt strings even
+on new input values, but that does not establish generalization to new natural-language
+requests; severe failures appeared under altered wording and on untrained structures; the
+corrected data-scaling sweep is flat (~0.90 from 10 to 300 examples per operation), so
+record count buys nothing in this regime; and the corrected surface factorial collapses
+to ~0 on any prompt-surface change. The diversity comparison still needs a corrected
+control before it can support a causal claim about surface diversity. One row of the
+matrix below is that remaining flawed study, and we price nothing from it; the
+data-scaling and surface rows now carry their corrected replacements.
 
 ## The cost matrix
 
@@ -54,8 +57,10 @@ all 560 — the 1,400 in the steps column is the separate 700 + 700 step budget.
 | Run | data records / unique pairs | parameters | steps |
 |------------------|-----------------------------|------------|-------|
 | `stage1` | 1,400 / 21 | 0.88M | 1,500 |
-| `stage3_surface` | 600 (10 op × 60) familiar/new-ID; **480** (8 op × 60) reworded | 0.88M | 1,500 |
-| `data_scaling` (per size) | 100, 300, 1000, 3000 (**prefix of an operation-ordered pool: 1/1/3/8 of 10 ops — P0-01**) | 0.88M | 800 |
+| `stage3_surface` (superseded, P0-03/P0-04) | 600 (10 op × 60) familiar/new-ID; **480** (8 op × 60) reworded | 0.88M | 1,500 |
+| `surface_corrected` (fixes P0-03/P0-04) | 600 train (60 op × 10); cells of 600 / 600 / **480** / **480** | 0.88M | 1,500 |
+| `data_scaling` (superseded, P0-01) | 100, 300, 1000, 3000 (**prefix of an operation-ordered pool: 1/1/3/8 of 10 ops**) | 0.88M | 800 |
+| `data_scaling_corrected` (per size; fixes P0-01) | 100 / 300 / 1000 / 3000, balanced **10/30/100/300 per op, 10/10 ops** | 0.88M | 1,000 |
 | `diversity` (Ch13) | requested 1,200; **realized 42** (high) vs 1,200 (minimal) — P0-02 | 0.88M | 900 |
 | `stage4_exposure` | not recorded | 0.88M | 1,500 |
 | `compdiv_minimal` / `compdiv_high` | not recorded | 0.88M | 1,500 |
@@ -64,15 +69,19 @@ all 560 — the 1,400 in the steps column is the separate 700 + 700 step budget.
 | `continual_joint` | 560 interleaved | 0.88M | 1,400 |
 
 **Table 19.2 — Measured outcomes, by run** (the neural **MODEL**'s score; baselines are in
-Chapters 15 and 16, not here). Run keys match Table 19.1. `0.350`/`0.000` are the model's
-scores on the new-identifier and reworded splits; `0.875`/`0.683` belong to the
+Chapters 15 and 16, not here). Run keys match Table 19.1. The two **corrected** rows
+(`surface_corrected`, `data_scaling_corrected`) give the model's per-seed scores on the
+four factorial cells and on the flat size sweep; the superseded rows keep the original
+`stage3_surface` / `data_scaling` values for the record. `0.875`/`0.683` belong to the
 TEMPLATE/RETRIEVAL baselines and are not the model's.
 
 | Run | in-dist | new IDs | new wording | composes |
 |------------------|---------|---------|-------------|----------|
 | `stage1` | 0.897 | — | — | 0.000* |
-| `stage3_surface` | 0.900 | 0.350† | 0.000‡ | — |
-| `data_scaling` | 0.100 / 0.098 / 0.300 / 0.641 § | — | — | — |
+| `stage3_surface` (superseded†‡) | 0.900 | 0.350† | 0.000‡ | — |
+| `surface_corrected` | 0.898 / 0.900 / 0.940 | 0.000 / 0.003 / 0.005 ¶ | 0.000 (both changes: 0.000 / 0.025 / 0.000) ¶ | — |
+| `data_scaling` (superseded§) | 0.100 / 0.098 / 0.300 / 0.641 § | — | — | — |
+| `data_scaling_corrected` | 0.893–0.997, **flat** across 100→3000 ¶ | — | — | — |
 | `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
 | `compdiv_minimal` | 1.000 | — | — | 0.592 / 0.000 |
 | `compdiv_high` | 1.000 | — | — | 0.550 / 0.000 |
@@ -85,11 +94,18 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 
 *`stage1`'s composes value (0.000) is from the stage-4 re-evaluation of that pilot
 checkpoint. † the new-identifier arm changes identifiers and wording-family coverage
-together (P0-03), so 0.350 is a mixed-factor shift. ‡ the reworded arm has 480 records
-over 8 operations, not 600 over 10 (P0-04). § the data-scaling arms are prefixes of an
-operation-ordered pool covering 1/1/3/8 of the ten operations (P0-01), so this row is a
-confounded historical run of operation coverage, not a record-count curve — we price
-nothing from it. The `stage4_exposure` and `compdiv_*` composes values are reported as
+together (P0-03), so 0.350 is a mixed-factor shift — superseded by the identifiers-only
+cell of `surface_corrected`, which is ~0. ‡ the reworded arm has 480 records over 8
+operations, not 600 over 10 (P0-04) — superseded by the corrected factorial's
+wording-only cell, 0.000 over 480 in every seed. § the data-scaling arms are prefixes of
+an operation-ordered pool covering 1/1/3/8 of the ten operations (P0-01), so this row is a
+confounded historical run of operation coverage, not a record-count curve — superseded by
+`data_scaling_corrected`, which is flat; we price nothing from the old row. ¶ corrected
+runs (Appendix C, Tables C.13/C.14): `surface_corrected` cells are scored over
+600/600/480/480 records with `abs_of` and `cond_abs_max` excluded from the held-out cells
+(8 ops × 60); `data_scaling_corrected` arms are balanced 10/10 operations under one fixed
+tokenizer against one shared 300-task test, so the row is a flat curve, not a trend. The
+`stage4_exposure` and `compdiv_*` composes values are reported as
 *exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed records
 each); the held-out composite — the transfer test — was 0.000, and for the run where we
 analyzed it (the composition-exposure run, Appendix B.10) the held-out candidates failed
@@ -115,11 +131,14 @@ prompt–program pairs**; it is not a measured per-operation data requirement, a
 is single-sample correctness for repeated previously-seen prompt strings under fresh
 execution values, not prompt generalization. Second, the
 size sweep changed training budgets (1,500 / 1,000 / 800 / 800 steps) and tokenizer, so it
-is not a size-only intervention. Third, two rows are **flawed constructions** (Appendix B):
-the `data_scaling` row is a prefix of an operation-ordered pool (arms cover 1/1/3/8 of the
-ten operations — P0-01), and the Chapter 13 diversity comparison realized **42 records
-against 1,200** (P0-02) — neither supports a causal price for record count or surface
-diversity, and we draw no budget lesson from either. Fourth, the exposed-composite scores varied (0.550, 0.592,
+is not a size-only intervention. Third, two rows are **superseded flawed constructions**
+(Appendix B) with corrected replacements now in the matrix: the old `data_scaling` row is
+a prefix of an operation-ordered pool (arms cover 1/1/3/8 of the ten operations — P0-01),
+replaced by the flat `data_scaling_corrected` row, and the old `stage3_surface` rows mixed
+factors and denominators (P0-03, P0-04), replaced by the `surface_corrected` factorial.
+One flawed construction has **no** corrected rerun yet: the Chapter 13 diversity
+comparison realized **42 records against 1,200** (P0-02), so it supports no causal price
+for surface diversity, and we draw no budget lesson from it. Fourth, the exposed-composite scores varied (0.550, 0.592,
 0.667); the held-out composite — the transfer test — was **0.000** at every size we tried.
 For the run where we analyzed stage rates (the composition-exposure run, Appendix B.10) the
 held-out candidates failed parsing before semantic evaluation; we do not extend that to the
@@ -136,13 +155,17 @@ achieved within the budgets we tried.
 So the *apparent* cost of a capability is low. But that number is misleading: it measures
 only in-distribution correctness on prompts the model has seen.
 
-**The real cost appears when we ask for generalization.** To make a single primitive
-robust to *surface* change (new identifiers, new wording), the experiments suggest the data
-would need to change substantially — diverse identifiers and wording — not just add
-capacity — though the two data-lever comparisons that were meant to price this (Chapters
-11 and 13) are the flawed constructions flagged above (P0-01, P0-02), so the suggestion
-is a lead, not a measured
-price. And composition was not achieved at any size we tried: it stayed 0.000 on
+**The real cost appears when we ask for generalization.** Two levers were meant to price
+robustness, and only one has a measurement now. *More data of the same kind* is priced at
+**zero marginal return**: the corrected sweep (Chapter 11) is flat at ~0.90 from 10 to
+300 examples per operation, so record count buys nothing — not capability, not
+robustness — in this regime. *More diverse data* remains unpriced: the Chapter 13
+comparison is still the flawed 42-versus-1,200 construction (P0-02), so "train on diverse
+identifiers and wording" is a lead, not a measured price, and capacity was never the
+promising lever either. What the corrected surface factorial does price is the failure
+itself: the same 600-record budget that yields ~0.90 on the familiar surface yields 0–3
+of 600 on new identifiers and 0 of 480 on held-out wording — robustness to surface change
+was not bought at any budget we tried. And composition was not achieved at any size we tried: it stayed 0.000 on
 held-out at 0.88M, 6.5M, 10.2M, and 29.3M. As the cautions above state, the parsing
 finding applies only to the composition-exposure run, so the cause of that zero is
 unresolved.
@@ -152,11 +175,13 @@ unresolved.
 generalization and composition columns reveal that the cheap number hides a much more
 expensive requirement — robust, compositional capability. On that requirement, capacity
 scaling was tested on composition and remained 0.000 at every size we ran; the
-data-count sweep and the diversity comparison are the flawed constructions flagged in
-the cautions above (P0-01, P0-02), so they support no pricing at all. The rows we *can*
-price are the
-ones with intact controls: the pilot's familiar-prompt cost, the surface run's
-robustness failure, and the continual-learning schedule comparison.
+diversity comparison is still the flawed construction flagged in the cautions above
+(P0-02) and supports no pricing at all, while the corrected data-count sweep prices
+record count at **zero marginal return** (flat ~0.90 across a 30× range). The rows we
+*can* price are the
+ones with intact controls: the pilot's familiar-prompt cost, the corrected surface
+factorial's robustness failure, the corrected data-scaling sweep's flat curve, and the
+continual-learning schedule comparison.
 
 ## The price of each column, read honestly
 
@@ -167,10 +192,13 @@ not the way a researcher who wants a good headline would read it.
   minutes.** That is the cheap row. Its in-distribution score was 0.897; the pilot itself
   did not run a reworded surface test (the Stage-3 surface run did, and scored 0.000 there).
   So we have bought a capability that works on the prompts it was trained with.
-- **New-identifier and reworded robustness** (the Stage-3 surface run) costs the same
-  1,400-class budget and still fails — the model drops to 0.350 on the mixed
-  identifiers-plus-family shift (P0-03) and to
-  0.000 on a reworded instruction (480 records, 8 operations — P0-04). We cannot buy this with more of the same from this run.
+- **New-identifier and reworded robustness** (the corrected surface factorial) costs the
+  same 600-record budget and still fails — the model drops to 0.000–0.005 on new
+  identifiers alone (0–3 of 600) and to 0.000 on held-out wording in every seed (0 of
+  480; both changes at once: 0.000–0.025), while TEMPLATE holds 0.800 / 0.875 and
+  RETRIEVAL 1.000 / 0.125 on the same records. The superseded Stage-3 row's 0.350 was a
+  mixed-factor reading (P0-03) and priced nothing. We cannot buy this robustness with
+  more of the same data either — the corrected size sweep is flat (Chapter 11).
 - **Composition** is the row that tells the sharpest story. It was 0.000 on held-out
   composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
   parameter column alone did not change that in the runs we ran. But the failure cause is
@@ -211,8 +239,8 @@ build unless we know the generalization cost going in.
 
 The most honest "cost" we measured is the cost of **mistaking surface association for
 grounded capability**. That cost is high: it makes a model that scores 90%
-in-distribution *look* capable while it collapses to 0.000 on a reworded instruction
-(and drops to 0.350 on a new identifier) — a change to the surface. In a deployed
+in-distribution *look* capable while it collapses to 0.000 on a reworded instruction and
+to 0.000–0.005 on a new identifier — any change to the surface. In a deployed
 system, that is precisely the failure that appears late and costs the most.
 
 So the real answer to "what does each capability cost?" is: the easy-to-see cost

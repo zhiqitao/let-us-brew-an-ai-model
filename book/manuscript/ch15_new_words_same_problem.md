@@ -29,7 +29,7 @@ To find out, we run the **surface-generalization** test. The logic is simple and
 elegant: if we change something that *shouldn't* change the computation — the variable
 names, or the wording — and the model fails, then its success is **not robust to that
 surface shift**. It is tied to the phrasing it saw. (We are careful about what this
-does and does not show: it demonstrates a lack of robustness to the chosen shift, not
+does and does show: it demonstrates a lack of robustness to the chosen shift, not
 that no internal semantic representation exists.)
 
 The key is choosing *what* to change. We want to change only the *surface* — the outer
@@ -38,92 +38,111 @@ Swapping `a` and `b` for `left` and `right` does not change what "add these two
 numbers" means. Rewording "their sum" as "the total" does not change the operation.
 If the model truly understood addition, neither change would matter. If it merely
 memorized a sentence, either change would break it. That asymmetry is exactly what we
-measure.
-
-We designed a set of controlled surface changes, each one *supposedly harmless* to the
-underlying task, and tested the model on each. This is the crux of the book's approach
-to generalization: we do not just ask "does it work?" We ask "does it survive the
-changes that a genuinely-general system should shrug off?"
+measure — and to measure it cleanly we change each factor *separately*, in a full
+2 × 2 design, because our first attempt changed two things at once and had to be
+corrected (a code audit showed the original "new identifiers" condition also changed
+wording-family coverage, and its denominator was misstated; Appendix B, P0-03 and
+P0-04).
 
 ## The setup
 
-We trained the model on arithmetic primitives, but only with **letter names** (`a`, `b`)
-and only a **subset of the wording** used to describe each operation. Then we re-asked
-the *identical* task three different ways and watched whether the model's ability
-survived.
+The corrected experiment trains the model on the ten arithmetic operations with
+**letter identifiers** (`a`, `b`) and only the **kept subset** of wording families, then
+re-asks the *identical* tasks under controlled surface changes. Everything is held fixed
+across the four cells:
+
+- **one fixed training set**: 600 tasks — 60 per operation × 10 operations — letter
+  identifiers × kept wording families;
+- **one fixed tokenizer**, fit on those training texts only and reused unchanged across
+  every cell and every seed (vocabulary 291; SHA-256
+  `3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e`);
+- **identical task sets per cell**, scored by the MODEL and by both baselines on the
+  same records, after the same 1,500-step training budget (batch 16, learning rate
+  1e-3), under seeds 0, 1, and 2.
+
+The four cells and their denominators:
+
+| cell | identifiers | wording | records |
+|------|-------------|---------|---------|
+| familiar | letters | kept families | **600** (10 ops × 60) |
+| identifiers only | words (`left`, `right`) | kept families | **600** (10 ops × 60) |
+| wording only | letters | held-out family | **480** (8 ops × 60) |
+| both changes | words | held-out family | **480** (8 ops × 60) |
+
+The held-out-wording cells have **480** records, not 600, because `abs_of` and
+`cond_abs_max` have a single wording family and therefore have no held-out family to
+test — they are excluded from those two cells (P0-04). With the factors unmixed and the
+denominators recorded in the manifest, any difference between cells is attributable to
+the surface change that cell applies.
 
 ## The result
 
-| Test | **MODEL** | TEMPLATE / RETRIEVAL |
-|----------------------------------------|--------------------|----------------------------------------|
-| Same as training | **0.900** | 0.800 / 1.000 |
-| New identifiers (mixed factors — see below) | **0.350** | 0.800 / 0.683 |
-| Same computation, reworded (480 records) | **0.000** | 0.875 / 0.125 |
+Model pass@1 by seed (successes in parentheses):
 
-*The baseline column lists TEMPLATE / RETRIEVAL in that order. A code audit (P0-03,
-P0-04) changed how these rows must be read: the second row changes the variable names
-`a,b` → `left,right` **and** the wording-family coverage (its evaluation pool is built
-with `families="all"` while training excluded the last family), so it is a **mixed-factor**
-shift, not an identifier-only one; the third row changes only the wording —
-the computation is identical in all three rows — and is scored over **480** records
-(8 operations × 60; `abs_of` and `cond_abs_max` have a single family and so have no
-held-out wording), not 600.*
+| cell (denominator) | seed 0 | seed 1 | seed 2 |
+|--------------------|--------|--------|--------|
+| familiar (600) | **0.898** (539) | **0.900** (540) | **0.940** (564) |
+| identifiers only (600) | **0.000** (0) | **0.003** (2) | **0.005** (3) |
+| wording only (480) | **0.000** (0) | **0.000** (0) | **0.000** (0) |
+| both changes (480) | **0.000** (0) | **0.025** (12) | **0.000** (0) |
+
+The baselines are identical across all three seeds: TEMPLATE scores 480/600 = 0.800 on
+the two kept-wording cells and 420/480 = 0.875 on the two held-out-wording cells;
+RETRIEVAL scores 600/600 = 1.000 on the two kept-wording cells and 60/480 = 0.125 on the
+two held-out-wording cells.
 
 Look at what happens when we touch only the *surface*, not the math.
 
-- **New variable names (mixed factors).** The model was trained on `a` and `b`. We ask the same
-  question with `left` and `right` — the *identical* operation. Performance collapses
-  from **0.900 to 0.350**. A code audit (P0-03) showed this condition changes **two**
-  factors at once: the identifier names *and* the wording-family coverage (the
-  new-identifier pool is built with `families="all"`, including the family withheld
-  from training), so 0.350 is **not** an identifier-only effect — it is a mixed
-  identifiers-plus-family shift, and the same applies to the retrieval baseline's
-  1.000 → 0.683 fall. Isolating the identifier axis needs a full identifier × wording
-  factorial (train on `letters × kept families`, then test ID-only, wording-only, and
-  combined cells separately).
+- **New identifiers alone.** The model was trained on `a` and `b`. We ask the same
+  question with `left` and `right` — identical wording, identical operation.
+  Performance collapses from **0.898–0.940 to 0.000–0.005**: 0, 2, and 3 successes out
+  of 600. The identifier shift by itself costs the model essentially everything, while
+  on the very same records RETRIEVAL stays at 600/600 and TEMPLATE at 480/600.
 
-- **Reworded instruction.** We say the exact same problem using a phrasing the model
-  never saw during training. Performance drops to **0.000** — over **480** records
-  (see the table note above for the operation mix), not the 600 of the other two rows.
+- **Held-out wording alone.** Identifiers untouched; we say the exact same problem using
+  a phrasing family the model never saw during training. Performance is **0.000 in every
+  seed** — 0 of 480, three times over.
 
-So the model that scored 0.900 on the familiar phrasing falls to 0.350 when the
-variable names (and family coverage) change, and to 0.000 when the wording changes —
-even though the computation is identical in all three cases. Because the second row
-mixes factors and the third row has a different operation mix (8 of 10 operations),
-the three aggregates are not operation-matched; a corrected comparison needs
-per-operation, matched-subset scoring.
+- **Both at once.** 0.000 / 0.025 / 0.000 — 0 to 12 of 480. Combining the shifts recovers
+  nothing: the collapse is already complete on either single factor.
+
+So the model that scores ~0.90 on the familiar phrasing falls to ~0 on *any* change of
+surface — new variable names, new wording, or both — even though the computation is
+identical in all four cells. The earlier 0.350 "new identifiers" figure came from the
+original Stage-3 run, which changed identifiers *and* wording-family coverage together;
+with the factors unmixed, the identifier-only cell is ~0, so 0.350 was **mixed-factor
+inflation**, not a partial identifier effect. That original run is preserved as a
+labeled flawed historical record (P0-03, P0-04) in the failure ledger and as a
+superseded row in Appendix C; the corrected factorial above is this chapter's result.
 
 ## The damning comparison
 
 The most revealing number isn't the model's collapse — it's what the other two did.
-![Surface generalization (mixed-factor new-ID arm; 480-record reworded arm)](figures/fig_surface.png)
+![Surface generalization — corrected 2x2 factorial](figures/fig_surface.png)
 
-*Each pass@1 is over held-out problems per condition from the scored `stage3_surface`
-run: the familiar and new-identifier conditions have **600** records each (10
-operations × 60), but the reworded condition has **480** (8 operations × 60 —
-`abs_of` and `cond_abs_max` have a single wording family and contribute no held-out
-records), so its rates are integer fractions over 480: template 0.875 = **420/480**,
-retrieval 0.125 = **60/480**, and the model's 0.000 is over **480** (P0-04). The
-familiar/new-ID rates are over 600 (e.g. 480/600 = 0.800, 410/600 = 0.683). Because
-the reworded arm covers a different operation mix (8 of 10) and the new-identifier arm
-changes identifiers *and* wording-family coverage together (P0-03), the three
-aggregates are not operation-matched or single-factor (the factorial we need is
-described under the new-identifier bullet above). The "new
-wording" column is the Stage-3 held-out wording family — an *intended* held-out-family
-condition; the audit that reported zero exact prompt-string overlap ran on regenerated
-samples with the current generator, not on the original scored files (evidence table,
-Chapter 11). Decoding is temperature-0.8 single-sample.*
+*Corrected 2×2 factorial (fixes P0-03 and P0-04), seed 0 shown; each pass@1 is over the
+cell's own held-out task set, with the MODEL and both baselines scored on identical
+records: the familiar and identifiers-only cells have **600** records each (10
+operations × 60), the wording-only and both-changes cells have **480** (8 operations ×
+60 — `abs_of` and `cond_abs_max` have a single wording family and are excluded from the
+held-out cells), so the rates are integer fractions over those denominators: MODEL
+539/600, 0/600, 0/480, 0/480; TEMPLATE 480/600, 480/600, 420/480, 420/480; RETRIEVAL
+600/600, 600/600, 60/480, 60/480. Across seeds the model's familiar cell is 0.898–0.940,
+identifiers-only 0.000–0.005, wording-only 0.000 in all seeds, both-changes 0.000–0.025.
+One fixed 600-record training set and one fixed train-only tokenizer underlie every
+cell; the superseded mixed-factor Stage-3 rows are the flawed historical run (P0-03,
+P0-04). Decoding is temperature-0.8 single-sample.*
 
 When we change the *words*, the **template baseline gets *better*, not worse** (0.875,
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
-surrounding phrasing. The **retrieval baseline** also falls (0.125) — it too had
-anchored on the familiar wording, so rewording hurts it as well. Only the learned model
-is *catastrophic* here (0.000). This is the cleaner reading: the mixed
-identifiers-plus-family shift (`a,b` -> `left,right`, with `families="all"`) left retrieval strong (0.683), but rewording broke both the
-learned model and the retriever — with the caveat that the 0.683 fall is itself a
-mixed-factor change (P0-03), so we do not attribute it to variable names alone.
+surrounding phrasing. The **retrieval baseline** falls to 0.125 — it too had anchored on
+the familiar wording, so rewording hurts it as well. On the identifier-only change,
+retrieval doesn't move at all (600/600): a retriever matching on content words is
+indifferent to what the variables are called. Only the learned model is *catastrophic*
+in every changed cell — 0 to 3 of 600 on identifiers, 0 of 480 on wording — below both
+baselines under every surface change we applied.
 
-So the model's 0.900 in-distribution score was at least partly **tied to the phrasing it
+So the model's ~0.90 in-distribution score was **tied to the phrasing it
 saw**. It had learned that this kind of sentence maps to that program. Whether it has
 learned anything more general about "take two numbers and return their sum" — something
 we could say any number of ways and still mean — is exactly what the reworded collapse
@@ -143,14 +162,20 @@ rule's was.
 ## The brewing experience
 
 The moment this result landed was genuinely unsettling, in a productive way. We had
-just celebrated the 0.900 in-distribution score — the model, we thought, could "add."
-Then we reworded the same problem and the floor fell out. The 0.900 had been real, and
-it had been *narrow*. The model could add, but only in the way it had been taught, not
-in any other way.
+just celebrated the ~0.90 familiar score — the model, we thought, could "add." Then we
+reworded the same problem and the floor fell out. The ~0.90 had been real, and it had
+been *narrow*. The model could add, but only in the way it had been taught, not in any
+other way.
+
+The corrected factorial made the narrowness narrower still. The first version of this
+experiment had offered a consolation prize — a partial 0.350 on new identifiers, as if
+the model half-survived a change of variable names. When the factors were unmixed, the
+consolation prize disappeared: identifiers alone took the score to 0–3 of 600. There was
+no cell, on any seed, where a surface change left the model standing.
 
 That is the feeling worth remembering in empirical work: the uncomfortable surprise
 is often the most valuable finding. It would have been easy to stop at "the model
-scores 0.900, success." The whole point of building a thoughtful experiment was to ask
+scores ~0.90, success." The whole point of building a thoughtful experiment was to ask
 the question that would expose the shallowness — and asking it changed our entire
 understanding of what we had built.
 
@@ -159,7 +184,7 @@ understanding of what we had built.
 1. **Suspected cheat: phrasing memorization.**
    **Why it fits:** the model tied training phrasings to code.
    **Control:** held one whole phrasing style out of training, tested on it.
-   **Result:** 0.000.
+   **Result:** 0.000 in every seed — 0 of 480, three times.
    **Ruled out:** that this model's success is *robust* to the chosen phrasing shift.
    **Still open:** whether the failure reflects purely surface association or the new
    vocabulary/wording pattern; and note that failure under one rewording does not, by
@@ -167,32 +192,34 @@ understanding of what we had built.
 
 2. **Suspected cheat: name memorization.**
    **Why it fits:** trained on `a,b`, maybe it hardwired those labels.
-   **Control:** retest on `left,right`.
-   **Result:** 0.350 — a big but partial drop.
-   **Ruled out:** pure name-memorization (it still fails partly, but names aren't the
-   whole story).
-   **Still open (P0-03):** the condition also changed wording-family coverage, so
-   0.350 is a mixed-factor shift; an identifier-only effect needs the factorial
-   described under the result above.
+   **Control:** retest on `left,right` with wording held fixed at the kept families
+   (the identifiers-only cell).
+   **Result:** 0.000 / 0.003 / 0.005 — 0 to 3 of 600. A complete collapse, not a
+   partial drop.
+   **Ruled out:** that the model survives an identifier change; names alone break it.
+   **Superseded:** the earlier 0.350 reading was a mixed-factor shift (P0-03), replaced
+   by this cell.
 
 ## The honest takeaway
 
-A model that scores 0.900 on familiar phrasings and 0.000 on a rewording of the same
-problem has not generalized to the *problem*. It generalized to the *phrasing*. That's
-the difference between "the model works" and "the model works when I say it the way I
-said it in training" — and it's the most important lesson of the generalization
-chapters.
+A model that scores ~0.90 on familiar phrasings and 0.000 on a rewording of the same
+problem — or on the same problem with different variable names — has not generalized to
+the *problem*. It generalized to the *phrasing*. That's the difference between "the
+model works" and "the model works when I say it the way I said it in training" — and
+it's the most important lesson of the generalization chapters.
 
 The sharpest way to state it, as observed: under this checkpoint, this decoding, and
 this extraction, the model produced `a + b` for the familiar phrasing and no passing
-program for the reworded one — 0.900 falling to 0.000 on an identical computation. One
-reading of that pattern is a hypothesis about the mechanism, not a measurement: that the
-model learned the *word "sum"* rather than addition. When that word appears in the
-sentence it was trained on, the model produces `a + b`; when the same meaning arrives in
-different words, it produced nothing usable. What the counts establish is the behavior —
-a severe surface-robustness failure — not the cause, and they do not rule out an
-internal representation of addition. That is the difference the experiment draws between
-generalizing and merely reciting.
+program for the reworded one — ~0.90 falling to 0.000 on an identical computation, with
+the identifier-only cell falling just as far (0–3 of 600). One reading of that pattern
+is a hypothesis about the mechanism, not a measurement: that the model learned the
+*word "sum"* rather than addition. When that word appears in the sentence it was trained
+on, the model produces `a + b`; when the same meaning arrives in different words, it
+produces nothing usable. What the counts establish is the behavior — a severe
+surface-robustness failure under *every* surface change we applied, single-factor or
+combined — not the cause, and they do not rule out an internal representation of
+addition. That is the difference the experiment draws between generalizing and merely
+reciting.
 
 ## The human-written test set: the hardest rewording of all
 

@@ -1,0 +1,20 @@
+tokenizer: vocab=291 sha=3bc4916b9318 source=loaded_existing (train-only, fixed)
+  step    0  loss 5.8331
+  step  200  loss 0.0365
+  step  400  loss 0.0213
+  step  600  loss 0.0213
+  step  800  loss 0.0281
+  step 1000  loss 0.0210
+  step 1200  loss 0.0197
+  step 1400  loss 0.0217
+  step 1499  loss 0.0288
+trained 1500 steps in 509.5s final_loss=0.0288 params=884224
+  familiar      : n=600 model=539/600=0.898 tmpl=480/600 ret=600/600 (378.3s)
+  id_only       : n=600 model=0/600=0.000 tmpl=480/600 ret=600/600 (398.3s)
+  wording_only  : n=480 model=0/480=0.000 tmpl=420/480 ret=60/480 (327.0s)
+  combined      : n=480 model=0/480=0.000 tmpl=420/480 ret=60/480 (354.8s)
+manifest -> /home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/manifests/surface_corrected_seed0.json
+  familiar        539/ 600 = 0.898 (ops=10, excluded=[])
+  id_only           0/ 600 = 0.000 (ops=10, excluded=[])
+  wording_only      0/ 480 = 0.000 (ops=8, excluded=['abs_of', 'cond_abs_max'])
+  combined          0/ 480 = 0.000 (ops=8, excluded=['abs_of', 'cond_abs_max'])

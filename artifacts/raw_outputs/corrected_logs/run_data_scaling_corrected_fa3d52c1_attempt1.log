@@ -1,0 +1,38 @@
+tokenizer: vocab=291 sha=ddbbc0edf257 source=loaded_existing
+  step    0  loss 5.5879
+  step  200  loss 0.0318
+  step  400  loss 0.0182
+  step  600  loss 0.0215
+  step  800  loss 0.0213
+  step  999  loss 0.0177
+  size   100: trained 1000 steps in 338.9s loss=0.0177
+  size   100: pass@1=0.893 (268/300) tmpl=0.800 ret=0.943 loss=0.0177 eval=198.2s
+  step    0  loss 5.5854
+  step  200  loss 0.0339
+  step  400  loss 0.0223
+  step  600  loss 0.0224
+  step  800  loss 0.0254
+  step  999  loss 0.0243
+  size   300: trained 1000 steps in 339.0s loss=0.0243
+  size   300: pass@1=0.900 (270/300) tmpl=0.800 ret=1.000 loss=0.0243 eval=197.8s
+  step    0  loss 5.6075
+  step  200  loss 0.0264
+  step  400  loss 0.0210
+  step  600  loss 0.0218
+  step  800  loss 0.0213
+  step  999  loss 0.0201
+  size  1000: trained 1000 steps in 340.3s loss=0.0201
+  size  1000: pass@1=0.900 (270/300) tmpl=0.800 ret=1.000 loss=0.0201 eval=197.7s
+  step    0  loss 5.7088
+  step  200  loss 0.0382
+  step  400  loss 0.0202
+  step  600  loss 0.0256
+  step  800  loss 0.0242
+  step  999  loss 0.0187
+  size  3000: trained 1000 steps in 339.6s loss=0.0187
+  size  3000: pass@1=0.900 (270/300) tmpl=0.800 ret=1.000 loss=0.0187 eval=197.6s
+manifest -> /home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/manifests/data_scaling_corrected_seed1.json
+  size=  100 n_per_op= 10 pass@1=0.893 (268/300) loss=0.0177
+  size=  300 n_per_op= 30 pass@1=0.900 (270/300) loss=0.0243
+  size= 1000 n_per_op=100 pass@1=0.900 (270/300) loss=0.0201
+  size= 3000 n_per_op=300 pass@1=0.900 (270/300) loss=0.0187

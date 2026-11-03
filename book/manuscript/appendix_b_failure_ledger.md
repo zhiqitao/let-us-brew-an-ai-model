@@ -274,9 +274,11 @@ the claim.
 
 **Action.** Chapter 11 rewritten: the curve and Figure 11.1 are labeled a *flawed
 historical run of operation coverage*; the "only the data count changes" claim, and any
-knee/threshold/data-efficiency lesson, are removed; a balanced, operation-stratified
-rerun (equal records per operation at every size, one fixed tokenizer, matched steps) is
-required before any record-count claim. Recorded here as P0-01.
+knee/threshold/data-efficiency lesson, are removed. A balanced, operation-stratified
+rerun (equal records per operation at every size, one fixed tokenizer, matched steps)
+was then performed and is recorded as `data_scaling_corrected` in Appendix C: with 10
+examples per operation the curve is already flat at ~0.90, so there is no data-size
+benefit once operation coverage is held constant. Recorded here as P0-01.
 
 ---
 
@@ -319,9 +321,11 @@ set-construction arguments in the script, not against the design's intent. Mixed
 arms cannot be attributed to either factor alone.
 
 **Action.** Chapter 15 corrected: the row, the figure caption, and the shortcut audit
-now state the mixed factors; a full identifier × wording factorial (ID-only,
-wording-only, combined cells, operation-matched) is required to isolate the identifier
-axis. Recorded here as P0-03.
+now state the mixed factors; a corrected identifier × wording factorial (ID-only,
+wording-only, combined cells, operation-matched) was then performed and is recorded as
+`surface_corrected` in Appendix C: the identifier-only collapse is ~0 (0-3 of 600) and
+the wording-only collapse is 0 of 480, so the model does not generalize to any
+prompt-surface change. Recorded here as P0-03.
 
 ---
 

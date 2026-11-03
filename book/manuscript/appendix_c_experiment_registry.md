@@ -116,12 +116,14 @@ unchanged from the run manifests.
 | Run ID | Question (experiment) | Headline result |
 |------------------------|--------------------------|--------------------------------------------------------|
 | `stage1_seed0` | Stage 1 pilot | in-dist 0.897; final loss 5.84→0.0208. Note: `stage1.json` preserves the pre-fix 0.000 evaluation referenced by Appendix B.1 |
-| `stage3_surface` | Stage 3 surface | in-dist 0.900; new-IDs 0.350 (mixed factors — identifiers *and* wording-family coverage, P0-03); held-out wording 0.000 over 480 records (8 ops × 60, P0-04) |
+| `stage3_surface` | Stage 3 surface — **superseded flawed historical run** (P0-03 mixed factors, P0-04 denominator); replaced by `surface_corrected` | in-dist 0.900; new-IDs 0.350 (mixed factors — identifiers *and* wording-family coverage, P0-03); held-out wording 0.000 over 480 records (8 ops × 60, P0-04) |
+| `surface_corrected` | Corrected surface 2×2 factorial — **MEASURED** (fixes P0-03, P0-04) | model pass@1 by seed: familiar 0.898 / 0.900 / 0.940 (of 600); identifiers-only 0.000 / 0.003 / 0.005 (of 600); wording-only 0.000 / 0.000 / 0.000 (of 480); combined 0.000 / 0.025 / 0.000 (of 480) — collapse on any surface change |
 | `stage4_pilot` | Stage 4 composition baseline | in-dist 0.9167 (n=60); composition 0.000 |
 | `stage4_6p5m` | Stage 4 — 6.5M | in-dist 0.897; composition 0.000 |
 | `stage4_10m` | Stage 4 — 10.2M | in-dist 0.773; composition 0.000 |
 | `stage4_29m` | Stage 4 — 29.3M | in-dist 0.897; composition 0.000 |
-| `data_scaling` | Data scaling | in-dist 0.100→0.641 (100→3000) — **confounded historical run**: arms are prefixes of an operation-ordered pool covering 1/1/3/8 of 10 operations (P0-01), so this is operation coverage, not a record-count curve |
+| `data_scaling` | Data scaling — **superseded flawed historical run** (P0-01); replaced by `data_scaling_corrected` | in-dist 0.100→0.641 (100→3000) — arms are prefixes of an operation-ordered pool covering 1/1/3/8 of 10 operations (P0-01), so this is operation coverage, not a record-count curve |
+| `data_scaling_corrected` | Corrected data scaling — **MEASURED** (fixes P0-01) | balanced 10/10 operations at every size, one fixed tokenizer, one shared 300-task test: pass@1 **flat** 0.893–0.997 across 100→3000 (10→300 per op), seeds 0/1/2 — **no data-size benefit**; template 0.800, retrieval 0.943–1.000 in all 12 arms |
 | `diversity` | Quantity vs diversity | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 — **realized 42 records (high) vs 1,200 (minimal)**, not the requested 1,200/1,200 (P0-02); the 1.000 is coverage of 42 exact mappings |
 | `memorization` | Memorization | 59/60 held-out; held-out program probe → general program |
 | `continual` | Continual learning | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
@@ -133,22 +135,36 @@ unchanged from the run manifests.
 | Run ID | Config (arch / steps / seed / params) | Manifest | Checkpoint |
 |------------------------|----------------------------------|----------------------------------|--------------------------|
 | `stage1_seed0` | 128/4/4 · 1500 · 0 · 884,224 | stage1_results.json | stage1.pt |
-| `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json | stage3_surface.pt |
+| `stage3_surface` | 128/4/4 · 1500 · 0 · 884,224 | stage3_surface.json (superseded, P0-03/P0-04) | stage3_surface.pt |
+| `surface_corrected` | 128/4/4 · 1500 · 0/1/2 · 884,224 | surface_corrected_seed{0,1,2}.json | surface_corrected_seed{0,1,2}.pt |
 | `stage4_pilot` | 128/4/4 · 1500 · 0 · 884,224 | stage4_scaling.json (ckpt stage1.pt) | stage1.pt |
 | `stage4_6p5m` | 256/8/8 · 1000 · 0 · 6,500,352 | stage4_composition_6p5m.json | stage4_6p5m.pt |
 | `stage4_10m` | 288/10/8 · 800 · 0 · 10,195,776 | stage4_composition_10m.json | stage4_10m.pt |
 | `stage4_29m` | 448/12/8 · 800 · 0 · 29,290,240 | stage4_composition.json | stage4_composition.pt |
-| `data_scaling` | 128/4/4 · 800 · 0 · 884,224 | data_scaling.json | — |
+| `data_scaling` | 128/4/4 · 800 · 0 · 884,224 | data_scaling.json (superseded, P0-01) | — |
+| `data_scaling_corrected` | 128/4/4 · 1000 · 0/1/2 · 884,224 | data_scaling_corrected_seed{0,1,2}.json | data_scaling_corrected_seed{0,1,2}_size{100,300,1000,3000}.pt |
 | `diversity` | 128/4/4 · 900 · 0 · 884,224 | diversity.json | — |
 | `memorization` | 128/4/4 · 1500 · 0 · 884,224 | memorization.json | — |
 | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json | — |
 | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json | stage4_exposure.pt |
 | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json | stage4_compdiv_{minimal,high}_diversity_pilot.pt |
 
+**Corrected-run tokenizer provenance.** Each corrected run pins exactly one tokenizer
+across all arms and seeds, recorded in every manifest. `data_scaling_corrected` uses
+`artifacts/tokenizer/data_scaling_corrected_tok.json`, SHA-256
+`ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae` (vocabulary 291, fit
+once on the union of the training texts at the largest size — `generate_dataset(n_per_op=300,
+id_set='letters', seed=4242)` — and never refit per size or seed). `surface_corrected`
+uses `artifacts/tokenizer/surface_corrected_tok.json`, SHA-256
+`3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e` (vocabulary 291, fit
+on train-only texts — letters × kept families — and never refit per cell or seed). The
+manifests record the same hash for every seed, so a checkpoint must still be evaluated
+with the tokenizer it was trained with.
+
 ## Run provenance ledger
 
 Tables C.4 and C.5 cover the headline runs. The ledger below is the compact,
-per-run provenance record for **every** manifest we hold — 30 in total — so a
+per-run provenance record for **every** manifest we hold — 36 in total — so a
 reader can see, run by run, the model-visible counts the manifest actually
 carries: manifest file, experiment ID, seed, training steps, `n_per_op`
 (records per operation), model parameters, final *training* loss, tokenizer
@@ -170,9 +186,12 @@ uses, so the two tables can be read against each other.
 | `continual_preB.json` | `continual_preB.json` | 0 · 700 · 70 · — · — · — | Same-run pre-B intermediate evaluation (Appendix C.8) |
 | `continual_seed1.json` | `continual_seed1.json` | 1 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 steps / `n_per_op` 80 vs 700 / 70): not a matched replication |
 | `continual_seed2.json` | `continual_seed2.json` | 2 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 / 80 vs 700 / 70): not a matched replication |
-| `data_scaling.json` | `data_scaling.json` | 0 · 800 · — · — · — · — | Scored data-scaling sweep — **flawed historical construction** (P0-01) |
-| `data_scaling_seed1.json` | `data_scaling_seed1.json` | 1 · 1000 · — · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (1000 vs 800 steps); repeats the P0-01 confound |
-| `data_scaling_seed2.json` | `data_scaling_seed2.json` | 2 · 1000 · — · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (1000 vs 800 steps); repeats the P0-01 confound |
+| `data_scaling.json` | `data_scaling.json` | 0 · 800 · — · — · — · — | Scored data-scaling sweep — **superseded flawed historical run** (P0-01); replaced by `data_scaling_corrected_seed*` |
+| `data_scaling_corrected_seed0.json` | `data_scaling_corrected` | 0 · 1000 · 10/30/100/300 · 884,224 · 0.0200–0.0228 · 291 | **Corrected balanced data-scaling sweep — MEASURED (fixes P0-01)**; 10/10 ops at every size, one fixed tokenizer, one shared 300-task test; pass@1 0.897/0.900/0.893/0.897 by size |
+| `data_scaling_corrected_seed1.json` | `data_scaling_corrected` | 1 · 1000 · 10/30/100/300 · 884,224 · 0.0177–0.0243 · 291 | **Corrected balanced data-scaling sweep — MEASURED (fixes P0-01)**; pass@1 0.893/0.900/0.900/0.900 by size |
+| `data_scaling_corrected_seed2.json` | `data_scaling_corrected` | 2 · 1000 · 10/30/100/300 · 884,224 · 0.0204–0.0235 · 291 | **Corrected balanced data-scaling sweep — MEASURED (fixes P0-01)**; pass@1 0.900/0.900/0.997/0.900 by size |
+| `data_scaling_seed1.json` | `data_scaling_seed1.json` | 1 · 1000 · — · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (1000 vs 800 steps); repeats the P0-01 confound; **superseded** by `data_scaling_corrected_seed*` |
+| `data_scaling_seed2.json` | `data_scaling_seed2.json` | 2 · 1000 · — · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (1000 vs 800 steps); repeats the P0-01 confound; **superseded** by `data_scaling_corrected_seed*` |
 | `decode_ablation.json` | `decode_ablation` | 0 · — · 200 · — · — · — | Diagnostic decode/termination ablation (Ch. 16), not a scored experiment |
 | `decode_ablation_disk_tok.json` | `decode_ablation` | 0 · — · 200 · — · — · — | Diagnostic ablation variant (regenerated tokenizer on disk), not a scored experiment |
 | `dedup_audit.json` | `dedup_audit.json` | — · — · — · — · — · — | Regenerated diagnostic novelty audit — **not** the originally scored files |
@@ -185,13 +204,16 @@ uses, so the two tables can be read against each other.
 | `stage1_results.json` | `stage1_results.json` | — · — · — · — · — · — | Scored pilot record — the manifest-backed 0.897 |
 | `stage1_seed1.json` | `stage1_seed1` | 1 · 1500 · — · 884,224 · 0.0196 · 291 | Multi-seed re-run — **matched** to the seed-0 configuration |
 | `stage1_seed2.json` | `stage1_seed2` | 2 · 1500 · — · 884,224 · 0.0229 · 291 | Multi-seed re-run — **matched** to the seed-0 configuration |
-| `stage3_surface.json` | `stage3_surface` | 0 · 1500 · 60 · 884,224 · 0.0218 · — | Scored Stage-3 surface run — **flawed historical construction** (P0-03, P0-04) |
-| `stage3_surface_seed1.json` | `stage3_surface_seed1` | 1 · 1500 · 130 · 884,224 · 0.0275 · — | Multi-seed re-run — **config mismatch** vs seed 0 (`n_per_op` 130 vs 60): not a matched replication |
-| `stage3_surface_seed2.json` | `stage3_surface_seed2` | 2 · 1500 · 130 · 884,224 · 0.0186 · — | Multi-seed re-run — **config mismatch** vs seed 0 (`n_per_op` 130 vs 60): not a matched replication |
+| `stage3_surface.json` | `stage3_surface` | 0 · 1500 · 60 · 884,224 · 0.0218 · — | Scored Stage-3 surface run — **superseded flawed historical run** (P0-03, P0-04); replaced by `surface_corrected_seed*` |
+| `stage3_surface_seed1.json` | `stage3_surface_seed1` | 1 · 1500 · 130 · 884,224 · 0.0275 · — | Multi-seed re-run — **config mismatch** vs seed 0 (`n_per_op` 130 vs 60): not a matched replication; **superseded** by `surface_corrected_seed*` |
+| `stage3_surface_seed2.json` | `stage3_surface_seed2` | 2 · 1500 · 130 · 884,224 · 0.0186 · — | Multi-seed re-run — **config mismatch** vs seed 0 (`n_per_op` 130 vs 60): not a matched replication; **superseded** by `surface_corrected_seed*` |
 | `stage4_composition.json` | `stage4_composition_seed0` | 0 · 800 · — · 29,290,240 · 0.0200 · 291 | Scored **29.3M** size point — despite its name, this manifest is the 29.3M run |
 | `stage4_composition_10m.json` | `stage4_composition_seed0` | 0 · 800 · — · 10,195,776 · 0.0503 · 291 | Scored **10.2M** size point |
 | `stage4_composition_6p5m.json` | `stage4_composition_seed0` | 0 · 1000 · — · 6,500,352 · 0.0347 · 291 | Scored **6.5M** size point — 1000 steps, so its training budget differs from the 800-step points |
 | `stage4_scaling.json` | `stage4_scaling.json` | 0 · — · — · — · — · — | The 0.88M Stage-4 baseline evaluation of `stage1.pt` (`sample=60`, `comp_per_op=40`) |
+| `surface_corrected_seed0.json` | `surface_corrected` | 0 · 1500 · 60 · 884,224 · 0.0288 · 291 | **Corrected surface 2×2 factorial — MEASURED (fixes P0-03 + P0-04)**; familiar 0.898 (539/600), identifiers-only 0.000 (0/600), wording-only 0.000 (0/480), combined 0.000 (0/480) |
+| `surface_corrected_seed1.json` | `surface_corrected` | 1 · 1500 · 60 · 884,224 · 0.0212 · 291 | **Corrected surface 2×2 factorial — MEASURED (fixes P0-03 + P0-04)**; familiar 0.900 (540/600), identifiers-only 0.003 (2/600), wording-only 0.000 (0/480), combined 0.025 (12/480) |
+| `surface_corrected_seed2.json` | `surface_corrected` | 2 · 1500 · 60 · 884,224 · 0.0201 · 291 | **Corrected surface 2×2 factorial — MEASURED (fixes P0-03 + P0-04)**; familiar 0.940 (564/600), identifiers-only 0.005 (3/600), wording-only 0.000 (0/480), combined 0.000 (0/480) |
 
 **What the ledger's mismatches mean.** The multi-seed re-runs are robustness
 checks, not all perfect matched replications, and the ledger records which is
@@ -284,7 +306,11 @@ The large-model runs are separate training runs.
   `pool_test`, 540 records = 10 ops × 54 after the per-op split, generated once and reused
   across every size), so the training-size comparison in that run is against the *same*
   held-out set. (It is a different set from the pilot's 300-record test, so the
-  data-scaling scores are not directly comparable to the pilot's 0.897.) Exact
+  data-scaling scores are not directly comparable to the pilot's 0.897.) The corrected
+  data-scaling arms (Table C.13) likewise share one fixed test set — 300 tasks, 30 per
+  operation × 10 operations — across every size and seed, so all twelve arms are scored
+  against the same denominator; the 540-record `pool_test` belongs to the superseded
+  historical rows only. Exact
   successes/totals (integers over the reported denominator) are recorded in each manifest.
 - **Unique model-visible prompts ≠ task IDs.** In the teacher, a task-ID seed changes
   the *hidden-test inputs*, so a new task ID can change the test values while the
@@ -400,7 +426,10 @@ run that.
   were not equal-count (42 vs 1,200).
   The ch15 surface model, by contrast, trained on *all-but-the-last-family* per
   operation and was tested on that held-out last family — so its 0.000 is an
-  **intended** held-out-family result (over 480 records, 8 operations — P0-04). We qualify "genuine": the audit that reported zero
+  **intended** held-out-family result (over 480 records, 8 operations — P0-04). The
+  corrected `surface_corrected` factorial (Table C.14) now measures the held-out-wording
+  cells directly, with the 480-record denominators (8 operations × 60; `abs_of` and
+  `cond_abs_max` excluded) recorded in each manifest rather than inferred. We qualify "genuine": the audit that reported zero
   exact prompt-string overlap ran on *regenerated* samples with the current generator,
   not on the originally scored files, and exact-string disjointness does not by itself
   prove wording-family exclusion. Historical family exclusion for that scored run was
@@ -478,7 +507,7 @@ Python 3.11 environment (`.venv-311`, torch 2.14.0+cpu, `TORCH_DISABLE_AVX2=1`,
 | 1 | 1.000 | 0.667 | **0.000** |
 | 2 | 1.000 | 0.667 | **0.000** |
 
-**Table C.7 — Stage-3 surface across seeds**
+**Table C.7 — Stage-3 surface across seeds (superseded flawed historical run, P0-03/P0-04)**
 
 | seed | in-dist | new identifiers | held-out wording |
 |------|------|------|------|
@@ -492,7 +521,10 @@ the surface numbers are tightly stable. One caveat: the RETRIEVAL baseline print
 artifact of the re-runs (`run_surface.py` was patched to accept `--out`/`--tag` so
 re-runs would not overwrite the original manifest), not a model result. We do not
 report the re-run retrieval values as findings; the seed-0 retrieval figures in the
-body chapters stand as recorded.
+body chapters stand as recorded. These rows are kept as the record of the *mixed-factor*
+construction (identifiers and wording-family coverage changed together, P0-03; 480-record
+denominator, P0-04); the corrected 2×2 factorial across seeds is Table C.14 below, and it
+supersedes this table.
 
 **Table C.8 — Diversity (quantity vs diversity) across seeds**
 
@@ -508,7 +540,7 @@ its coverage-vs-generalization caveat is unchanged by replication — and every 
 re-built the same **42-versus-1,200** pools (P0-02), so the replication repeats the
 construction flaw rather than establishing an equal-count effect.
 
-**Table C.9 — Data scaling across seeds (in-dist pass@1)**
+**Table C.9 — Data scaling across seeds (superseded flawed historical run, P0-01)**
 
 | size | seed 0 (800 steps) | seed 1 (1000 steps) | seed 2 (1000 steps) |
 |------|------|------|------|
@@ -524,8 +556,9 @@ operations), so what the table shows is that the **confound** is deterministic �
 monotone pattern repeats because the coverage slice repeats, not because record count
 was isolated. Only the size-3000 absolute moves with the budget (0.641 at 800 steps vs
 0.748 at 1000, and seed 1 = seed 2 = 0.748 at the same 1000-step budget). The robust
-claim is therefore the repeatability of the recorded pattern, not a data-size trend;
-a balanced, operation-stratified rerun is required before any record-count claim.
+claim is therefore the repeatability of the recorded pattern, not a data-size trend.
+Superseded by the corrected balanced sweep in Table C.13, which *did* isolate record
+count and found a flat curve.
 
 **Table C.10 — Pilot (Stage-1) in-distribution across seeds**
 
@@ -555,6 +588,52 @@ naming caveat as Chapter 18. Stable across seeds: sequential
 training catastrophically forgets A (retention 0.000) while still acquiring B
 (~0.87–0.89), and joint/interleaved retains A (1.000) while acquiring B (0.889). The
 joint/interleaved-vs-sequential distinction is robust, not a single-seed artifact.
+
+**The two corrected reruns.** The corrected experiments were built as three-seed runs
+from the start, so their seed tables come first-class rather than as re-runs. They
+supersede Tables C.7 and C.9 above.
+
+**Table C.13 — Corrected data scaling across seeds (MEASURED; fixes P0-01)** — model
+pass@1 on the one shared 300-task test (30 per operation × 10 operations), successes in
+parentheses:
+
+| size (per operation) | seed 0 | seed 1 | seed 2 |
+|------|------|------|------|
+| 100 (10/op) | 0.897 (269/300) | 0.893 (268/300) | 0.900 (270/300) |
+| 300 (30/op) | 0.900 (270/300) | 0.900 (270/300) | 0.900 (270/300) |
+| 1,000 (100/op) | 0.893 (268/300) | 0.900 (270/300) | 0.997 (299/300) |
+| 3,000 (300/op) | 0.897 (269/300) | 0.900 (270/300) | 0.900 (270/300) |
+
+Every arm covers 10 of 10 operations (balanced nested per-op prefixes, shuffled), uses
+the one fixed tokenizer (SHA-256 `ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae`),
+and trains 1,000 steps at batch 16, learning rate 1e-3 on the 884,224-parameter model.
+TEMPLATE is 0.800 (240/300) and RETRIEVAL 1.000 in eleven arms and 0.943 (283/300) in
+one; final training losses span 0.0177–0.0243 with no trend by size. Per operation,
+`cond_abs_max` is 0.0 in nine of the twelve arms and still 0.0 at size 3,000 in all
+three seeds; every other operation is ≥0.967 except `list_len` at 0.433 in seed 1's
+smallest arm. The reading is **flat**: no data-size-dependent benefit once operation
+coverage is held fixed.
+
+**Table C.14 — Corrected surface 2×2 factorial across seeds (MEASURED; fixes P0-03,
+P0-04)** — model pass@1 by cell, successes in parentheses:
+
+| cell (denominator) | seed 0 | seed 1 | seed 2 |
+|------|------|------|------|
+| familiar — letters × kept (600) | 0.898 (539) | 0.900 (540) | 0.940 (564) |
+| identifiers only — words × kept (600) | 0.000 (0) | 0.003 (2) | 0.005 (3) |
+| wording only — letters × held-out (480) | 0.000 (0) | 0.000 (0) | 0.000 (0) |
+| combined — words × held-out (480) | 0.000 (0) | 0.025 (12) | 0.000 (0) |
+
+One fixed 600-record training set (60 per operation × 10 operations, letters × kept
+families) and one fixed train-only tokenizer (SHA-256
+`3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e`) underlie every cell;
+model, TEMPLATE, and RETRIEVAL are scored on identical records per cell. The two
+held-out-wording cells have 480 records (8 operations × 60) because `abs_of` and
+`cond_abs_max` have a single wording family and are excluded from those cells. TEMPLATE
+is 480/600 = 0.800 on the two kept-wording cells and 420/480 = 0.875 on the two
+held-out-wording cells; RETRIEVAL is 600/600 = 1.000 and 60/480 = 0.125 respectively —
+both identical across seeds. The reading is a collapse on **any** prompt-surface change,
+single-factor or combined, against ~0.90 on the familiar surface.
 
 **Eval-pipeline robustness fixes (no measured value changed).** Two cross-version
 robustness fixes were needed so native re-runs work in the current environment, and

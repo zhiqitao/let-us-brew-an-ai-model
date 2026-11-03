@@ -12,8 +12,11 @@ Legibility/production pass (external review P1-PROD-03, P1-08/11/14/15.1):
     red/green as the ONLY success/failure signal),
   * direct labels and raw counts on the data,
   * Fig 13.1 titled/labeled "covered alternate surfaces" (not unseen-family
-    generalization), Fig 11.1 marked one-seed/540-records/coverage-unverified,
-    Fig 15.1 uses "new variable identifiers" naming.
+    generalization), Fig 11.1 = corrected balanced data-scaling sweep (flat
+    ~0.90, 10/10 operations at every size, one fixed tokenizer, 3 seeds, one
+    shared 300-task test), Fig 15.1 = corrected 2x2 surface factorial (collapse
+    on new identifiers and on held-out wording; "new variable identifiers"
+    naming).
 
 Run: python scripts/make_figures.py
 """
@@ -109,20 +112,28 @@ fig.tight_layout()
 save(fig, "fig_model_size.png")
 
 # ==========================================================================
-# 2. Surface generalization -- Figure 15.1 (measured, one seed, n=600/cond)
-# Values exact to artifacts/manifests/stage3_surface.json:
-#   model 0.900/0.350/0.000, template 0.800/0.800/0.875, retrieval 1.000/0.683/0.125
-# Raw counts (of 600 = 10 ops x 60): model 540/210/0, template 480/480/525,
-#   retrieval 600/410/75 (410/600=0.683, 525/600=0.875, 75/600=0.125).
+# 2. Surface generalization -- Figure 15.1 (CORRECTED 2x2 factorial, seed 0)
+# Values exact to artifacts/manifests/surface_corrected_seed0.json (fixes
+#   P0-03 + P0-04; supersedes the mixed-factor stage3_surface rows):
+#   model 0.898/0.000/0.000/0.000, template 0.800/0.800/0.875/0.875,
+#   retrieval 1.000/1.000/0.125/0.125 over cells of 600/600/480/480 records.
+# Raw counts: MODEL 539/600, 0/600, 0/480, 0/480;
+#   TEMPLATE 480/600, 480/600, 420/480, 420/480;
+#   RETRIEVAL 600/600, 600/600, 60/480, 60/480.
+# Held-out cells exclude abs_of + cond_abs_max (single wording family),
+#   so they are 8 ops x 60 = 480, not 600 (P0-04).
+# Model across seeds: familiar 0.898-0.940; identifiers-only 0.000-0.005;
+#   wording-only 0.000 (all seeds); both-changes 0.000-0.025.
 # "new IDs" -> "new variable identifiers" (P2-PROD-05 / 15.1 variable naming).
 # Grayscale-safe: distinct hatching per series + direct value labels; counts in
-#   a note (they would overlap if stacked under the 9 tightly-grouped bars).
+#   a note (they would overlap if stacked under the 12 tightly-grouped bars).
 # ==========================================================================
-fig, ax = plt.subplots(figsize=(5.7, 4.5))
-labels = ["in-distribution", "new variable\nidentifiers", "reworded\nwording"]
-model = [0.900, 0.350, 0.000]
-template = [0.800, 0.800, 0.875]
-retrieval = [1.000, 0.683, 0.125]
+fig, ax = plt.subplots(figsize=(5.8, 4.6))
+labels = ["familiar\n(letters, kept)", "new variable\nidentifiers\n(words, kept)",
+          "new wording\n(letters,\nheld-out)", "both changes\n(words,\nheld-out)"]
+model = [0.898, 0.000, 0.000, 0.000]
+template = [0.800, 0.800, 0.875, 0.875]
+retrieval = [1.000, 1.000, 0.125, 0.125]
 C_MODEL, C_TEMPLATE, C_RETRIEVAL = BLUE, GREEN, RED
 x = np.arange(len(labels)); w = 0.25
 ax.bar(x-w, model, w, label="MODEL", color=C_MODEL, edgecolor=INK)
@@ -143,67 +154,79 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=FS_TICK)
 ax.set_ylim(0, 1.30)  # headroom for the rotated value labels
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
-ax.set_title("Surface generalization\n(one seed; 600 / 600 / 480 records)",
+ax.set_title("Surface generalization (corrected 2x2)\nseed 0; 600 / 600 / 480 / 480 records",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=34)
 # legend above the axes (outside the plot) so it cannot collide with the tall
-# reworded-wording bar's 0.875 value label
+# familiar bar's 0.898 value label
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=3,
           frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
 ax.grid(axis="y", alpha=0.28)
-# raw counts + provenance caveats (P0-03 / P0-04): in-dist and new-ID arms are
-# 600 records each (10 ops x 60); the reworded arm is 480 (8 ops x 60 -- abs_of
-# and cond_abs_max have no held-out family), and the new-ID arm changes
-# identifiers AND wording-family coverage together. Historical excluded-family
-# membership not re-verified on the original scored file.
-ax.text(0.5, -0.26,
-        "raw counts (in-dist & new IDs of 600; reworded of 480):\n"
-        "MODEL 540/210/0  ·  TEMPLATE 480/480/420  ·  RETRIEVAL 600/410/60\n"
-        "new-ID arm = mixed factors (P0-03); reworded arm = 8 ops x 60 (P0-04);\n"
-        "held-out wording-family membership not re-verified on the scored file",
+# raw counts + provenance (fixes P0-03 / P0-04): familiar and identifiers-only
+# cells are 600 records each (10 ops x 60); the two held-out-wording cells are
+# 480 (8 ops x 60 -- abs_of and cond_abs_max have no held-out family). One fixed
+# 600-record train set + one fixed train-only tokenizer underlie every cell.
+ax.text(0.5, -0.30,
+        "seed-0 counts (cells of 600 / 600 / 480 / 480):\n"
+        "MODEL 539/0/0/0  ·  TEMPLATE 480/480/420/420  ·  RETRIEVAL 600/600/60/60\n"
+        "model across seeds: familiar 0.898-0.940, new IDs 0.000-0.005,\n"
+        "new wording 0.000 (all seeds), both 0.000-0.025; held-out cells exclude\n"
+        "abs_of + cond_abs_max (8 ops x 60 = 480); fixes P0-03/P0-04",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=INK)
 fig.tight_layout()
 save(fig, "fig_surface.png")
 
 # ==========================================================================
-# 3. Data scaling -- Figure 11.1 (FLAWED HISTORICAL RUN, P0-01)
-# Values exact to artifacts/manifests/data_scaling.json:
-#   0.100 / 0.098 / 0.300 / 0.641 over one 540-record pool_test.
-# Raw counts (from ch11): 54/540, 53/540, 162/540, 346/540.
-# P0-01: each arm is a prefix of an operation-ordered pool, covering
-#   1/1/3/8 of the 10 operations -- the curve tracks operation coverage,
-#   not record count. Label the plot as a flawed historical run.
+# 3. Data scaling -- Figure 11.1 (CORRECTED balanced sweep, fixes P0-01)
+# Values exact to artifacts/manifests/data_scaling_corrected_seed{0,1,2}.json:
+#   seed 0: 0.897 / 0.900 / 0.893 / 0.897 (269/270/268/269 of 300)
+#   seed 1: 0.893 / 0.900 / 0.900 / 0.900 (268/270/270/270 of 300)
+#   seed 2: 0.900 / 0.900 / 0.997 / 0.900 (270/270/299/270 of 300)
+# Balanced 10/30/100/300 records per operation, 10/10 operations at every
+#   size, ONE fixed tokenizer (sha256 ddbbc0ed...c1ae), one shared 300-task
+#   test (30/op), 1000 steps, bs16, lr1e-3, arch 128/4L, three seeds.
+# Template 0.800 (240/300) and retrieval 0.943-1.000 in every arm.
+# FLAT: no data-size benefit once operation coverage is held fixed; the old
+#   0.100->0.641 curve is a flawed historical run (P0-01), kept in the ledger.
+# Grayscale-safe: distinct markers/linestyles per seed + direct labels.
 # ==========================================================================
-fig, ax = plt.subplots(figsize=(5.5, 4.2))
+fig, ax = plt.subplots(figsize=(5.6, 4.3))
 sizes = [100, 300, 1000, 3000]
-perf = [0.100, 0.098, 0.300, 0.641]
-counts = ["54/540", "53/540", "162/540", "346/540"]
+perf_s1 = [0.8933, 0.900, 0.900, 0.900]
+perf_s2 = [0.900, 0.900, 0.9967, 0.900]
+perf = [0.8967, 0.900, 0.8933, 0.8967]      # seed 0 (labeled)
+counts = ["269/300", "270/300", "268/300", "269/300"]
 labelsize = {100: "100", 300: "300", 1000: "1,000", 3000: "3,000"}
-ax.plot(sizes, perf, "o-", color=BLUE, lw=2.2, ms=9, zorder=3)
+ax.plot(sizes, perf_s1, "^--", color=GREY, lw=1.6, ms=8, label="seed 1", zorder=2)
+ax.plot(sizes, perf_s2, "s:", color=GREEN, lw=1.6, ms=8, label="seed 2", zorder=2)
+ax.plot(sizes, perf, "o-", color=BLUE, lw=2.2, ms=9, label="seed 0", zorder=3)
 for x, y, c in zip(sizes, perf, counts):
     ax.annotate(f"{y:.3f}", (x, y), textcoords="offset points", xytext=(0, 14),
                 ha="center", fontsize=FS_VALUE, color=BLUE, fontweight="bold")
-    ax.annotate(c, (x, y), textcoords="offset points", xytext=(0, -22),
+    ax.annotate(c, (x, y), textcoords="offset points", xytext=(0, -24),
                 ha="center", fontsize=FS_COUNT, color=INK)
 ax.set_xscale("log")
 ax.margins(x=0.10)  # first point off the left edge so its count label clears the 0.0 tick
-ax.set_xlabel("training examples (log scale)", fontsize=FS_LABEL)
+ax.set_xlabel("training examples (log scale)\n"
+              "10/30/100/300 per op · 10/10 ops at every size",
+              fontsize=FS_LABEL)
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
 ax.set_xticks(sizes)
 ax.set_xticklabels([labelsize[s] for s in sizes], fontsize=FS_TICK)
-ax.set_ylim(-0.14, 1.10)
-ax.set_title("Data scaling -- flawed historical run:\noperation coverage, not data count",
+ax.set_ylim(-0.14, 1.18)
+ax.set_title("Data scaling (corrected): flat\n~0.90 from 10 to 300 examples per op",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
 ax.grid(alpha=0.28)
-# P0-01 scope banner: the arms cover 1/1/3/8 of the 10 operations.
-ax.text(0.5, 0.96,
-        "FLAWED RUN (P0-01)  ·  arms cover 1/1/3/8 of 10 operations  ·  one seed",
+ax.legend(loc="lower left", frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
+# corrected-scope banner: balanced arms, one fixed tokenizer, three seeds.
+ax.text(0.5, 0.99,
+        "10/10 operations at every size  ·  one fixed tokenizer  ·  3 seeds",
         transform=ax.transAxes, ha="center", va="top",
-        fontsize=FS_NOTE, color=RED, fontweight="bold")
-ax.text(0.5, -0.26,
-        "counts = successes / 540 shared pool_test records;\n"
-        "prefix-of-operation-ordered-pool arms -- a balanced,\n"
-        "operation-stratified rerun is required",
+        fontsize=FS_NOTE, color=INK, fontweight="bold")
+ax.text(0.5, -0.28,
+        "labels/counts = seed 0 (successes / 300 shared test, 30/op x 10 ops);\n"
+        "template 0.800 and retrieval 0.943-1.000 in all 12 arms; 1,000 steps;\n"
+        "the earlier 0.100->0.641 curve is a flawed historical run (P0-01)",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=INK)
 fig.tight_layout()
