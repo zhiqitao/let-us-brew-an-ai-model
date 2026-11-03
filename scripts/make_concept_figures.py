@@ -496,7 +496,8 @@ def fig_continual_timelines():
 
     Three horizontal timelines. Solid outline = measured regime; dashed = a true
     replay-after-A-first design, which we did NOT run. Shows that the book's
-    'replay/mixed' condition is actually JOINT training.
+    joint/interleaved condition (A+B from start, formerly labeled 'replay/mixed')
+    is actually JOINT training.
     """
     fig, ax = new_fig(w=9.2, h=5.2)
     ax.text(50, 96, "SEQUENTIAL VS JOINT VS REPLAY: three different designs", ha="center",
@@ -527,7 +528,7 @@ def fig_continual_timelines():
             ax.add_patch(FancyBboxPatch((61, y+1), 31, 4, fc=GREEN, ec=GREEN, lw=0.5))
             ax.text(45.5, y+3, "A", ha="center", va="center", fontsize=10, color="white")
             ax.text(76.5, y+3, "B (+ replay of A)", ha="center", va="center", fontsize=10, color="white")
-    note(ax, 2, 6, "The book's 'replay/mixed' condition interleaves A and B from the start --- that is JOINT training (row 2), not replay-after-A-first (row 3). Solid rows were measured; the dashed row is a design we did not run. (Rows are schematic, not to scale.)",
+    note(ax, 2, 6, "The book's joint/interleaved condition (A+B from start, formerly labeled 'replay/mixed') interleaves A and B from the start --- that is JOINT training (row 2), not replay-after-A-first (row 3). Solid rows were measured; the dashed row is a design we did not run. (Rows are schematic, not to scale.)",
          fs=10, color=INK)
     save(fig, "fig_continual_timelines.png")
 

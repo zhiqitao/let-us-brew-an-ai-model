@@ -252,7 +252,115 @@ them" is **not** supported by these aggregate counts alone.)
 
 ---
 
+## 11. P0-01 — The data-scaling sweep measured operation coverage, not data count
+
+**What happened.** Chapter 11's size sweep (100/300/1000/3000 records) was presented as
+a one-variable data-count experiment — "only the data count changes." A code–claim audit
+of `scripts/run_data_scaling.py` showed the claim was false: the script does
+`pool = generate_dataset(n_per_op=400, ...)` and `train = pool[:size]`, and the
+generator appends records **in operation order**, so each arm is a *prefix* of the pool.
+The 100- and 300-record arms cover **1 of 10** operations (`add` only), the 1,000 arm
+covers **3**, and the 3,000 arm covers **8** — while the evaluation set spans all ten.
+The tokenizer was also refit per size. The recorded curve (0.100 / 0.098 / 0.300 /
+0.641) and Figure 11.1 therefore track **operation coverage**, not record count.
+
+**What we learned.** An innocent `pool[:size]` slice can turn a one-variable experiment
+into a two-variable one. The numbers were real measurements all along; what was invalid
+was the *comparison* the construction implied. Replicating the same construction across
+seeds reproduces the confound, not the causal effect. This is the book's
+**code–claim auditing** lesson in its strongest form: before a claim about an
+experiment is published, the code that built the experiment's arms must be read against
+the claim.
+
+**Action.** Chapter 11 rewritten: the curve and Figure 11.1 are labeled a *flawed
+historical run of operation coverage*; the "only the data count changes" claim, and any
+knee/threshold/data-efficiency lesson, are removed; a balanced, operation-stratified
+rerun (equal records per operation at every size, one fixed tokenizer, matched steps) is
+required before any record-count claim. Recorded here as P0-01.
+
+---
+
+## 12. P0-02 — The Chapter 13 "1,200 versus 1,200" comparison was 42 versus 1,200
+
+**What happened.** Chapter 13's headline was an equal-count design: same 1,200 records,
+only diversity differs. The code audit of `scripts/run_diversity.py` showed the
+high-diversity pool is built one record per operation × wording family × identifier set,
+and the ten training operations have only **21 wording-family entries** in total — so
+with two identifier sets `build_pool()` constructs **42 records**, and
+`pool[:1200]` returns those 42. The minimal-diversity branch explicitly created 1,200
+(largely repeated) records. The manifest recorded only the *requested* `n_train=1200`,
+which hid the realized 42. The arms were **42 versus 1,200**, differing in count and
+diversity at once.
+
+**What we learned.** Record the *realized* dataset size, not the requested one — and
+assert it. The high arm's 1.000/1.000 is consistent with coverage of 42 exact training
+mappings; the equal-count causal lesson ("only diversity differed") is unsupported.
+Multi-seed replication of the same faulty construction repeats the flaw.
+
+**Action.** Chapter 13 rewritten: Figure 13.1 relabeled as coverage on an unequal-count
+construction; the equal-count causal claim is withdrawn; a larger varied-family
+generator that can fill both arms to the same count (with a genuine held-out-family
+test) is required. Recorded here as P0-02.
+
+---
+
+## 13. P0-03 — The Stage-3 "new identifiers" condition changed two factors
+
+**What happened.** Chapter 15's new-identifier arm was presented as an identifier-only
+ablation (`a,b` → `left,right`, everything else unchanged). The audit of
+`scripts/run_surface.py` showed the training pool excludes the last wording family while
+the `word_id` evaluation pool is built with `families="all"` — so the condition changes
+**both** the identifiers **and** the wording-family coverage. The reported 0.350 is a
+mixed-factor shift, not an identifier-only effect; the retrieval baseline's
+1.000 → 0.683 fall is mixed for the same reason.
+
+**What we learned.** A "one variable changed" claim must be checked against the actual
+set-construction arguments in the script, not against the design's intent. Mixed-factor
+arms cannot be attributed to either factor alone.
+
+**Action.** Chapter 15 corrected: the row, the figure caption, and the shortcut audit
+now state the mixed factors; a full identifier × wording factorial (ID-only,
+wording-only, combined cells, operation-matched) is required to isolate the identifier
+axis. Recorded here as P0-03.
+
+---
+
+## 14. P0-04 — The held-out-wording denominator was 480, not 600
+
+**What happened.** Figure 15.1 and its narration stated "600 held-out problems per
+condition" with illustrative counts 525/600 and 75/600. The audit of
+`src/nl_renderer/renderer.py` and `run_surface.py` showed held-out-wording records are
+only added for operations with a held-out family — `abs_of` and `cond_abs_max` have a
+single family — so the set is **8 × 60 = 480** records, and its operation mix differs
+from the 600-record familiar and new-identifier conditions. The correct readings are
+template 0.875 = **420/480**, retrieval 0.125 = **60/480**, and the model's 0.000 over
+**480**.
+
+**What we learned.** Denominators must come from the generated file, not from the
+design's per-condition template (`n_per × n_ops`). A narrative count that disagrees with
+`len(eval_set)` is a bug waiting to be read as a result — and mismatched operation mixes
+make aggregate contrasts non-comparable even when every individual rate is right.
+
+**Action.** Chapter 15 corrected: exact denominators and integer successes are stated at
+the figure and in the text; the operation-mismatch is flagged; a corrected comparison
+needs per-operation, matched-subset scoring with denominators recorded in the manifest.
+Recorded here as P0-04.
+
+---
+
+**The code–claim auditing lesson (elevated).** Entries 11–14 share one root cause: the
+prose claimed a controlled comparison that the code did not build. Every one was found
+by reading the release-tagged scripts against the manuscript's claims — no rerun was
+needed to establish them, because the construction is deterministic. The general
+discipline we take from this: **audit the code that constructs each experimental arm
+against the claim before publishing the claim; record realized (not requested) dataset
+sizes, exact denominators, and per-arm operation/family histograms; and treat a
+multi-seed replication of a flawed construction as replication of the flaw.** The
+original bug histories above are preserved exactly as they stood, because the failure
+ledger's job is to show how a promising number dies — not to hide that it ever lived.
+
 *The point of this ledger is the opposite of marketing. Every entry above, in its own
 way, made the final understanding sharper — and several of them — the broken evaluator,
-the wording leak, the task-too-easy result, the 0/16 human test — are among the most
-valuable findings in the book precisely because they forced us to be honest.*
+the wording leak, the task-too-easy result, the 0/16 human test, and the four P0
+experiment-construction defects — are among the most valuable findings in the book
+precisely because they forced us to be honest.*

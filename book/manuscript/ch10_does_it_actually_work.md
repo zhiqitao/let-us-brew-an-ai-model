@@ -157,6 +157,10 @@ counted here too), and `executable` is the fraction that **produced at least one
 correct output** — passed at least one hidden test — not merely the fraction that ran
 without error.
 
+*Model-visible novelty, stated precisely:* 0.897 is single-sample correctness for
+repeated previously-seen prompt strings under fresh execution values — not prompt
+generalization.
+
 Three things stand out.
 
 **First, the model learns to produce a program for a prompt it has seen many times.**

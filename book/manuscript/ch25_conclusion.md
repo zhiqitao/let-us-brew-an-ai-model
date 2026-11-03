@@ -19,8 +19,24 @@ certainty about what it did was the hard part, and it is the part worth writing 
 
 ## What the experiment established
 
-At the core, the answer to the book's central question is now clear and measured. The
-experiments separate cleanly into what the model **can** do and what it **cannot**.
+At the core, the answer to the book's central question is now stated in its most
+conservative, audit-proof form — the wording we adopt after the third external review
+(2026-11-02) and our own code–claim audit:
+
+> In this restricted task family, a sub-million-parameter decoder-only transformer
+> frequently produced executable, correct Python for prompt strings that appeared in
+> training, even when the resulting program was tested on new input values. That
+> performance alone does not establish generalization to new natural-language requests.
+> Separate evaluations found severe failures under altered wording and when asked for
+> previously untrained program structures. The initial scaling and diversity studies
+> require corrected controls before they can support causal claims about record count
+> or surface diversity. The durable methodological lesson is that a high score must be
+> interpreted through the precise model-visible novelty, the evaluator, the baseline,
+> and the controls used to obtain it.
+
+This wording is deliberately more conservative than the capability map's earlier
+summary, and it remains supportable even before the corrected reruns. Within it, the
+experiments separate into what the model **can** do and what it **cannot**.
 
 **It can learn, and it learns well — within a narrow regime.** On individual operations,
 the model reliably maps a natural-language spec to correct Python, reaching **~0.90
@@ -36,8 +52,10 @@ reuses training prompt strings.
 **But it is surface-tied and non-compositional.** The two limits that matter:
 
 1. **It anchors to phrasing, not meaning.** Change the variable names (`a,b` →
-   `left,right`) and it drops to 0.35; change the wording (same computation, different
-   words) and it falls to **0.000** — below both baselines. The external reality check
+   `left,right`) and it drops to 0.35 — with the caveat that this arm also changed
+   wording-family coverage, so it is a mixed-factor shift, not an identifier-only one
+   (P0-03); change the wording (same computation, different
+   words) and it falls to **0.000** over 480 records — below both baselines. The external reality check
    confirmed it: a human-written test set scored **0/16** — **0/11** on requests built
    from operations the model had seen (a phrasing/surface failure) and **0/5** on
    genuinely held-out composite requests (a structural failure, expected separately) —
@@ -49,16 +67,21 @@ reuses training prompt strings.
    template — produced a composite program. (This is a strong negative signal, not a
    proof that no cleverer method could; see the shortcut audit in Chapter 16.)
 
-**One limit was moveable — by changing the data, not its quantity.** Diversity of
+**One limit looked moveable — by changing the data, not its quantity — but that
+comparison did not survive code audit.** Diversity of
 surface phrasing is the one lever in the book that changed the surface outcome: a
 narrowly-trained model dropped to **0.000** on the surface test, but a model trained on
-the *same count* spread across many phrasings and both identifier-sets scored **1.000**
-on the covered surfaces. That result is explicitly a **coverage** improvement, not a
-proven transfer to a never-seen wording family (which the book could not establish from
-that design). So the picture is more than "small models are fragile": *content diversity*
-widens what a small model handles. More *capacity* (0.88M→29.3M) also did not lift the
-compositional limit. **We do not claim the same for more *data*:** the data-size sweep
-tested in-distribution accuracy only, not composition, so whether more data would help
+a pool spread across many phrasings and both identifier-sets scored **1.000**
+on the covered surfaces. Two corrections now qualify this. First, the arms were **not
+the same count**: the high-diversity pool realized only **42 records** against the
+minimal arm's 1,200 (P0-02), so the equal-count causal reading is unsupported — the
+1.000 is best read as coverage of 42 exact mappings. Second, even taken as coverage, it is explicitly **not** a
+proven transfer to a never-seen wording family. So the picture is more than "small models are fragile": *content diversity*
+is a strong lead for widening what a small model handles, pending a corrected
+equal-count rerun. More *capacity* (0.88M→29.3M) also did not lift the
+compositional limit. **We do not claim anything for more *data*:** the data-size sweep
+is confounded with operation coverage (its arms cover 1/1/3/8 of the ten operations —
+P0-01), so it establishes no record-count effect at all, and whether more data would help
 composition is a question we did not test and do not assert.
 
 **The scaling conclusion is our sharpest negative result.** Composition stays at
@@ -146,14 +169,17 @@ The honest map points at specific next experiments, not vague "more data / bigge
 
 1. **Does *structural* diversity of combinations unlock composition?** We tested two
    things and both failed: (a) feeding a few composites during training (held-out still
-   0.000), and (b) diversifying the *surface* of the composite exposure (many phrasings
-   × id-sets; held-out still 0.000). So the remaining open question is diversity of the
+   0.000), and (b) *identifier-diversified* composite exposure — two identifier sets
+   (each composite has a single renderer family, so this varied identifiers, not
+   wording-family variety; held-out still 0.000). So the remaining open question is diversity of the
    *inner structure* — exposing the model to many *different* primitive pairings — to
    see whether that teaches a general compose-operator. That is the one lever we have
    not isolated. The experiment to run is a systematic increase in *structural*
    diversity — the number, nesting, and variety of operator pairings — with disjoint
    held-out pairing structures and program length and vocabulary matched between
    training and test, so that structure is the only variable that changes.
+   (Two earlier data levers also need corrected reruns first: the operation-stratified
+   size sweep of P0-01 and the equal-count diversity comparison of P0-02.)
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
    measured 0.773 (a stable plateau, not the earlier 0.383 reading). A proper
    training-duration and config sweep at 10M would confirm the plateau is robust.
@@ -199,9 +225,13 @@ precisely and honestly, what a small model can and cannot learn — and we got a
 worth having:
 
 > The small model in this brew — 0.88M→29.3M decoder-only transformers on our
-> NL-to-Python task — learns narrow tasks well; in our tests its knowledge was
+> NL-to-Python task — frequently produced executable, correct Python for prompt strings
+> that appeared in training, even on new input values; that does not establish
+> generalization to new natural-language requests. In our tests its knowledge was
 > surface-tied and non-compositional, and more capacity (0.88M→29.3M) did not change
-> the compositional limit. Whether more *data* would is a question we did not test.
+> the compositional limit. The initial data-scaling and diversity studies are confounded
+> (operation coverage; 42-vs-1,200 arms) and require corrected controls before they can
+> support any causal claim about record count or surface diversity.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,
 audit shortcuts, preserve failures — are the durable part. That is the method worth

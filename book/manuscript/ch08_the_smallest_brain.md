@@ -38,7 +38,9 @@ goal is not novelty; the goal is that we can understand exactly what it is doing
 
 For the pilot, the configuration is small and honest:
 
-- vocabulary: 291 tokens (a compact BPE trained on the task corpus),
+- vocabulary: 291 tokens (a compact greedy character/whole-word vocabulary tokenizer —
+  256 character tokens plus frequent whole words, encoded by longest match; *not*
+  byte-pair encoding — see Appendix D),
 - hidden dimension: 128,
 - layers: 4,
 - attention heads: 4,

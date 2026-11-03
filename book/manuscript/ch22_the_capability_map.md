@@ -9,8 +9,25 @@ Everything below is scoped to **our** setup: a ~0.9M–29.3M decoder-only transf
 trained on a few thousand generated natural-language-to-Python tasks, evaluated by a
 mutation-tested execution-based judge. These are claims about this brew, not universal
 laws about all small models. Where we say "here" or "in this regime", it is deliberate —
-these are well-controlled measurements in one configuration, not proofs that hold
-everywhere.
+these are measurements in one configuration, not proofs that hold
+everywhere. Two of the map's original levers — the data-size sweep (Chapter 11) and the
+equal-count diversity comparison (Chapter 13) — did not survive code audit (P0-01,
+P0-02), so their cells are marked as confounded historical constructions rather than
+causal results.
+
+**The central conclusion, in its conservative form** (adopted from the third external
+review, 2026-11-02, and supportable even before the corrected reruns):
+
+> In this restricted task family, a sub-million-parameter decoder-only transformer
+> frequently produced executable, correct Python for prompt strings that appeared in
+> training, even when the resulting program was tested on new input values. That
+> performance alone does not establish generalization to new natural-language requests.
+> Separate evaluations found severe failures under altered wording and when asked for
+> previously untrained program structures. The initial scaling and diversity studies
+> require corrected controls before they can support causal claims about record count
+> or surface diversity. The durable methodological lesson is that a high score must be
+> interpreted through the precise model-visible novelty, the evaluator, the baseline,
+> and the controls used to obtain it.
 
 ## Why a map, and not a single score
 
@@ -42,9 +59,12 @@ is not excluded (see below).
 familiar prompt).
 
 **Question 3 — Surface.** *Does it survive superficial change?* **Measured:** narrow —
-new wording 0.000, new identifiers 0.350; diverse — 1.000 / 1.000. **Status:** `[MEASURED]`
-— brittle when trained narrowly; diverse training covers more surfaces (a truly-held-out
-family untested).
+new wording 0.000 (480 records, 8 operations), new identifiers 0.350 (mixed factors:
+identifiers *and* wording-family coverage changed together); diverse pool — 1.000 / 1.000
+(42 realized records vs 1,200). **Status:** `[MEASURED, CONFOUNDED]`
+— brittle when trained narrowly; the diverse pool covers more surfaces, but the arms
+were not equal-count and no truly-held-out
+family was tested by the diverse arm.
 
 **Question 4 — Structure.** *Can it compose known pieces in unseen ways?* **Measured:**
 0.000 (baselines also 0.000). **Status:** `[MEASURED]` — no, in this regime.
@@ -64,17 +84,21 @@ distinction: we only use `NT` when the evaluation *could* have been run but was 
 **Panel 1 — code-generation evaluations, by checkpoint**
 
 - **`stage1.pt` (Stage 1 pilot)** — familiar prompt 0.897; held-out composite 0.000.
-- **`stage3_surface.pt` (Stage 3)** — familiar prompt 0.900; new identifiers 0.350; excluded wording 0.000.
-- **high-diversity (same count)** — familiar prompt 1.000; covered alternate surface 1.000; excluded wording NT.
+- **`stage3_surface.pt` (Stage 3)** — familiar prompt 0.900; new identifiers 0.350 (mixed factors, P0-03); excluded wording 0.000 (480 records, P0-04).
+- **high-diversity pool (42 realized records vs 1,200 — P0-02)** — familiar prompt 1.000; covered alternate surface 1.000; excluded wording NT.
 - **`stage4_6p5m.pt`** — familiar prompt 0.897; held-out composite 0.000.
 - **`stage4_10m.pt`** — familiar prompt 0.773; held-out composite 0.000.
 - **`stage4_composition.pt`** — familiar prompt 0.897; held-out composite 0.000.
 
 Key: the surface-row scores (new identifiers 0.350, excluded wording 0.000) come from the
-**Stage-3 checkpoint**, not the Stage-1 pilot. The composition score for `stage1.pt` is a
+**Stage-3 checkpoint**, not the Stage-1 pilot, and both carry construction defects: the
+new-identifier arm changes identifiers and wording-family coverage together (P0-03), and
+the excluded-wording arm has 480 records over 8 operations, not 600 over 10 (P0-04).
+The composition score for `stage1.pt` is a
 separate re-evaluation of the pilot on the composition split (which is why the registry
 lists a "Stage-4 composition baseline" row that points at `stage1.pt`). The high-diversity
-row's 1.000 is **coverage** of surfaces in its training family, not transfer to an
+row's 1.000 is **coverage** of surfaces in its training family — a pool of just 42
+realized records, not an equal-count arm (P0-02) — not transfer to an
 excluded wording family.
 
 **Panel 2 — composition-intervention and continual-learning runs**
@@ -109,7 +133,8 @@ two (surface change, composition) under this setup.
 **It can learn individual operations well.** On in-distribution primitives — `add`,
 `sub`, `mul`, `max`, `abs`, `list_sum` — the ~0.9M model solves ~90% of held-out
 problems under the evaluation's default temperature-0.8 sampled decoding. It beats a hand-written template rule system (0.900
-vs 0.800). This is real, measurable capability on a narrow task.
+vs 0.800). This is real, measurable capability on a narrow task — for prompt strings
+that appeared in training (the pilot's test reuses them), on fresh execution values.
 
 **It produces general programs for fresh inputs of a prompt it saw in training.** On the
 task-ID probe it passed 59/60, and on a held-out pair it produced the *general* program
@@ -121,9 +146,12 @@ not test (its test reuses training prompt strings).
 ## What the model cannot do
 
 **It cannot survive changes to the surface form.** Change the variable names from
-`a,b` to `left,right` (identical computation) and performance falls to 0.350. Rephrase
+`a,b` to `left,right` (identical computation) and performance falls to 0.350 — with the
+caveat that this arm also changed wording-family coverage, so it is a mixed-factor
+shift, not an identifier-only one (P0-03). Rephrase
 the instruction with a wording family the model never saw (identical computation) and
-performance falls to **0.000** — below *both* baselines. This is Question-3 failure:
+performance falls to **0.000** — below *both* baselines — over 480 records covering 8
+of the 10 operations (P0-04). This is Question-3 failure:
 the model's capability is **anchored to the phrasing it saw**, not robust to a change of
 wording. (That is about *robustness to the shift we tested*; it does not by itself prove
 there is no internal semantic representation.)
@@ -154,16 +182,19 @@ lacked a compositional engine here.
 | Lever | Tested | Effect on composition |
 |-------|--------|-----------------------|
 | Model size | 0.88M → 29.3M (~33×) | **none** — still 0.000 at all four sizes |
-| Data size | 100 → 3000 examples | helps *in-distribution* (0.10→0.64); **composition not tested** in this run (we did not evaluate the scaled models on the composite split) |
+| Data size | 100 → 3000 examples (**confounded**: arms cover 1/1/3/8 of 10 operations — P0-01) | **no record-count claim possible**; composition **not tested** in this run (we did not evaluate the scaled models on the composite split) |
 | Training protocol | sequential vs joint | **big** — fixes continual retention (0.000→1.000); a *different* lever, not a composition lever |
 
 The second half of the map is about levers, and it is where the surprising findings
 live. We tried three ways to move the boundary — more capacity, more data, and a
 different training procedure. More capacity did nothing to composition (0.000 at all
-four sizes); more data was only evaluated on the in-distribution task (composition was
+four sizes); more data was a **confounded** sweep (its arms differ in operation
+coverage, so it supports no record-count reading at all — P0-01) and was in any case
+only evaluated on the in-distribution task (composition was
 not tested in the scaling run); and a different training procedure was the decisive
 lever for a *different* problem (continual learning), not for composition. This
-asymmetry is worth circling, because it tells us where effort does and does not pay.
+asymmetry is worth circling, because it tells us where effort does and does not pay —
+with the honest caveat that the data lever has not yet been properly measured.
 
 ## The capacity grid, in full
 
@@ -200,17 +231,20 @@ nothing for the deep one.
 
 **Measured (this setup):**
 - The model learns single operations to ~90% in-distribution and generalizes them
-  across instances (Q1/Q2).
-- The *narrowly-trained* model is surface-tied: new wording → 0.000, new identifiers →
-  0.350 (Q3). The *diversity-trained* model (same count) reaches 1.000/1.000 on the
-  tested surface — though, as the caveat notes, that is strongest as a coverage
-  statement, not proof of generalization to a wholly unseen wording family.
+  across instances (Q1/Q2) — for prompt strings seen in training, on fresh execution
+  values; that is not generalization to new requests.
+- The *narrowly-trained* model is surface-tied: new wording → 0.000 (480 records, 8
+  operations), new identifiers →
+  0.350 (mixed factors — P0-03/P0-04) (Q3). The *diversity*-pool model reaches 1.000/1.000 on the
+  tested surface — but its arm realized only **42 records against 1,200** (P0-02), so
+  this is a coverage statement on an unequal-count construction, not proof of
+  generalization to a wholly unseen wording family and not an equal-count causal result.
 - It cannot compose: unseen combinations → 0.000 across 0.88M→29.3M capacity (the
   model-size sweep tested composition at each size). **Caveat:** the *data-size* sweep
-  (Chapter 11) tested in-distribution accuracy only, not composition, so we do **not**
+  (Chapter 11) is confounded with operation coverage (P0-01) and tested in-distribution accuracy only, not composition, so we do **not**
   claim that more data likewise fails to help composition — that specific
   "more data doesn't fix composition" claim was **not** tested and is not made here
-  (Q4).
+  (Q4), and no record-count effect is claimed either.
 - Continual learning is a procedure problem: sequential forgets (A → 0.000), joint
   retains (A → 1.000) with no acquisition cost.
 - The pilot task was retrieval-solvable (retrieval = 1.000), so that split is "too
@@ -220,12 +254,15 @@ nothing for the deep one.
 - The composition failure is now **tested twice, not simply suggestive**: (a) exposure
   to a few composites during training does **not** unlock composition on unseen ones
   (the model memorizes the seen combinations at 0.667 but stays at 0.000 on held-out
-  ones); and (b) diversifying the *surface* of the composite exposure (many phrasings ×
-  id-sets) also leaves the held-out composite at **0.000**. So it is neither a "just
-  show it combinations" fix nor a "diversify the phrasing" fix. Two caveats: the
+  ones); and (b) *identifier-diversified* composite exposure (two identifier sets — each
+  composite has a single renderer family, so this varied identifiers, not wording-family
+  variety) also leaves the held-out composite at **0.000**. So it is neither a "just
+  show it combinations" fix nor an identifier-variety fix — and true wording-family
+  diversity for composites was never implemented (P1-05). Two caveats: the
   held-out composite candidates all **failed parsing** before semantic evaluation, so
   the *cause* of that zero is unresolved (it is a recorded negative, not a demonstrated
-  mechanism), and the data-scaling sweep did not evaluate composition at all.
+  mechanism), and the data-scaling sweep did not evaluate composition at all (and is
+  itself confounded — P0-01).
 - The one lever we have **not** isolated is diversity of the *inner structure* — many
   *different* primitive pairings rather than different phrasings of the same few. That
   is the remaining open experiment.
@@ -250,8 +287,11 @@ as valuable as any model number:
   families.
 - **Test the data.** The diversity-vs-quantity experiment showed the *same* example
   count produces surface-fragility (0.000) with minimal diversity or much broader
-  surface coverage (1.000) with high diversity. Diversity — not quantity — is what
-  changes how much surface the model covers. (This is coverage of the surfaces in the
+  surface coverage (1.000) with high diversity — but code audit then showed the arms
+  were **not** the same count (42 realized records vs 1,200 — P0-02), so what survives
+  is a coverage observation, not an equal-count causal result: diversity — not quantity — remains the
+  *suspected* driver of how much surface the model covers, pending a corrected rerun.
+  (This is coverage of the surfaces in the
   training family; it is not established transfer to a wording family excluded from
   training.)
 - **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
@@ -263,19 +303,26 @@ as valuable as any model number:
 
 ## The boundary, in one line
 
-> **A small model learns narrow, individual mappings well and generalizes them across
-> instances, but its knowledge is surface-tied. Under the recorded training and decoding
+> **A small model learns narrow, individual mappings well — frequently producing
+> executable, correct Python for prompt strings that appeared in training, even on new
+> input values — but that does not establish generalization to new natural-language
+> requests, and its knowledge is surface-tied. Under the recorded training and decoding
 > settings, the tested checkpoints produced no successful held-out composite completions;
 > the exposure run's held-out candidates all failed parsing, so the cause remains
-> unresolved. The data-count sweep measured familiar-task performance only. Broader surface
+> unresolved. The data-count sweep is confounded with operation coverage and establishes
+> no record-count effect; the diversity comparison realized 42 records against 1,200 and
+> establishes no equal-count causal effect. Broader surface
 > training improved coverage, not demonstrated transfer to excluded wording families.**
 >
 > (Size and data scaling are two separate levers, and neither was shown to turn surface
 > coverage into compositional capability: the size sweep changed training budgets and
-> tokenizer, so it is not a size-only intervention, and the data-count sweep did not
+> tokenizer, so it is not a size-only intervention, and the data-count sweep changed
+> operation coverage along with count and did not
 > evaluate composition at all. We also tested a scheduling change — sequential vs. joint
 > training — but that measured retention of *separately learned* task groups, not
-> composition, so it likewise does not speak to the composition boundary.)
+> composition, so it likewise does not speak to the composition boundary. The initial
+> scaling and diversity studies require corrected controls before they can support
+> causal claims about record count or surface diversity.)
 
 ## Why the map is the deliverable
 

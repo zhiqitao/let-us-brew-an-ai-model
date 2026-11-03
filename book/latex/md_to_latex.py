@@ -385,7 +385,7 @@ SHORT_TITLES = {
 # via \captionof{figure}[short]{long}.
 SHORT_FIG_CAPTIONS = {
     "figures/fig_model_size.png": "Model size vs composition",
-    "figures/fig_diversity.png": "Diversity vs quantity",
+    "figures/fig_diversity.png": "Diversity vs quantity (flawed: 42 vs 1,200)",
     "figures/fig_continual.png": "Sequential vs joint training",
     "figures/fig_apparatus.png": "The whole apparatus",
 }
@@ -926,8 +926,9 @@ the result as the successes.
 
 \\vspace{{0.8cm}}
 \\noindent\\footnotesize\\textbf{{Companion repository and errata.}} The code,
-scripts, configurations, and checkpoints that reproduce every experiment in this
-book live in the companion repository, which is public at
+scripts, configurations, run manifests, scored datasets, and regeneration scripts that
+reproduce every experiment in this book live in the companion repository, which is
+public at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model}} under the release
 tag \\texttt{{v20261001}} on release commit
 \\texttt{{a45a881158ed076f615f6d3bc2e72640dc5cdced}} (full hash; the reproduction

@@ -25,7 +25,10 @@ flag it.
 
 - **BPE (Byte-Pair Encoding).** A tokenization method that repeatedly merges the most
   common symbol pairs into a single token. It turns text into a fixed-size vocabulary
-  of subword pieces.
+  of subword pieces. **The tokenizer this book actually uses is *not* BPE:** it is a
+  greedy character/whole-word vocabulary tokenizer — 256 character tokens plus frequent
+  whole words, encoded by longest match (see Chapter 8). The earlier "compact BPE"
+  wording in Chapter 8 was wrong and has been corrected (P1-07).
 
 - **Baseline / rival.** A deliberately simple reference system (here, a keyword
   template-matcher and a TF-IDF retriever) used to interpret the model's score. A
@@ -70,6 +73,12 @@ flag it.
 
 - **In-distribution.** Tasks drawn from the same distribution as training (here, held
   out in *instances* but the same operation / surface family).
+
+- **Joint / interleaved training (A+B from start).** Training on both task groups'
+  examples interleaved from the beginning of training. Earlier drafts of Chapter 18
+  labeled this condition "replay"; we renamed it because *replay* properly means
+  continuing from an already-A-trained checkpoint with A examples mixed back in — a
+  design this book did **not** run (P1-14).
 
 - **Judge.** The execution-based evaluator: it runs the generated program against
   hidden tests and compares outputs (with a semantic comparator and mutation control).

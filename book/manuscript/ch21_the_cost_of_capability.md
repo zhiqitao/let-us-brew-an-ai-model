@@ -25,6 +25,15 @@ That distinction is the key to reading the results in this chapter. The model ca
 *cheap* to produce and still *expensive* to make useful, because the cheap version
 works only under conditions the real world will not respect.
 
+Before the matrix, the conclusion this chapter helps build, in the conservative form we
+now adopt (third external review, 2026-11-02): the model
+frequently produced executable, correct Python for training-seen prompt strings even on
+new input values, but that does not establish generalization to new natural-language
+requests; severe failures appeared under altered wording and on untrained structures;
+and the initial scaling and diversity studies need corrected controls before they can
+support causal claims about record count or surface diversity. Two rows of the matrix
+below are exactly those flawed studies, and we price nothing from them.
+
 ## The cost matrix
 
 Each row is a **run** from our experiments, identified by its checkpoint and evaluation so
@@ -45,8 +54,9 @@ all 560 — the 1,400 in the steps column is the separate 700 + 700 step budget.
 | Run | data records / unique pairs | parameters | steps |
 |------------------|-----------------------------|------------|-------|
 | `stage1` | 1,400 / 21 | 0.88M | 1,500 |
-| `stage3_surface` | 600 (10 op × 60) | 0.88M | 1,500 |
-| `data_scaling` (per size) | 100, 300, 1000, 3000 | 0.88M | 800 |
+| `stage3_surface` | 600 (10 op × 60) familiar/new-ID; **480** (8 op × 60) reworded | 0.88M | 1,500 |
+| `data_scaling` (per size) | 100, 300, 1000, 3000 (**prefix of an operation-ordered pool: 1/1/3/8 of 10 ops — P0-01**) | 0.88M | 800 |
+| `diversity` (Ch13) | requested 1,200; **realized 42** (high) vs 1,200 (minimal) — P0-02 | 0.88M | 900 |
 | `stage4_exposure` | not recorded | 0.88M | 1,500 |
 | `compdiv_minimal` / `compdiv_high` | not recorded | 0.88M | 1,500 |
 | size sweep | not recorded | 0.88M / 6.5M / 10.2M / 29.3M | 1,500 / 1,000 / 800 / 800 |
@@ -61,8 +71,8 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | Run | in-dist | new IDs | new wording | composes |
 |------------------|---------|---------|-------------|----------|
 | `stage1` | 0.897 | — | — | 0.000* |
-| `stage3_surface` | 0.900 | 0.350 | 0.000 | — |
-| `data_scaling` | 0.100 / 0.098 / 0.300 / 0.641 | — | — | — |
+| `stage3_surface` | 0.900 | 0.350† | 0.000‡ | — |
+| `data_scaling` | 0.100 / 0.098 / 0.300 / 0.641 § | — | — | — |
 | `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
 | `compdiv_minimal` | 1.000 | — | — | 0.592 / 0.000 |
 | `compdiv_high` | 1.000 | — | — | 0.550 / 0.000 |
@@ -74,7 +84,12 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | `continual_joint` | A 1.000; B 0.889 | — | — | — |
 
 *`stage1`'s composes value (0.000) is from the stage-4 re-evaluation of that pilot
-checkpoint. The `stage4_exposure` and `compdiv_*` composes values are reported as
+checkpoint. † the new-identifier arm changes identifiers and wording-family coverage
+together (P0-03), so 0.350 is a mixed-factor shift. ‡ the reworded arm has 480 records
+over 8 operations, not 600 over 10 (P0-04). § the data-scaling arms are prefixes of an
+operation-ordered pool covering 1/1/3/8 of the ten operations (P0-01), so this row is a
+confounded historical run of operation coverage, not a record-count curve — we price
+nothing from it. The `stage4_exposure` and `compdiv_*` composes values are reported as
 *exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed records
 each); the held-out composite — the transfer test — was 0.000, and for the run where we
 analyzed it (the composition-exposure run, Appendix B.10) the held-out candidates failed
@@ -94,9 +109,15 @@ negative, and use `—` when the run did not report that figure.*
 
 A few cautions before reading this as a budget. First, the Stage-1 pilot's "1,400 records"
 is the **ten-operation familiar-prompt family** total, which contained only **21 distinct
-prompt–program pairs**; it is not a measured per-operation data requirement. Second, the
+prompt–program pairs**; it is not a measured per-operation data requirement, and its 0.897
+is single-sample correctness for repeated previously-seen prompt strings under fresh
+execution values, not prompt generalization. Second, the
 size sweep changed training budgets (1,500 / 1,000 / 800 / 800 steps) and tokenizer, so it
-is not a size-only intervention. Third, the exposed-composite scores varied (0.550, 0.592,
+is not a size-only intervention. Third, two rows are **flawed constructions** (Appendix B):
+the `data_scaling` row is a prefix of an operation-ordered pool (arms cover 1/1/3/8 of the
+ten operations — P0-01), and the Chapter 13 diversity comparison realized **42 records
+against 1,200** (P0-02) — neither supports a causal price for record count or surface
+diversity, and we draw no budget lesson from either. Fourth, the exposed-composite scores varied (0.550, 0.592,
 0.667); the held-out composite — the transfer test — was **0.000** at every size we tried.
 For the run where we analyzed stage rates (the composition-exposure run, Appendix B.10) the
 held-out candidates failed parsing before semantic evaluation; we do not extend that to the
@@ -116,7 +137,9 @@ only in-distribution correctness on prompts the model has seen.
 **The real cost appears when we ask for generalization.** To make a single primitive
 robust to *surface* change (new identifiers, new wording), the experiments suggest the data
 would need to change substantially — diverse identifiers and wording — not just add
-capacity. And composition was not achieved at any size we tried: it stayed 0.000 on
+capacity — though the two data-lever comparisons that were meant to price this (Chapters
+11 and 13) are confounded (P0-01, P0-02), so the suggestion is a lead, not a measured
+price. And composition was not achieved at any size we tried: it stayed 0.000 on
 held-out at 0.88M, 6.5M, 10.2M, and 29.3M. As Chapter 16 notes, the parsing finding applies
 only to the composition-exposure run; we did not analyze the other size checkpoints' stage
 rates the same way, and the 0.88M baseline has a different recorded profile. So the cause
@@ -127,7 +150,11 @@ of that zero is unresolved.
 generalization and composition columns reveal that the cheap number hides a much more
 expensive requirement — robust, compositional capability. On that requirement, capacity
 scaling was tested on composition and remained 0.000 at every size we ran; the
-data-count sweep measured familiar-task accuracy only and did not evaluate composition.
+data-count sweep is confounded with operation coverage (P0-01) and did not evaluate composition,
+so it supports no pricing of data at all — and the diversity comparison (42 vs 1,200 —
+P0-02) supports no pricing of surface diversity either. The rows we *can* price are the
+ones with intact controls: the pilot's familiar-prompt cost, the surface run's
+robustness failure, and the continual-learning schedule comparison.
 
 ## The price of each column, read honestly
 
@@ -139,8 +166,9 @@ not the way a researcher who wants a good headline would read it.
   did not run a reworded surface test (the Stage-3 surface run did, and scored 0.000 there).
   So we have bought a capability that works on the prompts it was trained with.
 - **New-identifier and reworded robustness** (the Stage-3 surface run) costs the same
-  1,400-class budget and still fails — the model drops to 0.350 on new identifiers and to
-  0.000 on a reworded instruction. We cannot buy this with more of the same from this run.
+  1,400-class budget and still fails — the model drops to 0.350 on the mixed
+  identifiers-plus-family shift (P0-03) and to
+  0.000 on a reworded instruction (480 records, 8 operations — P0-04). We cannot buy this with more of the same from this run.
 - **Composition** is the row that tells the sharpest story. It was 0.000 on held-out
   composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
   parameter column alone did not change that in the runs we ran. But the failure cause is

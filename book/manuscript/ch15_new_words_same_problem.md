@@ -57,34 +57,59 @@ survived.
 | Test | **MODEL** | TEMPLATE / RETRIEVAL |
 |----------------------------------------|--------------------|----------------------------------------|
 | Same as training | **0.900** | 0.800 / 1.000 |
-| Same computation, new identifiers | **0.350** | 0.800 / 0.683 |
-| Same computation, reworded | **0.000** | 0.875 / 0.125 |
+| New identifiers (mixed factors — see below) | **0.350** | 0.800 / 0.683 |
+| Same computation, reworded (480 records) | **0.000** | 0.875 / 0.125 |
 
-*The baseline column lists TEMPLATE / RETRIEVAL in that order. The second row changes
-only the variable names, `a,b` → `left,right`; the third row changes only the wording —
-the computation is identical in all three rows.*
+*The baseline column lists TEMPLATE / RETRIEVAL in that order. A code audit (P0-03,
+P0-04) changed how these rows must be read: the second row changes the variable names
+`a,b` → `left,right` **and** the wording-family coverage (its evaluation pool is built
+with `families="all"` while training excluded the last family), so it is a **mixed-factor**
+shift, not an identifier-only one; the third row changes only the wording —
+the computation is identical in all three rows — and is scored over **480** records
+(8 operations × 60; `abs_of` and `cond_abs_max` have a single family and so have no
+held-out wording), not 600.*
 
 Look at what happens when we touch only the *surface*, not the math.
 
-- **New variable names.** The model was trained on `a` and `b`. We ask the same
+- **New variable names (mixed factors).** The model was trained on `a` and `b`. We ask the same
   question with `left` and `right` — the *identical* operation. Performance collapses
-  from **0.900 to 0.350**.
+  from **0.900 to 0.350**. A code audit (P0-03) showed this condition changes **two**
+  factors at once: the identifier names *and* the wording-family coverage (the
+  new-identifier pool is built with `families="all"`, including the family withheld
+  from training), so 0.350 is **not** an identifier-only effect — it is a mixed
+  identifiers-plus-family shift, and the same applies to the retrieval baseline's
+  1.000 → 0.683 fall. Isolating the identifier axis needs a full identifier × wording
+  factorial (train on `letters × kept families`, then test ID-only, wording-only, and
+  combined cells separately).
 
 - **Reworded instruction.** We say the exact same problem using a phrasing the model
-  never saw during training. Performance drops to **0.000**.
+  never saw during training. Performance drops to **0.000** — over **480** records
+  (8 operations × 60; `abs_of` and `cond_abs_max` have only one wording family and so
+  contribute no held-out-wording records), not the 600 of the other two rows.
 
 So the model that scored 0.900 on the familiar phrasing falls to 0.350 when the
-variable names change, and to 0.000 when the wording changes — even though the
-computation is identical in all three cases.
+variable names (and family coverage) change, and to 0.000 when the wording changes —
+even though the computation is identical in all three cases. Because the second row
+mixes factors and the third row has a different operation mix (8 of 10 operations),
+the three aggregates are not operation-matched; a corrected comparison needs
+per-operation, matched-subset scoring.
 
 ## The damning comparison
 
 The most revealing number isn't the model's collapse — it's what the other two did.
-![Surface generalization](figures/fig_surface.png)
+![Surface generalization (mixed-factor new-ID arm; 480-record reworded arm)](figures/fig_surface.png)
 
-*Each pass@1 is over 600 held-out problems per condition (10 operations × 60 records
-each, the scored `stage3_surface` run); so the rates are rounded from the stated counts
-(e.g. 525/600 = 0.875, 75/600 = 0.125, and 410/600 = 0.683 to three decimals). The "new
+*Each pass@1 is over held-out problems per condition from the scored `stage3_surface`
+run: the familiar and new-identifier conditions have **600** records each (10
+operations × 60), but the reworded condition has **480** (8 operations × 60 —
+`abs_of` and `cond_abs_max` have a single wording family and contribute no held-out
+records), so its rates are integer fractions over 480: template 0.875 = **420/480**,
+retrieval 0.125 = **60/480**, and the model's 0.000 is over **480** (P0-04). The
+familiar/new-ID rates are over 600 (e.g. 480/600 = 0.800, 410/600 = 0.683). Because
+the reworded arm covers a different operation mix (8 of 10) and the new-identifier arm
+changes identifiers *and* wording-family coverage together (P0-03), the three
+aggregates are not operation-matched or single-factor; a full identifier × wording
+factorial with matched subsets is needed before reading them as like-for-like. The "new
 wording" column is the Stage-3 held-out wording family — an *intended* held-out-family
 condition; the audit that reported zero exact prompt-string overlap ran on regenerated
 samples with the current generator, not on the original scored files, so historical
@@ -95,9 +120,10 @@ When we change the *words*, the **template baseline gets *better*, not worse** (
 up from 0.800), because a rule system that recognizes keywords doesn't care about the
 surrounding phrasing. The **retrieval baseline** also falls (0.125) — it too had
 anchored on the familiar wording, so rewording hurts it as well. Only the learned model
-is *catastrophic* here (0.000). This is the cleaner reading: identifier changes
-(`a,b` -> `left,right`) left retrieval strong (0.683), but rewording broke both the
-learned model and the retriever.
+is *catastrophic* here (0.000). This is the cleaner reading: the mixed
+identifiers-plus-family shift (`a,b` -> `left,right`, with `families="all"`) left retrieval strong (0.683), but rewording broke both the
+learned model and the retriever — with the caveat that the 0.683 fall is itself a
+mixed-factor change (P0-03), so we do not attribute it to variable names alone.
 
 So the model's 0.900 in-distribution score was at least partly **tied to the phrasing it
 saw**. It had learned that this kind of sentence maps to that program. Whether it has
@@ -147,6 +173,9 @@ understanding of what we had built.
    **Result:** 0.350 — a big but partial drop.
    **Ruled out:** pure name-memorization (it still fails partly, but names aren't the
    whole story).
+   **Still open (P0-03):** the condition also changed wording-family coverage
+   (`families="all"` in the new-identifier pool), so 0.350 is a mixed-factor shift;
+   an identifier-only effect needs the factorial described above.
 
 ## The honest takeaway
 

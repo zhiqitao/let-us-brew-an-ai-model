@@ -288,20 +288,24 @@ the mechanism behind it.
 This closes off the naive fix ("just add composites to the data") *for the partitions and
 budgets we tested*. Composition here is not a matter of having seen a combination —
 **under everything we have tested**, it does not emerge from exposure to a few
-combinations or from diversifying the phrasing of the exposed ones. We are careful about
+combinations or from identifier-diversifying the exposed ones (that condition varied
+identifier sets, not wording families — P1-05). We are careful about
 the word "structural": this is a strong empirical finding about *this model, this task,
 this training regime*. It is not a proof that tiny models "cannot compose" in general — it
 is a measurement that, in this setup, the tested interventions did not produce transfer to
 held-out composites. Whether some other intervention (different optimization, more diverse
-*combinations* rather than more diverse phrasings of the same ones) could produce it is a
+*combinations* rather than more identifier variants of the same ones) could produce it is a
 separate, open question we have not closed.
 
-One step further: since diversity was the lever that *did* fix surface robustness
-(Chapter 13), we tested whether *diversifying* the composite exposure unlocks
-composition. We diversified the surface of the exposed combinations (the same five
-composite operations rendered across many phrasings and identifier-sets) and held out
+One step further: since diversity looked like the lever that widened surface coverage
+(Chapter 13 — itself now recorded as a flawed 42-versus-1,200 construction, P0-02), we
+tested whether *diversifying* the composite exposure unlocks
+composition. What we actually ran was an **identifier-diversified composite exposure**:
+the same five composite operations, each with only one renderer wording family, rendered
+under two identifier sets — so this expanded identifiers, not wording-family variety
+(P1-05) — and we held out
 one composite operation entirely. The result again was a flat **0.000** on the
-held-out operation, whether the exposure was minimally or highly diverse.
+held-out operation, whether the exposure was minimally or highly identifier-diversified.
 
 So the diversity lever did **not** transfer to composition in this test. Surface
 diversity diversifies the *outer form* of a combination; composition appeared to need

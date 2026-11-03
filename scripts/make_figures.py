@@ -143,18 +143,22 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=FS_TICK)
 ax.set_ylim(0, 1.30)  # headroom for the rotated value labels
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
-ax.set_title("Surface generalization\n(one seed, n=600 per condition)",
+ax.set_title("Surface generalization\n(one seed; 600 / 600 / 480 records)",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=34)
 # legend above the axes (outside the plot) so it cannot collide with the tall
 # reworded-wording bar's 0.875 value label
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=3,
           frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
 ax.grid(axis="y", alpha=0.28)
-# raw counts (of 600) + provenance caveat (P0-02 / 15.1): historical excluded-
-# family membership not re-verified on the original scored file.
+# raw counts + provenance caveats (P0-03 / P0-04): in-dist and new-ID arms are
+# 600 records each (10 ops x 60); the reworded arm is 480 (8 ops x 60 -- abs_of
+# and cond_abs_max have no held-out family), and the new-ID arm changes
+# identifiers AND wording-family coverage together. Historical excluded-family
+# membership not re-verified on the original scored file.
 ax.text(0.5, -0.26,
-        "raw counts of 600 (in-dist / new IDs / reworded):\n"
-        "MODEL 540/210/0  ·  TEMPLATE 480/480/525  ·  RETRIEVAL 600/410/75\n"
+        "raw counts (in-dist & new IDs of 600; reworded of 480):\n"
+        "MODEL 540/210/0  ·  TEMPLATE 480/480/420  ·  RETRIEVAL 600/410/60\n"
+        "new-ID arm = mixed factors (P0-03); reworded arm = 8 ops x 60 (P0-04);\n"
         "held-out wording-family membership not re-verified on the scored file",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=INK)
@@ -162,11 +166,13 @@ fig.tight_layout()
 save(fig, "fig_surface.png")
 
 # ==========================================================================
-# 3. Data scaling -- Figure 11.1 (measured, one seed)
+# 3. Data scaling -- Figure 11.1 (FLAWED HISTORICAL RUN, P0-01)
 # Values exact to artifacts/manifests/data_scaling.json:
 #   0.100 / 0.098 / 0.300 / 0.641 over one 540-record pool_test.
 # Raw counts (from ch11): 54/540, 53/540, 162/540, 346/540.
-# P1-11: mark one seed / 540 test records / coverage unverified on the plot.
+# P0-01: each arm is a prefix of an operation-ordered pool, covering
+#   1/1/3/8 of the 10 operations -- the curve tracks operation coverage,
+#   not record count. Label the plot as a flawed historical run.
 # ==========================================================================
 fig, ax = plt.subplots(figsize=(5.5, 4.2))
 sizes = [100, 300, 1000, 3000]
@@ -186,32 +192,35 @@ ax.set_ylabel("pass@1", fontsize=FS_LABEL)
 ax.set_xticks(sizes)
 ax.set_xticklabels([labelsize[s] for s in sizes], fontsize=FS_TICK)
 ax.set_ylim(-0.14, 1.10)
-ax.set_title("Data scaling (measured, one seed)",
+ax.set_title("Data scaling -- flawed historical run:\noperation coverage, not data count",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
 ax.grid(alpha=0.28)
-# P1-11 scope banner: one seed, 540 test records, coverage unverified.
+# P0-01 scope banner: the arms cover 1/1/3/8 of the 10 operations.
 ax.text(0.5, 0.96,
-        "one seed  ·  540 test records  ·  coverage unverified",
+        "FLAWED RUN (P0-01)  ·  arms cover 1/1/3/8 of 10 operations  ·  one seed",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=RED, fontweight="bold")
 ax.text(0.5, -0.26,
-        "counts = successes / 540 shared pool_test records",
+        "counts = successes / 540 shared pool_test records;\n"
+        "prefix-of-operation-ordered-pool arms -- a balanced,\n"
+        "operation-stratified rerun is required",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=INK)
 fig.tight_layout()
 save(fig, "fig_data_scaling.png")
 
 # ==========================================================================
-# 4. Diversity vs quantity -- Figure 13.1 (measured, one seed)
+# 4. Diversity vs quantity -- Figure 13.1 (FLAWED CONSTRUCTION, P0-02)
 # Values exact to artifacts/manifests/diversity.json:
 #   minimal 0.500 in-dist / 0.000 surface ; high 1.000 / 1.000 (n_train=1200, seed 0).
-# P1-08/13.1: title + legend must say "covered alternate surfaces", NOT
-#   unseen-family generalization. The high-diversity 1.000 is coverage of
-#   wording families seen in training.
+# P0-02: the arms were NOT the same count -- the high-diversity pool realized
+#   only 42 records (21 wording-family entries x 2 identifier sets) against the
+#   minimal arm's 1,200. Relabel as coverage on unequal arms, not an
+#   equal-count comparison, and not unseen-family generalization.
 # Grayscale-safe: solid vs hatched bars + direct value labels.
 # ==========================================================================
 fig, ax = plt.subplots(figsize=(5.6, 4.4))
-labels = ["minimal diversity", "high diversity"]
+labels = ["minimal diversity\n(1,200 records)", "high diversity\n(42 records)"]
 in_d = [0.500, 1.000]
 surf = [0.000, 1.000]
 x = np.arange(len(labels)); w = 0.3
@@ -226,12 +235,13 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=FS_TICK)
 ax.set_ylim(0, 1.18)
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
-ax.set_title("Diversity vs quantity:\ncovered alternate surfaces",
+ax.set_title("Diversity vs quantity (flawed):\ncoverage on unequal arms",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
 ax.text(0.5, -0.22,
-        "same 1,200-record count, same test, one seed --\n"
-        "the high-diversity 1.000 is COVERAGE of trained\n"
-        "wording families, not unseen-family generalization",
+        "NOT the same count: high arm realized 42 records\n"
+        "vs minimal 1,200 (P0-02); same test, one seed --\n"
+        "the high-diversity 1.000 is COVERAGE of 42 trained\n"
+        "mappings, not unseen-family generalization",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=INK)
 ax.legend(loc="upper left", frameon=False, fontsize=FS_LEGEND, labelcolor=INK)

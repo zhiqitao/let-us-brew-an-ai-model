@@ -11,7 +11,9 @@ is trivial — of course it can reproduce what it saw. If it has *learned*, then
 apply the mapping to things it never saw. Our Stage-1 result said the model gets
 ~90% on the pilot's test records, which is a hint that it learned something more than
 literal reproduction. But that result reused training prompt strings, so it is not by
-itself evidence of transfer to a new prompt. So we test memorization explicitly, and we
+itself evidence of transfer to a new prompt — precisely, the pilot's 0.897 is
+single-sample correctness for repeated previously-seen prompt strings under fresh
+execution values, not prompt generalization. So we test memorization explicitly, and we
 are careful about what "new" means.
 
 This is the most basic honesty check we can run, and it is worth doing before any of

@@ -116,13 +116,13 @@ unchanged from the run manifests.
 | Run ID | Question (experiment) | Headline result |
 |------------------------|--------------------------|--------------------------------------------------------|
 | `stage1_seed0` | Stage 1 pilot | in-dist 0.897; final loss 5.84→0.0208. Note: `stage1.json` preserves the pre-fix 0.000 evaluation referenced by Appendix B.1 |
-| `stage3_surface` | Stage 3 surface | in-dist 0.900; new-IDs 0.350; held-out wording 0.000 |
+| `stage3_surface` | Stage 3 surface | in-dist 0.900; new-IDs 0.350 (mixed factors — identifiers *and* wording-family coverage, P0-03); held-out wording 0.000 over 480 records (8 ops × 60, P0-04) |
 | `stage4_pilot` | Stage 4 composition baseline | in-dist 0.9167 (n=60); composition 0.000 |
 | `stage4_6p5m` | Stage 4 — 6.5M | in-dist 0.897; composition 0.000 |
 | `stage4_10m` | Stage 4 — 10.2M | in-dist 0.773; composition 0.000 |
 | `stage4_29m` | Stage 4 — 29.3M | in-dist 0.897; composition 0.000 |
-| `data_scaling` | Data scaling | in-dist 0.100→0.641 (100→3000) |
-| `diversity` | Quantity vs diversity | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 (1200 examples, fixed across both) |
+| `data_scaling` | Data scaling | in-dist 0.100→0.641 (100→3000) — **confounded historical run**: arms are prefixes of an operation-ordered pool covering 1/1/3/8 of 10 operations (P0-01), so this is operation coverage, not a record-count curve |
+| `diversity` | Quantity vs diversity | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 — **realized 42 records (high) vs 1,200 (minimal)**, not the requested 1,200/1,200 (P0-02); the 1.000 is coverage of 42 exact mappings |
 | `memorization` | Memorization | 59/60 held-out; held-out program probe → general program |
 | `continual` | Continual learning | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | `composition_exposure_pilot` | Composition exposure | exposed 0.667; held-out 0.000; in-dist 1.000 |
@@ -322,11 +322,13 @@ run that.
   attach error bars to the in-distribution spread (0.897 / 0.773 / 0.897) in Chapter
   12. Treat it as approximate, not an exact plateau.
 - **Genuinely-held-out wording families for the *diversity* run.** The ch13
-  high-diversity model trained on *all* families × both id-sets, so its 1.000
-  surface score is coverage, not generalization to a never-seen family.
+  high-diversity model trained on *all* families × both id-sets — just **42 realized
+  records** (P0-02) — so its 1.000
+  surface score is coverage, not generalization to a never-seen family, and the arms
+  were not equal-count (42 vs 1,200).
   The ch15 surface model, by contrast, trained on *all-but-the-last-family* per
   operation and was tested on that held-out last family — so its 0.000 is an
-  **intended** held-out-family result. We qualify "genuine": the audit that reported zero
+  **intended** held-out-family result (over 480 records, 8 operations — P0-04). We qualify "genuine": the audit that reported zero
   exact prompt-string overlap ran on *regenerated* samples with the current generator,
   not on the originally scored files, and exact-string disjointness does not by itself
   prove wording-family exclusion. Historical family exclusion for that scored run was
@@ -430,7 +432,9 @@ body chapters stand as recorded.
 
 Stable across seeds: minimal-diversity sits at ~0.5 in-distribution / ~0 surface,
 high-diversity at ~1.0 / ~1.0. The Chapter 13 swing is not a single-seed accident;
-its coverage-vs-generalization caveat is unchanged by replication.
+its coverage-vs-generalization caveat is unchanged by replication — and every seed
+re-built the same **42-versus-1,200** pools (P0-02), so the replication repeats the
+construction flaw rather than establishing an equal-count effect.
 
 **Table C.9 — Data scaling across seeds (in-dist pass@1)**
 
@@ -442,10 +446,14 @@ its coverage-vs-generalization caveat is unchanged by replication.
 | 3000 | 0.641 | 0.748 | 0.748 |
 
 Step-budget caveat: the re-runs did not share a single step budget — seed 0 ran at
-the book's 800 steps, seeds 1 and 2 at 1000. The monotone data-size trend holds on
-every seed; only the size-3000 absolute moves with the budget (0.641 at 800 steps vs
+the book's 800 steps, seeds 1 and 2 at 1000. Construction caveat (P0-01): every seed
+re-ran the same prefix-of-an-operation-ordered-pool arms (1/1/3/8 of the ten
+operations), so what the table shows is that the **confound** is deterministic — the
+monotone pattern repeats because the coverage slice repeats, not because record count
+was isolated. Only the size-3000 absolute moves with the budget (0.641 at 800 steps vs
 0.748 at 1000, and seed 1 = seed 2 = 0.748 at the same 1000-step budget). The robust
-claim is therefore the monotone trend, not any single point.
+claim is therefore the repeatability of the recorded pattern, not a data-size trend;
+a balanced, operation-stratified rerun is required before any record-count claim.
 
 **Table C.10 — Pilot (Stage-1) in-distribution across seeds**
 
@@ -463,16 +471,18 @@ the seed-0 figure quoted throughout the book is the manifest-backed 0.897 in
 
 **Table C.11 — Continual learning across seeds**
 
-| seed | sequential A-retention | sequential B-acquisition | replay A-retention | replay B-acquisition |
+| seed | sequential A-retention | sequential B-acquisition | joint/interleaved A-retention | joint/interleaved B-acquisition |
 |------|------|------|------|------|
 | 1 | 0.000 | 0.889 | 1.000 | 0.889 |
 | 2 | 0.000 | 0.861 | 1.000 | 0.889 |
 
-"Replay" here is the interleaved-from-the-start condition (the chapter's joint-training
-control), with the same naming caveat as Chapter 18. Stable across seeds: sequential
+"Replay" here (as the chapter originally labeled it) is the interleaved-from-the-start
+condition (the chapter's joint-training control), not true post-A experience replay; we
+now call it **joint/interleaved (A+B from start)** throughout (P1-14), with the same
+naming caveat as Chapter 18. Stable across seeds: sequential
 training catastrophically forgets A (retention 0.000) while still acquiring B
-(~0.87–0.89), and replay retains A (1.000) while acquiring B (0.889). The
-replay-vs-sequential distinction is robust, not a single-seed artifact.
+(~0.87–0.89), and joint/interleaved retains A (1.000) while acquiring B (0.889). The
+joint/interleaved-vs-sequential distinction is robust, not a single-seed artifact.
 
 **Eval-pipeline robustness fixes (no measured value changed).** Two cross-version
 robustness fixes were needed so native re-runs work in the current environment, and

@@ -37,7 +37,10 @@ We run this under two protocols, changing only the *order and mixing*, not the m
 data, or optimizer:
 
 - **sequential:** learn A fully, then learn B with no A exposure.
-- **replay / mixed:** interleave A and B examples throughout.
+- **joint / interleaved (A+B from start):** interleave A and B examples throughout
+  (earlier drafts of this chapter labeled this condition "replay"; we now call it
+  joint/interleaved, because true replay means continuing from an A-trained checkpoint
+  with A examples mixed back in — see the note below).
 
 Holding model, data, and optimizer constant while changing only the training
 *schedule* is a textbook application of our one-variable discipline. If the results
@@ -87,16 +90,19 @@ this jointly trained model has no separate "after A" point (A and B were trained
 together from the start), so its A accuracy is a final accuracy, not a retention score
 relative to an A-only checkpoint.
 
-One honest note on the term "replay." This design interleaves A and B **from the start**
-— which is really *joint training* on both, not "learn A first, then continue to B
-while replaying A." Both answers are legitimate, but they are different questions. The
+One honest note on the term "replay," which earlier drafts used for the interleaved
+condition. This design interleaves A and B **from the start** — which is *joint
+training* on both, not "learn A first, then continue to B while replaying A." We have
+therefore renamed the condition **joint/interleaved (A+B from start)** wherever it
+appeared as "replay," because "replay" properly names a different design. Both designs
+are legitimate, but they are different questions. The
 sequential condition is a true continual-learning setup (does learning B destroy A? —
 yes, 0.000). The interleaved condition is a joint-training control (if both are seen
 together, is there a forgetting problem at all? — no, 1.000). The timelines below make
 the three designs explicit; note that the third (a true replay-after-A-first) was **not**
-run — it is a separate experiment, not the one labeled "replay" in this chapter.
+run — it is a separate experiment, not the condition this chapter measures.
 
-![Sequential vs joint vs replay](figures/fig_continual_timelines.png)
+![Sequential, joint/interleaved A+B from start, and true replay-after-A (not run)](figures/fig_continual_timelines.png)
 
 What this establishes is that **the forgetting seen under sequential training disappears
 when the model is trained jointly on both.** It does not demonstrate that a replay
@@ -110,13 +116,14 @@ than sequenced. That is exactly the procedure finding. We did **not** quantify w
 time or compute precisely enough to claim one schedule is "faster" or "cheaper," so we make
 no such claim here; the measured comparison is final task accuracy, not resource cost.
 
-**A note on replication across seeds.** The replay-vs-sequential distinction
+**A note on replication across seeds.** The joint/interleaved-vs-sequential distinction
 reproduces under fresh trainings at seeds 1 and 2. Sequential training ends with
 A-retention **0.000 / 0.000** while still acquiring B (**0.889 / 0.861**); the
-interleaved condition (labeled "replay" in this chapter) retains A at
+interleaved condition (the joint/interleaved arm, formerly labeled "replay" in this
+chapter) retains A at
 **1.000 / 1.000** while acquiring B at **0.889 / 0.889** (report:
 `docs/reviews/loop/multiseed_replication.md`). So across seeds, sequential
-forgets A completely while acquiring B (~0.87–0.89), and replay keeps A at 1.0
+forgets A completely while acquiring B (~0.87–0.89), and joint/interleaved keeps A at 1.0
 while acquiring B just as well — the distinction is not a single-seed artifact.
 
 ## Why this result is so striking
