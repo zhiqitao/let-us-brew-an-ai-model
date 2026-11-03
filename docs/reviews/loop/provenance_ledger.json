@@ -1,0 +1,302 @@
+[
+  {
+    "manifest": "composition_diversity_pilot.json",
+    "experiment_id": "composition_diversity_pilot",
+    "seed": null,
+    "steps": null,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "composition_exposure_pilot.json",
+    "experiment_id": "composition_exposure_pilot",
+    "seed": 0,
+    "steps": 1500,
+    "n_per_op": 200,
+    "model_params": 884224,
+    "final_loss": 0.0187,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "composition_exposure_seed1.json",
+    "experiment_id": "composition_exposure_seed1",
+    "seed": 1,
+    "steps": 1500,
+    "n_per_op": 200,
+    "model_params": 884224,
+    "final_loss": 0.0179,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "composition_exposure_seed2.json",
+    "experiment_id": "composition_exposure_seed2",
+    "seed": 2,
+    "steps": 1500,
+    "n_per_op": 200,
+    "model_params": 884224,
+    "final_loss": 0.0218,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "continual.json",
+    "experiment_id": "continual.json",
+    "seed": 0,
+    "steps": 700,
+    "n_per_op": 70,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "continual_preB.json",
+    "experiment_id": "continual_preB.json",
+    "seed": 0,
+    "steps": 700,
+    "n_per_op": 70,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "continual_seed1.json",
+    "experiment_id": "continual_seed1.json",
+    "seed": 1,
+    "steps": 600,
+    "n_per_op": 80,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "continual_seed2.json",
+    "experiment_id": "continual_seed2.json",
+    "seed": 2,
+    "steps": 600,
+    "n_per_op": 80,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "data_scaling.json",
+    "experiment_id": "data_scaling.json",
+    "seed": 0,
+    "steps": 800,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "data_scaling_seed1.json",
+    "experiment_id": "data_scaling_seed1.json",
+    "seed": 1,
+    "steps": 1000,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "data_scaling_seed2.json",
+    "experiment_id": "data_scaling_seed2.json",
+    "seed": 2,
+    "steps": 1000,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "decode_ablation.json",
+    "experiment_id": "decode_ablation",
+    "seed": 0,
+    "steps": null,
+    "n_per_op": 200,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "decode_ablation_disk_tok.json",
+    "experiment_id": "decode_ablation",
+    "seed": 0,
+    "steps": null,
+    "n_per_op": 200,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "dedup_audit.json",
+    "experiment_id": "dedup_audit.json",
+    "seed": null,
+    "steps": null,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "diversity.json",
+    "experiment_id": "diversity.json",
+    "seed": 0,
+    "steps": 900,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "diversity_seed1.json",
+    "experiment_id": "diversity_seed1.json",
+    "seed": 1,
+    "steps": 900,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "diversity_seed2.json",
+    "experiment_id": "diversity_seed2.json",
+    "seed": 2,
+    "steps": 900,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "judge_mutation.json",
+    "experiment_id": "judge_mutation.json",
+    "seed": null,
+    "steps": null,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "memorization.json",
+    "experiment_id": "memorization.json",
+    "seed": null,
+    "steps": null,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "stage1.json",
+    "experiment_id": "stage1_seed0",
+    "seed": 0,
+    "steps": 1500,
+    "n_per_op": null,
+    "model_params": 884224,
+    "final_loss": 0.0208,
+    "tokenizer_vocab": 291
+  },
+  {
+    "manifest": "stage1_results.json",
+    "experiment_id": "stage1_results.json",
+    "seed": null,
+    "steps": null,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "stage1_seed1.json",
+    "experiment_id": "stage1_seed1",
+    "seed": 1,
+    "steps": 1500,
+    "n_per_op": null,
+    "model_params": 884224,
+    "final_loss": 0.0196,
+    "tokenizer_vocab": 291
+  },
+  {
+    "manifest": "stage1_seed2.json",
+    "experiment_id": "stage1_seed2",
+    "seed": 2,
+    "steps": 1500,
+    "n_per_op": null,
+    "model_params": 884224,
+    "final_loss": 0.0229,
+    "tokenizer_vocab": 291
+  },
+  {
+    "manifest": "stage3_surface.json",
+    "experiment_id": "stage3_surface",
+    "seed": 0,
+    "steps": 1500,
+    "n_per_op": 60,
+    "model_params": 884224,
+    "final_loss": 0.0218,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "stage3_surface_seed1.json",
+    "experiment_id": "stage3_surface_seed1",
+    "seed": 1,
+    "steps": 1500,
+    "n_per_op": 130,
+    "model_params": 884224,
+    "final_loss": 0.0275,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "stage3_surface_seed2.json",
+    "experiment_id": "stage3_surface_seed2",
+    "seed": 2,
+    "steps": 1500,
+    "n_per_op": 130,
+    "model_params": 884224,
+    "final_loss": 0.0186,
+    "tokenizer_vocab": null
+  },
+  {
+    "manifest": "stage4_composition.json",
+    "experiment_id": "stage4_composition_seed0",
+    "seed": 0,
+    "steps": 800,
+    "n_per_op": null,
+    "model_params": 29290240,
+    "final_loss": 0.02,
+    "tokenizer_vocab": 291
+  },
+  {
+    "manifest": "stage4_composition_10m.json",
+    "experiment_id": "stage4_composition_seed0",
+    "seed": 0,
+    "steps": 800,
+    "n_per_op": null,
+    "model_params": 10195776,
+    "final_loss": 0.0503,
+    "tokenizer_vocab": 291
+  },
+  {
+    "manifest": "stage4_composition_6p5m.json",
+    "experiment_id": "stage4_composition_seed0",
+    "seed": 0,
+    "steps": 1000,
+    "n_per_op": null,
+    "model_params": 6500352,
+    "final_loss": 0.0347,
+    "tokenizer_vocab": 291
+  },
+  {
+    "manifest": "stage4_scaling.json",
+    "experiment_id": "stage4_scaling.json",
+    "seed": 0,
+    "steps": null,
+    "n_per_op": null,
+    "model_params": null,
+    "final_loss": null,
+    "tokenizer_vocab": null
+  }
+]

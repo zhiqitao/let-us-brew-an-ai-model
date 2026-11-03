@@ -146,9 +146,9 @@ not test (its test reuses training prompt strings).
 ## What the model cannot do
 
 **It cannot survive changes to the surface form.** Change the variable names from
-`a,b` to `left,right` (identical computation) and performance falls to 0.350 — with the
-caveat that this arm also changed wording-family coverage, so it is a mixed-factor
-shift, not an identifier-only one (P0-03). Rephrase
+`a,b` to `left,right` (identical computation) and performance falls to 0.350 — a
+mixed-factor shift, not an identifier-only one (P0-03; the evidence table and
+Chapter 15 carry the justification). Rephrase
 the instruction with a wording family the model never saw (identical computation) and
 performance falls to **0.000** — below *both* baselines — over 480 records covering 8
 of the 10 operations (P0-04). This is Question-3 failure:
@@ -188,8 +188,8 @@ lacked a compositional engine here.
 The second half of the map is about levers, and it is where the surprising findings
 live. We tried three ways to move the boundary — more capacity, more data, and a
 different training procedure. More capacity did nothing to composition (0.000 at all
-four sizes); more data was a **confounded** sweep (its arms differ in operation
-coverage, so it supports no record-count reading at all — P0-01) and was in any case
+four sizes); more data was the **confounded** sweep of Chapter 11 (P0-01; evidence
+table), which supports no record-count reading and was in any case
 only evaluated on the in-distribution task (composition was
 not tested in the scaling run); and a different training procedure was the decisive
 lever for a *different* problem (continual learning), not for composition. This
@@ -201,7 +201,8 @@ with the honest caveat that the data lever has not yet been properly measured.
 The sharpest negative result in the whole book is the model-size sweep, and it deserves
 its own table because it is the claim a reader would most want to test. We ran the
 composition experiment across a ~33× range of capacity. We did **not** hold every
-hyperparameter constant — the runs used different step counts (see Appendix C), so this
+hyperparameter constant — the runs used different step counts (see Appendix C; the
+model-size-budget row of the evidence table, Chapter 11), so this
 is a sweep across capacity with some training-budget variation alongside it, not a
 strictly-controlled size-only comparison.
 
@@ -291,9 +292,8 @@ as valuable as any model number:
   were **not** the same count (42 realized records vs 1,200 — P0-02), so what survives
   is a coverage observation, not an equal-count causal result: diversity — not quantity — remains the
   *suspected* driver of how much surface the model covers, pending a corrected rerun.
-  (This is coverage of the surfaces in the
-  training family; it is not established transfer to a wording family excluded from
-  training.)
+  (Coverage of the training family's surfaces, not transfer — evidence table,
+  Chapter 11.)
 - **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
   (1.000), proving it was "too easy," and forced us to build harder splits. And the
   moments the model *fell below* a baseline were the most informative results.
@@ -318,7 +318,7 @@ as valuable as any model number:
 > coverage into compositional capability: the size sweep changed training budgets and
 > tokenizer, so it is not a size-only intervention, and the data-count sweep changed
 > operation coverage along with count and did not
-> evaluate composition at all. We also tested a scheduling change — sequential vs. joint
+> evaluate composition at all (evidence table, Chapter 11). We also tested a scheduling change — sequential vs. joint
 > training — but that measured retention of *separately learned* task groups, not
 > composition, so it likewise does not speak to the composition boundary. The initial
 > scaling and diversity studies require corrected controls before they can support

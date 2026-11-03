@@ -98,7 +98,8 @@ breakdown, so the aggregate should not be read as per-primitive accuracy). (This
 0.9167, n=60 — is the composition run's in-distribution score on primitives; the
 pilot's first pass scored
 0.897 on its own held-out split — see Chapter 10 and the cost table, so the two
-"familiar-prompt" figures are two measurements, not a discrepancy.) But on the
+"familiar-prompt" figures are two measurements with different denominators, not a
+discrepancy — denominator row, evidence table, Chapter 11.) But on the
 composite operations, it scores **0.000** with the same aggregate reading. Not 0.1, not
 "sometimes," not "close." Zero. The model never produced a correct program for any
 composite operation it was asked — the composites were held out, so it never saw them —
@@ -131,10 +132,8 @@ This is the cleanest negative result in the book, and it is the book's central
 finding. Let us unpack it.
 
 The model scores **0.9167 in aggregate** (n=60; see Appendix C.5) on the ten seen operation IDs, and **0.000**
-on the composites it never saw. To unpack: on the primitives the aggregate is high, but
-we did not publish a per-operation breakdown, so we do not say "it *knows* `abs` at 0.9167
-and `add` at 0.9167" as individual facts — we say the *family* of primitives is largely
-solved in aggregate. Yet the composites — which combine those same primitives — score
+on the composites it never saw — the aggregate reading and the two-measurements
+point are spelled out above. Yet the composites — which combine those same primitives — score
 0.000. It is as if the model has access to two perfectly good operations, but the
 compositions that must chain them together go nowhere. It cannot take the output of one
 primitive and feed it into another in the simplest combination we asked, even though every
@@ -324,11 +323,10 @@ no successful held-out composite completion under the interventions we tried.** 
 qualification: the recorded aggregate stage rates for the held-out composites showed
 syntax_rate = 0.0 — the failures were logged before execution — so the **cause** of the
 zero is not resolved by the aggregate (it could be generation/parsing, a length limit,
-optimization, or a capability limit; see Appendix B.10). A decode/termination ablation
-has since narrowed that list — the 0.000 persists under greedy and up-to-256-token
-sampled decoding and an alternative NUL extraction, so decoding, generation length, and
-extraction are ruled out and the failure sits at the first generated tokens (see the
-ablation note above) — but the mechanism behind that first-token collapse is still not
+optimization, or a capability limit; see Appendix B.10). The decode/termination
+ablation described above narrowed that list — decoding, generation length, and
+extraction are ruled out and the failure sits at the first generated tokens —
+but the mechanism behind that first-token collapse is still not
 fully isolated. What we can claim is the
 measured outcome and that the interventions we tried did not produce a success. This is
 not a statement about "intelligence" or about "what models will eventually do." It is a

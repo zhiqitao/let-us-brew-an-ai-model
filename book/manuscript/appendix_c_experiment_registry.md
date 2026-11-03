@@ -145,6 +145,78 @@ unchanged from the run manifests.
 | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json | stage4_exposure.pt |
 | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json | stage4_compdiv_{minimal,high}_diversity_pilot.pt |
 
+## Run provenance ledger
+
+Tables C.4 and C.5 cover the headline runs. The ledger below is the compact,
+per-run provenance record for **every** manifest we hold — 30 in total — so a
+reader can see, run by run, the model-visible counts the manifest actually
+carries: manifest file, experiment ID, seed, training steps, `n_per_op`
+(records per operation), model parameters, final *training* loss, tokenizer
+vocabulary size, and the run's status. A dash means the ledger found no
+model-visible value for that field in that manifest — not zero, and not "not
+run." The configuration fields are packed into one column in the same
+`seed · steps · n_per_op · params · final loss · vocab` order that Table C.5
+uses, so the two tables can be read against each other.
+
+**Table C.12 — Run provenance ledger: every manifest, its recorded configuration, and its status**
+
+| Manifest | Experiment ID | Config (seed · steps · n_per_op · params · final loss · vocab) | Status |
+|---|---|---|---|
+| `composition_diversity_pilot.json` | `composition_diversity_pilot` | — · — · — · — · — · — | Scored composition-diversity pilot (Ch. 16); per-arm final losses are recorded under each arm, the ledger found no top-level config fields |
+| `composition_exposure_pilot.json` | `composition_exposure_pilot` | 0 · 1500 · 200 · 884,224 · 0.0187 · — | Scored composition-exposure run (Ch. 16) |
+| `composition_exposure_seed1.json` | `composition_exposure_seed1` | 1 · 1500 · 200 · 884,224 · 0.0179 · — | Multi-seed re-run — **matched** to the seed-0 configuration |
+| `composition_exposure_seed2.json` | `composition_exposure_seed2` | 2 · 1500 · 200 · 884,224 · 0.0218 · — | Multi-seed re-run — **matched** to the seed-0 configuration |
+| `continual.json` | `continual.json` | 0 · 700 · 70 · — · — · — | Scored sequential continual-learning run (Ch. 18) |
+| `continual_preB.json` | `continual_preB.json` | 0 · 700 · 70 · — · — · — | Same-run pre-B intermediate evaluation (Appendix C.8) |
+| `continual_seed1.json` | `continual_seed1.json` | 1 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 steps / `n_per_op` 80 vs 700 / 70): not a matched replication |
+| `continual_seed2.json` | `continual_seed2.json` | 2 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 / 80 vs 700 / 70): not a matched replication |
+| `data_scaling.json` | `data_scaling.json` | 0 · 800 · — · — · — · — | Scored data-scaling sweep — **flawed historical construction** (P0-01) |
+| `data_scaling_seed1.json` | `data_scaling_seed1.json` | 1 · 1000 · — · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (1000 vs 800 steps); repeats the P0-01 confound |
+| `data_scaling_seed2.json` | `data_scaling_seed2.json` | 2 · 1000 · — · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (1000 vs 800 steps); repeats the P0-01 confound |
+| `decode_ablation.json` | `decode_ablation` | 0 · — · 200 · — · — · — | Diagnostic decode/termination ablation (Ch. 16), not a scored experiment |
+| `decode_ablation_disk_tok.json` | `decode_ablation` | 0 · — · 200 · — · — · — | Diagnostic ablation variant (regenerated tokenizer on disk), not a scored experiment |
+| `dedup_audit.json` | `dedup_audit.json` | — · — · — · — · — · — | Regenerated diagnostic novelty audit — **not** the originally scored files |
+| `diversity.json` | `diversity.json` | 0 · 900 · — · — · — · — | Scored quantity-vs-diversity run — **flawed historical construction** (P0-02) |
+| `diversity_seed1.json` | `diversity_seed1.json` | 1 · 900 · — · — · — · — | Multi-seed re-run — matched steps, but re-builds the same 42-vs-1,200 pools (P0-02) |
+| `diversity_seed2.json` | `diversity_seed2.json` | 2 · 900 · — · — · — · — | Multi-seed re-run — matched steps, but re-builds the same 42-vs-1,200 pools (P0-02) |
+| `judge_mutation.json` | `judge_mutation.json` | — · — · — · — · — · — | Judge mutation suite (Ch. 17) |
+| `memorization.json` | `memorization.json` | — · — · — · — · — · — | Scored memorization probe (Ch. 14) |
+| `stage1.json` | `stage1_seed0` | 0 · 1500 · — · 884,224 · 0.0208 · 291 | **Pre-fix 0.000 evaluation record** (Appendix B.1) — not the scored 0.897 |
+| `stage1_results.json` | `stage1_results.json` | — · — · — · — · — · — | Scored pilot record — the manifest-backed 0.897 |
+| `stage1_seed1.json` | `stage1_seed1` | 1 · 1500 · — · 884,224 · 0.0196 · 291 | Multi-seed re-run — **matched** to the seed-0 configuration |
+| `stage1_seed2.json` | `stage1_seed2` | 2 · 1500 · — · 884,224 · 0.0229 · 291 | Multi-seed re-run — **matched** to the seed-0 configuration |
+| `stage3_surface.json` | `stage3_surface` | 0 · 1500 · 60 · 884,224 · 0.0218 · — | Scored Stage-3 surface run — **flawed historical construction** (P0-03, P0-04) |
+| `stage3_surface_seed1.json` | `stage3_surface_seed1` | 1 · 1500 · 130 · 884,224 · 0.0275 · — | Multi-seed re-run — **config mismatch** vs seed 0 (`n_per_op` 130 vs 60): not a matched replication |
+| `stage3_surface_seed2.json` | `stage3_surface_seed2` | 2 · 1500 · 130 · 884,224 · 0.0186 · — | Multi-seed re-run — **config mismatch** vs seed 0 (`n_per_op` 130 vs 60): not a matched replication |
+| `stage4_composition.json` | `stage4_composition_seed0` | 0 · 800 · — · 29,290,240 · 0.0200 · 291 | Scored **29.3M** size point — despite its name, this manifest is the 29.3M run |
+| `stage4_composition_10m.json` | `stage4_composition_seed0` | 0 · 800 · — · 10,195,776 · 0.0503 · 291 | Scored **10.2M** size point |
+| `stage4_composition_6p5m.json` | `stage4_composition_seed0` | 0 · 1000 · — · 6,500,352 · 0.0347 · 291 | Scored **6.5M** size point — 1000 steps, so its training budget differs from the 800-step points |
+| `stage4_scaling.json` | `stage4_scaling.json` | 0 · — · — · — · — · — | The 0.88M Stage-4 baseline evaluation of `stage1.pt` (`sample=60`, `comp_per_op=40`) |
+
+**What the ledger's mismatches mean.** The multi-seed re-runs are robustness
+checks, not all perfect matched replications, and the ledger records which is
+which. The **composition-exposure** re-runs (seeds 1 and 2) *are* matched: all
+three seeds ran 1500 steps at `n_per_op` 200 on the 884,224-parameter model.
+The other three re-run families used a **different configuration** than their
+seed-0 original: the **surface** re-runs used `n_per_op` 130 against seed 0's
+60; the **data-scaling** re-runs used 1000 steps against seed 0's 800; and the
+**continual** re-runs used 600 steps at `n_per_op` 80 against seed 0's 700 at
+70. Those particular re-runs therefore show that the recorded *pattern* repeats
+under a fresh seed and a nearby budget — they are not like-for-like
+replications of the seed-0 numbers, and we do not read them as such. The
+diversity and pilot re-runs matched their seed-0 steps; the diversity re-runs
+nevertheless repeat the P0-02 construction, because every seed re-built the
+same 42-versus-1,200 pools.
+
+**What the ledger does not ship.** The ledger carries model-visible counts and
+hashes from the manifests only. Per-run **raw per-candidate generations** were
+not archived, and the **exact checkpoints** are not shipped with the book
+(they are large; the repository carries the manifests and scored dataset files,
+not the weights). A reader can therefore verify every count in this ledger
+against the shipped manifests, but cannot re-score the original candidates or
+re-load the original weights without re-training from the recorded
+configuration and seed.
+
 ## The scaling run: an honesty note on "same protocol"
 
 The model-size sweep is often summarized as "same training protocol, only size

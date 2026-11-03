@@ -14,6 +14,25 @@ It is a question worth measuring rather than guessing, because the folklore answ
 helps, and *where* the help stops being worth it, is where the real information is —
 and, as the audit note below shows, our own first attempt did not isolate it.
 
+## How to read the evidence
+
+This chapter opens the experimental part of the book, so we consolidate here the
+small set of caveats that the chapters that follow would otherwise re-justify in
+near-identical words. Each later result still carries its own local caveat,
+immediately next to the number it bounds; what lives only in this table is the
+shared *justification*. Where a chapter repeats one of these points, it now
+points back to this table instead of re-arguing it.
+
+**Table 11.1 — How to read the evidence**
+
+| Caveat | What it means | Where it bites |
+|---|---|---|
+| **Coverage is not transfer.** | A score on prompts, surfaces, or operations the training pool already covers measures *coverage*, not generalization to something never seen. The pilot's 0.897 is single-sample correctness on reused training prompt strings; Chapter 13's 1.000 is coverage of its own training families. | Ch. 10, 11, 13, 14, 20 |
+| **The 0.88M baseline denominator.** | Three "familiar-prompt" numbers — 0.897 (pilot, 300-record test), 0.900 (Stage-3 surface, 600 records), 0.9167 (Stage-4 baseline, n=60) — are three different evaluation sets, not a discrepancy. The figure they agree on is composition 0.000. | Ch. 12, 16, 19, 20 |
+| **Model-size budget differences.** | The size sweep varied training budget and tokenizer alongside size (1,500 / 1,000 / 800 / 800 steps; pilot vs. composition tokenizer), so it is not a size-only intervention. | Ch. 12, 19, 20 |
+| **Old vs. new novelty audits.** | The pilot was audited on the original scored files; the Stage-3 and Stage-4 holdouts were audited on *regenerated* reproductions with the current generator — corroborating, but not proof on the scored artifacts. | Ch. 13, 15, App. C |
+| **Flawed historical constructions.** | Ch. 11's data-scaling sweep (P0-01: operation coverage), Ch. 13's diversity comparison (P0-02: 42 vs. 1,200 records), and Ch. 15's surface rows (P0-03: mixed factors; P0-04: 480-record denominator) are preserved as records of flawed runs. We draw no causal claim from any of them. | Ch. 11, 13, 15, 19, 20 |
+
 **What a later code audit showed — read this before the numbers.** The sweep does not
 change only the data count. The script builds one pool with
 `pool = generate_dataset(n_per_op=400, ...)` and trains on `train = pool[:size]` — a
@@ -60,11 +79,10 @@ with the confound stated, rather than as the clean one-variable claim we meant t
 a common held-out test set (one `pool_test`, 540 records = 10 operations × 54 each
 after the per-op train/test split, reused across sizes), so the rates are integer
 fractions over 540 (54/540 = 0.100, 53/540 = 0.098, 162/540 = 0.300, 346/540 =
-0.641). Because each arm is a prefix of an operation-ordered pool, the arms cover
-1/1/3/8 of the 10 operations while the test covers all ten — so the curve tracks
-operation coverage at least as much as record count. It is kept as a record of how an
-innocent slice construction invalidates a comparison, not as a scaling result; a
-balanced, operation-stratified rerun is required.*
+0.641). The arms cover 1/1/3/8 of the 10 operations while the test covers all ten —
+the coverage confound stated in the audit note above — so the curve is kept as a
+record of how an innocent slice construction invalidates a comparison, not as a
+scaling result.*
 
 One honest caveat about what "more data" means here, on top of the coverage confound.
 Within a single operation family,
@@ -89,8 +107,8 @@ separate "more records helped" from "more operations were covered." We therefore
 no minimum-data requirement, no plateau, and no knee: those lessons would be readings
 of an operation-coverage curve. The honest statement is **four descriptive
 measurements from a confounded sweep**, kept because the failure is instructive (it is
-logged as P0-01 in Appendix B), and to be replaced by a balanced, operation-stratified
-rerun in which every arm includes all ten operations in equal proportion.
+logged as P0-01 in Appendix B); the balanced, operation-stratified rerun that would
+replace it is specified in the audit note above.
 
 ## The motif, restated
 
@@ -205,13 +223,13 @@ not identical across seeds — seed 0 ran at this chapter's 800 steps, seeds 1 a
 
 Four points, each read honestly.
 
-First, these four points are **not** a data-count trend. They are four measurements
-from a sweep whose arms cover 1/1/3/8 of the ten operations: 0.100 at 100 examples →
-0.098 at 300 → 0.300 at 1000 → 0.641 at 3000. The multi-seed re-runs reproduce the
+First, these four points are **not** a data-count trend: 0.100 at 100 examples →
+0.098 at 300 → 0.300 at 1000 → 0.641 at 3000 come from a sweep whose arms cover
+1/1/3/8 of the ten operations, and the multi-seed re-runs reproduce the
 same confounded construction on every seed. We therefore make **no** claim of the form
 "performance improves as example count grows" or "there is a knee at 3000" — those
-would require the balanced, operation-stratified rerun described at the top, which is
-pending (Appendix B, P0-01).
+would require the balanced, operation-stratified rerun specified in the audit note
+above, which is pending (Appendix B, P0-01).
 
 Second, the recorded numbers are for a **multi-operation pool sliced by prefix**, not
 a per-operation requirement. The 3000-record arm trains on eight of the
@@ -222,14 +240,13 @@ model reached 0.641" is the aggregate
 over the whole 3000-record pool with two operations never shown — it does **not** mean every individual
 operation needed 3000 examples, nor that one operation on its own requires 3000. The
 1,400-record pilot is likewise the whole task family, not 1,400 per primitive. (The
-pilot's own 0.897, by contrast, is single-sample correctness for repeated
-previously-seen prompt strings under fresh execution values — not prompt
-generalization; see Chapter 10.)
+pilot's own 0.897 is coverage of seen prompt strings, not prompt generalization —
+the "coverage is not transfer" row of the evidence table above; see Chapter 10.)
 
 Third, the comparison is against a *common* held-out set within the run (one
 `pool_test` reused at every size), which at least keeps the evaluation constant across
 arms — the one part of the design that did hold fixed. It is a different set from the pilot's 300-case test, so these scores are
-not directly comparable to the pilot's 0.897.
+not directly comparable to the pilot's 0.897 (denominator row, evidence table above).
 
 Fourth — and anticipating the rest of the book — the reworded-wording experiment
 (Chapter 15) found the trained model surface-fragile on held-out rewordings, so a higher

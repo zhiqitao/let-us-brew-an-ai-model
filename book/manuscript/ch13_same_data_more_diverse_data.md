@@ -41,9 +41,8 @@ generator that can actually fill both arms to the same count.
 ![Diversity vs quantity — flawed historical run (42 vs 1,200 records)](figures/fig_diversity.png)
 
 *Flawed historical run, relabeled as coverage: the arms were **not** the same count —
-the high-diversity pool realized only **42 records** (21 wording-family entries × 2
-identifier sets) against the minimal-diversity arm's 1,200, because the generator's
-domain is small (P0-02). The minimal-diversity
+the high-diversity pool realized only **42 records** against the minimal-diversity
+arm's 1,200 (P0-02; how the 42 arises is in the audit note above). The minimal-diversity
 condition's surface test falls outside its narrow training surface → 0.000; the
 high-diversity condition's surface test is within its training family set → 1.000
 (coverage of 42 exact mappings, not transfer to an excluded family, and not an
@@ -78,9 +77,9 @@ Because the count was meant to be identical, any difference in the result would 
 diversity — a clean one-variable experiment, and the strongest test of the
 hypothesis.
 
-As built, the second arm could not reach 1,200: the generator's whole diverse domain
-for these ten operations is 42 records, so the realized training sets were **42
-(high diversity) versus 1,200 (minimal diversity)**. The count is not identical — it
+As built, the second arm could not reach 1,200: the realized training sets were **42
+(high diversity) versus 1,200 (minimal diversity)** — the generator's whole diverse
+domain for these ten operations is 42 records (mechanism in the audit note above). The count is not identical — it
 differs by a factor of ~28, in the *opposite* direction from the diversity advantage.
 Any causal reading "diversity alone caused the swing" is therefore unsupported: the
 arms differ in count and diversity at once, and the manifest recorded only the
@@ -207,7 +206,8 @@ split and the held-out wording family, but that audit was run on **regenerated s
 with the current generator, not on the originally scored files. Zero string overlap also
 does not by itself prove the *family* was excluded — construction intent and a regenerated
 diagnostic corroborate that the family was meant to be held out, but we did not
-independently verify exclusion on the historical scored artifacts. The Chapter 13 result,
+independently verify exclusion on the historical scored artifacts (the old-vs-new novelty
+audits row of the evidence table, Chapter 11). The Chapter 13 result,
 by contrast, is a coverage demonstration on a 42-record pool. Only Chapter 15 speaks to generalization to a
 *never-seen* wording; Chapter 13 shows diversity widens the covered surface.
 
@@ -220,8 +220,7 @@ held-out-family test would train on some families and test on one that is never 
 ## The honest caveat
 
 It is worth noting that this experiment was *intended* to measure *surface* diversity at
-fixed count, and did not deliver the fixed count: the high-diversity arm realized 42
-records against 1,200 (P0-02). What the run shows is that
+fixed count, and did not deliver the fixed count (P0-02; the audit note above). What the run shows is that
 varying phrasing and identifiers makes the model cover the alternate surfaces *within
 the tested family set* (the Question-3 boundary) — a coverage result on unequal arms.
 It does **not** show that diversity
@@ -256,9 +255,7 @@ spreading across template families turned a brittle 0.500/0.000 model into one t
 covers 1.000/1.000 of the tested surfaces in our run. Read that
 1.000/1.000 narrowly, in the same breath as we report it: it is a coverage result
 for surfaces *within the tested family set* on this one task — repeatable across
-seeds 0, 1, and 2 (see the multi-seed note above) — on a pool of **42 records** against
-1,200, so transfer to an
-unseen wording family was not demonstrated and the equal-count causal claim is not
-supported. That is the kind
+seeds 0, 1, and 2 (see the multi-seed note above) — on the 42-versus-1,200 pools, so
+the scope limits stated in the honest caveat above apply in full. That is the kind
 of result that changes how a dataset *might* actually be built — as a measured,
 single-run lead worth re-testing under corrected controls, not universal practitioner advice.

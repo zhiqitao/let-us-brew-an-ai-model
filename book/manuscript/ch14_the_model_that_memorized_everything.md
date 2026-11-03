@@ -144,7 +144,8 @@ behaves more like a **learner than a fixed literal-retriever**:
 
 So at the level of *individual records with fresh inputs*, the model is not a literal
 value-parrot: it regenerates a general program for a familiar prompt. **This is real,
-but narrow.** Because the pilot reuses the same prompt strings in training and test, none
+but narrow.** Because the pilot reuses the same prompt strings in training and test
+(coverage is not transfer — evidence table, Chapter 11), none
 of these probes demonstrates transfer to a prompt the model never saw, nor program
 memorization to be absent. That genuinely-new-prompt question is what the surface and
 composition holdouts answer later.
@@ -194,6 +195,6 @@ answer values — a held-out probe yields a general program, not a literal. But 
 did not demonstrate transfer to a genuinely new prompt, and its success is confined to
 the phrasing it saw. So rather than placing it on a single "memorize → learn" ladder, the
 honest statement is more modest: it reliably regenerates correct general programs for
-familiar prompts, and we have *not* verified whether it would do the same for a prompt it
-had never seen. Distinguishing Q1 memorization from Q3 surface-tiedness, and being
+familiar prompts — and the new-prompt question stays open (coverage is not transfer;
+evidence table, Chapter 11). Distinguishing Q1 memorization from Q3 surface-tiedness, and being
 explicit about which one we are looking at, is part of the experiment.

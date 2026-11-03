@@ -107,7 +107,9 @@ are not the same run, so the different in-distribution numbers are not a conflic
 did not test it). We reserve an explicit `0.000` for outcomes we measured and that came out
 negative, and use `—` when the run did not report that figure.*
 
-A few cautions before reading this as a budget. First, the Stage-1 pilot's "1,400 records"
+A few cautions before reading this as a budget — the shared justifications live in the
+evidence table at the start of Chapter 11; what follows is what each caution means for
+*these* rows. First, the Stage-1 pilot's "1,400 records"
 is the **ten-operation familiar-prompt family** total, which contained only **21 distinct
 prompt–program pairs**; it is not a measured per-operation data requirement, and its 0.897
 is single-sample correctness for repeated previously-seen prompt strings under fresh
@@ -138,21 +140,21 @@ only in-distribution correctness on prompts the model has seen.
 robust to *surface* change (new identifiers, new wording), the experiments suggest the data
 would need to change substantially — diverse identifiers and wording — not just add
 capacity — though the two data-lever comparisons that were meant to price this (Chapters
-11 and 13) are confounded (P0-01, P0-02), so the suggestion is a lead, not a measured
+11 and 13) are the flawed constructions flagged above (P0-01, P0-02), so the suggestion
+is a lead, not a measured
 price. And composition was not achieved at any size we tried: it stayed 0.000 on
-held-out at 0.88M, 6.5M, 10.2M, and 29.3M. As Chapter 16 notes, the parsing finding applies
-only to the composition-exposure run; we did not analyze the other size checkpoints' stage
-rates the same way, and the 0.88M baseline has a different recorded profile. So the cause
-of that zero is unresolved.
+held-out at 0.88M, 6.5M, 10.2M, and 29.3M. As the cautions above state, the parsing
+finding applies only to the composition-exposure run, so the cause of that zero is
+unresolved.
 
 **The cost matrix makes a dangerous pricing error visible.** If we only look at the
 "in-dist" column, we would conclude capability is nearly free and scale up naively. The
 generalization and composition columns reveal that the cheap number hides a much more
 expensive requirement — robust, compositional capability. On that requirement, capacity
 scaling was tested on composition and remained 0.000 at every size we ran; the
-data-count sweep is confounded with operation coverage (P0-01) and did not evaluate composition,
-so it supports no pricing of data at all — and the diversity comparison (42 vs 1,200 —
-P0-02) supports no pricing of surface diversity either. The rows we *can* price are the
+data-count sweep and the diversity comparison are the flawed constructions flagged in
+the cautions above (P0-01, P0-02), so they support no pricing at all. The rows we *can*
+price are the
 ones with intact controls: the pilot's familiar-prompt cost, the surface run's
 robustness failure, and the continual-learning schedule comparison.
 
@@ -172,8 +174,8 @@ not the way a researcher who wants a good headline would read it.
 - **Composition** is the row that tells the sharpest story. It was 0.000 on held-out
   composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
   parameter column alone did not change that in the runs we ran. But the failure cause is
-  unresolved — the parsing finding applies to the composition-exposure run only, and we did
-  not analyze the other size checkpoints' stage rates the same way — so this is a recorded
+  unresolved — the parsing finding is scoped to the composition-exposure run (see the
+  cautions above) — so this is a recorded
   negative result, not a demonstrated mechanism. The exposed composites (0.550–0.667) also
   fell short of mastery on the *training-covered* combinations, so the model did not even
   fully learn those it was shown.

@@ -74,14 +74,15 @@ narrowly-trained model dropped to **0.000** on the surface test, but a model tra
 a pool spread across many phrasings and both identifier-sets scored **1.000**
 on the covered surfaces. Two corrections now qualify this. First, the arms were **not
 the same count**: the high-diversity pool realized only **42 records** against the
-minimal arm's 1,200 (P0-02), so the equal-count causal reading is unsupported — the
+minimal arm's 1,200 (P0-02; the mechanism is in Chapter 13's audit note), so the
+equal-count causal reading is unsupported — the
 1.000 is best read as coverage of 42 exact mappings. Second, even taken as coverage, it is explicitly **not** a
 proven transfer to a never-seen wording family. So the picture is more than "small models are fragile": *content diversity*
 is a strong lead for widening what a small model handles, pending a corrected
 equal-count rerun. More *capacity* (0.88M→29.3M) also did not lift the
 compositional limit. **We do not claim anything for more *data*:** the data-size sweep
-is confounded with operation coverage (its arms cover 1/1/3/8 of the ten operations —
-P0-01), so it establishes no record-count effect at all, and whether more data would help
+is confounded with operation coverage (P0-01; evidence table, Chapter 11), so it
+establishes no record-count effect at all, and whether more data would help
 composition is a question we did not test and do not assert.
 
 **The scaling conclusion is our sharpest negative result.** Composition stays at
