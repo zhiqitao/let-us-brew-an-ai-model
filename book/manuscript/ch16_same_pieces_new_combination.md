@@ -297,7 +297,7 @@ held-out composites. Whether some other intervention (different optimization, mo
 separate, open question we have not closed.
 
 One step further: since diversity looked like the lever that widened surface coverage
-(Chapter 13 — itself now recorded as a flawed 42-versus-1,200 construction, P0-02), we
+(Chapter 13 — first recorded as a flawed 42-versus-1,200 construction, P0-02, then corrected by an equal-count rerun), we
 tested whether *diversifying* the composite exposure unlocks
 composition. What we actually ran was an **identifier-diversified composite exposure**:
 the same five composite operations, each with only one renderer wording family, rendered

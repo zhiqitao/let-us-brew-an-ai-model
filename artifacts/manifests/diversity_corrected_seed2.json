@@ -1,0 +1,1051 @@
+{
+  "experiment_id": "diversity_corrected",
+  "status": "MEASURED",
+  "fixes": [
+    "P0-02"
+  ],
+  "seed": 2,
+  "config": {
+    "steps": 1000,
+    "n_embd": 128,
+    "n_layer": 4,
+    "n_head": 4,
+    "bs": 16,
+    "lr": 0.001,
+    "seed": 2,
+    "build_only": false,
+    "manifest_dir": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/manifests",
+    "ckpt_dir": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/checkpoints",
+    "tok_path": "/home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/tokenizer/diversity_corrected_tok.json"
+  },
+  "design": "equal-count 1200-vs-1200, operation-balanced (120/op, 10/10 ops) low- vs high-diversity arms under one fixed tokenizer and a matched training protocol, scored on an identical in-distribution test and an identical held-out-family test (model + template + retrieval, exact denominators)",
+  "tokenizer": {
+    "vocab_size": 293,
+    "sha256": "d43d4a09d7b1f57e0bb4d8898560ce830176d4546f4fe654b5e676edf2396c1c",
+    "source": "loaded_existing",
+    "trained_on": "union of BOTH arms' train texts (no test text)",
+    "fixed_across_arms": true,
+    "fixed_across_seeds": true,
+    "refit_per_arm": false
+  },
+  "arms": {
+    "low": {
+      "n": 1200,
+      "ops_covered": 10,
+      "per_op_counts": {
+        "add": 120,
+        "sub": 120,
+        "mul": 120,
+        "max_of": 120,
+        "min_of": 120,
+        "abs_of": 120,
+        "list_sum": 120,
+        "list_len": 120,
+        "first_element": 120,
+        "cond_abs_max": 120
+      },
+      "unique_prompts": 20,
+      "unique_prompt_program_pairs": 20,
+      "family_count": 6,
+      "op_family_pairs": 20,
+      "families_per_op": {
+        "abs_of": 2,
+        "add": 2,
+        "cond_abs_max": 2,
+        "first_element": 2,
+        "list_len": 2,
+        "list_sum": 2,
+        "max_of": 2,
+        "min_of": 2,
+        "mul": 2,
+        "sub": 2
+      },
+      "identifier_sets": [
+        "letters"
+      ],
+      "identifier_set_count": 1,
+      "content": {
+        "n_instances": 1200,
+        "distinct_prompt_code": 20,
+        "distinct_prompts": 20
+      }
+    },
+    "high": {
+      "n": 1200,
+      "ops_covered": 10,
+      "per_op_counts": {
+        "add": 120,
+        "sub": 120,
+        "mul": 120,
+        "max_of": 120,
+        "min_of": 120,
+        "abs_of": 120,
+        "list_sum": 120,
+        "list_len": 120,
+        "first_element": 120,
+        "cond_abs_max": 120
+      },
+      "unique_prompts": 605,
+      "unique_prompt_program_pairs": 605,
+      "family_count": 16,
+      "op_family_pairs": 121,
+      "families_per_op": {
+        "abs_of": 11,
+        "add": 13,
+        "cond_abs_max": 11,
+        "first_element": 12,
+        "list_len": 12,
+        "list_sum": 12,
+        "max_of": 12,
+        "min_of": 12,
+        "mul": 13,
+        "sub": 13
+      },
+      "identifier_sets": [
+        "animals",
+        "colors",
+        "greek",
+        "letters",
+        "words"
+      ],
+      "identifier_set_count": 5,
+      "content": {
+        "n_instances": 1200,
+        "distinct_prompt_code": 605,
+        "distinct_prompts": 605
+      },
+      "expected_pairs_per_op": {
+        "add": 65,
+        "sub": 65,
+        "mul": 65,
+        "max_of": 60,
+        "min_of": 60,
+        "abs_of": 55,
+        "list_sum": 60,
+        "list_len": 60,
+        "first_element": 60,
+        "cond_abs_max": 55
+      },
+      "expected_pairs_total": 605
+    }
+  },
+  "tests": {
+    "in_distribution": {
+      "n": 100,
+      "per_op_counts": {
+        "add": 10,
+        "sub": 10,
+        "mul": 10,
+        "max_of": 10,
+        "min_of": 10,
+        "abs_of": 10,
+        "list_sum": 10,
+        "list_len": 10,
+        "first_element": 10,
+        "cond_abs_max": 10
+      },
+      "ops_covered": 10,
+      "families": "low arm's 2 families/op x letters (familiar to BOTH arms; low space is a subset of high's)",
+      "id_set": "letters",
+      "holdout_level": "instance (new construction seeds + new hidden tests); content overlaps training by design",
+      "fixed_across_arms_and_seeds": true
+    },
+    "held_out_family": {
+      "n": 100,
+      "per_op_counts": {
+        "add": 10,
+        "sub": 10,
+        "mul": 10,
+        "max_of": 10,
+        "min_of": 10,
+        "abs_of": 10,
+        "list_sum": 10,
+        "list_len": 10,
+        "first_element": 10,
+        "cond_abs_max": 10
+      },
+      "ops_covered": 10,
+      "families": "2 families/op used by NO training arm (h01, h02) x letters",
+      "id_set": "letters",
+      "holdout_level": "family + prompt + instance (disjoint from both train arms; collision counts in `audit`)",
+      "fixed_across_arms_and_seeds": true
+    }
+  },
+  "results": {
+    "in_distribution": {
+      "low": {
+        "arm": "low",
+        "test": "in_distribution",
+        "n": 100,
+        "denominator": 100,
+        "ops_covered": 10,
+        "per_op_counts": {
+          "add": 10,
+          "sub": 10,
+          "mul": 10,
+          "max_of": 10,
+          "min_of": 10,
+          "abs_of": 10,
+          "list_sum": 10,
+          "list_len": 10,
+          "first_element": 10,
+          "cond_abs_max": 10
+        },
+        "content": {
+          "n_instances": 100,
+          "distinct_prompt_code": 20,
+          "distinct_prompts": 20
+        },
+        "systems": {
+          "MODEL": {
+            "successes": 95,
+            "denominator": 100,
+            "pass_at_1": 0.95,
+            "syntax_rate": 0.95,
+            "executable_rate": 0.95,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 5,
+                "denominator": 10,
+                "pass_at_1": 0.5
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          },
+          "TEMPLATE": {
+            "successes": 80,
+            "denominator": 100,
+            "pass_at_1": 0.8,
+            "syntax_rate": 1.0,
+            "executable_rate": 0.9,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          },
+          "RETRIEVAL": {
+            "successes": 100,
+            "denominator": 100,
+            "pass_at_1": 1.0,
+            "syntax_rate": 1.0,
+            "executable_rate": 1.0,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          }
+        },
+        "eval_time_s": 70.7
+      },
+      "high": {
+        "arm": "high",
+        "test": "in_distribution",
+        "n": 100,
+        "denominator": 100,
+        "ops_covered": 10,
+        "per_op_counts": {
+          "add": 10,
+          "sub": 10,
+          "mul": 10,
+          "max_of": 10,
+          "min_of": 10,
+          "abs_of": 10,
+          "list_sum": 10,
+          "list_len": 10,
+          "first_element": 10,
+          "cond_abs_max": 10
+        },
+        "content": {
+          "n_instances": 100,
+          "distinct_prompt_code": 20,
+          "distinct_prompts": 20
+        },
+        "systems": {
+          "MODEL": {
+            "successes": 84,
+            "denominator": 100,
+            "pass_at_1": 0.84,
+            "syntax_rate": 0.89,
+            "executable_rate": 0.84,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 5,
+                "denominator": 10,
+                "pass_at_1": 0.5
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 7,
+                "denominator": 10,
+                "pass_at_1": 0.7
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 9,
+                "denominator": 10,
+                "pass_at_1": 0.9
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 3,
+                "denominator": 10,
+                "pass_at_1": 0.3
+              }
+            }
+          },
+          "TEMPLATE": {
+            "successes": 80,
+            "denominator": 100,
+            "pass_at_1": 0.8,
+            "syntax_rate": 1.0,
+            "executable_rate": 0.9,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          },
+          "RETRIEVAL": {
+            "successes": 100,
+            "denominator": 100,
+            "pass_at_1": 1.0,
+            "syntax_rate": 1.0,
+            "executable_rate": 1.0,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          }
+        },
+        "eval_time_s": 67.7
+      }
+    },
+    "held_out_family": {
+      "low": {
+        "arm": "low",
+        "test": "held_out_family",
+        "n": 100,
+        "denominator": 100,
+        "ops_covered": 10,
+        "per_op_counts": {
+          "add": 10,
+          "sub": 10,
+          "mul": 10,
+          "max_of": 10,
+          "min_of": 10,
+          "abs_of": 10,
+          "list_sum": 10,
+          "list_len": 10,
+          "first_element": 10,
+          "cond_abs_max": 10
+        },
+        "content": {
+          "n_instances": 100,
+          "distinct_prompt_code": 20,
+          "distinct_prompts": 20
+        },
+        "systems": {
+          "MODEL": {
+            "successes": 0,
+            "denominator": 100,
+            "pass_at_1": 0.0,
+            "syntax_rate": 0.08,
+            "executable_rate": 0.0,
+            "per_op": {
+              "abs_of": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "add": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "cond_abs_max": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "first_element": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "list_len": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "list_sum": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "max_of": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "min_of": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "mul": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "sub": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              }
+            }
+          },
+          "TEMPLATE": {
+            "successes": 70,
+            "denominator": 100,
+            "pass_at_1": 0.7,
+            "syntax_rate": 1.0,
+            "executable_rate": 1.0,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "list_sum": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          },
+          "RETRIEVAL": {
+            "successes": 60,
+            "denominator": 100,
+            "pass_at_1": 0.6,
+            "syntax_rate": 1.0,
+            "executable_rate": 0.85,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "list_sum": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "max_of": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "min_of": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              }
+            }
+          }
+        },
+        "eval_time_s": 86.1
+      },
+      "high": {
+        "arm": "high",
+        "test": "held_out_family",
+        "n": 100,
+        "denominator": 100,
+        "ops_covered": 10,
+        "per_op_counts": {
+          "add": 10,
+          "sub": 10,
+          "mul": 10,
+          "max_of": 10,
+          "min_of": 10,
+          "abs_of": 10,
+          "list_sum": 10,
+          "list_len": 10,
+          "first_element": 10,
+          "cond_abs_max": 10
+        },
+        "content": {
+          "n_instances": 100,
+          "distinct_prompt_code": 20,
+          "distinct_prompts": 20
+        },
+        "systems": {
+          "MODEL": {
+            "successes": 71,
+            "denominator": 100,
+            "pass_at_1": 0.71,
+            "syntax_rate": 0.72,
+            "executable_rate": 0.71,
+            "per_op": {
+              "abs_of": {
+                "successes": 9,
+                "denominator": 10,
+                "pass_at_1": 0.9
+              },
+              "add": {
+                "successes": 8,
+                "denominator": 10,
+                "pass_at_1": 0.8
+              },
+              "cond_abs_max": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "first_element": {
+                "successes": 9,
+                "denominator": 10,
+                "pass_at_1": 0.9
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 5,
+                "denominator": 10,
+                "pass_at_1": 0.5
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          },
+          "TEMPLATE": {
+            "successes": 70,
+            "denominator": 100,
+            "pass_at_1": 0.7,
+            "syntax_rate": 1.0,
+            "executable_rate": 1.0,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "list_sum": {
+                "successes": 0,
+                "denominator": 10,
+                "pass_at_1": 0.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          },
+          "RETRIEVAL": {
+            "successes": 100,
+            "denominator": 100,
+            "pass_at_1": 1.0,
+            "syntax_rate": 1.0,
+            "executable_rate": 1.0,
+            "per_op": {
+              "abs_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "add": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "cond_abs_max": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "first_element": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_len": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "list_sum": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "max_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "min_of": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "mul": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              },
+              "sub": {
+                "successes": 10,
+                "denominator": 10,
+                "pass_at_1": 1.0
+              }
+            }
+          }
+        },
+        "eval_time_s": 84.6
+      }
+    }
+  },
+  "audit": {
+    "heldout_family_collisions_vs_low_train": {
+      "op_family_pairs": 0,
+      "prompts": 0,
+      "prompt_program_pairs": 0
+    },
+    "heldout_family_collisions_vs_high_train": {
+      "op_family_pairs": 0,
+      "prompts": 0,
+      "prompt_program_pairs": 0
+    },
+    "indist_family_membership": {
+      "families_not_in_low_train": [],
+      "families_not_in_high_train": [],
+      "prompt_overlap_with_low_train": 20,
+      "prompt_overlap_with_high_train": 20,
+      "prompt_overlap_note": "expected: the in-distribution test shares (op, family, id_set) content with training by design; holdout is instance-level only"
+    },
+    "instance_seed_overlap_all_split_pairs": 0,
+    "program_set_sha256": {
+      "low": "62dc0e02970df22efc79d481e9a2e3fbf86752f8bad5d1ed629f673ff9efd969",
+      "high": "8e7e22b857a19de5133b42d335e92fa757fe561372f936cc0f875872724aa174",
+      "in_distribution": "62dc0e02970df22efc79d481e9a2e3fbf86752f8bad5d1ed629f673ff9efd969",
+      "held_out_family": "62dc0e02970df22efc79d481e9a2e3fbf86752f8bad5d1ed629f673ff9efd969"
+    }
+  },
+  "final_train_loss": {
+    "low": 0.0167,
+    "high": 0.0445
+  },
+  "train_time_s": {
+    "low": 486.9,
+    "high": 506.2
+  },
+  "assertions": {
+    "both_arms_exactly_1200_records": true,
+    "both_arms_10_of_10_ops": true,
+    "both_arms_120_per_op": true,
+    "low_unique_pairs": 20,
+    "high_unique_pairs": 605,
+    "high_unique_pairs_gt_500": true,
+    "low_id_set_count": 1,
+    "high_id_set_count": 5,
+    "low_space_subset_of_high": true,
+    "tokenizer_identical_across_arms_and_seeds": true,
+    "identical_task_sets_per_test_across_arms_and_seeds": true,
+    "matched_steps_arch_lr_and_init_per_seed": true,
+    "heldout_family_disjoint_from_both_arms": true,
+    "heldout_prompt_collisions": 0,
+    "denominators_exact_per_test": {
+      "in_distribution": 100,
+      "held_out_family": 100
+    },
+    "instance_disjoint_all_split_pairs": true
+  }
+}

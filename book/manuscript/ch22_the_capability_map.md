@@ -13,9 +13,12 @@ these are measurements in one configuration, not proofs that hold
 everywhere. One of the map's original levers — the data-size sweep (Chapter 11) — did not
 survive code audit (P0-01) and has since been re-run correctly: the balanced,
 operation-stratified sweep is flat, so record count is now a *measured* null rather than
-a confound. The equal-count diversity comparison (Chapter 13) still did not survive code
-audit (P0-02) and has no corrected rerun, so its cell remains a confounded historical
-construction rather than a causal result; the original surface rows (P0-03, P0-04) are
+a confound. The equal-count diversity comparison (Chapter 13) did not survive code
+audit in its first form (P0-02) and has since been re-run correctly — both arms at
+exactly 1,200 records, balanced 10/10 operations at 120 per operation, one fixed
+tokenizer — so its cell is now a *measured* result (diversity moves a held-out phrasing
+family from 0.000 to 0.550 mean), with the flawed 42-record construction kept as labeled
+history; the original surface rows (P0-03, P0-04) are
 likewise superseded by the corrected 2×2 factorial that Chapter 15 now reports.
 
 **The central conclusion, in its conservative form** (adopted from the third external
@@ -30,8 +33,9 @@ review, 2026-11-02, and now strengthened by the corrected reruns):
 > operation coverage, one fixed tokenizer — is flat at ~0.90 across a 30× range, so
 > record count bought nothing in this regime; the corrected surface factorial collapses
 > to ~0 on new identifiers, on held-out wording, and on both together, so no tested
-> prompt-surface change is survived. The diversity comparison still requires a
-> corrected control before it can support a causal claim about surface diversity. The
+> prompt-surface change is survived. The corrected equal-count diversity comparison
+> shows phrasing diversity moving a genuinely held-out family from 0.000 to 0.550
+> mean, at a small in-distribution cost (0.950 to 0.743 mean). The
 > durable methodological lesson is that a high score must be interpreted through the
 > precise model-visible novelty, the evaluator, the baseline, and the controls used to
 > obtain it.
@@ -68,11 +72,14 @@ familiar prompt).
 **Question 3 — Surface.** *Does it survive superficial change?* **Measured** (corrected
 2×2 factorial, three seeds): familiar 0.898–0.940 (of 600); new identifiers alone
 0.000–0.005 (0–3 of 600); held-out wording alone 0.000 (0 of 480, every seed); both
-together 0.000–0.025 (0–12 of 480). Diverse pool — 1.000 / 1.000 (42 realized records
-vs 1,200). **Status:** `[MEASURED]` for the narrow model — it collapses on *any*
-prompt-surface change, single-factor or combined; `[CONFOUNDED]` for the diverse pool —
-it covers more surfaces, but its arms were not equal-count and no truly-held-out family
-was tested by that arm (P0-02).
+together 0.000–0.025 (0–12 of 480). Diverse pool, corrected equal-count run — held-out
+family 0.000 (LOW) vs **0.550** mean (HIGH) at 1,200 records per arm; the flawed first
+run's 1.000 / 1.000 (42 realized records vs 1,200) is superseded coverage. **Status:**
+`[MEASURED]` for the narrow model — it collapses on *any*
+prompt-surface change, single-factor or combined; `[MEASURED]` for the corrected diverse
+arm — it transfers to a never-seen phrasing family (0.550 mean; per seed 0.640 / 0.300 /
+0.710) at equal count, below both baselines on that test; `[SUPERSEDED]` for the
+42-record construction (P0-02).
 
 **Question 4 — Structure.** *Can it compose known pieces in unseen ways?* **Measured:**
 0.000 (baselines also 0.000). **Status:** `[MEASURED]` — no, in this regime.
@@ -95,7 +102,8 @@ distinction: we only use `NT` when the evaluation *could* have been run but was 
 - **`stage3_surface.pt` (Stage 3) — superseded flawed historical run (P0-03, P0-04)** — familiar prompt 0.900; new identifiers 0.350 (mixed factors); excluded wording 0.000 (480 records).
 - **`surface_corrected_seed{0,1,2}.pt` (corrected 2×2 factorial; fixes P0-03, P0-04)** — familiar 0.898 / 0.900 / 0.940 (of 600); identifiers-only 0.000 / 0.003 / 0.005 (of 600); wording-only 0.000 (of 480, all seeds); combined 0.000 / 0.025 / 0.000 (of 480).
 - **`data_scaling_corrected_seed{0,1,2}_size*.pt` (corrected size sweep; fixes P0-01)** — in-distribution 0.893–0.997, **flat** across 100→3000 (10→300 per op, 10/10 operations) on one shared 300-task test; composition not evaluated.
-- **high-diversity pool (42 realized records vs 1,200 — P0-02)** — familiar prompt 1.000; covered alternate surface 1.000; excluded wording NT.
+- **`diversity_corrected_seed{0,1,2}.pt` (low/high arms; corrected equal-count diversity; fixes P0-02)** — in-distribution 0.950 (low) vs 0.743 (high) mean; held-out phrasing family 0.000 (low) vs **0.550** (high) mean, per seed 0.000 / 0.000 / 0.000 vs 0.640 / 0.300 / 0.710; both arms 1,200 records, 10/10 ops at 120/op, one fixed tokenizer.
+- **high-diversity pool (42 realized records vs 1,200 — P0-02; superseded)** — familiar prompt 1.000; covered alternate surface 1.000; excluded wording NT.
 - **`stage4_6p5m.pt`** — familiar prompt 0.897; held-out composite 0.000.
 - **`stage4_10m.pt`** — familiar prompt 0.773; held-out composite 0.000.
 - **`stage4_composition.pt`** — familiar prompt 0.897; held-out composite 0.000.
@@ -112,7 +120,9 @@ separate re-evaluation of the pilot on the composition split (which is why the r
 lists a "Stage-4 composition baseline" row that points at `stage1.pt`). The high-diversity
 row's 1.000 is **coverage** of surfaces in its training family — a pool of just 42
 realized records, not an equal-count arm (P0-02) — not transfer to an
-excluded wording family.
+excluded wording family; it is superseded by the `diversity_corrected` rows, whose
+held-out-family test (`h01`/`h02`, zero family/prompt collisions against both arms) is a
+genuine transfer measurement at equal count.
 
 **Panel 2 — composition-intervention and continual-learning runs**
 
@@ -254,10 +264,11 @@ nothing for the deep one.
 - The *narrowly-trained* model is surface-tied under **every** tested change (corrected
   2×2, three seeds): new wording → 0.000 (0 of 480, all seeds), new identifiers →
   0.000–0.005 (0–3 of 600), both → 0.000–0.025, against 0.898–0.940 familiar (Q3). The
-  *diversity*-pool model reaches 1.000/1.000 on the tested surface — but its arm realized
-  only **42 records against 1,200** (P0-02), so
-  this is a coverage statement on an unequal-count construction, not proof of
-  generalization to a wholly unseen wording family and not an equal-count causal result.
+  *diversity*-pool model in the corrected equal-count run reaches **0.550 mean** on a
+  genuinely held-out wording family (0.000 for the narrow arm; per seed 0.640 / 0.300 /
+  0.710) at 1,200 records per arm — a measured equal-count diversity effect, still below
+  both baselines on that test; the earlier 1.000/1.000 came from the flawed 42-record
+  construction (P0-02) and is superseded coverage.
 - It cannot compose: unseen combinations → 0.000 across 0.88M→29.3M capacity (the
   model-size sweep tested composition at each size). **Caveat:** the corrected
   *data-size* sweep (Chapter 11) is flat on in-distribution accuracy (0.893–0.997 across
@@ -310,14 +321,16 @@ as valuable as any model number:
   corrected balanced rerun came back flat. An innocent slice can manufacture a result
   that even replicates across seeds — only reading the arm-building code against the
   claim catches it.
-- **Test the data.** The diversity-vs-quantity experiment showed the *same* example
-  count produces surface-fragility (0.000) with minimal diversity or much broader
-  surface coverage (1.000) with high diversity — but code audit then showed the arms
-  were **not** the same count (42 realized records vs 1,200 — P0-02), so what survives
-  is a coverage observation, not an equal-count causal result: diversity — not quantity — remains the
-  *suspected* driver of how much surface the model covers, pending a corrected rerun.
-  (Coverage of the training family's surfaces, not transfer — evidence table,
-  Chapter 11.)
+- **Test the data.** The diversity-vs-quantity experiment's first version reported 0.000
+  with minimal diversity and 1.000 with high diversity — but code audit showed the arms
+  were **not** the same count (42 realized records vs 1,200 — P0-02), so that 1.000 was
+  coverage of a 42-record pool. The corrected rerun held both arms at exactly 1,200
+  records with balanced operation coverage and one fixed tokenizer, and the finding
+  survived in honest form: diversity — not quantity — is the *measured* driver of
+  transfer to a never-seen wording family (**0.000 → 0.550 mean**), at a small
+  in-distribution cost (**0.950 → 0.743 mean**). Reading the arm-building code against
+  the claim is what caught the flaw; the corrected rerun is what turned the suspicion
+  into a measurement.
 - **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
   (1.000), proving it was "too easy," and forced us to build harder splits. And the
   moments the model *fell below* a baseline were the most informative results.
@@ -335,10 +348,10 @@ as valuable as any model number:
 > training and decoding settings, the tested checkpoints produced no successful held-out
 > composite completions; the exposure run's held-out candidates all failed parsing, so
 > the cause remains unresolved. The corrected data-count sweep is flat (0.893–0.997
-> across a 30× range), so record count establishes no benefit; the diversity comparison
-> realized 42 records against 1,200 and establishes no equal-count causal effect.
-> Broader surface training improved coverage, not demonstrated transfer to excluded
-> wording families.**
+> across a 30× range), so record count establishes no benefit; the corrected equal-count
+> diversity comparison shows phrasing diversity moving a held-out family from 0.000 to
+> 0.550 mean (in-distribution 0.950 → 0.743), so diversity — not quantity — buys
+> partial transfer to excluded wording families.**
 >
 > (Size and data scaling are two separate levers, and neither was shown to turn surface
 > coverage into compositional capability: the size sweep changed training budgets and
@@ -347,8 +360,9 @@ as valuable as any model number:
 > at all while never evaluating composition (evidence table, Chapter 11). We also tested
 > a scheduling change — sequential vs. joint training — but that measured retention of
 > *separately learned* task groups, not composition, so it likewise does not speak to the
-> composition boundary. The diversity study still requires a corrected control before it
-> can support a causal claim about surface diversity.)
+> composition boundary. The diversity study's corrected equal-count control now
+> supports exactly that claim, scoped to phrasing diversity on this task: 0.000 → 0.550
+> on a held-out family, 0.950 → 0.743 in-distribution.)
 
 ## Why the map is the deliverable
 

@@ -32,10 +32,12 @@ on new input values, but that does not establish generalization to new natural-l
 requests; severe failures appeared under altered wording and on untrained structures; the
 corrected data-scaling sweep is flat (~0.90 from 10 to 300 examples per operation), so
 record count buys nothing in this regime; and the corrected surface factorial collapses
-to ~0 on any prompt-surface change. The diversity comparison still needs a corrected
-control before it can support a causal claim about surface diversity. One row of the
-matrix below is that remaining flawed study, and we price nothing from it; the
-data-scaling and surface rows now carry their corrected replacements.
+to ~0 on any prompt-surface change. The corrected equal-count diversity rerun now
+prices surface diversity: at 1,200 records per arm it moves a genuinely held-out
+phrasing family from **0.000 to 0.550 mean**, at a small in-distribution cost
+(**0.950 → 0.743 mean**). One row of the
+matrix below is the superseded flawed study, and we price nothing from it; the
+data-scaling, surface, and diversity rows now carry their corrected replacements.
 
 ## The cost matrix
 
@@ -61,7 +63,8 @@ all 560 — the 1,400 in the steps column is the separate 700 + 700 step budget.
 | `surface_corrected` (fixes P0-03/P0-04) | 600 train (60 op × 10); cells of 600 / 600 / **480** / **480** | 0.88M | 1,500 |
 | `data_scaling` (superseded, P0-01) | 100, 300, 1000, 3000 (**prefix of an operation-ordered pool: 1/1/3/8 of 10 ops**) | 0.88M | 800 |
 | `data_scaling_corrected` (per size; fixes P0-01) | 100 / 300 / 1000 / 3000, balanced **10/30/100/300 per op, 10/10 ops** | 0.88M | 1,000 |
-| `diversity` (Ch13) | requested 1,200; **realized 42** (high) vs 1,200 (minimal) — P0-02 | 0.88M | 900 |
+| `diversity` (Ch13 — superseded flawed historical, P0-02) | requested 1,200; **realized 42** (high) vs 1,200 (minimal) | 0.88M | 900 |
+| `diversity_corrected` (Ch13; fixes P0-02) | **1,200 / 1,200** (low/high), balanced 120 per op, 10/10 ops; 20 vs 605 unique pairs | 0.88M | 1,000 |
 | `stage4_exposure` | not recorded | 0.88M | 1,500 |
 | `compdiv_minimal` / `compdiv_high` | not recorded | 0.88M | 1,500 |
 | size sweep | not recorded | 0.88M / 6.5M / 10.2M / 29.3M | 1,500 / 1,000 / 800 / 800 |
@@ -69,10 +72,13 @@ all 560 — the 1,400 in the steps column is the separate 700 + 700 step budget.
 | `continual_joint` | 560 interleaved | 0.88M | 1,400 |
 
 **Table 19.2 — Measured outcomes, by run** (the neural **MODEL**'s score; baselines are in
-Chapters 15 and 16, not here). Run keys match Table 19.1. The two **corrected** rows
-(`surface_corrected`, `data_scaling_corrected`) give the model's per-seed scores on the
-four factorial cells and on the flat size sweep; the superseded rows keep the original
-`stage3_surface` / `data_scaling` values for the record. `0.875`/`0.683` belong to the
+Chapters 15 and 16, not here). Run keys match Table 19.1. The three **corrected** rows
+(`surface_corrected`, `data_scaling_corrected`, `diversity_corrected`) give the model's
+per-seed scores on the
+four factorial cells, on the flat size sweep, and on the equal-count diversity
+comparison; the superseded rows keep the original
+`stage3_surface` / `data_scaling` / `diversity` values for the record. `0.875`/`0.683`
+belong to the
 TEMPLATE/RETRIEVAL baselines and are not the model's.
 
 | Run | in-dist | new IDs | new wording | composes |
@@ -82,6 +88,8 @@ TEMPLATE/RETRIEVAL baselines and are not the model's.
 | `surface_corrected` | 0.898 / 0.900 / 0.940 | 0.000 / 0.003 / 0.005 ¶ | 0.000 (both changes: 0.000 / 0.025 / 0.000) ¶ | — |
 | `data_scaling` (superseded§) | 0.100 / 0.098 / 0.300 / 0.641 § | — | — | — |
 | `data_scaling_corrected` | 0.893–0.997, **flat** across 100→3000 ¶ | — | — | — |
+| `diversity` (superseded‖) | 0.500 minimal / 1.000 high | — | 1.000 high (covered families) | — |
+| `diversity_corrected` | 0.950 low / 0.743 high ‖ | — | 0.000 low / **0.550** high ‖ | — |
 | `stage4_exposure` | 1.000 | — | — | 0.667 / 0.000 |
 | `compdiv_minimal` | 1.000 | — | — | 0.592 / 0.000 |
 | `compdiv_high` | 1.000 | — | — | 0.550 / 0.000 |
@@ -104,7 +112,15 @@ confounded historical run of operation coverage, not a record-count curve — su
 runs (Appendix C, Tables C.13/C.14): `surface_corrected` cells are scored over
 600/600/480/480 records with `abs_of` and `cond_abs_max` excluded from the held-out cells
 (8 ops × 60); `data_scaling_corrected` arms are balanced 10/10 operations under one fixed
-tokenizer against one shared 300-task test, so the row is a flat curve, not a trend. The
+tokenizer against one shared 300-task test, so the row is a flat curve, not a trend. ‖
+corrected equal-count diversity (Appendix C, Table C.15): both arms exactly 1,200
+records, 10/10 operations at 120 per operation, one fixed tokenizer, matched
+1,000-step protocol; the "new wording" cell is the genuinely held-out phrasing family
+(h01/h02, 100 tasks, zero family/prompt collisions against both arms), per seed LOW
+0.000 / 0.000 / 0.000 vs HIGH 0.640 / 0.300 / 0.710 (means 0.000 vs 0.550), with
+in-distribution LOW 0.950 in every seed vs HIGH 0.820 / 0.570 / 0.840 (means 0.950 vs
+0.743); the superseded `diversity` row realized 42 records against 1,200 (P0-02), so we
+price nothing from it. The
 `stage4_exposure` and `compdiv_*` composes values are reported as
 *exposed* / *held-out* (e.g. 0.667 exposed, 0.000 held-out, over n=120 exposed records
 each); the held-out composite — the transfer test — was 0.000, and for the run where we
@@ -115,8 +131,10 @@ continual rows test
 task *retention*, not composition, so their "composes" cell is `—`. Note that the
 `compdiv_*` rows (both in-dist 1.000, composes 0.592/0.550) are the **composition-
 diversity** intervention runs from Chapter 16/Appendix C (`composition_diversity_pilot`,
-1,500 steps) — a different experiment from Chapter 13's quantity-vs-diversity run
-(`diversity`, 900 steps), whose minimal-diversity in-distribution score was 0.500. They
+1,500 steps) — a different experiment from Chapter 13's quantity-vs-diversity
+comparison, now reported as the corrected equal-count run `diversity_corrected`
+(1,000 steps; LOW arm in-distribution 0.950), whose flawed first version
+(`diversity`, 900 steps, minimal in-distribution 0.500) is superseded. They
 are not the same run, so the different in-distribution numbers are not a conflict.*
 
 *Legend: `—` = that specific breakdown was not separately reported for that run (or the run
@@ -131,14 +149,14 @@ prompt–program pairs**; it is not a measured per-operation data requirement, a
 is single-sample correctness for repeated previously-seen prompt strings under fresh
 execution values, not prompt generalization. Second, the
 size sweep changed training budgets (1,500 / 1,000 / 800 / 800 steps) and tokenizer, so it
-is not a size-only intervention. Third, two rows are **superseded flawed constructions**
+is not a size-only intervention. Third, three rows are **superseded flawed constructions**
 (Appendix B) with corrected replacements now in the matrix: the old `data_scaling` row is
 a prefix of an operation-ordered pool (arms cover 1/1/3/8 of the ten operations — P0-01),
-replaced by the flat `data_scaling_corrected` row, and the old `stage3_surface` rows mixed
-factors and denominators (P0-03, P0-04), replaced by the `surface_corrected` factorial.
-One flawed construction has **no** corrected rerun yet: the Chapter 13 diversity
-comparison realized **42 records against 1,200** (P0-02), so it supports no causal price
-for surface diversity, and we draw no budget lesson from it. Fourth, the exposed-composite scores varied (0.550, 0.592,
+replaced by the flat `data_scaling_corrected` row; the old `stage3_surface` rows mixed
+factors and denominators (P0-03, P0-04), replaced by the `surface_corrected` factorial;
+and the old `diversity` row realized **42 records against 1,200** (P0-02), replaced by
+the equal-count `diversity_corrected` row — we draw no budget lesson from the flawed row
+itself. Fourth, the exposed-composite scores varied (0.550, 0.592,
 0.667); the held-out composite — the transfer test — was **0.000** at every size we tried.
 For the run where we analyzed stage rates (the composition-exposure run, Appendix B.10) the
 held-out candidates failed parsing before semantic evaluation; we do not extend that to the
@@ -156,12 +174,15 @@ So the *apparent* cost of a capability is low. But that number is misleading: it
 only in-distribution correctness on prompts the model has seen.
 
 **The real cost appears when we ask for generalization.** Two levers were meant to price
-robustness, and only one has a measurement now. *More data of the same kind* is priced at
+robustness, and both now have measurements. *More data of the same kind* is priced at
 **zero marginal return**: the corrected sweep (Chapter 11) is flat at ~0.90 from 10 to
 300 examples per operation, so record count buys nothing — not capability, not
-robustness — in this regime. *More diverse data* remains unpriced: the Chapter 13
-comparison is still the flawed 42-versus-1,200 construction (P0-02), so "train on diverse
-identifiers and wording" is a lead, not a measured price, and capacity was never the
+robustness — in this regime. *More diverse data* is priced by the corrected equal-count
+rerun (Chapter 13): at the same 1,200-record budget, spreading the data across more
+phrasings and five identifier sets moves a genuinely held-out phrasing family from
+**0.000 to 0.550 mean** (three seeds) and costs some in-distribution sharpness
+(**0.950 → 0.743 mean**) — so "train on diverse identifiers and wording" is a measured
+price, not just a lead, and capacity was never the
 promising lever either. What the corrected surface factorial does price is the failure
 itself: the same 600-record budget that yields ~0.90 on the familiar surface yields 0–3
 of 600 on new identifiers and 0 of 480 on held-out wording — robustness to surface change
@@ -175,12 +196,15 @@ unresolved.
 generalization and composition columns reveal that the cheap number hides a much more
 expensive requirement — robust, compositional capability. On that requirement, capacity
 scaling was tested on composition and remained 0.000 at every size we ran; the
-diversity comparison is still the flawed construction flagged in the cautions above
-(P0-02) and supports no pricing at all, while the corrected data-count sweep prices
+superseded diversity row supports no pricing at all, while the corrected diversity row
+prices phrasing diversity as the lever that buys held-out-family transfer
+(0.000 → 0.550 mean) at a small in-distribution cost (0.950 → 0.743 mean), and the
+corrected data-count sweep prices
 record count at **zero marginal return** (flat ~0.90 across a 30× range). The rows we
 *can* price are the
 ones with intact controls: the pilot's familiar-prompt cost, the corrected surface
-factorial's robustness failure, the corrected data-scaling sweep's flat curve, and the
+factorial's robustness failure, the corrected data-scaling sweep's flat curve, the
+corrected diversity comparison's diversity price, and the
 continual-learning schedule comparison.
 
 ## The price of each column, read honestly
@@ -199,6 +223,14 @@ not the way a researcher who wants a good headline would read it.
   RETRIEVAL 1.000 / 0.125 on the same records. The superseded Stage-3 row's 0.350 was a
   mixed-factor reading (P0-03) and priced nothing. We cannot buy this robustness with
   more of the same data either — the corrected size sweep is flat (Chapter 11).
+- **Held-out-wording robustness bought with diversity** (the corrected equal-count
+  comparison, Chapter 13) costs the same 1,200-record budget in both arms: spending it
+  on 605 distinct phrasings and five identifier sets rather than 20 lifts the
+  genuinely held-out phrasing family from **0.000** (0 of 100, every seed) to **0.550
+  mean** (0.640 / 0.300 / 0.710), while in-distribution falls from 0.950 to 0.743 mean.
+  The diverse model still sits below TEMPLATE (0.700) and its own arm's RETRIEVAL
+  (1.000) on that test, so the price of *partial* transfer is a little in-distribution
+  sharpness — and the flawed 42-record first run (P0-02) priced nothing.
 - **Composition** is the row that tells the sharpest story. It was 0.000 on held-out
   composites at every parameter size we tried (0.88M, 6.5M, 10.2M, 29.3M), and the
   parameter column alone did not change that in the runs we ran. But the failure cause is

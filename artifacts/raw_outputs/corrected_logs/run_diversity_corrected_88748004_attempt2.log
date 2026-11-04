@@ -1,0 +1,28 @@
+LOW : n=1200 ops=10/10 per_op=120 unique_pairs=20 unique_prompts=20 families(op,fam)=20 id_sets=['letters']
+HIGH: n=1200 ops=10/10 per_op=120 unique_pairs=605 unique_prompts=605 families(op,fam)=121 id_sets=5 (animals,colors,greek,letters,words)
+TEST in_distribution  : n=100 ops=10/10 per_op=10
+TEST held_out_family  : n=100 ops=10/10 per_op=10
+tokenizer: vocab=293 sha=d43d4a09d7b1 source=loaded_existing (union of both arms' train texts, fixed)
+  step    0  loss 5.6057
+  step  200  loss 0.0324
+  step  400  loss 0.0229
+  step  600  loss 0.0159
+  step  800  loss 0.0229
+  step  999  loss 0.0174
+  low : trained 1000 steps in 393.8s loss=0.0174 params=884736
+  low  in_distribution  : n=100 model=95/100=0.950 tmpl=80/100 ret=100/100 (69.8s)
+  low  held_out_family  : n=100 model=0/100=0.000 tmpl=70/100 ret=60/100 (85.2s)
+  step    0  loss 5.6682
+  step  200  loss 0.3687
+  step  400  loss 0.0903
+  step  600  loss 0.0656
+  step  800  loss 0.0559
+  step  999  loss 0.0432
+  high: trained 1000 steps in 430.2s loss=0.0432 params=884736
+  high in_distribution  : n=100 model=82/100=0.820 tmpl=80/100 ret=100/100 (70.3s)
+  high held_out_family  : n=100 model=64/100=0.640 tmpl=70/100 ret=100/100 (88.2s)
+manifest -> /home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/manifests/diversity_corrected_seed0.json
+  in_distribution   low  model= 95/100=0.950 tmpl=0.800 ret=1.000 loss=0.0174
+  in_distribution   high model= 82/100=0.820 tmpl=0.800 ret=1.000 loss=0.0432
+  held_out_family   low  model=  0/100=0.000 tmpl=0.700 ret=0.600 loss=0.0174
+  held_out_family   high model= 64/100=0.640 tmpl=0.700 ret=1.000 loss=0.0432

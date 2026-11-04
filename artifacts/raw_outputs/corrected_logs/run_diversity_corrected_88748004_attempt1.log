@@ -1,0 +1,5 @@
+LOW : n=1200 ops=10/10 per_op=120 unique_pairs=20 unique_prompts=20 families(op,fam)=20 id_sets=['letters']
+HIGH: n=1200 ops=10/10 per_op=120 unique_pairs=605 unique_prompts=605 families(op,fam)=121 id_sets=5 (animals,colors,greek,letters,words)
+TEST in_distribution  : n=100 ops=10/10 per_op=10
+TEST held_out_family  : n=100 ops=10/10 per_op=10
+tokenizer: vocab=293 sha=d43d4a09d7b1 source=trained_now (union of both arms' train texts, fixed)

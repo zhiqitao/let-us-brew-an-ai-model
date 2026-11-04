@@ -32,8 +32,9 @@ conservative, audit-proof form — the wording we adopt after the third external
 > operation coverage, one fixed tokenizer — is flat at ~0.90 across a 30× range, so
 > record count bought nothing in this regime; the corrected surface factorial collapses
 > to ~0 on new identifiers, on held-out wording, and on both together, so no tested
-> prompt-surface change is survived. The diversity comparison still requires a
-> corrected control before it can support a causal claim about surface diversity. The
+> prompt-surface change is survived. The corrected equal-count diversity comparison
+> shows phrasing diversity moving a genuinely held-out family from 0.000 to 0.550
+> mean, at a small in-distribution cost (0.950 to 0.743 mean). The
 > durable methodological lesson is that a high score must be interpreted through the
 > precise model-visible novelty, the evaluator, the baseline, and the controls used to
 > obtain it.
@@ -74,19 +75,21 @@ reuses training prompt strings.
    template — produced a composite program. (This is a strong negative signal, not a
    proof that no cleverer method could; see the shortcut audit in Chapter 16.)
 
-**One limit looked moveable — by changing the data, not its quantity — but that
-comparison did not survive code audit.** Diversity of
-surface phrasing is the one lever in the book that changed the surface outcome: a
-narrowly-trained model dropped to **0.000** on the surface test, but a model trained on
-a pool spread across many phrasings and both identifier-sets scored **1.000**
-on the covered surfaces. Two corrections now qualify this. First, the arms were **not
-the same count**: the high-diversity pool realized only **42 records** against the
-minimal arm's 1,200 (P0-02; the mechanism is in Chapter 13's audit note), so the
-equal-count causal reading is unsupported — the
-1.000 is best read as coverage of 42 exact mappings. Second, even taken as coverage, it is explicitly **not** a
-proven transfer to a never-seen wording family. So the picture is more than "small models are fragile": *content diversity*
-is a strong lead for widening what a small model handles, pending a corrected
-equal-count rerun. More *capacity* (0.88M→29.3M) also did not lift the
+**One limit looked moveable — by changing the data, not its quantity — and the
+corrected rerun confirms it.** Diversity of
+surface phrasing is the one lever in the book that changed the surface outcome. Its
+first comparison did not survive code audit: the high-diversity pool realized only
+**42 records** against the minimal arm's 1,200 (P0-02; the mechanism is in Chapter 13's
+audit note), so the reported **1.000** was coverage of 42 exact mappings — not transfer,
+and not an equal-count result. The corrected rerun holds both arms at exactly **1,200
+records**, 10/10 operations at 120 per operation, one fixed tokenizer, matched
+protocol — and the finding survives in honest form: on a genuinely held-out phrasing
+family the narrow arm scores **0.000** (0 of 100, every seed) and the diverse arm
+**0.550** mean (0.640 / 0.300 / 0.710), while in-distribution the narrow arm is
+sharper (**0.950** vs **0.743** mean). So the picture is more than "small models are
+fragile": *content diversity* is a **measured** lever for widening what a small model
+handles — partial transfer, still below both baselines on that test, bought with a
+little in-distribution sharpness. More *capacity* (0.88M→29.3M) also did not lift the
 compositional limit. **More *data* of the same kind is now measured, and it bought
 nothing:** the corrected, operation-balanced size sweep is flat at ~0.90 from 10 to 300
 examples per operation — a 30× range with no benefit (Chapter 11) — while the original
@@ -189,9 +192,10 @@ The honest map points at specific next experiments, not vague "more data / bigge
    diversity — the number, nesting, and variety of operator pairings — with disjoint
    held-out pairing structures and program length and vocabulary matched between
    training and test, so that structure is the only variable that changes.
-   (One data lever now has its corrected rerun: the operation-stratified size sweep of
-   P0-01 came back flat, so record count is settled as a null; the equal-count diversity
-   comparison of P0-02 still needs its corrected rerun.)
+   (Both data levers now have their corrected reruns: the operation-stratified size sweep
+   of P0-01 came back flat, so record count is settled as a null; the equal-count
+   diversity comparison of P0-02 came back decisive for held-out-family transfer —
+   0.000 → 0.550 mean — so phrasing diversity is settled as a measured, partial lever.)
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
    measured 0.773 (a stable plateau, not the earlier 0.383 reading). A proper
    training-duration and config sweep at 10M would confirm the plateau is robust.
@@ -243,9 +247,10 @@ worth having:
 > surface-tied and non-compositional: the corrected surface factorial collapses to ~0 on
 > new identifiers, on held-out wording, and on both together, and more capacity
 > (0.88M→29.3M) did not change the compositional limit. The corrected data-scaling sweep
-> is flat at ~0.90 across a 30× range, so record count bought nothing; the diversity
-> comparison remains confounded (42-vs-1,200 arms) and still requires a corrected
-> control before it can support any causal claim about surface diversity.
+> is flat at ~0.90 across a 30× range, so record count bought nothing; the corrected
+> equal-count diversity comparison shows phrasing diversity moving a held-out family
+> from 0.000 to 0.550 mean at a small in-distribution cost (0.950 → 0.743), while the
+> original 42-vs-1,200 run is superseded history.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,
 audit shortcuts, preserve failures — are the durable part. That is the method worth

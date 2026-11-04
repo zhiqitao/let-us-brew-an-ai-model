@@ -11,8 +11,10 @@ Legibility/production pass (external review P1-PROD-03, P1-08/11/14/15.1):
   * grayscale-safe encoding (hatching + distinct markers/linestyles, never
     red/green as the ONLY success/failure signal),
   * direct labels and raw counts on the data,
-  * Fig 13.1 titled/labeled "covered alternate surfaces" (not unseen-family
-    generalization), Fig 11.1 = corrected balanced data-scaling sweep (flat
+  * Fig 13.1 = corrected equal-count diversity comparison (LOW vs HIGH on
+    in-distribution and on a genuinely held-out phrasing family; 3-seed means
+    with min-max whiskers; both arms 1,200 records, 10/10 ops at 120/op, one
+    fixed tokenizer), Fig 11.1 = corrected balanced data-scaling sweep (flat
     ~0.90, 10/10 operations at every size, one fixed tokenizer, 3 seeds, one
     shared 300-task test), Fig 15.1 = corrected 2x2 surface factorial (collapse
     on new identifiers and on held-out wording; "new variable identifiers"
@@ -233,38 +235,60 @@ fig.tight_layout()
 save(fig, "fig_data_scaling.png")
 
 # ==========================================================================
-# 4. Diversity vs quantity -- Figure 13.1 (FLAWED CONSTRUCTION, P0-02)
-# Values exact to artifacts/manifests/diversity.json:
-#   minimal 0.500 in-dist / 0.000 surface ; high 1.000 / 1.000 (n_train=1200, seed 0).
-# P0-02: the arms were NOT the same count -- the high-diversity pool realized
-#   only 42 records (21 wording-family entries x 2 identifier sets) against the
-#   minimal arm's 1,200. Relabel as coverage on unequal arms, not an
-#   equal-count comparison, and not unseen-family generalization.
-# Grayscale-safe: solid vs hatched bars + direct value labels.
+# 4. Diversity at equal count -- Figure 13.1 (CORRECTED, fixes P0-02)
+# Values exact to artifacts/manifests/diversity_corrected_seed{0,1,2}.json:
+#   LOW  arm (1,200 records, 20 unique pairs):  in-dist 0.950/0.950/0.950
+#        (mean 0.950, range 0.950-0.950); held-out family 0.000 x3 (mean 0.000).
+#   HIGH arm (1,200 records, 605 unique pairs): in-dist 0.820/0.570/0.840
+#        (mean 0.743, range 0.570-0.840); held-out family 0.640/0.300/0.710
+#        (mean 0.550, range 0.300-0.710).
+# Both arms: exactly 1,200 records, 10/10 ops at 120/op, one fixed tokenizer
+#   (vocab 293), matched 1,000 steps/arch/lr/init; held-out families h01/h02
+#   used by NO training arm (0 family/prompt collisions, audited).
+# The earlier 0.000-vs-1.000 figure was the flawed 42-record historical run
+#   (P0-02), superseded by this corrected comparison.
+# Grayscale-safe: solid vs hatched bars + direct value labels; whiskers = the
+#   per-seed min-max range around the 3-seed mean.
 # ==========================================================================
 fig, ax = plt.subplots(figsize=(5.6, 4.4))
-labels = ["minimal diversity\n(1,200 records)", "high diversity\n(42 records)"]
-in_d = [0.500, 1.000]
-surf = [0.000, 1.000]
+labels = ["low diversity\n(1,200 records;\n20 unique pairs)",
+          "high diversity\n(1,200 records;\n605 unique pairs)"]
+# 3-seed means, with per-seed min-max ranges for the whiskers
+in_d_mean  = [0.950, 0.743]
+in_d_lo    = [0.950, 0.570]   # seed min: 0.950/0.950/0.950 ; 0.820/0.570/0.840
+in_d_hi    = [0.950, 0.840]
+fam_mean   = [0.000, 0.550]
+fam_lo     = [0.000, 0.300]   # seed min: 0.000/0.000/0.000 ; 0.640/0.300/0.710
+fam_hi     = [0.000, 0.710]
 x = np.arange(len(labels)); w = 0.3
-ax.bar(x-w/2, in_d, w, label="in-distribution", color=BLUE, edgecolor=INK)
-ax.bar(x+w/2, surf, w, label="covered alternate surfaces\n(seen families)",
-       color=GREEN, edgecolor=INK, hatch="//")
-for xi, v in zip(x-w/2, in_d):
-    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=FS_VALUE, color=INK, fontweight="bold")
-for xi, v in zip(x+w/2, surf):
-    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", fontsize=FS_VALUE, color=INK, fontweight="bold")
+ax.bar(x-w/2, in_d_mean, w, label="in-distribution", color=BLUE,
+       edgecolor=INK, yerr=[np.array(in_d_mean)-np.array(in_d_lo),
+                            np.array(in_d_hi)-np.array(in_d_mean)],
+       capsize=6, error_kw=dict(ecolor=INK, lw=1.6, capthick=1.6))
+ax.bar(x+w/2, fam_mean, w, label="held-out phrasing family\n(never trained)",
+       color=GREEN, edgecolor=INK, hatch="//",
+       yerr=[np.array(fam_mean)-np.array(fam_lo),
+             np.array(fam_hi)-np.array(fam_mean)],
+       capsize=6, error_kw=dict(ecolor=INK, lw=1.6, capthick=1.6))
+for xi, v, lo, hi in zip(x-w/2, in_d_mean, in_d_lo, in_d_hi):
+    rng = f"{lo:.3f}-{hi:.3f}" if hi > lo else f"{v:.3f}"
+    ax.text(xi, hi+0.03, f"{v:.3f}\n({rng})", ha="center", fontsize=FS_VALUE,
+            color=INK, fontweight="bold")
+for xi, v, lo, hi in zip(x+w/2, fam_mean, fam_lo, fam_hi):
+    rng = f"{lo:.3f}-{hi:.3f}" if hi > lo else f"{v:.3f}"
+    ax.text(xi, hi+0.03, f"{v:.3f}\n({rng})", ha="center", fontsize=FS_VALUE,
+            color=INK, fontweight="bold")
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=FS_TICK)
-ax.set_ylim(0, 1.18)
+ax.set_ylim(0, 1.28)
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
-ax.set_title("Diversity vs quantity (flawed):\ncoverage on unequal arms",
+ax.set_title("Diversity at equal count (corrected):\nunseen-family transfer 0.000 -> 0.550",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
-ax.text(0.5, -0.22,
-        "NOT the same count: high arm realized 42 records\n"
-        "vs minimal 1,200 (P0-02); same test, one seed --\n"
-        "the high-diversity 1.000 is COVERAGE of 42 trained\n"
-        "mappings, not unseen-family generalization",
+ax.text(0.5, -0.30,
+        "both arms 1,200 records, 10/10 ops at 120/op, one fixed\n"
+        "tokenizer, matched 1,000 steps; bars = 3-seed mean, whiskers =\n"
+        "seed range (0/1/2); held-out families used by NO arm (0 collisions);\n"
+        "the earlier 0.000-vs-1.000 was the flawed 42-record run (P0-02)",
         transform=ax.transAxes, ha="center", va="top",
         fontsize=FS_NOTE, color=INK)
 ax.legend(loc="upper left", frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
