@@ -34,6 +34,13 @@ We score it by running that program against a set of hidden test cases (inputs w
 expected outputs) and checking whether the program's output matches, semantically,
 for every case.
 
+One clarification worth making now, because later chapters lean on it: a *fresh* hidden
+test value is a new input to the **program**, never a new input to the **model**. The
+model sees the specification once and emits one program; the hidden tests then call that
+program with values the model was never shown. So a record whose task ID and test values
+are new is new to the *evaluator* — it is not an extra example for the model, and it
+gives the model nothing new to learn from.
+
 ## The task schema
 
 Every task is described by a small, formal schema — the ground truth that drives
@@ -63,8 +70,9 @@ From that single record, the teacher generates:
 ## The pure-function constraint
 
 For the pilot we constrain the generated programs to be **pure functions**. No side
-effects, no file I/O, no randomness. This makes evaluation deterministic and
-unambiguous: for a given input, there is one correct output. It is a deliberate
+effects, no file I/O, no randomness. This makes *executing a given program* deterministic and
+unambiguous: for a given input, there is one correct output. (It says nothing about
+*which* program we get — that is sampled; see the success criterion below.) It is a deliberate
 simplification, and it is exactly what makes the task cleanly measurable.
 
 ## Hidden tests
@@ -109,7 +117,11 @@ problem. That strictness is what keeps the measurement honest: we are not measur
 Natural-language-to-Python is a good laboratory task precisely because it has
 everything a controlled experiment needs:
 
-- **Deterministic.** Same spec, same program, same tests.
+- **Deterministic to grade, sampled to produce.** The tests and the comparison are
+  deterministic *for a given program* — but the program itself is **sampled**
+  (temperature 0.8), so the same spec can yield different programs on different draws.
+  That is exactly why the success criterion below scores one sampled program with
+  pass@1 rather than assuming "same spec, same program."
 - **Executable.** We run real Python and compare real outputs.
 - **Objectively scorable.** Pass/fail, no judge-subjectivity.
 - **Synthetic.** We can generate as much controlled data as we want.

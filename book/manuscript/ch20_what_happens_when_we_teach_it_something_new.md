@@ -49,16 +49,17 @@ the data, or the optimizer — it must be the schedule. That makes any differenc
 find a *procedure* finding, exactly the thing we want to isolate.
 
 ## The result
-![Task accuracy: sequential versus joint training, with the sequential A-before-B measurement](figures/fig_continual.png)
+![Task accuracy: sequential versus joint/interleaved (A+B from start), with the sequential same-run A-before-B measurement](figures/fig_continual.png)
 
-| Protocol | **A right after phase A** | **A accuracy (final)** | **B accuracy (final)** |
+| Protocol | **A right after phase A (same run, pre-B)** | **A accuracy (final)** | **B accuracy (final)** |
 |----------|---------------------------|-----------------|-------------------|
 | **sequential** | **1.000** | **0.000** | 0.889 |
-| **joint** | — (A+B trained together) | **1.000** | 0.889 |
+| **joint/interleaved (A+B from start)** | — (A and B trained together) | **1.000** | 0.889 |
 
-*The sequential "A right after phase A" (1.000) is measured on the same run, right after
-phase A and before any B exposure (Appendix C.8); the final is measured after phase B.
-The joint model has no separate "after A" point because A and B are trained together from
+*Both A measurements in the sequential row come from the **same run**: the 1.000 is
+measured right after phase A and before any B exposure, the 0.000 after phase B
+(Appendix C.8); the final is measured after phase B.
+The joint/interleaved model has no separate "after A" point because A and B are trained together from
 the start.*
 
 This is as clean a result as this book produced.

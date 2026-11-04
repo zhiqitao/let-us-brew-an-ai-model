@@ -48,12 +48,16 @@ variants of the reference solution and ran them through the judge against that
 operation's hidden tests, then measured how many the tests *kill*. The measured
 result, across all 16 operations, is honest and **partial**:
 
-- **35 mutants generated, 29 killed, 6 survived** — an overall kill rate of **0.829**.
+- **35 mutants generated across all 16 operations: 29 killed, 6 surviving mutants that we
+  classify as equivalent over the integer domain** — a raw kill rate of **0.829**. The
+  equivalence classification, its explicit domain, and its limits are spelled out in the
+  next section; the totals are 29 / 6, and we report them as such everywhere below.
 - **Positive control passed:** the correct reference program was *accepted* by the
   judge for every operation. This rules out the failure mode of a
   reject-everything evaluator — it genuinely distinguishes correct programs from most
   broken ones.
-- **Six mutants survived**: `max_of` (`>`→`>=`), `min_of` (`<`→`<=`), `abs_of`
+- **The six survivors** (all equivalent over the integer domain, per the case analysis
+  below): `max_of` (`>`→`>=`), `min_of` (`<`→`<=`), `abs_of`
   (`<`→`<=`), `cond_abs_max` (`>`→`>=`), `sum_of_abs` (`<`→`<=`), and `max_add`
   (`>`→`>=`).
 
@@ -75,6 +79,14 @@ operator differs only at equality, and both branches return equal values there. 
 build and run a general equivalence checker; the equivalence rests on this case analysis,
 scoped to the strict→non-strict tie-breaking mutants we observed. So they are *not* six
 missed defects; they are six tie-breaking equivalences.
+
+The coverage limits stand right next to that classification, unchanged. The experiment
+record's own words are that the tests were *not* "edge-case-complete"; the six survivors
+sit exactly on the six weakest operations (`max_of` 0.5, `min_of` 0.5, `cond_abs_max`
+0.5, `abs_of` 0.667, `sum_of_abs` 0.75, `max_add` 0.75 kill rates); and we built no
+general equivalence checker, so the equivalence claim is scoped to these six tie-only
+mutants over the integer domain. Reporting "29 killed / 6 equivalent" does not upgrade
+the suite: it says what these six are, not that the tests cover every error class.
 
 This is the important nuance worth spelling out: *a surviving **equivalent**
 mutant is not a missed error.* The mutation score therefore does **not** mean "the test

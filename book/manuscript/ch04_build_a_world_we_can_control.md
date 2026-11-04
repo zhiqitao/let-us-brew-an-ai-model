@@ -43,7 +43,7 @@ fundamentally fragile — there is always some construct we forgot. Python has a
 enormous surface area, and attackers (or, in our case, just curious models) find the
 gaps. Denying a hundred things is not safety; it is a constant game of catch-up.
 
-The robust way is the opposite: **an allowlist.** We parse the program into its
+The sound way is the opposite: **an allowlist.** We parse the program into its
 abstract syntax tree — the structured representation of the code, before it runs — and
 walk through every node. If any node type is not *explicitly permitted*, we **reject
 the entire program.** There is no "mostly allowed." If the model emits even one
@@ -90,8 +90,16 @@ in the world, and not by something else that drifted.
 
 ## Resource and determinism policy
 
-Beyond what is allowed syntactically, we also control *how complex* the program may
-be. This is the second half of making the world trustworthy:
+**Start with the enforcement that is missing: the shipped sandbox enforces no time limit
+and no memory limit.** Nothing in it stops an allowed program from looping forever or
+allocating until the machine runs out of memory. The spec *designs* a hard execution
+timeout, a maximum nesting depth, and recursion protection, and the code carries them as
+constants — but the shipped validator checks AST depth and node count alone, so those
+three are not enforced at runtime. Everything in this section therefore bounds the
+*shape* of allowed programs, not their resource use; we say it here, up front, so that no
+reader mistakes a shape limit for a resource limit.
+
+Beyond what is allowed syntactically, we also control *how complex* the program may be:
 
 - maximum AST depth (24) and node count (200) — a program can only be so complex,
 - float-comparison tolerance (because `0.1 + 0.2` is not exactly `0.3`),
@@ -103,13 +111,11 @@ We cannot tell whether a failure means "the model didn't learn this" or "the pro
 rolled the dice." By making the world deterministic, we eliminate that ambiguity
 entirely. The book's every later claim rests on this.
 
-One honesty note on that list: the spec also designs a maximum nesting depth, a hard
-execution timeout (a program that loops forever is a failed program), and recursion
-protection, but the shipped sandbox enforces none of the three — they exist in the
-code only as unused constants, and validation checks AST depth and node count alone.
-We did not enforce a runtime timeout or recursion cap, so an allowed program could
-still loop or consume memory. That is exactly the resource-use qualification Gate A
-carries below: the gate bounds the *shape* of allowed programs, not their resource use.
+One honesty note on that list, restated because it matters: the timeout, nesting-depth,
+and recursion caps are *designed but not enforced* (stated up front in this section), so
+an allowed program could still loop or consume memory. That is exactly the
+resource-use qualification Gate A carries below: the gate bounds the *shape* of allowed
+programs, not their resource use.
 
 ## The pipeline
 
@@ -252,19 +258,28 @@ they imagine a well-behaved model as one that simply chooses to behave.
 
 Our two gates are not an esoteric lab device; they are the same two ideas that real
 systems use, under different names. It is worth mapping them, so the book's abstract
-apparatus connects to what people actually deploy.
+apparatus connects to what people actually deploy. We split the map into two compact
+two-column tables — one per gate, with what a mechanism does and what it does *not*
+establish in the same cell — because a four-column table does not survive a 6×9 page.
 
-| Our gate | Production analogue | What it does (property) | What it does NOT establish |
-|---|---|---|---|
-| **Gate B** (input) | **Structured-input schema** | Declares the request's allowed shape (JSON schema); a request outside it is invalid by construction — a deterministic rule, not a model's decision | *Shape* compliance only. Schema validity is not correctness, safety, or authorization |
-| **Gate B** (input) | **Function/tool signatures** | Only registered functions with typed signatures can be called; off-scope actions aren't callable | Permission for every argument or action — a declared function can still be called with a harmful argument |
-| **Gate B** (input) | **Learned safety classifier (input)** | A separate learned model scores the prompt and a block action is applied to the score | Perfect semantic classification — the classifier is itself imperfect and can misclassify |
-| **Gate A** (output) | **Schema-constrained decoding** | Decoder only emits tokens that keep output inside the declared structure | Correctness of values or authorization — it guarantees *structure*, not semantic correctness |
-| **Gate A** (output) | **Provider JSON mode** | The provider's documented behavior for ensuring the completion is valid JSON, with incomplete-output / edge-case handling needed | Arbitrary schema adherence or semantic correctness — a provider's JSON mode ensures JSON validity (including the incomplete-output caveat), not adherence to a specific schema or correctness of values |
-| **Gate A** (output) | **Prompt-only formatting request** | The model is only *asked* to format a certain way; there is no formal syntax enforcement | Valid JSON or schema compliance — a prompt saying "please use JSON" is not an API's JSON mode |
-| **Gate A** (output) | **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes what slipped through | Correctness of the content — the check is only as good as its rules |
+**Gate B (input) analogues**
 
-The thread running through the "What it does NOT establish" column is the book's point:
+| Production analogue | What it does — and what it does NOT establish |
+|---|---|
+| **Structured-input schema** | Declares the request's allowed shape (JSON schema); a request outside it is invalid by construction — a deterministic rule, not a model's decision. *Not established:* shape compliance only — schema validity is not correctness, safety, or authorization |
+| **Function/tool signatures** | Only registered functions with typed signatures can be called; off-scope actions aren't callable. *Not established:* permission for every argument or action — a declared function can still be called with a harmful argument |
+| **Learned safety classifier (input)** | A separate learned model scores the prompt and a block action is applied to the score. *Not established:* perfect semantic classification — the classifier is itself imperfect and can misclassify |
+
+**Gate A (output) analogues**
+
+| Production analogue | What it does — and what it does NOT establish |
+|---|---|
+| **Schema-constrained decoding** | Decoder only emits tokens that keep output inside the declared structure. *Not established:* correctness of values or authorization — it guarantees *structure*, not semantic correctness |
+| **Provider JSON mode** | The provider's documented behavior for ensuring the completion is valid JSON, with incomplete-output / edge-case handling needed. *Not established:* arbitrary schema adherence or semantic correctness — a provider's JSON mode ensures JSON validity (including the incomplete-output caveat), not adherence to a specific schema or correctness of values |
+| **Prompt-only formatting request** | The model is only *asked* to format a certain way; there is no formal syntax enforcement. *Not established:* valid JSON or schema compliance — a prompt saying "please use JSON" is not an API's JSON mode |
+| **Output filter / sandbox** | A post-hoc check (or a walled-off execution environment) rejects or neutralizes what slipped through. *Not established:* correctness of the content — the check is only as good as its rules |
+
+The thread running through the *what it does NOT establish* half of every row is the book's point:
 every reliable enforcement mechanism is **external and scoped**, and none of them is
 "the model chose to behave." Even a frontier model that appears to refuse is doing so
 because RLHF shaped it to *tend* toward refusal — which is a soft, jailbreakable
@@ -272,7 +287,7 @@ behavior, not a bound. The dependable version of "it only does what it was desig
 for" is the wiring we build around it, exactly as our sandbox and our validator are.
 
 Three things follow. First, we deliberately do **not** assign "Low / Medium / High"
-residual-risk ratings to the rows above: we have no threat model or measurement to
+residual-risk ratings to the rows in the two tables above: we have no threat model or measurement to
 justify a quantitative ranking, so a color-coded risk column would be unsupported
 assertion. Instead each row names *which* failure mode remains open. Second, the
 distinction between a *prompt-only* request and an API's *JSON mode* is a real one:

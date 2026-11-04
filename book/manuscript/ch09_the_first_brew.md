@@ -103,12 +103,16 @@ result. But a *converging* loss by itself does not distinguish learning from
 memorization — both produce a falling loss. That distinction is exactly what the
 upcoming evaluations, not the loss curve, have to settle.
 
-**Second, the *final* value is not the interesting number.** A loss of 0.019 means the
-model can predict the next token of the *training* sequence almost perfectly. That
+**Second, the *final* value is not the interesting number.** A loss of 0.019 means
+the model can predict the next token of the *training* sequence almost perfectly. That
 tells us it fits the training data — and nothing more. One qualifier belongs on the
 number itself: there is no completion-only loss mask (Chapter 8), so this loss is
 averaged over *prompt and program* tokens together — the prompts are short and highly
-repetitive, and a low value partly reflects easy prompt-token prediction. No
+repetitive, and a low value partly reflects easy prompt-token prediction. Chapter 8's
+length audit adds the other half: about 35% of the pilot's loss-target positions are
+zero-padding targets (token id 0, NUL), because batches pad to the batch maximum and
+the loss carries no ignore index — so ~0.02 averages prompt tokens, program tokens,
+and padding targets together. No
 code-token-only training loss was recorded, so ~0.02 should be read as full-sequence
 fit, not as a clean measure of code-completion fit alone. This is the book's recurring
 motif, and it is worth saying loudly: **a falling training loss, and even a very low

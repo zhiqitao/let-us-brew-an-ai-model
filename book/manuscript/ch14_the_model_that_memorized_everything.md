@@ -137,6 +137,11 @@ behaves more like a **learner than a fixed literal-retriever**:
   stored answer per record; it emits a general program that, when **Python** runs it with
   fresh execution inputs, produces the correct result. The generalization to new input
   *values* is performed by the generated program, not by the model re-computing them.
+  And note what 59/60 does **not** say: it says nothing about *templates*. A model that
+  had memorized the prompt→program templates would score exactly this, because the prompt
+  is familiar and only the hidden-test values moved. The probe rules out stored literal
+  *answers*; it does not rule out — and must not be read as ruling out — memorized
+  prompt→program templates.
 - On a held-out probe it emits the general program, not a memorized literal — so it did
   not memorize *answer values*. (But emitting a general program it saw many times in
   training is also consistent with program *memorization*, so this does not by itself rule

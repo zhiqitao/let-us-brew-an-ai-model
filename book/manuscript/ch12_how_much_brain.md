@@ -34,12 +34,14 @@ say.
 That is a **~33×** increase in parameters from the smallest to the largest. On the
 thing we care about — composition — nothing changed at all.
 
-![Model size vs composition (line chart of in-distribution and composition pass@1 across 0.88M/6.5M/10.2M/29.3M; the runs' step budgets and tokenizer training corpora differed, so this is not a size-only comparison — see the setup)](figures/fig_model_size.png)
+![Observed runs, not a size-isolated comparison (line chart of pass@1 across the four observed configurations — 0.88M/6.5M/10.2M/29.3M; the runs' step budgets and tokenizer training corpora differed, so this is a descriptive cross-configuration comparison of observed runs, not a size-only comparison or a capacity–response curve — see the setup)](figures/fig_model_size.png)
 
 ![Illustrative prompts on five selected checkpoints](figures/fig_live_sweep.png)
 
-The first figure is a **line chart** of the measured pass@1 across the four model sizes;
-the second walks five selected checkpoints through a battery of *illustrative* prompts —
+The first figure is a **line chart** of the measured pass@1 across the four observed
+runs; read it as a descriptive cross-configuration comparison of what we actually ran,
+not as a capacity–response curve.
+The second walks five selected checkpoints through a battery of *illustrative* prompts —
 one prompt per case — and records whether each produced a working program. On the two
 familiar requests every checkpoint writes correct code; on a reworded request and a new
 combination, none does; on an out-of-scope request (which is not really a task from their
@@ -127,8 +129,11 @@ ability to compose in our evaluations.
 
 ## The audit: is this a fair comparison?
 
-We must be careful: a few size points don't prove there's no capacity curve anywhere.
-But the shape is telling. If capacity were the binding constraint, we'd expect a
+We must be careful: a few size points don't prove there's no capacity curve anywhere,
+and these four runs are not points on a size-isolated curve to begin with — they are a
+descriptive cross-configuration comparison of four observed runs whose step budgets and
+tokenizer training corpora differed. Read that way, the shape is still telling. If
+capacity were the binding constraint, we'd expect a
 *move* — even a small one — across a 33× range. We see none: composition is 0.000 at
 all four sizes. The in-distribution scores span 0.773–0.9167 across a 33× range. That
 spread (0.773 vs 0.9167 at 10.2M vs 0.88M) is large enough that we should be honest

@@ -50,11 +50,57 @@ For the pilot, the configuration is small and honest:
 Each of these is a deliberate choice that we can justify. The context length of 128
 tokens, for example, is chosen because a pilot task's prompt-plus-program fits
 comfortably within it — long enough to hold a full task, short enough that the model
-is not wasting capacity on irrelevant span. The 4 layers and 128-wide hidden
+is not wasting capacity on irrelevant span (we measure that claim below rather than
+assert it). The 4 layers and 128-wide hidden
 dimension keep it fast to train on the modest hardware available, which matters
 enormously: if training takes an hour, we iterate on the *experiment*; if it takes a
 day, we wait on the *model*, and the brew slows to a crawl. A small model is a fast
 iteration loop, and a fast loop is what lets a scientific investigation move.
+
+## Measured: does a task actually fit in 128 tokens?
+
+A claim like that deserves a measurement, so we made one. We tokenized the actual
+training sets with the exact tokenizer each experiment fits and counted lengths,
+truncations, and padding (`scripts/measure_truncation.py`; full per-operation
+distributions in `artifacts/manifests/truncation_audit.json` and
+`docs/reviews/loop/truncation_audit.md`):
+
+| training set | records | prompt+program (median / max) | records over 128 |
+|---|---|---|---|
+| Pilot (Stage 1) | 1,400 | 68 / 109 | 0 |
+| Stage-3 surface | 600 | 66 / 109 | 0 |
+| Stage-4 exposure | 1,520 | 68 / 172 | 40 |
+
+For the pilot, prompts run 27–51 tokens and programs 14–68, so the combined
+sequence tops out at 109 tokens — `cond_abs_max`, the longest operation, nineteen
+tokens short of the window. Zero of the 1,400 training records are cut, which means
+every program the pilot is asked to learn appears complete in its training sequence;
+"fits comfortably" is measured, not assumed. The Stage-3 surface set is the same
+story: zero records over 128. The composition baseline of Chapter 16 trains on the
+same primitive split as the pilot — we verified the two are identical on task ID,
+prompt, and program — so it too has no truncated training records. Training-time
+truncation therefore cannot explain the held-out composite 0.000, and we do not
+claim it does; the decode ablation narrowed *inference-time* stopping, which is a
+different question from training-time slicing.
+
+One arm is genuinely cut, and we say so plainly. In the Stage-4
+composition-exposure run, all 40 `sum_of_abs` training records are 172 tokens (58 of
+prompt plus 114 of program), so the window keeps 70 program tokens and slices off
+the last 44 — the `else` branch and the `return`. Training in that arm never shows a
+completed `sum_of_abs` program, a real coverage defect for that operation there. It
+is also the one exposed operation the decode ablation reports failing on its own
+training instances; the correlation is suggestive, but we ran no ablation
+(retraining with a longer window), so we do not turn it into a causal claim.
+
+There is a second, quieter consequence of the same design. Batches are zero-padded
+to the longest example in the batch, and the loss has no ignore index, so padding
+positions are part of the objective. Measured under the trainer's exact batching
+rule, about 35% of the pilot's loss-target positions are padding targets (36% for
+the surface arm, 38% for the exposure arm). The pad token is id 0 — NUL — so every
+padded row trains the model to predict NUL immediately after a sequence's last
+token. That is a share of loss *positions*, not of loss *value* (we did not
+decompose the trained loss), and we report it as a property of the objective rather
+than as an explanation for any score.
 
 ## The honest parameter count
 

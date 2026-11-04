@@ -114,10 +114,31 @@ def _c(op, names, rng):   # family "c"
 # Each operation has its own set of families; _op_noun/_op_sym map an operation
 # to the right word ("sum", "product", ...) and symbol ("+", "*", ...), so the
 # same families work for every operation, not just addition.
-FAMILIES = {"add": [_a, _b, _c], "mul": [_a, _b, _c], ...}
+FAMILIES = {
+    # three families each:
+    "add": [_a, _b, _c], "sub": [_a, _b, _c], "mul": [_a, _b, _c],
+    # two families each:
+    "max_of": [_a, _b], "min_of": [_a, _b],
+    "list_sum": [_list_a, _list_b], "list_len": [_list_a, _list_b],
+    "first_element": [_list_a, _list_b],
+    # singletons — exactly one family each:
+    "abs_of": [_unary_a], "cond_abs_max": [_a],
+    # composites: one family each, and held out of training entirely
+    # (composition split only):
+    "abs_add": [_comp_add_abs], "sub_abs": [_comp_sub_abs],
+    "sum_of_abs": [_comp_sum_abs], "max_add": [_comp_max_add],
+    "double_first": [_comp_double_first], "len_minus_one": [_comp_len_minus_one],
+}
 ```
 
 The semantics is fixed; only the wording changes. That is the entire point.
+
+Cardinality is visible in that dict, and it is deliberately uneven: three families for
+`add`/`sub`/`mul`, two for the other primitives, and exactly one for the singletons
+`abs_of` and `cond_abs_max` (and for every composite). A singleton has no held-out
+family to offer — which is why Chapter 15's held-out-wording cells cover 8 operations
+and 480 records rather than 10 and 600 (Chapter 5 introduces this cardinality with the
+teacher; Appendix D defines "held-out family").
 
 ## 4. The hidden tests
 
@@ -173,6 +194,88 @@ as a clean task spec — and we should not call it a "leakage" measure or equate
 that reveals the answer) drives the score. We therefore treat the vocabulary separability
 as a first check and separately inspect for duplicated examples and accidental cues,
 rather than reading one number as proof of leakage.
+
+## 6. From prompt to tokens: the actual tokenizer
+
+The generator stops at text. The training pipeline turns that text into ids with the
+tokenizer in `src/tokenizer/tokenizer.py` — and it is worth showing here, because it is
+**not** BPE (Chapter 8 and Appendix D carry the correction): the vocabulary is the 256
+character tokens plus the most frequent whole words of the corpus, and encoding is a
+greedy longest match.
+
+```
+def train_tokenizer(texts, min_vocab=128, max_vocab=512, save_path=None):
+    # character alphabet first, so nothing is ever out-of-vocabulary
+    vocab = {chr(c) for c in range(256)}
+    words = Counter()
+    for t in texts:
+        for w in t.split():
+            words[w] += 1
+    for w, _ in words.most_common(max_vocab - len(vocab)):
+        vocab.add(w)
+    vocab = sorted(vocab)[:max_vocab]
+    return Tokenizer(vocab)
+
+class Tokenizer:
+    def encode(self, text):
+        # greedy longest match over the vocabulary (deterministic), window <= 24
+        ...
+```
+
+Worked example, from an actual run of that code on three rendered addition prompts
+(`max_vocab=300`): the vocabulary came out **283 tokens — all 256 characters plus the
+frequent whole words** — and encoding
+
+```
+"Write a function that takes two numbers, a and b and returns the sum of them."
+```
+
+produced **31 tokens**:
+
+```
+['Write', ' ', 'a', ' ', 'function', ' ', 'that', ' ', 'takes', ' ', 'two',
+ ' ', 'numbers,', ' ', 'a', ' ', 'and', ' ', 'b', ' ', 'and', ' ', 'returns',
+ ' ', 'the', ' ', 'sum', ' ', 'of', ' ', 'them.']
+```
+
+Whole words are taken whole when they are in the vocabulary (`function`, `numbers,`),
+single characters otherwise; `decode(encode(x)) == x` exactly. Two consequences the
+book relies on: the tokenizer is deterministic (same corpus, same vocabulary), and its
+vocabulary is trained on the *training* text only in the corrected experiments
+(Chapter 15 states this for its fixed tokenizer), so evaluation never leaks vocabulary
+from held-out prompts.
+
+## 7. Split construction: the invariants
+
+Splits are assigned *after* generation, by `scripts/generate_data.py`, and the
+following invariants are what make a split claim checkable rather than a promise:
+
+1. **One record, one split.** Every record carries its own `split` field, and each
+   record lands in exactly one of `train` / `val` / `test` — splits are disjoint by
+   `task_id`.
+2. **Per-operation 70/15/15, by sorted `task_id`.** Within each operation the records
+   are sorted by `task_id`; the first 15% go to `val`, the next 15% to `test`, the rest
+   to `train` (with at least one record per non-empty split). So every operation appears
+   in every split with the same distribution — the pilot's splits are *not*
+   operation-disjoint.
+3. **Operation holdout is a different mechanism.** The composites come from
+   `generate_compositional`, a separate path, and never enter the pilot's train split;
+   that — not the 70/15/15 cut — is what makes the composition split a holdout.
+4. **The manifest records the split's own provenance:** `dataset_version`, `seed`,
+   `n_per_op`, the per-split counts, and the operation list, so the split can be
+   re-derived instead of merely trusted.
+5. **Regeneration is deterministic.** `make_task` seeds its RNG from the record's
+   seed, so the same seed rebuilds the same record — a split can be reproduced, not
+   just read.
+6. **Hidden tests never enter training.** They are evaluator-only artifacts
+   (Appendix D, "Hidden tests"), so no split's training data contains a test's expected
+   values.
+7. **Records are disjoint; prompt strings need not be.** The pilot reuses the same 21
+   prompt strings across train/val/test, so "held out" there means held-out *records*
+   (and fresh hidden-test values), not held-out prompts — the surface and composition
+   splits hold out prompt wording and operation families instead (Appendix D,
+   "Train/val/test split"). A split claim therefore has to name its novelty axis, and
+   these invariants are what the novelty audit checks.
 
 ## How to run it
 

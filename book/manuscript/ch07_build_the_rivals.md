@@ -114,6 +114,35 @@ most informative result of the experiment: it showed that the model's apparent
 capability was tied to exact surface form in a way that even a dumb rule system was
 immune to.
 
+## Comparability, stated once and applied everywhere
+
+Whenever a model score is set beside a baseline's, three things are held fixed and
+reported alongside the number:
+
+- **Same test membership.** The model and both rivals are scored over the *identical*
+  task set — the same records, the same hidden tests, the same judge, the same grading
+  path. Our scoring helper evaluates MODEL, TEMPLATE, and RETRIEVAL in one pass over the
+  same test tasks, so a difference between the numbers cannot come from a difference in
+  what was graded.
+- **Same prompt exposure at evaluation.** Each system receives exactly the same test
+  prompt and nothing else — no hidden tests, no task ID, no reference program. Each
+  system's exposure to *training* prompts is different by construction and is stated
+  wherever it matters: the model trained on those prompts, the retriever indexes those
+  same prompts, and the template rival carries no prompt store at all.
+- **Same generator access.** All three draw their programs from the same generated
+  corpus: the template rival calls the teacher's own reference generator, the retriever
+  reuses training reference programs, and the model trained on that data. None of them
+  gets an outside corpus or a hand-written solution library.
+
+One asymmetry we cannot remove and do not pretend to: **the baselines can be advantaged
+by domain knowledge.** The template rival's keyword table ("sum" → addition,
+"length" → list length) is knowledge we wrote down by hand — the same knowledge a reader
+brings to the task — while the model has to induce that association from data. So a
+baseline score is not a neutral floor: it can reflect understanding planted in it by its
+author. That cuts in the direction of making the baseline *harder* to beat, not easier,
+and it is one more reason we read a baseline as a sanity check on the *task*, never as a
+measure of learned capability.
+
 ## The lesson
 
 A neural model is not impressive merely because it works. It is impressive only when it

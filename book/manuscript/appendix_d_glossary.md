@@ -4,6 +4,10 @@ Short definitions of the terms used in this book. Where a term has a standard
 meaning that we follow, we say so; where we use it in a deliberately narrow way, we
 flag it.
 
+Three counting units are defined separately below — a **record**, a **unique prompt**,
+and a **held-out family**. They are not interchangeable evidence: a pass on one is not a
+pass on the others, so wherever a number is a count, the book says which unit it counts.
+
 > **A note on the word "learned."** The book uses "the model learned X" in more than one
 > sense, and we want to be explicit about which each claim uses. Sometimes it means the
 > model's *optimization fitted the training data* (its loss fell). Sometimes it means *a
@@ -62,6 +66,14 @@ flag it.
   the hidden-test input values — so the book states the axis wherever "held out" carries
   a claim; see "Train/val/test split" below.
 
+- **Held-out family (held-out template family).** A template family — a phrasing
+  skeleton the teacher renders with — kept out of training entirely and used only for
+  evaluation. It is the strongest of the three novelty units: every prompt in a held-out
+  family is new *and* comes from a skeleton the model never saw, whereas a held-out
+  record or a held-out prompt string can still reuse a familiar skeleton. Operations
+  with a single family (`abs_of`, `cond_abs_max`) have no held-out family to offer, so
+  they are excluded from held-out-wording cells rather than counted in them.
+
 - **Held-out program probe (formerly called a "canary").** Here, a held-out prompt-and-answer *pair*
   (a prompt the model did not see as this exact pair, though its prompt novelty is not
   independently verified — see Appendix C.7) used to check whether the model reproduces a
@@ -107,6 +119,13 @@ flag it.
   that each reference program was syntactically indivisible. See the operation dictionary
   in Appendix C (the experiment registry) for which entries are composite.
 
+- **Record.** One generated task instance: a semantic record rendered into one prompt
+  plus its own hidden tests, with its own `task_id` and its own `split`. The record is
+  the book's default counting unit — but a record is not a *unique prompt*: many records
+  can carry one prompt string, and a record can be new while its prompt is not (the
+  pilot's test records are new records under reused prompts). A count of records is
+  therefore evidence about records only.
+
 - **Sandbox / Gate A.** The software layer that runs generated programs and rejects any
   that use a construct outside an allowlist (e.g. `import`, `eval`), before they run.
 
@@ -126,6 +145,12 @@ flag it.
   samples and checking exact strings, not wording-family membership). So "held out" in
   this book is not a single thing: each split's novelty axis (new prompt vs. new input
   values vs. new operation) is stated explicitly where it matters.
+
+- **Unique prompt.** A distinct prompt *string*, counted once however many records carry
+  it. The pilot's train/val/test reuse the same 21 prompt strings, so its record count
+  and its unique-prompt count are very different numbers; a novelty claim has to say
+  which unit it is counting — record, unique prompt, or held-out family — because these
+  are separate evidence units with separate strength (see "Held-out family" above).
 
 - **Validator / Gate B.** The software layer that sits in front of the model and
   declines any incoming request that is not in the designed scope, before the model

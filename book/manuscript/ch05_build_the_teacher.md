@@ -105,6 +105,22 @@ Same meaning, three different wordings. This is what gives the dataset linguisti
 diversity — and, more importantly, it's what lets us later test whether the model
 learned the *idea* or just one *sentence*.
 
+Cardinality — how many families an operation has — is per operation and deliberately
+uneven, and it is worth knowing now rather than meeting it as a surprise later: `add`,
+`sub`, and `mul` have **three** families each; `max_of`, `min_of`, `list_sum`,
+`list_len`, and `first_element` have **two**; and `abs_of` and `cond_abs_max` are
+**singletons**, with exactly one family each. (The composite operations are
+single-family too, and they are held out of training entirely — Chapter 16.)
+
+Singletons change what a wording claim can mean. For a singleton operation, every
+training prompt and every in-distribution test prompt comes from the same phrasing
+skeleton, so "the model has seen this wording" and "the model has seen this operation"
+cannot be told apart — which is why the surface experiment (Chapter 15) excludes those
+two operations from its held-out-wording cells instead of pretending a holdout exists,
+and why the diversity experiment (Chapter 13) later grows the train-eligible pool to
+11–13 families per primitive operation while reserving two further families per
+operation exclusively for held-out-family tests.
+
 **4. `generate_hidden_tests`** — generates test cases **from the semantics**, not from
 the reference program's logic. It deliberately covers edge cases: ordinary values,
 zero, negatives, boundary values, large magnitudes, and (where legal) empty lists. For
@@ -112,8 +128,21 @@ each it computes the expected value from the operation itself.
 
 ## Why the tests come from the meaning, not the code
 
-This is a subtle but crucial point, and we want to be precise about what it does and
-does not establish. If we generated the tests by looking at the reference program, a
+This is a subtle but crucial point, and two different guarantees are easy to blur here,
+so we name them separately before explaining either:
+
+- **Shared-semantics consistency** is what the semantic-first design above buys: the
+  program, the prompt, and the tests all derive from one semantic record, so they agree
+  by construction. It is cheap and automatic, and it is blind to an error *in the record
+  itself* — everything downstream inherits it.
+- **Independent oracle validation** is a different thing entirely: checking the evaluator
+  against evidence that does *not* come from that shared record — the judge's mutation
+  control and its known-correct reference programs (Chapter 6), and the deliberate
+  red-team (Chapter 17). Consistency reduces drift; only independent validation can
+  bound a correlated error, and this chapter does not provide it.
+
+With those apart, here is precisely what the separate test-generation path does and does
+not establish. If we generated the tests by looking at the reference program, a
 model that emitted the reference would trivially pass — the tests would be circular.
 By generating the tests from the shared *semantics* instead, the tests provide a
 **separate implementation path**: the expected values are computed from the operation
@@ -203,7 +232,7 @@ than we ran, not one we completed here. Our finding-001 note is best read as "th
 is very predictive of the operation" — which is a property of a clear task, not proof of a
 shortcut. (One implementation note as well: the TF-IDF vectorizer was fit on the whole
 set before cross-validation, which would leak held-out-fold vocabulary; a principled
-version fits the vectorizer inside the CV pipeline, as shown in Appendix A.6.)
+version fits the vectorizer inside the CV pipeline, as shown in Appendix A.5.)
 
 This is the teacher doing its real job. A dataset generator that only produces data is
 half a tool. One that produces data **and audits it** — asking whether the surface is
