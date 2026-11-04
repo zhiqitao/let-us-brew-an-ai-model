@@ -49,7 +49,7 @@ the data, or the optimizer — it must be the schedule. That makes any differenc
 find a *procedure* finding, exactly the thing we want to isolate.
 
 ## The result
-![Task accuracy: sequential versus joint/interleaved (A+B from start), with the sequential same-run A-before-B measurement](figures/fig_continual.png)
+![Task accuracy: sequential versus joint/interleaved (A+B from start), with the sequential same-run A-before-B measurement](figures/fig_continual.pdf)
 
 | Protocol | **A right after phase A (same run, pre-B)** | **A accuracy (final)** | **B accuracy (final)** |
 |----------|---------------------------|-----------------|-------------------|
@@ -103,7 +103,7 @@ together, is there a forgetting problem at all? — no, 1.000). The timelines be
 the three designs explicit; note that the third (a true replay-after-A-first) was **not**
 run — it is a separate experiment, not the condition this chapter measures.
 
-![Sequential, joint/interleaved A+B from start, and true replay-after-A (not run)](figures/fig_continual_timelines.png)
+![Sequential, joint/interleaved A+B from start, and true replay-after-A (not run)](figures/fig_continual_timelines.pdf)
 
 What this establishes is that **the forgetting seen under sequential training disappears
 when the model is trained jointly on both.** It does not demonstrate that a replay

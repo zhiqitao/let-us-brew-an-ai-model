@@ -28,7 +28,7 @@ instrument, so that the experiment — not the gadgetry — is the subject.
 
 ## What it is
 
-![The smallest brain](figures/fig_brain.png)
+![The smallest brain](figures/fig_brain.pdf)
 
 The smallest brain is a tiny decoder-only transformer: tokens in, embed, attend
 through the layers, and predict the next token.

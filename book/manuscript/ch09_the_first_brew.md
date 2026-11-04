@@ -49,7 +49,7 @@ vocabularies, which is not this model).
 
 ## The training process, step by step
 
-![The brew loop](figures/fig_brew.png)
+![The brew loop](figures/fig_brew.pdf)
 
 Every experiment is one pass around this loop: generate, train, measure, and let
 what we measured shape what we generate next.

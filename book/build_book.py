@@ -35,7 +35,13 @@ def _merge(cover, interior, final):
         "author": "Zhiqi Tao",
         "subject": "What tiny language models can actually learn when given one job",
         "keywords": "language model, generalization, empirical investigation",
+        "creator": "Hermes / xelatex + pymupdf",
+        "producer": "pymupdf",
     })
+    try:
+        out.set_language("en-US")
+    except Exception:
+        pass
     out.save(final)
     out.close()
     src.close()

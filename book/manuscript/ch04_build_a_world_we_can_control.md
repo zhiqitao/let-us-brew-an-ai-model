@@ -133,7 +133,7 @@ chose to give it.
 
 ### The whole apparatus, in one picture
 
-![The whole apparatus](figures/fig_apparatus.png)
+![The whole apparatus](figures/fig_apparatus.pdf)
 
 Here is the full loop: the teacher creates the dataset, the student reads it, the
 judge grades the result, and the world encloses it all.
@@ -174,7 +174,7 @@ examination.
 
 ## Two gates, not one
 
-![The two gates](figures/fig_two_gates.png)
+![The two gates](figures/fig_two_gates.pdf)
 
 Neither gate lives inside the model. Gate B sits on the way in, Gate A on the way out.
 

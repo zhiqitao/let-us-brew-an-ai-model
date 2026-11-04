@@ -70,8 +70,13 @@ def save(fig, name):
     # the natural width and lowers the effective point size at the book's 4.5in
     # render -- a tighter crop keeps labels larger (P1-PROD-03).
     fig.savefig(p, dpi=150, bbox_inches="tight", pad_inches=0.03)
+    # VECTOR copy: same tight crop, but text/paths are real vectors so the
+    # labels are crisp at any print size (the manuscript references
+    # figures/fig_X.pdf; the PNG stays for previews/EPUB raster fallbacks).
+    v = os.path.join(FIG, os.path.splitext(name)[0] + ".pdf")
+    fig.savefig(v, bbox_inches="tight", pad_inches=0.03)
     plt.close(fig)
-    print("wrote", p)
+    print("wrote", p, "|", v)
     return p
 
 

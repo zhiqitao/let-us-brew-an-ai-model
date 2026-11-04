@@ -14,7 +14,7 @@ The model receives a **natural-language specification** of a programming task an
 must produce a **Python program** that solves it. That program is then executed
 against hidden tests.
 
-![The one job](figures/fig_task.png)
+![The one job](figures/fig_task.pdf)
 
 The contract is simple: a natural-language specification in, a program out, and a
 set of hidden tests to grade it against. Everything else follows from it.

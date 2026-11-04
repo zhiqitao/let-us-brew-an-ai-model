@@ -384,10 +384,10 @@ SHORT_TITLES = {
 # several LOF lines (the full caption still appears beneath the figure). Registered
 # via \captionof{figure}[short]{long}.
 SHORT_FIG_CAPTIONS = {
-    "figures/fig_model_size.png": "Model size vs composition",
-    "figures/fig_diversity.png": "Diversity vs quantity (flawed: 42 vs 1,200)",
-    "figures/fig_continual.png": "Sequential vs joint training",
-    "figures/fig_apparatus.png": "The whole apparatus",
+    "figures/fig_model_size.pdf": "Model size vs composition",
+    "figures/fig_diversity.pdf": "Diversity vs quantity (flawed: 42 vs 1,200)",
+    "figures/fig_continual.pdf": "Sequential vs joint training",
+    "figures/fig_apparatus.pdf": "The whole apparatus",
 }
 
 def fix_verbatim(path):

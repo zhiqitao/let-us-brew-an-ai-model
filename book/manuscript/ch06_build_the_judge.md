@@ -34,7 +34,7 @@ either it returns the correct result for every test, or it does not.
 
 ## The four-stage pipeline
 
-![The judge](figures/fig_judge.png)
+![The judge](figures/fig_judge.pdf)
 
 The judge is a funnel: a program clears it only by passing every stage, and the
 first failure sends it to zero.

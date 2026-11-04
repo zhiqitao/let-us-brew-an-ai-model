@@ -9,7 +9,7 @@ already rasterized for ebook display.
 The EPUB is reflowable: it does NOT reproduce the print pagination, and figures
 render at viewport width rather than at fixed print dimensions.
 """
-import os, subprocess
+import os, re, subprocess
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 MANU = os.path.join(ROOT, "book", "manuscript")
@@ -103,6 +103,10 @@ def main():
             parts.append(txt)
     body = "\n\n---\n\n".join(parts)
     md = FRONT + "\n" + body + "\n"
+    # The manuscript references the VECTOR figures (figures/fig_X.pdf) for the
+    # print PDF; EPUB readers only accept raster/SVG media, so fall back to the
+    # co-generated PNGs for the ebook build.
+    md = re.sub(r"(figures/fig_[a-z0-9_]+)\.pdf", r"\1.png", md)
 
     out_md = os.path.join(BOOK, "_epub.md")
     open(out_md, "w", encoding="utf-8").write(md)

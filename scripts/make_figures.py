@@ -56,8 +56,13 @@ def load(path):
 def save(fig, name):
     p = os.path.join(FIG, name)
     fig.savefig(p, dpi=150, bbox_inches="tight")
+    # VECTOR copy (production: raster PNGs were only ~167-312 dpi at 6x9 trim).
+    # The PDF backend draws text/paths as real vectors, so labels stay crisp at
+    # any print size; the manuscript references figures/fig_X.pdf.
+    v = os.path.join(FIG, os.path.splitext(name)[0] + ".pdf")
+    fig.savefig(v, bbox_inches="tight")
     plt.close(fig)
-    print("wrote", p)
+    print("wrote", p, "|", v)
     return p
 
 

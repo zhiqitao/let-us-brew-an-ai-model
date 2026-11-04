@@ -94,7 +94,7 @@ all twelve arms, RETRIEVAL 1.000 in eleven of them and 0.943 (283/300) in the tw
 Final training losses sit in a narrow band, 0.0177–0.0243, with no trend by size.
 
 ## What it tells us
-![Data scaling — corrected balanced sweep](figures/fig_data_scaling.png)
+![Data scaling — corrected balanced sweep](figures/fig_data_scaling.pdf)
 
 *Corrected sweep (fixes P0-01): every point is one run on the shared 300-task test set
 (30 per operation × 10 operations, generated once and reused across sizes and seeds), so

@@ -30,7 +30,7 @@ The flawed first run is preserved as labeled history at the end of the chapter.
 
 ## What our experiments hinted
 
-![Diversity at equal count — low vs high diversity, in-distribution and held-out family](figures/fig_diversity.png)
+![Diversity at equal count — low vs high diversity, in-distribution and held-out family](figures/fig_diversity.pdf)
 
 *Corrected equal-count run (three seeds; P0-02 fixed): both arms hold **1,200
 records**, 10/10 operations at 120 per operation, under one fixed tokenizer and a
@@ -195,7 +195,7 @@ lives inside the training family set measures **coverage**: the model saw that
 surface. A test on a family excluded from training measures **generalization**: the
 model did not.
 
-![Coverage is not a held-out family test](figures/fig_coverage.png)
+![Coverage is not a held-out family test](figures/fig_coverage.pdf)
 
 The figure makes the distinction explicit: a surface test drawn from the training
 family set measures coverage, whereas a true held-out-family test trains on some

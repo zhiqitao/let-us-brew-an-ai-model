@@ -20,7 +20,7 @@ that merely memorized the word "sum" mapped to a `+` cannot.
 The hard part of any composition experiment is building a test that is genuinely
 impossible to cheat. Here is how we do it.
 
-![Same operators, different programs](figures/fig_same_ops.png)
+![Same operators, different programs](figures/fig_same_ops.pdf)
 
 One clarification before the mechanics. The composite `abs_add` is **`abs(a) + abs(b)`**
 (the sum of the absolute values of each input), *not* the absolute value of a sum

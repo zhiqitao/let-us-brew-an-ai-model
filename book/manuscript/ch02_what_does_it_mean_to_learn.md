@@ -46,7 +46,7 @@ what? and could a dumber mechanism explain the result?
 
 ## The four questions of generalization
 
-![The four evaluation questions](figures/fig_ladder.png)
+![The four evaluation questions](figures/fig_ladder.pdf)
 
 The four questions make the point explicit. Each asks something distinct about a
 result, and we never collapse them into a single number. They are not a ladder — passing

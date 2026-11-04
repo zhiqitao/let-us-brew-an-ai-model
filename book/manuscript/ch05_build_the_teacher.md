@@ -14,7 +14,7 @@ way we build it, and it's a central design decision in the whole book.
 
 ## Semantic-first: start with the meaning, not a template
 
-![The teacher](figures/fig_teacher.png)
+![The teacher](figures/fig_teacher.pdf)
 
 One semantic record is the single source of truth: the program, the task, and the
 tests all derive from it, so they are much less likely to drift apart than if each were

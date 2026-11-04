@@ -6,7 +6,7 @@ machines, our **rivals**, and why they are the most important comparison in the 
 
 ## The principle
 
-![The rivals](figures/fig_rivals.png)
+![The rivals](figures/fig_rivals.pdf)
 
 The template and the retrieval baseline are *sanity checks*, not a score ceiling. Our
 model is drawn next to them for comparison: it has to clear them to be worth anything,

@@ -118,7 +118,7 @@ superseded row in Appendix C; the corrected factorial above is this chapter's re
 ## The damning comparison
 
 The most revealing number isn't the model's collapse — it's what the other two did.
-![Surface generalization — corrected 2x2 factorial](figures/fig_surface.png)
+![Surface generalization — corrected 2x2 factorial](figures/fig_surface.pdf)
 
 *Corrected 2×2 factorial (fixes P0-03 and P0-04), seed 0 shown; each pass@1 is over the
 cell's own held-out task set, with the MODEL and both baselines scored on identical
