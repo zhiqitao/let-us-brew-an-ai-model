@@ -1,0 +1,2140 @@
+{
+  "primitive_native": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 300,
+          "syntax_rate": 0.21,
+          "valid_program_rate": 0.19,
+          "solve_defined_rate": 0.2067,
+          "executable_rate": 0.1833,
+          "pass_at_1": 0.13,
+          "decomposition": {
+            "parse_fail": 237,
+            "allowlist_fail": 6,
+            "zero_pass": 2,
+            "partial": 16,
+            "all_pass": 39
+          },
+          "subflags": {
+            "solve_defined": 62,
+            "wrong_output": 1,
+            "runtime_error_all": 1
+          },
+          "no_viable_code": 243,
+          "wrong_program": 18,
+          "mean_extracted_chars": 49.2,
+          "distinct_extracted_codes": 219
+        },
+        "per_op": {
+          "abs_of": {
+            "n": 30,
+            "syntax_rate": 0.0333,
+            "valid_program_rate": 0.0333,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0333,
+            "pass_at_1": 0.0333,
+            "decomposition": {
+              "parse_fail": 29,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 1
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 29,
+            "wrong_program": 0,
+            "mean_extracted_chars": 57.5,
+            "distinct_extracted_codes": 23
+          },
+          "add": {
+            "n": 30,
+            "syntax_rate": 0.3333,
+            "valid_program_rate": 0.3333,
+            "solve_defined_rate": 0.3333,
+            "executable_rate": 0.3333,
+            "pass_at_1": 0.2,
+            "decomposition": {
+              "parse_fail": 20,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 4,
+              "all_pass": 6
+            },
+            "subflags": {
+              "solve_defined": 10
+            },
+            "no_viable_code": 20,
+            "wrong_program": 4,
+            "mean_extracted_chars": 39.9,
+            "distinct_extracted_codes": 20
+          },
+          "cond_abs_max": {
+            "n": 30,
+            "syntax_rate": 0.2,
+            "valid_program_rate": 0.1333,
+            "solve_defined_rate": 0.2,
+            "executable_rate": 0.1,
+            "pass_at_1": 0.1,
+            "decomposition": {
+              "parse_fail": 24,
+              "allowlist_fail": 2,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 3
+            },
+            "subflags": {
+              "solve_defined": 6,
+              "runtime_error_all": 1
+            },
+            "no_viable_code": 26,
+            "wrong_program": 1,
+            "mean_extracted_chars": 74.1,
+            "distinct_extracted_codes": 27
+          },
+          "first_element": {
+            "n": 30,
+            "syntax_rate": 0.6667,
+            "valid_program_rate": 0.6667,
+            "solve_defined_rate": 0.6667,
+            "executable_rate": 0.6667,
+            "pass_at_1": 0.6667,
+            "decomposition": {
+              "parse_fail": 10,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 20
+            },
+            "subflags": {
+              "solve_defined": 20
+            },
+            "no_viable_code": 10,
+            "wrong_program": 0,
+            "mean_extracted_chars": 32.0,
+            "distinct_extracted_codes": 11
+          },
+          "list_len": {
+            "n": 30,
+            "syntax_rate": 0.0333,
+            "valid_program_rate": 0.0333,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0333,
+            "pass_at_1": 0.0333,
+            "decomposition": {
+              "parse_fail": 29,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 1
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 29,
+            "wrong_program": 0,
+            "mean_extracted_chars": 36.5,
+            "distinct_extracted_codes": 12
+          },
+          "list_sum": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 68.6,
+            "distinct_extracted_codes": 30
+          },
+          "max_of": {
+            "n": 30,
+            "syntax_rate": 0.2667,
+            "valid_program_rate": 0.1667,
+            "solve_defined_rate": 0.2667,
+            "executable_rate": 0.1333,
+            "pass_at_1": 0.0667,
+            "decomposition": {
+              "parse_fail": 22,
+              "allowlist_fail": 3,
+              "zero_pass": 1,
+              "partial": 2,
+              "all_pass": 2
+            },
+            "subflags": {
+              "solve_defined": 8,
+              "wrong_output": 1
+            },
+            "no_viable_code": 25,
+            "wrong_program": 3,
+            "mean_extracted_chars": 51.8,
+            "distinct_extracted_codes": 25
+          },
+          "min_of": {
+            "n": 30,
+            "syntax_rate": 0.0667,
+            "valid_program_rate": 0.0667,
+            "solve_defined_rate": 0.0667,
+            "executable_rate": 0.0667,
+            "pass_at_1": 0.0667,
+            "decomposition": {
+              "parse_fail": 28,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 2
+            },
+            "subflags": {
+              "solve_defined": 2
+            },
+            "no_viable_code": 28,
+            "wrong_program": 0,
+            "mean_extracted_chars": 53.3,
+            "distinct_extracted_codes": 25
+          },
+          "mul": {
+            "n": 30,
+            "syntax_rate": 0.4667,
+            "valid_program_rate": 0.4333,
+            "solve_defined_rate": 0.4333,
+            "executable_rate": 0.4333,
+            "pass_at_1": 0.1333,
+            "decomposition": {
+              "parse_fail": 16,
+              "allowlist_fail": 1,
+              "zero_pass": 0,
+              "partial": 9,
+              "all_pass": 4
+            },
+            "subflags": {
+              "solve_defined": 13
+            },
+            "no_viable_code": 17,
+            "wrong_program": 9,
+            "mean_extracted_chars": 36.1,
+            "distinct_extracted_codes": 23
+          },
+          "sub": {
+            "n": 30,
+            "syntax_rate": 0.0333,
+            "valid_program_rate": 0.0333,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0333,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 29,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 1,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 29,
+            "wrong_program": 1,
+            "mean_extracted_chars": 42.3,
+            "distinct_extracted_codes": 28
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 300,
+          "syntax_rate": 0.21,
+          "valid_program_rate": 0.19,
+          "solve_defined_rate": 0.2067,
+          "executable_rate": 0.1833,
+          "pass_at_1": 0.13,
+          "decomposition": {
+            "parse_fail": 237,
+            "allowlist_fail": 6,
+            "zero_pass": 2,
+            "partial": 16,
+            "all_pass": 39
+          },
+          "subflags": {
+            "solve_defined": 62,
+            "wrong_output": 1,
+            "runtime_error_all": 1
+          },
+          "no_viable_code": 243,
+          "wrong_program": 18,
+          "mean_extracted_chars": 49.2,
+          "distinct_extracted_codes": 219
+        },
+        "per_op": {
+          "abs_of": {
+            "n": 30,
+            "syntax_rate": 0.0333,
+            "valid_program_rate": 0.0333,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0333,
+            "pass_at_1": 0.0333,
+            "decomposition": {
+              "parse_fail": 29,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 1
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 29,
+            "wrong_program": 0,
+            "mean_extracted_chars": 57.5,
+            "distinct_extracted_codes": 23
+          },
+          "add": {
+            "n": 30,
+            "syntax_rate": 0.3333,
+            "valid_program_rate": 0.3333,
+            "solve_defined_rate": 0.3333,
+            "executable_rate": 0.3333,
+            "pass_at_1": 0.2,
+            "decomposition": {
+              "parse_fail": 20,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 4,
+              "all_pass": 6
+            },
+            "subflags": {
+              "solve_defined": 10
+            },
+            "no_viable_code": 20,
+            "wrong_program": 4,
+            "mean_extracted_chars": 39.9,
+            "distinct_extracted_codes": 20
+          },
+          "cond_abs_max": {
+            "n": 30,
+            "syntax_rate": 0.2,
+            "valid_program_rate": 0.1333,
+            "solve_defined_rate": 0.2,
+            "executable_rate": 0.1,
+            "pass_at_1": 0.1,
+            "decomposition": {
+              "parse_fail": 24,
+              "allowlist_fail": 2,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 3
+            },
+            "subflags": {
+              "solve_defined": 6,
+              "runtime_error_all": 1
+            },
+            "no_viable_code": 26,
+            "wrong_program": 1,
+            "mean_extracted_chars": 74.1,
+            "distinct_extracted_codes": 27
+          },
+          "first_element": {
+            "n": 30,
+            "syntax_rate": 0.6667,
+            "valid_program_rate": 0.6667,
+            "solve_defined_rate": 0.6667,
+            "executable_rate": 0.6667,
+            "pass_at_1": 0.6667,
+            "decomposition": {
+              "parse_fail": 10,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 20
+            },
+            "subflags": {
+              "solve_defined": 20
+            },
+            "no_viable_code": 10,
+            "wrong_program": 0,
+            "mean_extracted_chars": 32.0,
+            "distinct_extracted_codes": 11
+          },
+          "list_len": {
+            "n": 30,
+            "syntax_rate": 0.0333,
+            "valid_program_rate": 0.0333,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0333,
+            "pass_at_1": 0.0333,
+            "decomposition": {
+              "parse_fail": 29,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 1
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 29,
+            "wrong_program": 0,
+            "mean_extracted_chars": 36.5,
+            "distinct_extracted_codes": 12
+          },
+          "list_sum": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 68.6,
+            "distinct_extracted_codes": 30
+          },
+          "max_of": {
+            "n": 30,
+            "syntax_rate": 0.2667,
+            "valid_program_rate": 0.1667,
+            "solve_defined_rate": 0.2667,
+            "executable_rate": 0.1333,
+            "pass_at_1": 0.0667,
+            "decomposition": {
+              "parse_fail": 22,
+              "allowlist_fail": 3,
+              "zero_pass": 1,
+              "partial": 2,
+              "all_pass": 2
+            },
+            "subflags": {
+              "solve_defined": 8,
+              "wrong_output": 1
+            },
+            "no_viable_code": 25,
+            "wrong_program": 3,
+            "mean_extracted_chars": 51.8,
+            "distinct_extracted_codes": 25
+          },
+          "min_of": {
+            "n": 30,
+            "syntax_rate": 0.0667,
+            "valid_program_rate": 0.0667,
+            "solve_defined_rate": 0.0667,
+            "executable_rate": 0.0667,
+            "pass_at_1": 0.0667,
+            "decomposition": {
+              "parse_fail": 28,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 2
+            },
+            "subflags": {
+              "solve_defined": 2
+            },
+            "no_viable_code": 28,
+            "wrong_program": 0,
+            "mean_extracted_chars": 53.3,
+            "distinct_extracted_codes": 25
+          },
+          "mul": {
+            "n": 30,
+            "syntax_rate": 0.4667,
+            "valid_program_rate": 0.4333,
+            "solve_defined_rate": 0.4333,
+            "executable_rate": 0.4333,
+            "pass_at_1": 0.1333,
+            "decomposition": {
+              "parse_fail": 16,
+              "allowlist_fail": 1,
+              "zero_pass": 0,
+              "partial": 9,
+              "all_pass": 4
+            },
+            "subflags": {
+              "solve_defined": 13
+            },
+            "no_viable_code": 17,
+            "wrong_program": 9,
+            "mean_extracted_chars": 36.1,
+            "distinct_extracted_codes": 23
+          },
+          "sub": {
+            "n": 30,
+            "syntax_rate": 0.0333,
+            "valid_program_rate": 0.0333,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0333,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 29,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 1,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 29,
+            "wrong_program": 1,
+            "mean_extracted_chars": 42.3,
+            "distinct_extracted_codes": 28
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 300,
+      "syntax_rate": 0.21,
+      "valid_program_rate": 0.19,
+      "solve_defined_rate": 0.2067,
+      "executable_rate": 0.1833,
+      "pass_at_1": 0.13,
+      "decomposition": {
+        "parse_fail": 237,
+        "allowlist_fail": 6,
+        "zero_pass": 2,
+        "partial": 16,
+        "all_pass": 39
+      },
+      "subflags": {
+        "solve_defined": 62,
+        "wrong_output": 1,
+        "runtime_error_all": 1
+      },
+      "no_viable_code": 243,
+      "wrong_program": 18,
+      "mean_extracted_chars": 49.2,
+      "distinct_extracted_codes": 219
+    },
+    "nul_terminated": 300,
+    "post_nul_content": 0,
+    "stopped_early": 300,
+    "max_prompt_tokens": 51,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.9,
+        "pass_at_1": 0.8
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 1.0,
+        "pass_at_1": 1.0
+      }
+    },
+    "role": "anchor: seen structure + seen surface (in-distribution)",
+    "structure": "seen_primitive",
+    "surface": "seen",
+    "length": "primitive",
+    "paired_with": null,
+    "n": 300,
+    "denominator": 300,
+    "eval_time_s": 95.9
+  },
+  "primitive_unseen_surface": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 300,
+          "syntax_rate": 0.1267,
+          "valid_program_rate": 0.0,
+          "solve_defined_rate": 0.0033,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 262,
+            "allowlist_fail": 38,
+            "zero_pass": 0,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "solve_defined": 1
+          },
+          "no_viable_code": 300,
+          "wrong_program": 0,
+          "mean_extracted_chars": 25.6,
+          "distinct_extracted_codes": 249
+        },
+        "per_op": {
+          "abs_of": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 37.7,
+            "distinct_extracted_codes": 30
+          },
+          "add": {
+            "n": 30,
+            "syntax_rate": 0.0667,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 28,
+              "allowlist_fail": 2,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 31.0,
+            "distinct_extracted_codes": 29
+          },
+          "cond_abs_max": {
+            "n": 30,
+            "syntax_rate": 0.2333,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 23,
+              "allowlist_fail": 7,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 7.9,
+            "distinct_extracted_codes": 17
+          },
+          "first_element": {
+            "n": 30,
+            "syntax_rate": 0.1,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 27,
+              "allowlist_fail": 3,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 29.4,
+            "distinct_extracted_codes": 29
+          },
+          "list_len": {
+            "n": 30,
+            "syntax_rate": 0.4,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 18,
+              "allowlist_fail": 12,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 24.0,
+            "distinct_extracted_codes": 24
+          },
+          "list_sum": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 18.6,
+            "distinct_extracted_codes": 27
+          },
+          "max_of": {
+            "n": 30,
+            "syntax_rate": 0.1333,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 26,
+              "allowlist_fail": 4,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 23.9,
+            "distinct_extracted_codes": 28
+          },
+          "min_of": {
+            "n": 30,
+            "syntax_rate": 0.1,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 27,
+              "allowlist_fail": 3,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 36.6,
+            "distinct_extracted_codes": 29
+          },
+          "mul": {
+            "n": 30,
+            "syntax_rate": 0.2333,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 23,
+              "allowlist_fail": 7,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 21.5,
+            "distinct_extracted_codes": 18
+          },
+          "sub": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 25.3,
+            "distinct_extracted_codes": 23
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 300,
+          "syntax_rate": 0.1267,
+          "valid_program_rate": 0.0,
+          "solve_defined_rate": 0.0033,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 262,
+            "allowlist_fail": 38,
+            "zero_pass": 0,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "solve_defined": 1
+          },
+          "no_viable_code": 300,
+          "wrong_program": 0,
+          "mean_extracted_chars": 25.6,
+          "distinct_extracted_codes": 249
+        },
+        "per_op": {
+          "abs_of": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 37.7,
+            "distinct_extracted_codes": 30
+          },
+          "add": {
+            "n": 30,
+            "syntax_rate": 0.0667,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 28,
+              "allowlist_fail": 2,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 31.0,
+            "distinct_extracted_codes": 29
+          },
+          "cond_abs_max": {
+            "n": 30,
+            "syntax_rate": 0.2333,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 23,
+              "allowlist_fail": 7,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 7.9,
+            "distinct_extracted_codes": 17
+          },
+          "first_element": {
+            "n": 30,
+            "syntax_rate": 0.1,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 27,
+              "allowlist_fail": 3,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 29.4,
+            "distinct_extracted_codes": 29
+          },
+          "list_len": {
+            "n": 30,
+            "syntax_rate": 0.4,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 18,
+              "allowlist_fail": 12,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 24.0,
+            "distinct_extracted_codes": 24
+          },
+          "list_sum": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 18.6,
+            "distinct_extracted_codes": 27
+          },
+          "max_of": {
+            "n": 30,
+            "syntax_rate": 0.1333,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 26,
+              "allowlist_fail": 4,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 23.9,
+            "distinct_extracted_codes": 28
+          },
+          "min_of": {
+            "n": 30,
+            "syntax_rate": 0.1,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0333,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 27,
+              "allowlist_fail": 3,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 36.6,
+            "distinct_extracted_codes": 29
+          },
+          "mul": {
+            "n": 30,
+            "syntax_rate": 0.2333,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 23,
+              "allowlist_fail": 7,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 21.5,
+            "distinct_extracted_codes": 18
+          },
+          "sub": {
+            "n": 30,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 30,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 30,
+            "wrong_program": 0,
+            "mean_extracted_chars": 25.3,
+            "distinct_extracted_codes": 23
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 300,
+      "syntax_rate": 0.1267,
+      "valid_program_rate": 0.0,
+      "solve_defined_rate": 0.0033,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0,
+      "decomposition": {
+        "parse_fail": 262,
+        "allowlist_fail": 38,
+        "zero_pass": 0,
+        "partial": 0,
+        "all_pass": 0
+      },
+      "subflags": {
+        "solve_defined": 1
+      },
+      "no_viable_code": 300,
+      "wrong_program": 0,
+      "mean_extracted_chars": 25.6,
+      "distinct_extracted_codes": 249
+    },
+    "nul_terminated": 300,
+    "post_nul_content": 0,
+    "stopped_early": 300,
+    "max_prompt_tokens": 64,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.95,
+        "pass_at_1": 0.1
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.6,
+        "pass_at_1": 0.1
+      }
+    },
+    "role": "control (a): SEEN program structure, UNSEEN wording \u2014 reference code and hidden tests byte-identical to primitive_native",
+    "structure": "seen_primitive",
+    "surface": "unseen_new_family",
+    "length": "primitive",
+    "paired_with": "primitive_native",
+    "n": 300,
+    "denominator": 300,
+    "eval_time_s": 84.1
+  },
+  "exposed_native": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 120,
+          "syntax_rate": 0.1083,
+          "valid_program_rate": 0.1,
+          "solve_defined_rate": 0.1083,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 107,
+            "allowlist_fail": 1,
+            "zero_pass": 12,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "solve_defined": 13,
+            "runtime_error_all": 12
+          },
+          "no_viable_code": 108,
+          "wrong_program": 12,
+          "mean_extracted_chars": 44.1,
+          "distinct_extracted_codes": 96
+        },
+        "per_op": {
+          "abs_add": {
+            "n": 40,
+            "syntax_rate": 0.3,
+            "valid_program_rate": 0.3,
+            "solve_defined_rate": 0.3,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 28,
+              "allowlist_fail": 0,
+              "zero_pass": 12,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 12,
+              "runtime_error_all": 12
+            },
+            "no_viable_code": 28,
+            "wrong_program": 12,
+            "mean_extracted_chars": 29.2,
+            "distinct_extracted_codes": 18
+          },
+          "sub_abs": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 48.6,
+            "distinct_extracted_codes": 40
+          },
+          "sum_of_abs": {
+            "n": 40,
+            "syntax_rate": 0.025,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.025,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 39,
+              "allowlist_fail": 1,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 54.4,
+            "distinct_extracted_codes": 38
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 120,
+          "syntax_rate": 0.1083,
+          "valid_program_rate": 0.1,
+          "solve_defined_rate": 0.1083,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 107,
+            "allowlist_fail": 1,
+            "zero_pass": 12,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "solve_defined": 13,
+            "runtime_error_all": 12
+          },
+          "no_viable_code": 108,
+          "wrong_program": 12,
+          "mean_extracted_chars": 44.1,
+          "distinct_extracted_codes": 96
+        },
+        "per_op": {
+          "abs_add": {
+            "n": 40,
+            "syntax_rate": 0.3,
+            "valid_program_rate": 0.3,
+            "solve_defined_rate": 0.3,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 28,
+              "allowlist_fail": 0,
+              "zero_pass": 12,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 12,
+              "runtime_error_all": 12
+            },
+            "no_viable_code": 28,
+            "wrong_program": 12,
+            "mean_extracted_chars": 29.2,
+            "distinct_extracted_codes": 18
+          },
+          "sub_abs": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 48.6,
+            "distinct_extracted_codes": 40
+          },
+          "sum_of_abs": {
+            "n": 40,
+            "syntax_rate": 0.025,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.025,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 39,
+              "allowlist_fail": 1,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1
+            },
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 54.4,
+            "distinct_extracted_codes": 38
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 120,
+      "syntax_rate": 0.1083,
+      "valid_program_rate": 0.1,
+      "solve_defined_rate": 0.1083,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0,
+      "decomposition": {
+        "parse_fail": 107,
+        "allowlist_fail": 1,
+        "zero_pass": 12,
+        "partial": 0,
+        "all_pass": 0
+      },
+      "subflags": {
+        "solve_defined": 13,
+        "runtime_error_all": 12
+      },
+      "no_viable_code": 108,
+      "wrong_program": 12,
+      "mean_extracted_chars": 44.1,
+      "distinct_extracted_codes": 96
+    },
+    "nul_terminated": 120,
+    "post_nul_content": 0,
+    "stopped_early": 120,
+    "max_prompt_tokens": 58,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.6667,
+        "pass_at_1": 0.0
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 1.0,
+        "pass_at_1": 1.0
+      }
+    },
+    "role": "anchor: composites seen in training (pipeline upper bound)",
+    "structure": "seen_composite",
+    "surface": "seen",
+    "length": "composite",
+    "paired_with": null,
+    "n": 120,
+    "denominator": 120,
+    "eval_time_s": 39.4
+  },
+  "heldout_native": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 120,
+          "syntax_rate": 0.1583,
+          "valid_program_rate": 0.0917,
+          "solve_defined_rate": 0.0083,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 101,
+            "allowlist_fail": 8,
+            "zero_pass": 11,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "no_solve": 10,
+            "solve_defined": 1,
+            "runtime_error_all": 1
+          },
+          "no_viable_code": 109,
+          "wrong_program": 11,
+          "mean_extracted_chars": 22.8,
+          "distinct_extracted_codes": 105
+        },
+        "per_op": {
+          "double_first": {
+            "n": 40,
+            "syntax_rate": 0.025,
+            "valid_program_rate": 0.025,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 39,
+              "allowlist_fail": 0,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "no_solve": 1
+            },
+            "no_viable_code": 39,
+            "wrong_program": 1,
+            "mean_extracted_chars": 24.8,
+            "distinct_extracted_codes": 36
+          },
+          "len_minus_one": {
+            "n": 40,
+            "syntax_rate": 0.075,
+            "valid_program_rate": 0.025,
+            "solve_defined_rate": 0.025,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 37,
+              "allowlist_fail": 2,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1,
+              "runtime_error_all": 1
+            },
+            "no_viable_code": 39,
+            "wrong_program": 1,
+            "mean_extracted_chars": 31.6,
+            "distinct_extracted_codes": 39
+          },
+          "max_add": {
+            "n": 40,
+            "syntax_rate": 0.375,
+            "valid_program_rate": 0.225,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 25,
+              "allowlist_fail": 6,
+              "zero_pass": 9,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "no_solve": 9
+            },
+            "no_viable_code": 31,
+            "wrong_program": 9,
+            "mean_extracted_chars": 11.8,
+            "distinct_extracted_codes": 30
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 120,
+          "syntax_rate": 0.1583,
+          "valid_program_rate": 0.0917,
+          "solve_defined_rate": 0.0083,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 101,
+            "allowlist_fail": 8,
+            "zero_pass": 11,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "no_solve": 10,
+            "solve_defined": 1,
+            "runtime_error_all": 1
+          },
+          "no_viable_code": 109,
+          "wrong_program": 11,
+          "mean_extracted_chars": 22.8,
+          "distinct_extracted_codes": 105
+        },
+        "per_op": {
+          "double_first": {
+            "n": 40,
+            "syntax_rate": 0.025,
+            "valid_program_rate": 0.025,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 39,
+              "allowlist_fail": 0,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "no_solve": 1
+            },
+            "no_viable_code": 39,
+            "wrong_program": 1,
+            "mean_extracted_chars": 24.8,
+            "distinct_extracted_codes": 36
+          },
+          "len_minus_one": {
+            "n": 40,
+            "syntax_rate": 0.075,
+            "valid_program_rate": 0.025,
+            "solve_defined_rate": 0.025,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 37,
+              "allowlist_fail": 2,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 1,
+              "runtime_error_all": 1
+            },
+            "no_viable_code": 39,
+            "wrong_program": 1,
+            "mean_extracted_chars": 31.6,
+            "distinct_extracted_codes": 39
+          },
+          "max_add": {
+            "n": 40,
+            "syntax_rate": 0.375,
+            "valid_program_rate": 0.225,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 25,
+              "allowlist_fail": 6,
+              "zero_pass": 9,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "no_solve": 9
+            },
+            "no_viable_code": 31,
+            "wrong_program": 9,
+            "mean_extracted_chars": 11.8,
+            "distinct_extracted_codes": 30
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 120,
+      "syntax_rate": 0.1583,
+      "valid_program_rate": 0.0917,
+      "solve_defined_rate": 0.0083,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0,
+      "decomposition": {
+        "parse_fail": 101,
+        "allowlist_fail": 8,
+        "zero_pass": 11,
+        "partial": 0,
+        "all_pass": 0
+      },
+      "subflags": {
+        "no_solve": 10,
+        "solve_defined": 1,
+        "runtime_error_all": 1
+      },
+      "no_viable_code": 109,
+      "wrong_program": 11,
+      "mean_extracted_chars": 22.8,
+      "distinct_extracted_codes": 105
+    },
+    "nul_terminated": 120,
+    "post_nul_content": 0,
+    "stopped_early": 120,
+    "max_prompt_tokens": 63,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.3333,
+        "pass_at_1": 0.0
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.3333,
+        "pass_at_1": 0.0
+      }
+    },
+    "role": "baseline: the book's failing condition (unseen composite, native unseen family prompt)",
+    "structure": "unseen_composite",
+    "surface": "unseen_native_family",
+    "length": "composite",
+    "paired_with": null,
+    "n": 120,
+    "denominator": 120,
+    "eval_time_s": 26.9
+  },
+  "heldout_seen_surface": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 120,
+          "syntax_rate": 0.0417,
+          "valid_program_rate": 0.0,
+          "solve_defined_rate": 0.0,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 115,
+            "allowlist_fail": 5,
+            "zero_pass": 0,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {},
+          "no_viable_code": 120,
+          "wrong_program": 0,
+          "mean_extracted_chars": 31.2,
+          "distinct_extracted_codes": 80
+        },
+        "per_op": {
+          "double_first": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 32.4,
+            "distinct_extracted_codes": 26
+          },
+          "len_minus_one": {
+            "n": 40,
+            "syntax_rate": 0.125,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 35,
+              "allowlist_fail": 5,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 22.4,
+            "distinct_extracted_codes": 27
+          },
+          "max_add": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 38.8,
+            "distinct_extracted_codes": 28
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 120,
+          "syntax_rate": 0.0417,
+          "valid_program_rate": 0.0,
+          "solve_defined_rate": 0.0,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 115,
+            "allowlist_fail": 5,
+            "zero_pass": 0,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {},
+          "no_viable_code": 120,
+          "wrong_program": 0,
+          "mean_extracted_chars": 31.2,
+          "distinct_extracted_codes": 80
+        },
+        "per_op": {
+          "double_first": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 32.4,
+            "distinct_extracted_codes": 26
+          },
+          "len_minus_one": {
+            "n": 40,
+            "syntax_rate": 0.125,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 35,
+              "allowlist_fail": 5,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 22.4,
+            "distinct_extracted_codes": 27
+          },
+          "max_add": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 38.8,
+            "distinct_extracted_codes": 28
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 120,
+      "syntax_rate": 0.0417,
+      "valid_program_rate": 0.0,
+      "solve_defined_rate": 0.0,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0,
+      "decomposition": {
+        "parse_fail": 115,
+        "allowlist_fail": 5,
+        "zero_pass": 0,
+        "partial": 0,
+        "all_pass": 0
+      },
+      "subflags": {},
+      "no_viable_code": 120,
+      "wrong_program": 0,
+      "mean_extracted_chars": 31.2,
+      "distinct_extracted_codes": 80
+    },
+    "nul_terminated": 120,
+    "post_nul_content": 0,
+    "stopped_early": 120,
+    "max_prompt_tokens": 52,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.3333,
+        "pass_at_1": 0.0
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.3333,
+        "pass_at_1": 0.0
+      }
+    },
+    "role": "control (b): UNSEEN composite structure under a VERBATIM training surface frame \u2014 ref code + tests identical to heldout_native",
+    "structure": "unseen_composite",
+    "surface": "seen_verbatim_frame",
+    "length": "composite",
+    "paired_with": "heldout_native",
+    "n": 120,
+    "denominator": 120,
+    "eval_time_s": 33.5
+  },
+  "new_composite_unseen_surface": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 80,
+          "syntax_rate": 0.1125,
+          "valid_program_rate": 0.0125,
+          "solve_defined_rate": 0.0,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 71,
+            "allowlist_fail": 8,
+            "zero_pass": 1,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "empty": 1,
+            "no_solve": 1
+          },
+          "no_viable_code": 79,
+          "wrong_program": 1,
+          "mean_extracted_chars": 14.0,
+          "distinct_extracted_codes": 53
+        },
+        "per_op": {
+          "abs_mul": {
+            "n": 40,
+            "syntax_rate": 0.2,
+            "valid_program_rate": 0.025,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 32,
+              "allowlist_fail": 7,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "empty": 1,
+              "no_solve": 1
+            },
+            "no_viable_code": 39,
+            "wrong_program": 1,
+            "mean_extracted_chars": 16.3,
+            "distinct_extracted_codes": 31
+          },
+          "first_plus_len": {
+            "n": 40,
+            "syntax_rate": 0.025,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 39,
+              "allowlist_fail": 1,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 11.7,
+            "distinct_extracted_codes": 22
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 80,
+          "syntax_rate": 0.1125,
+          "valid_program_rate": 0.0125,
+          "solve_defined_rate": 0.0,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 71,
+            "allowlist_fail": 8,
+            "zero_pass": 1,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "empty": 1,
+            "no_solve": 1
+          },
+          "no_viable_code": 79,
+          "wrong_program": 1,
+          "mean_extracted_chars": 14.0,
+          "distinct_extracted_codes": 53
+        },
+        "per_op": {
+          "abs_mul": {
+            "n": 40,
+            "syntax_rate": 0.2,
+            "valid_program_rate": 0.025,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 32,
+              "allowlist_fail": 7,
+              "zero_pass": 1,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "empty": 1,
+              "no_solve": 1
+            },
+            "no_viable_code": 39,
+            "wrong_program": 1,
+            "mean_extracted_chars": 16.3,
+            "distinct_extracted_codes": 31
+          },
+          "first_plus_len": {
+            "n": 40,
+            "syntax_rate": 0.025,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 39,
+              "allowlist_fail": 1,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 11.7,
+            "distinct_extracted_codes": 22
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 80,
+      "syntax_rate": 0.1125,
+      "valid_program_rate": 0.0125,
+      "solve_defined_rate": 0.0,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0,
+      "decomposition": {
+        "parse_fail": 71,
+        "allowlist_fail": 8,
+        "zero_pass": 1,
+        "partial": 0,
+        "all_pass": 0
+      },
+      "subflags": {
+        "empty": 1,
+        "no_solve": 1
+      },
+      "no_viable_code": 79,
+      "wrong_program": 1,
+      "mean_extracted_chars": 14.0,
+      "distinct_extracted_codes": 53
+    },
+    "nul_terminated": 80,
+    "post_nul_content": 0,
+    "stopped_early": 80,
+    "max_prompt_tokens": 86,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.5,
+        "pass_at_1": 0.0
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.5,
+        "pass_at_1": 0.0
+      }
+    },
+    "role": "control (c): NEW length-matched composite, novel wording \u2014 2x2 cell unseen structure x unseen surface",
+    "structure": "unseen_composite_new",
+    "surface": "unseen_new_family",
+    "length": "matched_to_primitive",
+    "paired_with": "new_composite_seen_surface",
+    "n": 80,
+    "denominator": 80,
+    "eval_time_s": 20.1
+  },
+  "new_composite_seen_surface": {
+    "extractions": {
+      "book_prefix80": {
+        "aggregate": {
+          "n": 80,
+          "syntax_rate": 0.2,
+          "valid_program_rate": 0.0,
+          "solve_defined_rate": 0.2,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 64,
+            "allowlist_fail": 16,
+            "zero_pass": 0,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "solve_defined": 16
+          },
+          "no_viable_code": 80,
+          "wrong_program": 0,
+          "mean_extracted_chars": 35.5,
+          "distinct_extracted_codes": 68
+        },
+        "per_op": {
+          "abs_mul": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 44.2,
+            "distinct_extracted_codes": 39
+          },
+          "first_plus_len": {
+            "n": 40,
+            "syntax_rate": 0.4,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.4,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 24,
+              "allowlist_fail": 16,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 16
+            },
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 26.9,
+            "distinct_extracted_codes": 29
+          }
+        }
+      },
+      "favorable256": {
+        "aggregate": {
+          "n": 80,
+          "syntax_rate": 0.2,
+          "valid_program_rate": 0.0,
+          "solve_defined_rate": 0.2,
+          "executable_rate": 0.0,
+          "pass_at_1": 0.0,
+          "decomposition": {
+            "parse_fail": 64,
+            "allowlist_fail": 16,
+            "zero_pass": 0,
+            "partial": 0,
+            "all_pass": 0
+          },
+          "subflags": {
+            "solve_defined": 16
+          },
+          "no_viable_code": 80,
+          "wrong_program": 0,
+          "mean_extracted_chars": 35.7,
+          "distinct_extracted_codes": 68
+        },
+        "per_op": {
+          "abs_mul": {
+            "n": 40,
+            "syntax_rate": 0.0,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.0,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 40,
+              "allowlist_fail": 0,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {},
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 44.6,
+            "distinct_extracted_codes": 39
+          },
+          "first_plus_len": {
+            "n": 40,
+            "syntax_rate": 0.4,
+            "valid_program_rate": 0.0,
+            "solve_defined_rate": 0.4,
+            "executable_rate": 0.0,
+            "pass_at_1": 0.0,
+            "decomposition": {
+              "parse_fail": 24,
+              "allowlist_fail": 16,
+              "zero_pass": 0,
+              "partial": 0,
+              "all_pass": 0
+            },
+            "subflags": {
+              "solve_defined": 16
+            },
+            "no_viable_code": 40,
+            "wrong_program": 0,
+            "mean_extracted_chars": 26.9,
+            "distinct_extracted_codes": 29
+          }
+        }
+      }
+    },
+    "alt_nul_filter_favorable256": {
+      "n": 80,
+      "syntax_rate": 0.2,
+      "valid_program_rate": 0.0,
+      "solve_defined_rate": 0.2,
+      "executable_rate": 0.0,
+      "pass_at_1": 0.0,
+      "decomposition": {
+        "parse_fail": 64,
+        "allowlist_fail": 16,
+        "zero_pass": 0,
+        "partial": 0,
+        "all_pass": 0
+      },
+      "subflags": {
+        "solve_defined": 16
+      },
+      "no_viable_code": 80,
+      "wrong_program": 0,
+      "mean_extracted_chars": 35.7,
+      "distinct_extracted_codes": 68
+    },
+    "nul_terminated": 80,
+    "post_nul_content": 0,
+    "stopped_early": 80,
+    "max_prompt_tokens": 60,
+    "baselines": {
+      "TEMPLATE": {
+        "label": "TEMPLATE",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.5,
+        "pass_at_1": 0.0
+      },
+      "RETRIEVAL": {
+        "label": "RETRIEVAL",
+        "syntax_rate": 1.0,
+        "executable_rate": 0.5,
+        "pass_at_1": 0.0
+      }
+    },
+    "role": "control (c)+(b): NEW length-matched composite under a VERBATIM training frame \u2014 2x2 cell unseen structure x seen surface",
+    "structure": "unseen_composite_new",
+    "surface": "seen_verbatim_frame",
+    "length": "matched_to_primitive",
+    "paired_with": "new_composite_unseen_surface",
+    "n": 80,
+    "denominator": 80,
+    "eval_time_s": 24.7
+  }
+}

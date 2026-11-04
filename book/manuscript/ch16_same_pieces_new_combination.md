@@ -124,7 +124,11 @@ reasons — unfamiliar instruction syntax, unseen vocabulary, generation-length 
 optimization, or a particular held-out operation. We have narrowed *some* causes (it
 knows the primitives, it generalizes instances) but not proven that composition is the
 single operating factor. That is why we describe the result as a strong measured
-failure under this setup, not a proof that composition is impossible.
+failure under this setup, not a proof that composition is impossible. (The
+matched-control experiment later in this chapter identifies the *kind* of
+failure — a no-viable-code generation collapse on out-of-distribution prompts,
+semantics never reached — which narrows the list above without turning the
+result into a proof.)
 
 ## What this really means
 
@@ -149,7 +153,10 @@ the token sequence for `+`. It did not behave as if it had learned a general
 *operation* that can be an argument to another general operation — at least not in the
 way the composition test requires. We say "behaves as if" deliberately: this is an
 observation about what the model produces under our evaluations, not a claim about
-its internal representation.
+its internal representation. The matched-control experiment later in this chapter
+sharpens it: the model never emits a complete program for an unseen composition,
+so we never observe a wrong composition — what we measure is a failure to generate
+viable code at all.
 
 It is tempting to read the Level-3 and Level-4 failures as one mechanism seen twice —
 surface-tiedness "all the way down." We label that reading explicitly: it is a separate
@@ -165,6 +172,9 @@ checkpoint, decoding, and extraction, no held-out composite candidate passed all
 tests. In the audited exposure run those failures occurred before execution, so from
 these counts alone we cannot distinguish a compositional-rule deficit from a decoding,
 extraction, or validity issue. Both statements are true, and both must be reported.
+(The matched-control experiment below resolves that ambiguity in one direction:
+the held-out failures are no-viable-code, so the output contains no
+compositional rule — correct or wrong — to evaluate.)
 
 ## The puzzling asymmetry (and why it's a finding, not a bug)
 
@@ -252,6 +262,9 @@ evaluation, so we cannot establish that mechanism. (Appendix B.10 reports that
 syntax_rate = 0.0 for that run's held-out composites; we do not extend that parsing
 finding to other size checkpoints, whose recorded stage rates we did not analyze the same
 way.) The observed zero is real; *why* it is zero has competing explanations.
+The matched-control experiment below later narrows those explanations to one:
+the zero is a no-viable-code generation failure that survives surface- and
+length-matched controls.
 
 To narrow those explanations, we ran a decode/termination ablation on the
 composition-exposure checkpoint (report `docs/reviews/loop/decode_ablation.md`,
@@ -270,7 +283,9 @@ passing programs when the composite was seen. Two residuals we keep in view:
 on the exposed control `sum_of_abs` fails 40/40 under every setting, a real
 semantic failure on an operation the model was trained on, and the ablation
 narrows the cause without fully isolating the mechanism — it rules out decoding
-and extraction, not every upstream explanation.
+and extraction, not every upstream explanation (the matched-control experiment
+below takes the next step, from *where* the failure sits to *what kind* of
+failure it is).
 
 To check that the zero is not a lucky seed, we also re-ran the whole
 composition-exposure experiment from scratch under two more training seeds
@@ -314,6 +329,69 @@ five pairings, but many *different* primitive pairings — that could teach the 
 compose-operator. That is the open question now, and it is a genuinely different axis
 from the one we tested.
 
+## What kind of failure is it? The matched controls
+
+The decode ablation told us *where* the failure sits — the first generated
+tokens — and the seed replication told us it is stable. Neither told us
+*what kind* of failure it is. Two readings stayed open: the model might
+generate complete programs that compute the wrong composition (a semantic
+failure — it "composes incorrectly"), or it might fail to generate any viable
+program at all (a generation failure). We ran a matched-control experiment to
+separate them (review item P1-09; manifests
+`artifacts/manifests/composition_match_controls_seed{0,1}.json`, script
+`scripts/run_composition_match_controls.py`, registry Table C.16).
+
+The design: one model trained exactly as in the composition-exposure run —
+primitives plus the three exposed composites — then seven conditions crossing
+*structure* (seen / unseen) with *surface* (seen / unseen), with paired
+instances: within each pair the reference program and hidden tests are
+byte-identical, so only the prompt changes. Two controls pin the obvious
+confounds. Control (b) re-frames the held-out composites under a verbatim
+training surface. Control (c) adds *new* composites whose reference programs
+sit inside the mastered-primitive length range (14–68 tokens; the new
+composites are 27 and 23 tokens). Control (a) runs the experiment backwards:
+it rewords *mastered* primitive programs under never-seen wording families.
+
+The anchors reproduce the book first: primitives score 300/300 pass in both
+seeds, and the exposed composites score 0.667 (seed 0) and 0.658 (seed 1)
+against the book's 0.667 — the same pipeline that measures the successes is
+the one that measures the collapse. Then the result, identical in seeds 0
+and 1:
+
+- **Held-out composites: no viable code, no semantics.** Not one of the 120
+  held-out generations per seed defines a complete `solve` program
+  (complete-program rate 0.000), with **0 wrong-semantics** and 0 pass. The
+  model never emits a complete program — correct *or* wrong — so semantics
+  are never reached. The 0.000 is a **generation** failure, not a wrong
+  composition.
+- **Control (b): the wording frame is not the explanation.** The identical
+  held-out composite programs under verbatim training framing are 120/120
+  no-viable-code in each seed, complete-program rate 0.000, pass 0.000 —
+  the same as the native-prompt baseline. A seen surface rescues nothing.
+- **Control (c): program length is not the explanation.** The new
+  length-matched composites score complete-program rate 0.000 and pass 0.000
+  under *both* the unseen and the seen surface, in both seeds — 80/80
+  generations per cell with no complete program. Syntax can even appear:
+  seed 0's `abs_mul` reaches syntax 0.925 yet defines 0/40 complete programs
+  (36 of the 40 parse only as module-level fragments with no `solve`).
+- **Control (a): rewording alone reproduces the collapse.** Mastered
+  primitive programs under never-seen wording families leave 298/300 (seed 0)
+  and 300/300 (seed 1) generations without a complete program, pass 0.000 —
+  against 300/300 complete and passing under the native wording.
+
+Put together, the mechanism is a **generic prompt-OOD generation collapse**:
+this model emits no viable code for prompts that are out of distribution.
+Unseen composite structure is one sufficient trigger; never-seen wording on a
+*seen* program is another. So the book's honest claim is narrower than "the
+model composes incorrectly": we never observed an incorrect composition,
+because we never observed a complete program. The observed boundary is that
+the model **generates no viable code for unseen prompts** — unseen
+compositions among them. The structural-generalization conclusion survives
+the matched controls: the zero is real, replicated, and not explained by
+wording or length. What its mechanism is *not* is a compositional rule that
+misfires; what remains open is why an out-of-distribution prompt collapses
+generation in the first place.
+
 ## The honest framing
 
 This is a *useful*, *clean* negative result — and in science, a decisive negative is
@@ -326,8 +404,11 @@ zero is not resolved by the aggregate (it could be generation/parsing, a length 
 optimization, or a capability limit; see Appendix B.10). The decode/termination
 ablation described above narrowed that list — decoding, generation length, and
 extraction are ruled out and the failure sits at the first generated tokens —
-but the mechanism behind that first-token collapse is still not
-fully isolated. What we can claim is the
+and the matched-control experiment above isolated the failure mode itself: a
+no-viable-code generation collapse on out-of-distribution prompts that survives
+the seen-surface and length-matched controls, with semantics never reached.
+What remains open is *why* generation collapses on an out-of-distribution
+prompt. What we can claim is the
 measured outcome and that the interventions we tried did not produce a success. This is
 not a statement about "intelligence" or about "what models will eventually do." It is a
 precise, reproducible measurement of where *this* model's capability stops *here* — and,

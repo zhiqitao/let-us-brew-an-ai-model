@@ -132,6 +132,7 @@ unchanged from the run manifests.
 | `continual` | Continual learning | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | `composition_exposure_pilot` | Composition exposure | exposed 0.667; held-out 0.000; in-dist 1.000 |
 | `composition_diversity_pilot` | Composition diversity | exposed 0.550-0.592; held-out 0.000 |
+| `composition_match_controls` | Matched controls for the composition zero — **MEASURED** (P1-09) | held-out composites 0 complete programs / 0 wrong-semantics / pass 0.000 under native and seen-surface framing (120/120 no-viable-code per seed under the seen frame); length-matched new composites 0 complete under both surfaces; reworded primitives 298/300 (seed 0) and 300/300 (seed 1) without a complete program — prompt-OOD generation collapse, not incorrect composition (Table C.16) |
 
 **Table C.5 — Registry: configuration and artifacts**
 
@@ -152,6 +153,7 @@ unchanged from the run manifests.
 | `continual` | 128/4/4 · 700+700 · 0 · 884,224 | continual.json; continual_preB.json | — |
 | `composition_exposure_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_exposure_pilot.json | stage4_exposure.pt |
 | `composition_diversity_pilot` | 128/4/4 · 1500 · 0 · 884,224 | composition_diversity_pilot.json | stage4_compdiv_{minimal,high}_diversity_pilot.pt |
+| `composition_match_controls` | 128/4/4 · 1500 · 0/1 · 884,224 | composition_match_controls_seed{0,1}.json | composition_match_controls_seed{0,1}.pt |
 
 **Corrected-run tokenizer provenance.** Each corrected run pins exactly one tokenizer
 across all arms and seeds, recorded in every manifest. `data_scaling_corrected` uses
@@ -171,10 +173,17 @@ manifests). The
 manifests record the same hash for every seed, so a checkpoint must still be evaluated
 with the tokenizer it was trained with.
 
+**Matched-control tokenizer provenance.** `composition_match_controls` pins one
+tokenizer across both seeds: `artifacts/tokenizer/composition_match_controls_tok.json`,
+SHA-256 `6daf6cf5066745b7ff1d5b20aad2792bb447fb2020d77e524dfd23e0cf9e3abf`, vocabulary 291,
+fit on the train+exposed corpus then the held-out text (the exact exposure order)
+with a complete byte alphabet for the control prompts — the same hash recorded in
+both seed manifests (full detail in Table C.16).
+
 ## Run provenance ledger
 
 Tables C.4 and C.5 cover the headline runs. The ledger below is the compact,
-per-run provenance record for **every** manifest we hold — 39 in total — so a
+per-run provenance record for **every** manifest we hold — 41 in total — so a
 reader can see, run by run, the model-visible counts the manifest actually
 carries: manifest file, experiment ID, seed, training steps, `n_per_op`
 (records per operation), model parameters, final *training* loss, tokenizer
@@ -192,6 +201,8 @@ uses, so the two tables can be read against each other.
 | `composition_exposure_pilot.json` | `composition_exposure_pilot` | 0 · 1500 · 200 · 884,224 · 0.0187 · — | Scored composition-exposure run (Ch. 16) |
 | `composition_exposure_seed1.json` | `composition_exposure_seed1` | 1 · 1500 · 200 · 884,224 · 0.0179 · — | Multi-seed re-run — **matched** to the seed-0 configuration |
 | `composition_exposure_seed2.json` | `composition_exposure_seed2` | 2 · 1500 · 200 · 884,224 · 0.0218 · — | Multi-seed re-run — **matched** to the seed-0 configuration |
+| `composition_match_controls_seed0.json` | `composition_match_controls` | 0 · 1500 · 200 · 884,224 · 0.0169 · 291 | **Matched controls for the composition zero — MEASURED (P1-09)**; seven structure × surface conditions with paired prompts; Table C.16 |
+| `composition_match_controls_seed1.json` | `composition_match_controls` | 1 · 1500 · 200 · 884,224 · 0.0187 · 291 | **Matched controls — MEASURED (P1-09)**, matched to the seed-0 configuration; Table C.16 |
 | `continual.json` | `continual.json` | 0 · 700 · 70 · — · — · — | Scored sequential continual-learning run (Ch. 18) |
 | `continual_preB.json` | `continual_preB.json` | 0 · 700 · 70 · — · — · — | Same-run pre-B intermediate evaluation (Appendix C.8) |
 | `continual_seed1.json` | `continual_seed1.json` | 1 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 steps / `n_per_op` 80 vs 700 / 70): not a matched replication |
@@ -495,7 +506,8 @@ run that.
 
 Each run script lives in `scripts/` (e.g. `run_composition.py`, `run_diversity.py`,
 `run_composition_exposure.py`, `run_composition_diversity.py`, `run_surface.py`,
-`run_data_scaling.py`, `run_continual.py`, plus `train.py` and `eval_ckpt.py`).
+`run_data_scaling.py`, `run_continual.py`, `run_composition_match_controls.py`,
+plus `train.py` and `eval_ckpt.py`).
 
 **Publication status.** The companion repository is published at
 `https://github.com/zhiqitao/let-us-brew-an-ai-model` and carries a release tag
@@ -694,6 +706,76 @@ Final training losses are LOW 0.0174 / 0.0215 / 0.0167 and HIGH 0.0432 / 0.0457 
 phrasing family (0.000 → 0.550 mean) at the cost of some in-distribution sharpness
 (0.950 → 0.743 mean)**; this table supersedes Table C.8 and the Chapter 13 numbers
 drawn from it.
+
+**Table C.16 — Composition matched controls across seeds (MEASURED; P1-09)** —
+per-condition failure decomposition under the `favorable256` decode
+(temperature 0.8, `max_new` 256, NUL-truncated extraction plus the
+delete-all-NULs variant), each cell `no-viable-code / incomplete /
+wrong-semantics` followed by the complete-program rate (defines `solve`) and
+pass@1; the `book_prefix80` extraction (`max_new` 80) gives identical rates:
+
+| condition (role) | n | seed 0 | seed 1 |
+|---|---|---|---|
+| `primitive_native` (anchor: seen structure, seen surface) | 300 | 0/300 · 0 · 0 · 1.000 · 1.000 | 0/300 · 0 · 0 · 1.000 · 1.000 |
+| `exposed_native` (anchor: composites seen in training) | 120 | 39/120 · 0 · 1 · 0.675 · 0.667 | 1/120 · 0 · 40 · 0.992 · 0.658 |
+| `heldout_native` (baseline: the book's failing condition) | 120 | 120/120 · 0 · 0 · 0.000 · 0.000 | 118/120 · 2 · 0 · 0.000 · 0.000 |
+| `heldout_seen_surface` (control b: seen surface, unseen structure) | 120 | 120/120 · 0 · 0 · 0.000 · 0.000 | 120/120 · 0 · 0 · 0.000 · 0.000 |
+| `new_composite_unseen_surface` (control c: length-matched, unseen surface) | 80 | 44/80 · 36 · 0 · 0.000 · 0.000 | 79/80 · 1 · 0 · 0.000 · 0.000 |
+| `new_composite_seen_surface` (control c+b: length-matched, seen surface) | 80 | 80/80 · 0 · 0 · 0.000 · 0.000 | 80/80 · 0 · 0 · 0.000 · 0.000 |
+| `primitive_unseen_surface` (control a: seen structure, unseen surface) | 300 | 298/300 · 0 · 2 · 0.007 · 0.000 | 295/300 · 5 · 0 · 0.000 · 0.000 |
+
+**Configuration and tokenizer.** One model per seed, trained exactly as the
+composition-exposure run (128/4/4, 1500 steps, batch 16, learning rate 1e-3,
+884,224 parameters, 200 records per primitive operation plus 120
+exposed-composite records; final training loss 0.0169 for seed 0 and 0.0187
+for seed 1), seeds 0 and 1, manifests
+`composition_match_controls_seed{0,1}.json`, checkpoints
+`composition_match_controls_seed{0,1}.pt`, script
+`scripts/run_composition_match_controls.py`, raw generations under
+`artifacts/raw_outputs/composition_match_controls/`. One tokenizer pins both
+seeds: `artifacts/tokenizer/composition_match_controls_tok.json`, SHA-256
+`6daf6cf5066745b7ff1d5b20aad2792bb447fb2020d77e524dfd23e0cf9e3abf`, vocabulary 291,
+fit on the train+exposed corpus then the held-out text (the exact exposure
+order) with a complete byte alphabet for the control prompts, the same hash
+recorded in both seed manifests. Decoding is the book's temperature-0.8
+sampling with `max_new` 256, NUL truncation, and early stop after 16
+consecutive NUL tokens; both recorded extractions (`book_prefix80` at
+`max_new` 80, `favorable256` at `max_new` 256) give identical rates. Paired
+conditions share byte-identical reference programs and hidden tests — only the
+prompt changes — and all 1,120 reference programs pass their own tests.
+
+**Anchors.** The anchors reproduce the book: `primitive_native` is 300/300
+pass in both seeds, and `exposed_native` is 0.667 (seed 0) and 0.658 (seed 1)
+against the book's 0.667 exposed-composite figure — the same pipeline that
+measures the collapse measures the successes. Length matching is asserted
+against the mastered-primitive reference range of 14–68 tokens: the new
+composites are 27 tokens (`abs_mul`) and 23 tokens (`first_plus_len`), and the
+held-out references (66, 18, and 20 tokens) sit inside the range as well. Per
+composite, seed 0's `abs_mul` under the unseen surface reaches syntax 0.925
+yet defines 0/40 complete programs — 36 of the 40 parse only as module-level
+fragments with no `solve`.
+
+**The honest mechanism.** The composition 0.000 is a **no-viable-code
+generation failure**: 0 of the 120 held-out generations per seed defines a
+complete `solve` program (complete-program rate 0.000), with **0
+wrong-semantics** and 0 pass — semantics are never reached, so we never
+observe a wrong composition. The failure survives control (b), the verbatim
+seen-surface framing (120/120 no-viable-code per seed), so the wording frame
+is not the explanation, and control (c), the length-matched new composites
+(0 complete programs under both surfaces, both seeds), so program length is
+not the explanation. Control (a) runs the other way: rewording *mastered*
+primitive programs under never-seen families leaves 298/300 (seed 0) and
+300/300 (seed 1) generations without a complete program, against 300/300
+complete and passing under the native wording. The mechanism we therefore
+report is a **generic prompt-OOD generation collapse** — this model emits no
+viable code for out-of-distribution prompts, of which unseen composite
+structure is one sufficient trigger and never-seen wording on a seen program
+is another. The structural-generalization conclusion survives the matched
+controls; what changes is the mechanism we attach to it: the model does not
+"compose incorrectly," it generates no viable code for unseen prompts, unseen
+compositions among them. An earlier attempt that also seeded the global batch
+scheduler is archived as `*_bothseeded.*` manifests and is not reported (its
+seed-1 batch stream diverged late in training).
 
 **Eval-pipeline robustness fixes (no measured value changed).** Two cross-version
 robustness fixes were needed so native re-runs work in the current environment, and

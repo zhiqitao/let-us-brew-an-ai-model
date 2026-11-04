@@ -75,6 +75,18 @@ reuses training prompt strings.
    template — produced a composite program. (This is a strong negative signal, not a
    proof that no cleverer method could; see the shortcut audit in Chapter 16.)
 
+   **What the zero *is*, is now measured** (the matched-control experiment,
+   Table C.16): among the 120 held-out generations per seed there are **0 complete
+   programs and 0 wrong-semantics** — the model never emits a complete program,
+   correct or wrong — and the zero survives a verbatim seen-surface framing
+   (120/120 no-viable-code per seed) and a length-matched new-composite control
+   (0 complete programs under both surfaces), while rewording *mastered* primitives
+   under unseen wording collapses generation the same way (298/300 in seed 0 and
+   300/300 in seed 1 without a complete program, against 300/300 complete and
+   passing under the native wording). So the boundary we report is a
+   **prompt-OOD generation failure** — no viable code for unseen prompts, unseen
+   compositions among them — not a model that composes incorrectly.
+
 **One limit looked moveable — by changing the data, not its quantity — and the
 corrected rerun confirms it.** Diversity of
 surface phrasing is the one lever in the book that changed the surface outcome. Its
@@ -228,7 +240,12 @@ valid programs for the primitive operations, whose tokens it clearly knew. But t
 **not** prove the model has full *nested* syntax competence — the observed failures were
 malformed fragments, and knowing the tokens for `def`/`return` is not the same as
 producing correctly nested compound expressions. So we treat "not a syntax problem" as a
-plausible-but-unestablished reading, and leave the mechanism open. The versioned,
+plausible-but-unestablished reading. The matched-control experiment (Table C.16)
+has since pinned the *failure mode* of the composition zero — no-viable-code
+generation on out-of-distribution prompts, where syntax can even be present but no
+complete `solve` program appears (seed 0's length-matched `abs_mul` reaches syntax
+0.925 yet defines 0/40 complete programs) — while *why* generation collapses on an
+out-of-distribution prompt remains open. The versioned,
 step-by-step widening framework (the capability spec's `v0_1`, `v0_2`, …) is how we would
 test new capability, and we state it as a proposal for the future rather than a completed
 result.
@@ -246,7 +263,9 @@ worth having:
 > generalization to new natural-language requests. In our tests its knowledge was
 > surface-tied and non-compositional: the corrected surface factorial collapses to ~0 on
 > new identifiers, on held-out wording, and on both together, and more capacity
-> (0.88M→29.3M) did not change the compositional limit. The corrected data-scaling sweep
+> (0.88M→29.3M) did not change the compositional limit — a limit the matched controls
+> show to be a no-viable-code generation failure on unseen prompts (0 complete
+> programs, 0 wrong-semantics on held-out composites), not incorrect composition. The corrected data-scaling sweep
 > is flat at ~0.90 across a 30× range, so record count bought nothing; the corrected
 > equal-count diversity comparison shows phrasing diversity moving a held-out family
 > from 0.000 to 0.550 mean at a small in-distribution cost (0.950 → 0.743), while the
@@ -368,3 +387,10 @@ identify the cause (instruction interpretation, syntax generation, length handli
 coverage, optimization, or a particular held-out operation), is not proof of a general
 capacity limit, and is not proof that the model "cannot compose" — a per-stage failure
 report or an all-composites control would narrow which cause holds.
+
+In this book we later ran exactly the kind of control the exercise asks for — the
+matched-control experiment (Table C.16). It showed the composition zero is a
+no-viable-code generation failure (0 complete programs, 0 wrong-semantics on
+held-out composites, both seeds) that survives seen-surface and length-matched
+controls, so the cause we now report is prompt-OOD generation collapse, not
+incorrect composition.

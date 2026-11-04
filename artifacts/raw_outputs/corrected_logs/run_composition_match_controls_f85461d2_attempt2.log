@@ -1,0 +1,13 @@
+split: train 1400 val 300 test 300 exposed 120 heldout 120
+  condition primitive_native                 n=300
+  condition primitive_unseen_surface         n=300
+  condition exposed_native                   n=120
+  condition heldout_native                   n=120
+  condition heldout_seen_surface             n=120
+  condition new_composite_unseen_surface     n=80
+  condition new_composite_seen_surface       n=80
+task validity: 1120/1120 reference programs pass their own hidden tests
+design assertions: prompt-disjointness, pairing, split integrity OK
+tokenizer: vocab=291 sha=6daf6cf50667 (exposure corpus, byte alphabet complete)
+length: primitive tokens [14, 68] chars [29, 96]; heldout {'max_add': {'chars': 88, 'tokens': 66}, 'double_first': {'chars': 33, 'tokens': 18}, 'len_minus_one': {'chars': 35, 'tokens': 20}}; new {'abs_mul': {'chars': 43, 'tokens': 27}, 'first_plus_len': {'chars': 38, 'tokens': 23}}
+training 1500 steps on primitives + 120 exposed composites (1520 tasks)...

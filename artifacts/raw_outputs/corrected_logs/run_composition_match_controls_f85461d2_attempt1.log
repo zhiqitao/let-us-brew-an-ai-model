@@ -1,0 +1,43 @@
+split: train 1400 val 300 test 300 exposed 120 heldout 120
+  condition primitive_native                 n=300
+  condition primitive_unseen_surface         n=300
+  condition exposed_native                   n=120
+  condition heldout_native                   n=120
+  condition heldout_seen_surface             n=120
+  condition new_composite_unseen_surface     n=80
+  condition new_composite_seen_surface       n=80
+task validity: 1120/1120 reference programs pass their own hidden tests
+design assertions: prompt-disjointness, pairing, split integrity OK
+tokenizer: vocab=291 sha=6daf6cf50667 (exposure corpus, byte alphabet complete)
+length: primitive tokens [14, 68] chars [29, 96]; heldout {'max_add': {'chars': 88, 'tokens': 66}, 'double_first': {'chars': 33, 'tokens': 18}, 'len_minus_one': {'chars': 35, 'tokens': 20}}; new {'abs_mul': {'chars': 43, 'tokens': 27}, 'first_plus_len': {'chars': 38, 'tokens': 23}}
+loaded checkpoint /home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/checkpoints/composition_match_controls_seed0.pt
+  [skip] primitive_native.jsonl complete (300)
+  primitive_native                 n=300 syntax=1.000 valid=1.000 exe=1.000 pass@1=1.000 (no_viable=0 wrong_prog=0, 3.1s)
+  [skip] primitive_unseen_surface.jsonl complete (300)
+  primitive_unseen_surface         n=300 syntax=0.017 valid=0.007 exe=0.000 pass@1=0.000 (no_viable=298 wrong_prog=2, 1.2s)
+  [skip] exposed_native.jsonl complete (120)
+  exposed_native                   n=120 syntax=0.675 valid=0.675 exe=0.667 pass@1=0.667 (no_viable=39 wrong_prog=1, 0.7s)
+  [skip] heldout_native.jsonl complete (120)
+  heldout_native                   n=120 syntax=0.000 valid=0.000 exe=0.000 pass@1=0.000 (no_viable=120 wrong_prog=0, 0.4s)
+  [skip] heldout_seen_surface.jsonl complete (120)
+  heldout_seen_surface             n=120 syntax=0.000 valid=0.000 exe=0.000 pass@1=0.000 (no_viable=120 wrong_prog=0, 0.4s)
+  [skip] new_composite_unseen_surface.jsonl complete (80)
+  new_composite_unseen_surface     n=80 syntax=0.463 valid=0.450 exe=0.000 pass@1=0.000 (no_viable=44 wrong_prog=36, 0.4s)
+  [skip] new_composite_seen_surface.jsonl complete (80)
+  new_composite_seen_surface       n=80 syntax=0.000 valid=0.000 exe=0.000 pass@1=0.000 (no_viable=80 wrong_prog=0, 0.3s)
+manifest -> /home/ubuntu/hermes-work/let-us-brew-an-ai-model/scripts/../artifacts/manifests/composition_match_controls_seed0.json
+
+=== SUMMARY (favorable256) ===
+  primitive_native                 n= 300 syntax=1.000 valid=1.000 exe=1.000 pass@1=1.000 | book80 syntax=1.000 pass@1=1.000
+  primitive_unseen_surface         n= 300 syntax=0.017 valid=0.007 exe=0.000 pass@1=0.000 | book80 syntax=0.017 pass@1=0.000
+  exposed_native                   n= 120 syntax=0.675 valid=0.675 exe=0.667 pass@1=0.667 | book80 syntax=0.675 pass@1=0.667
+  heldout_native                   n= 120 syntax=0.000 valid=0.000 exe=0.000 pass@1=0.000 | book80 syntax=0.000 pass@1=0.000
+  heldout_seen_surface             n= 120 syntax=0.000 valid=0.000 exe=0.000 pass@1=0.000 | book80 syntax=0.000 pass@1=0.000
+  new_composite_unseen_surface     n=  80 syntax=0.463 valid=0.450 exe=0.000 pass@1=0.000 | book80 syntax=0.463 pass@1=0.000
+  new_composite_seen_surface       n=  80 syntax=0.000 valid=0.000 exe=0.000 pass@1=0.000 | book80 syntax=0.000 pass@1=0.000
+
+DECOMPOSITION: per-condition failure decomposition (favorable256 decode; no-viable-code | incomplete | wrong-semantics | pass): primitive_native: 0/300 no-viable-code (syntax 1.000), 0/300 incomplete (parses but defines no solve), 0/300 wrong-semantics (complete program, runs, fails tests), 300/300 pass (pass@1 1.000, complete-program rate 1.000); primitive_unseen_surface: 298/300 no-viable-code (syntax 0.017), 0/300 incomplete (parses but defines no solve), 2/300 wrong-semantics (complete program, runs, fails tests), 0/300 pass (pass@1 0.000, complete-program rate 0.007); exposed_native: 39/120 no-viable-code (syntax 0.675), 0/120 incomplete (parses but defines no solve), 1/120 wrong-semantics (complete program, runs, fails tests), 80/120 pass (pass@1 0.667, complete-program rate 0.675); heldout_native: 120/120 no-viable-code (syntax 0.000), 0/120 incomplete (parses but defines no solve), 0/120 wrong-semantics (complete program, runs, fails tests), 0/120 pass (pass@1 0.000, complete-program rate 0.000); heldout_seen_surface: 120/120 no-viable-code (syntax 0.000), 0/120 incomplete (parses but defines no solve), 0/120 wrong-semantics (complete program, runs, fails tests), 0/120 pass (pass@1 0.000, complete-program rate 0.000); new_composite_unseen_surface: 44/80 no-viable-code (syntax 0.463), 36/80 incomplete (parses but defines no solve), 0/80 wrong-semantics (complete program, runs, fails tests), 0/80 pass (pass@1 0.000, complete-program rate 0.000); new_composite_seen_surface: 80/80 no-viable-code (syntax 0.000), 0/80 incomplete (parses but defines no solve), 0/80 wrong-semantics (complete program, runs, fails tests), 0/80 pass (pass@1 0.000, complete-program rate 0.000)
+
+CONCLUSION: **Held-out composites (baseline) are a pure no-viable-code (0/120 define a complete solve program; syntax 0.000) failure**: 120/120 no-viable-code + 0/120 incomplete, 0/120 wrong-semantics under the most favorable decode (favorable256; book_prefix80 syntax 0.000), so the 0.000 is not 'parses but computes the wrong composition' — semantics are never reached. The same pipeline scores complete-program rate 1.000/pass@1 1.000 on primitives and complete-program rate 0.675/pass@1 0.667 on exposed composites, so the pipeline itself is sound. **Wording axis (control a)**: rewording MASTERED primitive programs with never-seen template families yields syntax 0.017, complete-program rate 0.007 and pass@1 0.000 (298/300 no-viable-code + 0/300 incomplete) vs syntax 1.000/complete 1.000/pass@1 1.000 for the native wording — novel wording alone ALSO collapses generation, so surface-OD is a real contributor and must be controlled for — see control (b). **Surface-matched control (b)**: the identical held-out composite programs under verbatim training frames score syntax 0.000, complete-program rate 0.000, executable 0.000, pass@1 0.000 (120/120 no-viable-code + 0/120 incomplete, 0/120 wrong-semantics) vs the native-prompt baseline syntax 0.000/pass@1 0.000 — verbatim frames move the complete-program rate only 0.000 -> 0.000 and pass@1 stays 0.000: no rescue, so the wording FRAME is not the confound. **Length-matched control (c)**: the NEW composites (reference token length asserted inside the mastered-primitive range) score unseen-surface complete-program rate 0.000/pass@1 0.000 (44/80 no-viable-code + 36/80 incomplete, 0/80 wrong-semantics; per op: abs_mul: syntax 0.925/complete 0.000/pass 0.000; first_plus_len: syntax 0.000/complete 0.000/pass 0.000) and seen-frame complete-program rate 0.000/pass@1 0.000 (80/80 no-viable-code + 0/80 incomplete) — length is NOT the confound: at primitive-matched length the unseen composite still fails to produce a complete program. **Verdict**: the composition 0.000 IS a no-viable-code generation failure (120/120 without a complete program, 0/120 wrong-semantics — semantics are never reached), and it SURVIVES both matched controls: verbatim training frames (b) leave 120/120 without a complete program (complete-program rate 0.000) and pass@1 0.000, and at primitive-matched program length the new composites are 80/80 + 80/80 without a complete program under BOTH wordings (c), pass@1 0.000/0.000 — so neither wording frame nor program length explains the 0.000. IMPORTANT qualification from control (a): rewording MASTERED primitive programs with never-seen families ALSO collapses generation (298/300 without a complete program, complete-program rate 0.007 vs 1.000 native), so no-viable-code is this model's generic response to out-of-distribution prompts, and unseen composite structure is one such trigger — sufficient even when the sentence frame is verbatim from training (prompt length is ruled out: the seen-surface exposed control runs at comparable prompt length with complete-program rate 0.675). The book's structural-generalization conclusion therefore survives the matched controls as a GENERATION failure on unseen compositions (never a wrong-program/semantic failure: composite wrong-semantics counts are held-out 0, seen-surface 0, length-matched 0), but its mechanism is prompt-OD generation collapse, not failed composition attempts: the honest claim is that the model cannot generate code for unseen compositions (nor for seen programs under unseen wording), not that it composes incorrectly.
+
+total runtime 8s

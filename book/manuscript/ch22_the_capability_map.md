@@ -83,6 +83,14 @@ arm — it transfers to a never-seen phrasing family (0.550 mean; per seed 0.640
 
 **Question 4 — Structure.** *Can it compose known pieces in unseen ways?* **Measured:**
 0.000 (baselines also 0.000). **Status:** `[MEASURED]` — no, in this regime.
+**Mechanism (matched controls, P1-09, Table C.16):** the 0.000 is a
+no-viable-code *generation* failure — 0 complete programs and 0 wrong-semantics
+on held-out composites in both seeds — and it survives a seen-surface framing
+control (120/120 no-viable-code per seed) and a length-matched new-composite
+control (0 complete programs under both surfaces), while rewording *mastered*
+programs under unseen families collapses generation the same way (298/300 and
+300/300 without a complete program). Prompt-OOD generation collapse, not
+incorrect composition.
 
 ### The evidence, keyed by checkpoint
 
@@ -132,6 +140,7 @@ These conditions are not "one bigger model"; they test whether *training content
 - **composition-exposure (`stage4_exposure`)** — in-dist 1.000; exposed composites 0.667; held-out composite 0.000.
 - **composition-diversity (minimal)** — in-dist 1.000; exposed composites 0.592; held-out composite 0.000.
 - **composition-diversity (high)** — in-dist 1.000; exposed composites 0.550; held-out composite 0.000.
+- **composition-match controls (`composition_match_controls`, seeds 0/1; P1-09)** — held-out composites: 0 complete programs, 0 wrong-semantics, pass 0.000 under native *and* seen-surface framing; length-matched new composites 0 complete under both surfaces; reworded primitives 298/300 (seed 0) and 300/300 (seed 1) without a complete program — a mechanism probe, not an intervention: prompt-OOD generation collapse (Table C.16).
 
 **Panel 3 — sequential vs. joint training**
 
@@ -189,6 +198,19 @@ easy) *also* scored 0.000 — a useful cross-check that the failure is not uniqu
 learned model, though it is a measured negative, not a proof that no method or shortcut
 could ever solve it.
 
+The matched-control experiment (P1-09, Table C.16) shows what the 0.000 *is*:
+among the 120 held-out generations per seed there are **0 complete programs and
+0 wrong-semantics** — the model never emits a complete program, correct or
+wrong, so semantics are never reached. The zero survives a verbatim seen-surface
+framing (120/120 no-viable-code per seed) and a length-matched new-composite
+control (0 complete programs under both surfaces, both seeds), and rewording
+*mastered* primitives under unseen families collapses generation the same way
+(298/300 in seed 0 and 300/300 in seed 1 without a complete program, against
+300/300 complete and passing under the native wording). So the measured
+boundary is a **prompt-OOD generation failure** — no viable code for unseen
+prompts, unseen compositions among them — not a model that composes
+incorrectly.
+
 ## The two axes of the boundary
 
 Put together, the results define a sharp boundary along two independent axes:
@@ -199,8 +221,11 @@ concept; it generalizes "this sentence shape → this code." Change the surface,
 capability evaporates.
 
 **Axis 2 — Composition.** Even within a surface form it knows, the model did not
-combine two learned pieces into a novel structure in our tests. It behaved as if it
-lacked a compositional engine here.
+combine two learned pieces into a novel structure in our tests. The matched
+controls sharpen the reading: it never generated a complete program for the
+novel structure at all (0 complete, 0 wrong-semantics), so what we observed is
+a failure to generate viable code for an unseen prompt — not a compositional
+engine producing wrong answers.
 
 ## The scaling map (what changes it)
 
@@ -291,8 +316,13 @@ nothing for the deep one.
   show it combinations" fix nor an identifier-variety fix — and true wording-family
   diversity for composites was never implemented (P1-05). Two caveats: the
   held-out composite candidates all **failed parsing** before semantic evaluation, so
-  the *cause* of that zero is unresolved (it is a recorded negative, not a demonstrated
-  mechanism), and even the corrected data-scaling sweep did not evaluate composition at
+  the *cause* of that zero began as a recorded negative rather than a demonstrated
+  mechanism — **now measured** by the matched controls (P1-09, Table C.16): the zero is
+  a no-viable-code generation failure (0 complete programs, 0 wrong-semantics on
+  held-out composites, both seeds) that survives seen-surface and length-matched
+  controls, and rewording mastered programs collapses generation too, so the mechanism
+  is prompt-OOD generation collapse, not incorrect composition; and even the corrected
+  data-scaling sweep did not evaluate composition at
   all, so the data lever speaks only to in-distribution accuracy (where it is flat).
 - The one lever we have **not** isolated is diversity of the *inner structure* — many
   *different* primitive pairings rather than different phrasings of the same few. That
@@ -346,8 +376,12 @@ as valuable as any model number:
 > requests, and its knowledge is surface-tied: the corrected factorial shows it collapse
 > to ~0 on new identifiers, on held-out wording, and on both together. Under the recorded
 > training and decoding settings, the tested checkpoints produced no successful held-out
-> composite completions; the exposure run's held-out candidates all failed parsing, so
-> the cause remains unresolved. The corrected data-count sweep is flat (0.893–0.997
+> composite completions; the exposure run's held-out candidates all failed parsing, and
+> the matched-control experiment (P1-09, Table C.16) now identifies the cause as a
+> no-viable-code generation failure on out-of-distribution prompts — 0 complete
+> programs and 0 wrong-semantics on held-out composites, surviving surface- and
+> length-matched controls — so the boundary is failure to generate, not incorrect
+> composition. The corrected data-count sweep is flat (0.893–0.997
 > across a 30× range), so record count establishes no benefit; the corrected equal-count
 > diversity comparison shows phrasing diversity moving a held-out family from 0.000 to
 > 0.550 mean (in-distribution 0.950 → 0.743), so diversity — not quantity — buys
