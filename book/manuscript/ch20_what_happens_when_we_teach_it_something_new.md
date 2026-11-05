@@ -58,7 +58,7 @@ find a *procedure* finding, exactly the thing we want to isolate.
 
 *Both A measurements in the sequential row come from the **same run**: the 1.000 is
 measured right after phase A and before any B exposure, the 0.000 after phase B
-(Appendix C.8); the final is measured after phase B.
+(Appendix C.9); the final is measured after phase B.
 The joint/interleaved model has no separate "after A" point because A and B are trained together from
 the start.*
 
@@ -70,7 +70,7 @@ trajectory. The pre-B A accuracy was **1.000**; after learning B, A fell to **0.
 the sequential zero is not a case of "A was never acquired" — A was acquired to 1.000 and
 then lost. This is a **same-trajectory before/after** measurement, taken on a dedicated
 re-run of the sequential pipeline with an intermediate A evaluation inserted right after
-phase A and before any B exposure (Appendix C.8; also captured in the `continual_preB`
+phase A and before any B exposure (Appendix C.9; also captured in the `continual_preB`
 manifest) — which is what supports reading the sequential drop as genuine forgetting of
 learned A competence rather than under-acquisition.
 
@@ -190,7 +190,7 @@ to always measure *both* the new and the old.
 This is a controlled, reproducible demonstration that the *training schedule* affects final
 task accuracy: the same workload produces a 0.000 final A accuracy when learned sequentially
 and a 1.000 final A accuracy when learned jointly, with identical B accuracy in both. The
-same-trajectory pre-B measurement (a dedicated re-run, Appendix C.8) confirms the
+same-trajectory pre-B measurement (a dedicated re-run, Appendix C.9) confirms the
 sequential drop is genuine forgetting: A was 1.000 right after phase A and fell to 0.000
 after B, so it was acquired and then lost rather than never learned. We make no
 resource-cost claim: both protocols used the same

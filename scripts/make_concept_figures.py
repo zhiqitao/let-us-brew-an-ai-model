@@ -448,11 +448,11 @@ def fig_capability_map():
 
     rows = [
         # name, familiar-accuracy, new-IDs, excluded-family, cover-surface, held-out-compose, final-A/B
-        ("Stage 1 pilot (0.88M)",        "0.897", "0.350", "0.000",  "-",      "0.000", "NT"),
+        ("Stage 1 pilot (0.88M)",        "0.897", "0.000", "0.000",  "-",      "0.000", "NT"),
         ("6.5M",                         "0.897", "-",      "-",      "-",      "0.000", "NT"),
         ("10.2M",                        "0.773", "-",      "-",      "-",      "0.000", "NT"),
         ("29.3M",                        "0.897", "-",      "-",      "-",      "0.000", "NT"),
-        ("High-diversity (same count)",  "1.000", "-",      "NT",     "1.000",  "NT",    "NT"),
+        ("High-diversity (same count)",  "0.743", "-",      "0.550",  "NT",     "NT",    "NT"),
         ("Sequential A then B",          "-",     "-",      "-",      "-",      "NT",    "A 0.000 / B 0.889"),
         ("Joint A+B",                    "-",     "-",      "-",      "-",      "NT",    "A 1.000 / B 0.889"),
     ]
@@ -491,7 +491,7 @@ def fig_capability_map():
                 txt, tc = v, "#2b8a3e"
             ax.text(x+(cw-0.6)/2, y+rh*0.45, txt, ha="center", va="center", fontsize=10, color=tc)
     note(ax, 3, 4, "Green = measured strong result. Red = measured zero. NT = not tested. " +
-          "The high-diversity 1.000 is *coverage* of surfaces in its training family, not transfer to an excluded wording family.",
+          "Corrected equal-count run: high-diversity 0.743 in-dist / 0.550 held-out family (the earlier 1.000 was coverage of a 42-record pool, P0-02).",
          fs=10, color=INK)
     save(fig, "fig_capability_map.png")
 
@@ -623,62 +623,93 @@ def fig_same_ops():
 
 
 def fig_coverage():
-    """D02 -- COVERAGE IS NOT A HELD-OUT FAMILY TEST (ch13).
+    """D02 -- COVERAGE IS NOT A HELD-OUT FAMILY TEST (ch13) -> Figure 13.2.
 
-    Rows = training condition (minimal / high diversity); the surface evaluation is a
-    cell in the same family set the model trained on, so high-diversity 1.000 is
-    coverage, not transfer to an excluded family. A second (proposed, not measured)
-    panel shows what a true holdout would require.
+    Top section    = the flawed original's coverage test (surface test drawn
+                     from the training family set -> 1.000 is coverage of a
+                     42-record pool).
+    Bottom section = 'flawed original vs corrected measured (n=100)': the
+                     corrected equal-count run DID measure a true holdout
+                     (h01/h02 excluded from both arms, 100 tasks per arm):
+                     0.000 (low) vs 0.550 (high) mean.
+    LAYOUT (release gate): the two sections are stacked VERTICALLY at full
+    width so every line is short relative to the canvas (the old side-by-side
+    layout needed an 8.8in canvas, which shrank to ~5.1pt effective type at
+    the book's 4.5in text width). At figsize 6.0in wide the 11pt labels
+    render at >= 8.25pt in the book (>= the required 8pt). Every block has a
+    reserved vertical band with >= 1.5 y-unit gaps (the old right-panel
+    heading printed on top of the title; v2 let the bold conclusion cross the
+    dashed border), and all text keeps >= 3 y-units of margin inside the
+    dashed border.
     """
     import numpy as np
-    fig, ax = plt.subplots(figsize=(8.8, 5.0))
+    fig, ax = plt.subplots(figsize=(6.0, 5.0))
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
     ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    ax.text(50, 96, "COVERAGE IS NOT A HELD-OUT FAMILY TEST", ha="center", va="center",
-            fontsize=10.5, fontweight="bold", color=INK)
+    FS = 11          # >= 8.25pt effective at the book's 4.5in text width
+    FSB = 12         # bold headings, >= 9pt effective
 
-    # main panel: same family set
-    ax.text(23, 86, "what was measured", ha="center", fontsize=10, fontweight="bold", color=INK)
-    # family set axis
-    ax.add_patch(FancyBboxPatch((6, 30), 34, 6, boxstyle="round,pad=0.02,rounding_size=1",
-                                fc="#eef1f5", ec=GREY, lw=0.8))
-    ax.text(23, 33, "the training family set", ha="center", fontsize=10, color="#333333", va="center")
-    # model trained on all families (illustrative labels only)
+    # ======================= TOP: the flawed original =======================
+    ax.text(50, 96, "COVERAGE IS NOT A HELD-OUT FAMILY TEST", ha="center",
+            va="center", fontsize=FSB, fontweight="bold", color=INK)
+    ax.text(50, 90, "flawed original: what it measured", ha="center",
+            va="center", fontsize=FS, fontweight="bold", color=INK)
+    ax.text(50, 84, "the surface test is INSIDE the training family set\n"
+                    "→ 1.000 is coverage, not a new-family result "
+                    "(42-record pool)", ha="center", va="top",
+            fontsize=FS, color=GREEN)
+    # family row + the training-family-set box (y 66-73)
     for i, fam in enumerate(["α", "β", "γ"]):
-        x = 8 + i*10
-        ax.add_patch(FancyBboxPatch((x, 46), 9, 9, boxstyle="round,pad=0.02,rounding_size=1",
+        x = 10 + i * 12
+        ax.add_patch(FancyBboxPatch((x, 66), 10, 7,
+                                    boxstyle="round,pad=0.02,rounding_size=1",
                                     fc="#cfe0f5", ec=INK, lw=0.8))
-        ax.text(x+4.5, 50.5, fam, ha="center", fontsize=10, color=INK)
-    ax.text(21, 41, "high-diversity training: sees all families (illustrative α / β / γ)", ha="center", fontsize=10, color=INK)
-    # surface test point (well above the families, not overlapping)
-    # box widened (9 -> 15) so the 10pt "surface test" label does not overflow
-    ax.add_patch(FancyBboxPatch((21, 66), 15, 8, boxstyle="round,pad=0.02,rounding_size=1",
-                                fc="#e0f0e4", ec=GREEN, lw=0.8))
-    ax.text(28.5, 70, "surface test", ha="center", fontsize=10, color=INK)
-    ax.text(28.5, 60, "test is IN the training family set\n→ 1.000 is coverage", ha="center",
-            fontsize=10, color=GREEN)
-    ax.text(23, 20, "So the high-diversity 1.000 is COVERAGE of surfaces it was trained on,\nnot generalization to a wording family it never saw.",
-            ha="center", fontsize=10, color=INK)
+        ax.text(x + 5, 69.5, fam, ha="center", va="center", fontsize=FS,
+                color=INK)
+    ax.add_patch(FancyBboxPatch((46, 66), 40, 7,
+                                boxstyle="round,pad=0.02,rounding_size=1",
+                                fc="#eef1f5", ec=GREY, lw=0.8))
+    ax.text(66, 69.5, "the training family set", ha="center", va="center",
+            fontsize=FS, color="#333333")
+    ax.text(50, 62, "high-diversity training sees all families (illustrative)",
+            ha="center", va="top", fontsize=FS, color=INK)
+    ax.text(50, 57, "So the flawed run's 1.000 is COVERAGE of surfaces it "
+                    "trained on,\nnot generalization to a family it never saw.",
+            ha="center", va="top", fontsize=FS, color=INK)
+    ax.plot([6, 94], [47.5, 47.5], color=GREY, lw=0.8)
 
-    # proposed holdout panel (right, dashed)
-    ax.text(74, 92, "what a true holdout needs  (proposed, not measured)", ha="center",
-            fontsize=10, fontweight="bold", color=PURPLE)
-    ax.add_patch(FancyBboxPatch((58, 20), 32, 64, boxstyle="round,pad=0.02,rounding_size=2",
+    # ================ BOTTOM: flawed original vs corrected measured =========
+    ax.text(50, 43.5, "flawed original vs corrected measured (n=100)",
+            ha="center", va="center", fontsize=FS, fontweight="bold",
+            color=PURPLE)
+    ax.add_patch(FancyBboxPatch((6, 2), 88, 38,
+                                boxstyle="round,pad=0.02,rounding_size=2",
                                 fc="#fbfaf6", ec=PURPLE, lw=1.0, linestyle="--"))
     for i, fam in enumerate(["α", "β", "γ", "δ"]):
         fc = "#cfe0f5" if i < 3 else "#f6dede"
-        x = 60 + i*7.5
-        ax.add_patch(FancyBboxPatch((x, 66), 6.5, 9, boxstyle="round,pad=0.02,rounding_size=1",
+        x = 8 + i * 11
+        ax.add_patch(FancyBboxPatch((x, 31), 9, 7,
+                                    boxstyle="round,pad=0.02,rounding_size=1",
                                     fc=fc, ec=INK, lw=0.7))
-        ax.text(x+3.2, 70.5, fam, ha="center", fontsize=10, color=INK)
-    ax.text(74, 60, "train on α/β/γ, hold out δ (illustrative)", ha="center", fontsize=10, color=INK)
-    ax.add_patch(FancyBboxPatch((64, 40), 20, 9, boxstyle="round,pad=0.02,rounding_size=1",
+        ax.text(x + 4.5, 34.5, fam, ha="center", va="center", fontsize=FS,
+                color=INK)
+    ax.text(72, 34.5, "train on α/β/γ, hold out δ", ha="center", va="center",
+            fontsize=FS, color=INK)
+    ax.add_patch(FancyBboxPatch((10, 20), 34, 9,
+                                boxstyle="round,pad=0.02,rounding_size=1",
                                 fc="#f6dede", ec=RED, lw=0.8))
-    # wrapped to 2 lines so the 10pt label fits the 20-unit box width
-    ax.text(74, 44.5, "test on family δ\n(never seen)", ha="center", va="center",
-            fontsize=10, color=RED)
-    ax.text(74, 30, "only this tests generalization\nto an EXCLUDED family", ha="center", fontsize=10, color=INK)
+    ax.text(27, 24.5, "test on family δ\n(never seen)", ha="center",
+            va="center", fontsize=FS, color=RED)
+    ax.text(71, 29, "flawed original: test drawn\nfrom training families\n"
+                    "→ 1.000 = coverage", ha="center", va="top",
+            fontsize=FS, color=INK)
+    ax.text(50, 18.5, "corrected: h01/h02 excluded from both arms, n = 100",
+            ha="center", va="top", fontsize=FS, color=INK)
+    ax.text(50, 13.3, "→ 0.000 (low) vs 0.550 (high) mean", ha="center",
+            va="top", fontsize=FS, color=INK, fontweight="bold")
+    ax.text(50, 8.1, "only the corrected run tests an EXCLUDED family",
+            ha="center", va="top", fontsize=FS, color=INK, fontweight="bold")
     save(fig, "fig_coverage.png")
 
 

@@ -355,8 +355,8 @@ it rewords *mastered* primitive programs under never-seen wording families.
 The anchors reproduce the book first: primitives score 300/300 pass in both
 seeds, and the exposed composites score 0.667 (seed 0) and 0.658 (seed 1)
 against the book's 0.667 — the same pipeline that measures the successes is
-the one that measures the collapse. Then the result, identical in seeds 0
-and 1:
+the one that measures the collapse. Then the result, qualitatively identical in seeds
+0 and 1:
 
 - **Held-out composites: no viable code, no semantics.** Not one of the 120
   held-out generations per seed defines a complete `solve` program
@@ -366,18 +366,24 @@ and 1:
   composition.
 - **Control (b): the wording frame is not the explanation.** The identical
   held-out composite programs under verbatim training framing are 120/120
-  no-viable-code in each seed, complete-program rate 0.000, pass 0.000 —
-  the same as the native-prompt baseline. A seen surface rescues nothing.
+  no-viable-code in each seed — 0 wrong-semantics — complete-program rate
+  0.000, pass 0.000 — the same as the native-prompt baseline. A seen surface
+  rescues nothing.
 - **Control (c): program length is not the explanation.** The new
   length-matched composites score complete-program rate 0.000 and pass 0.000
   under *both* the unseen and the seen surface, in both seeds — 80/80
-  generations per cell with no complete program. Syntax can even appear:
-  seed 0's `abs_mul` reaches syntax 0.925 yet defines 0/40 complete programs
-  (36 of the 40 parse only as module-level fragments with no `solve`).
+  generations per cell with no complete program and 0 wrong-semantics.
+  Syntax can even appear: seed 0's `abs_mul` reaches syntax 0.925 yet
+  defines 0/40 complete programs (36 of the 40 parse only as module-level
+  fragments with no `solve`).
 - **Control (a): rewording alone reproduces the collapse.** Mastered
   primitive programs under never-seen wording families leave 298/300 (seed 0)
   and 300/300 (seed 1) generations without a complete program, pass 0.000 —
-  against 300/300 complete and passing under the native wording.
+  against 300/300 complete and passing under the native wording. The
+  **0 wrong-semantics** reading is scoped to the held-out composites and to
+  controls (b) and (c); control (a) did reach semantics: seed 0 recorded
+  **2/300 wrong-semantics** (both complete programs failing every hidden test
+  at runtime — `runtime_error_all`), seed 1 0/300.
 
 Put together, the mechanism is a **generic prompt-OOD generation collapse**:
 this model emits no viable code for prompts that are out of distribution.

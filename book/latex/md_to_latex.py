@@ -385,7 +385,7 @@ SHORT_TITLES = {
 # via \captionof{figure}[short]{long}.
 SHORT_FIG_CAPTIONS = {
     "figures/fig_model_size.pdf": "Model size vs composition",
-    "figures/fig_diversity.pdf": "Diversity vs quantity (flawed: 42 vs 1,200)",
+    "figures/fig_diversity.pdf": "Diversity at equal count (corrected: 0.950 vs 0.743)",
     "figures/fig_continual.pdf": "Sequential vs joint training",
     "figures/fig_apparatus.pdf": "The whole apparatus",
 }
@@ -931,8 +931,12 @@ reproduce every experiment in this book live in the companion repository, which 
 public at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model}} under the release
 tag \\href{{https://github.com/zhiqitao/let-us-brew-an-ai-model/releases/tag/v20261001}}{{\\texttt{{v20261001}}}} on release commit
-\\texttt{{a45a881158ed076f615f6d3bc2e72640dc5cdced}} (full hash; the reproduction
-quick start and the exact release identifiers are in Appendix C). To report an error
+\\texttt{{a45a881158ed076f615f6d3bc2e72640dc5cdced}} (full hash; verified as the
+commit the release tag points to --- the single release identifier;
+the reproduction quick start and the exact release identifiers are in Appendix C).
+This PDF was built from repository commit
+\\texttt{{eaa8cc02d1d989b96bea5f53caa07136a95589ad}} (the PDF build commit, stated
+separately from the release commit above). To report an error
 or request an erratum, open an issue at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model/issues}}.
 \\vfill

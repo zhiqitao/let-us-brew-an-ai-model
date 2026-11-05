@@ -18,9 +18,13 @@ The distinction is important enough to state as a rule:
 > **More data ≠ more information ≠ more diversity.**
 
 And this is the chapter where we stopped treating it as a hunch and measured it
-directly. The design: hold the *count* fixed and vary only the *spread*. If we train
+directly. The design: hold the *count* fixed and vary the *spread*. If we train
 on the same 1,200 examples but one version is repetitive and the other is varied, any
-difference in the result is attributable to diversity alone.
+difference in the result is attributable to the diversity intervention alone — with one
+scope caveat stated up front: the varied arm changes phrasing families, identifier sets,
+and the unique-pair count *together*, so what we measure is the **combined
+phrasing/identifier/uniqueness diversity intervention**, not any single diversity factor
+in isolation.
 
 The first attempt at that comparison failed its own premise (a code audit found the
 arms were 42 versus 1,200 records — P0-02). We rebuilt it. The numbers below are the
@@ -74,15 +78,23 @@ each arm — across two training sets:
 Everything else is matched. Both arms cover **10 of 10 operations at exactly 120
 records per operation**; both use **one fixed tokenizer** (vocabulary 293, fit once
 on the union of the two arms' training texts and never refit per arm or seed — the
-SHA-256 is pinned in every manifest, Appendix C); and both train for **1,000 steps**
+file's SHA-256 is pinned in Appendix C and the tokenizer itself in every manifest);
+and both train for **1,000 steps**
 on the 884,224-parameter model with batch 16, learning rate 1e-3, and the *same*
 initialization within each run seed — identical initial weights, so only the data
 differs. The low arm's (family, identifier) space is a strict subset of the high
 arm's, so the two arms differ in spread, not in operations or count.
 
 Because count, operation coverage, tokenizer, and protocol are all held fixed, any
-difference in the result is caused by the diversity — a clean one-variable
-experiment, and the strongest test of the hypothesis.
+difference in the result is caused by the diversity intervention — a clean one-variable
+experiment in *diversity*, and the strongest test of the hypothesis. What that one
+variable bundles is worth being exact about: the high arm crosses all training phrasing
+families with **5 identifier sets**, taking the pool from 20 to **605 unique
+(prompt, program) pairs** — phrasing families, identifier names, and uniqueness move
+**together**. We therefore call it the combined phrasing/identifier/uniqueness
+intervention throughout; it does not isolate which of the three factors moves the
+number. (The held-out test itself changes wording only — letter identifiers — so the
+transfer it measures is wording-family transfer.)
 
 ## Two tests, shared by both arms
 
@@ -133,9 +145,10 @@ Let us read this carefully.
   family that appears nowhere in its training data. It sits below TEMPLATE (0.700)
   and RETRIEVAL (1.000) on that test, so this is partial generalization, not mastery.
 
-That is the trade, measured at equal count: **diversity buys generalization to an
-unseen phrasing family (0.000 → 0.550 mean) and costs some in-distribution
-sharpness (0.950 → 0.743 mean).** The low arm's 0.950 is the sharpest
+That is the trade, measured at equal count: **the combined phrasing/identifier/
+uniqueness intervention buys generalization to an unseen phrasing family
+(0.000 → 0.550 mean) and costs some in-distribution sharpness
+(0.950 → 0.743 mean).** The low arm's 0.950 is the sharpest
 in-distribution score in this comparison, and it is worth exactly nothing on a
 wording the model never saw.
 
@@ -245,8 +258,9 @@ comparison that says *diversity* is what moves the number.
 
 The corrected experiment delivers the fixed count and the audited holdout, so the
 equal-count causal reading is now supported: with count, operation coverage,
-tokenizer, and protocol matched, phrasing diversity is what separates 0.000 from
-0.550 on the held-out family. Three limits still bound the claim.
+tokenizer, and protocol matched, the combined phrasing/identifier/uniqueness diversity
+intervention is what separates 0.000 from 0.550 on the held-out family. Three limits
+still bound the claim.
 
 First, this is **surface** diversity — phrasings and identifier names. It does
 **not** show that diversity fixes *compositional* generalization (the Question-4
@@ -258,9 +272,11 @@ problem. Third, the scope is one task family, one model size (0.88M), and three
 seeds on one fixed tokenizer — the usual "here, in this regime" applies.
 
 So the honest scope of the finding is precise: **at equal count and balanced
-operation coverage, phrasing diversity improved generalization to a genuinely
-held-out wording family from 0.000 to 0.550 mean, at the cost of in-distribution
-sharpness (0.950 to 0.743 mean).** Whether diversity reaches deeper, into
+operation coverage, the combined phrasing/identifier/uniqueness diversity intervention
+improved generalization to a genuinely held-out wording family from 0.000 to 0.550
+mean, at the cost of in-distribution sharpness (0.950 to 0.743 mean).** It does not
+isolate which diversity factor — phrasing families, identifier sets, or unique-pair
+count — moves the number. Whether diversity reaches deeper, into
 composition, remains open.
 
 ## Flawed history: the first run (P0-02), superseded

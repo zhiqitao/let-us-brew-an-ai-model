@@ -1,0 +1,729 @@
+#!/usr/bin/env python3
+"""verify_release.py — closed-loop release-gate invariant checker for
+"Let Us Brew an AI Model".
+
+A fourth review found stale/contradictory integration defects (wrong diversity
+numbers in a figure caption, a stale Ch11 claim, an unprintable Figure 15.1, a
+stale LOF entry, shifted Appendix C section refs, release-commit provenance).
+Free-form re-reading is not a release gate, so this script asserts MACHINE-
+CHECKED invariants in four phases:
+
+  A. manifest invariants  — parse artifacts/manifests/*.json and assert the
+     canonical corrected values (data scaling, diversity, surface 2x2,
+     composition match-controls, stage1 pilot) against hard-coded ground truth.
+     Manifest tokenizer fields are the in-memory VOCABULARY hashes the runs
+     recorded (TOK_*_VOCAB), not file hashes.
+  B. source invariants    — scan book/manuscript/*.md, the LOF caption dict in
+     book/latex/md_to_latex.py, and the figure scripts: every stale pattern is
+     absent (or carries an explicit flawed/superseded marker), every canonical
+     number/claim/section-ref/provenance identifier is present, the manuscript
+     cites the tokenizer DISK sha256s (never the in-memory vocab hashes), the
+     ch15/ch16 reviewer-scoped statements are present, and the pinned
+     requirements-lock.txt exists with its four pins.
+  C. PDF invariants       — extract the rebuilt PDF's text with pymupdf and
+     assert the canonical values appear, the stale values do not (outside
+     labeled historical context), no '??'/'undefined' LaTeX artifacts remain,
+     the four surface denominators are present, and the LOF entry for Fig 13.1
+     is the corrected one.
+  D. release record       — hash the four corrected tokenizer files on disk
+     and assert they equal the cited constants, then assert
+     docs/release_manifest.json (tag, tag-target commit, PDF build commit,
+     PDF sha256, tokenizer disk hashes) matches git, the built PDF, and the
+     files on disk.
+
+Historical values (the flawed 42-record run's 0.500/1.000, the Stage-3
+mixed-factor 0.350, "42 versus 1,200") are legitimate WHENEVER they sit inside
+a window that also carries a flaw marker (superseded / flawed / historical /
+P0-0x / mixed-factor / Stage-3 / corrected ... instead). Everything else fails.
+
+Usage:
+    python3 scripts/verify_release.py                 # A + B + D + C (default PDFs)
+    python3 scripts/verify_release.py --no-pdf        # A + B + D only
+    python3 scripts/verify_release.py --pdf path.pdf  # A + B + D + C on that PDF
+Exit code 0 = release gate PASS (0 mismatches), 1 = FAIL.
+"""
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+MS = os.path.join(ROOT, "book", "manuscript")
+MANIFESTS = os.path.join(ROOT, "artifacts", "manifests")
+
+RELEASE_TAG = "v20261001"
+RELEASE_COMMIT = "a45a881158ed076f615f6d3bc2e72640dc5cdced"   # git rev-parse v20261001^{commit}
+BUILD_COMMIT = "eaa8cc02d1d989b96bea5f53caa07136a95589ad"     # git rev-parse HEAD at build
+STALE_COMMIT = "ae1ec01"                                       # never print this
+
+# Canonical tokenizer hashes = SHA-256 of the tokenizer FILE ON DISK (the
+# reproducible identifier the book cites). Phase D asserts these against the
+# live files under artifacts/tokenizer/, phase B against the manuscript.
+TOK_DATA = "361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5"
+TOK_DIV = "2282c2fe22c34467e193651b92a5b59da1e4820f5add778196e145170d081dce"
+TOK_SURF = "2c5c800b21e6a9a39d2688aec50cd4e092b3f99ea673b0618ffa6ffc65eb0a2b"
+TOK_COMP = "fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c"
+TOK_FILES = {  # tokenizer id -> file under artifacts/tokenizer/
+    "data_scaling": "data_scaling_corrected_tok.json",
+    "diversity": "diversity_corrected_tok.json",
+    "surface": "surface_corrected_tok.json",
+    "composition_controls": "composition_match_controls_tok.json",
+}
+TOK_EXPECTED = {"data_scaling": TOK_DATA, "diversity": TOK_DIV,
+                "surface": TOK_SURF, "composition_controls": TOK_COMP}
+# In-memory VOCABULARY hashes recorded in the run manifests (vocab-content
+# hash, NOT the file hash) — phase A asserts the manifests still carry these.
+TOK_DATA_VOCAB = "ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae"
+TOK_DIV_VOCAB = "d43d4a09d7b1f57e0bb4d8898560ce830176d4546f4fe654b5e676edf2396c1c"
+TOK_SURF_VOCAB = "3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e"
+RELEASE_MANIFEST = os.path.join(ROOT, "docs", "release_manifest.json")
+LOCKFILE = os.path.join(ROOT, "requirements-lock.txt")
+
+# canonical corrected values -------------------------------------------------
+DS_AGG = {  # aggregate pass@1 by size per seed (data_scaling_corrected)
+    0: [0.897, 0.900, 0.893, 0.897],
+    1: [0.893, 0.900, 0.900, 0.900],
+    2: [0.900, 0.900, 0.997, 0.900],   # seed-2 size-1000 outlier 299/300
+}
+DIV_IN = {"low": [0.950, 0.950, 0.950], "high": [0.820, 0.570, 0.840]}   # mean high 0.743
+DIV_HO = {"low": [0.000, 0.000, 0.000], "high": [0.640, 0.300, 0.710]}   # mean high 0.550
+SURF_DEN = {"familiar": 600, "id_only": 600, "wording_only": 480, "combined": 480}
+SURF_MODEL = {  # MODEL pass@1 per seed per cell
+    0: [0.898, 0.000, 0.000, 0.000],
+    1: [0.900, 0.003, 0.000, 0.025],
+    2: [0.940, 0.005, 0.000, 0.000],
+}
+SURF_CELLS = ["familiar", "id_only", "wording_only", "combined"]
+SURF_TEMPLATE_SUCC = [480, 480, 420, 420]   # TEMPLATE numerators over cell n
+SURF_RETRIEVAL_SUCC = [600, 600, 60, 60]   # RETRIEVAL numerators over cell n
+COMP_EXPOSED = {0: 0.667, 1: 0.658}
+
+# flaw markers that license a historical value in the same window -----------
+FLAW_MARK = re.compile(
+    r"superseded|flawed|historical|P0-0\d|mixed-factor|Stage-3|stage3|"
+    r"instead|not |retention|continual|corrected|replaced|ledger|audit",
+    re.I)
+
+results = []   # (phase, name, ok, detail)
+
+
+def check(phase, name, ok, detail=""):
+    results.append((phase, name, bool(ok), detail))
+    mark = "PASS" if ok else "FAIL"
+    print(f"[{phase}] {mark}  {name}" + (f"  -- {detail}" if detail and not ok else ""))
+    return ok
+
+
+def rd(fname):
+    with open(os.path.join(MANIFESTS, fname), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def near(a, b, tol=0.0011):
+    return abs(float(a) - b) <= tol
+
+
+def window_ok(text, span, pattern):
+    """Every match of `pattern` in `text` must sit in a window that carries a
+    flaw marker (or the match itself is inside a labeled historical table)."""
+    for m in re.finditer(pattern, text):
+        w = text[max(0, m.start() - 420):m.end() + 420]
+        if not FLAW_MARK.search(w):
+            line = text[:m.start()].count("\n") + 1
+            return False, f"line {line}: {text[max(0,m.start()-60):m.end()+60]!r}"
+    return True, ""
+
+
+# ===========================================================================
+# PHASE A — manifest invariants
+# ===========================================================================
+def phase_a():
+    print("\n== PHASE A: manifest invariants ==")
+    # --- A1 data scaling ---
+    ok_all = True
+    for seed in (0, 1, 2):
+        d = rd(f"data_scaling_corrected_seed{seed}.json")
+        ok = (d["tokenizer"]["sha256"] == TOK_DATA_VOCAB and
+              d["config"]["steps"] == 1000 and
+              d["selection"]["n_per_op_by_size"] == {"100": 10, "300": 30,
+                                                     "1000": 100, "3000": 300})
+        aggs = [round(r["aggregate_pass_at_1"], 3) for r in
+                sorted(d["rows"], key=lambda r: r["size"])]
+        ok = ok and aggs == DS_AGG[seed]
+        ok = ok and all(r["ops_covered"] == 10 for r in d["rows"])
+        ok_all &= check("A", f"data_scaling seed {seed}: aggregates {aggs} + "
+                             f"tokenizer/steps/balanced-ops", ok,
+                        f"expected {DS_AGG[seed]}")
+    zeros = sum(1 for seed in (0, 1, 2)
+                for r in rd(f"data_scaling_corrected_seed{seed}.json")["rows"]
+                if r["per_op_pass_at_1"]["cond_abs_max"] == 0.0)
+    ok_all &= check("A", "data scaling: cond_abs_max is 0.0 in 9/12 arms",
+                    zeros == 9, f"found {zeros}/12")
+    s2 = [r for r in rd("data_scaling_corrected_seed2.json")["rows"]
+          if r["size"] == 1000][0]
+    ok_all &= check("A", "data scaling: seed-2 size-1000 outlier = 0.997 (299/300)",
+                    round(s2["aggregate_pass_at_1"], 3) == 0.997 and
+                    s2["model_successes"] == 299 and s2["model_denominator"] == 300,
+                    f"{s2['model_successes']}/{s2['model_denominator']}")
+
+    # --- A2 diversity (equal-count) ---
+    for seed in (0, 1, 2):
+        d = rd(f"diversity_corrected_seed{seed}.json")
+        lo, hi = d["arms"]["low"], d["arms"]["high"]
+        ok = (d["tokenizer"]["sha256"] == TOK_DIV_VOCAB and
+              d["tokenizer"]["vocab_size"] == 293 and
+              d["config"]["steps"] == 1000 and
+              lo["n"] == 1200 and hi["n"] == 1200 and
+              lo["unique_prompt_program_pairs"] == 20 and
+              hi["unique_prompt_program_pairs"] == 605 and
+              set(lo["per_op_counts"].values()) == {120} and
+              set(hi["per_op_counts"].values()) == {120})
+        ind = d["results"]["in_distribution"]
+        ho = d["results"]["held_out_family"]
+        ok = ok and near(ind["low"]["systems"]["MODEL"]["pass_at_1"], DIV_IN["low"][seed])
+        ok = ok and near(ind["high"]["systems"]["MODEL"]["pass_at_1"], DIV_IN["high"][seed])
+        ok = ok and near(ho["low"]["systems"]["MODEL"]["pass_at_1"], DIV_HO["low"][seed])
+        ok = ok and near(ho["high"]["systems"]["MODEL"]["pass_at_1"], DIV_HO["high"][seed])
+        ok = ok and all(x["denominator"] == 100 for x in
+                        (ind["low"], ind["high"], ho["low"], ho["high"]))
+        ok_all &= check("A", f"diversity seed {seed}: 1200/1200 records, 20/605 pairs, "
+                             f"in-dist {DIV_IN['low'][seed]:.3f}/{DIV_IN['high'][seed]:.3f}, "
+                             f"held-out {DIV_HO['low'][seed]:.3f}/{DIV_HO['high'][seed]:.3f}, n=100",
+                        ok)
+    m_in = sum(DIV_IN["high"]) / 3
+    m_ho = sum(DIV_HO["high"]) / 3
+    ok_all &= check("A", "diversity: high-arm means 0.743 in-dist / 0.550 held-out",
+                    round(m_in, 3) == 0.743 and round(m_ho, 3) == 0.550,
+                    f"{m_in:.3f}/{m_ho:.3f}")
+
+    # --- A3 surface 2x2 ---
+    for seed in (0, 1, 2):
+        d = rd(f"surface_corrected_seed{seed}.json")
+        ok = d["tokenizer"]["sha256"] == TOK_SURF_VOCAB
+        ok = ok and d["assertions"]["denominators_exact_per_cell"] == SURF_DEN
+        for i, cell in enumerate(SURF_CELLS):
+            c = d["conditions"][cell]
+            ok = ok and c["denominator"] == SURF_DEN[cell]
+            ok = ok and near(c["systems"]["MODEL"]["pass_at_1"], SURF_MODEL[seed][i])
+            ok = ok and c["systems"]["TEMPLATE"]["successes"] == SURF_TEMPLATE_SUCC[i]
+            ok = ok and c["systems"]["RETRIEVAL"]["successes"] == SURF_RETRIEVAL_SUCC[i]
+        ok = ok and d["assertions"]["heldout_cells_exclude_single_family_ops"] == \
+            ["abs_of", "cond_abs_max"]
+        ok_all &= check("A", f"surface seed {seed}: denominators 600/600/480/480, "
+                             f"MODEL {SURF_MODEL[seed]}, template {SURF_TEMPLATE_SUCC}, "
+                             f"retrieval {SURF_RETRIEVAL_SUCC}", ok)
+
+    # --- A4 composition match-controls ---
+    for seed in (0, 1):
+        d = rd(f"composition_match_controls_seed{seed}.json")
+        prim = d["conditions"]["primitive_native"]["extractions"]["book_prefix80"]["aggregate"]
+        exp = d["conditions"]["exposed_native"]["extractions"]["book_prefix80"]["aggregate"]
+        ok = prim["n"] == 300 and near(prim["pass_at_1"], 1.0) and \
+            near(exp["pass_at_1"], COMP_EXPOSED[seed])
+        ok_all &= check("A", f"composition seed {seed}: primitive anchors 300/300, "
+                             f"exposed {COMP_EXPOSED[seed]}", ok,
+                        f"prim {prim['pass_at_1']}, exposed {exp['pass_at_1']}")
+        for cond in ("new_composite_unseen_surface", "new_composite_seen_surface"):
+            for st in ("book_prefix80", "favorable256"):
+                agg = d["conditions"][cond]["extractions"][st]["aggregate"]
+                ok = near(agg["pass_at_1"], 0.0) and agg["wrong_semantics"] == 0
+                ok_all &= check("A", f"composition seed {seed}: {cond}/{st} held-out "
+                                     f"composites pass 0.000, 0 complete programs, "
+                                     f"0 wrong-semantics", ok,
+                                f"pass {agg['pass_at_1']}, ws {agg['wrong_semantics']}")
+
+    # --- A5 stage1 pilot ---
+    st = rd("stage1_results.json")
+    model = [x for x in st if x["label"] == "MODEL"][0]
+    ok_all &= check("A", "stage1 pilot: in-dist 0.897",
+                    round(model["pass_at_1"], 3) == 0.897,
+                    f"{model['pass_at_1']}")
+    return ok_all
+
+
+# ===========================================================================
+# PHASE B — source invariants (manuscript + caption dict + figure scripts)
+# ===========================================================================
+def read_ms(name):
+    with open(os.path.join(MS, name), encoding="utf-8") as f:
+        return f.read()
+
+
+def phase_b():
+    print("\n== PHASE B: source invariants ==")
+    ok_all = True
+    ms_files = sorted(f for f in os.listdir(MS) if f.endswith(".md"))
+    ms_text = {f: read_ms(f) for f in ms_files}
+    all_ms = "\n".join(ms_text.values())
+    md_tex = open(os.path.join(ROOT, "book", "latex", "md_to_latex.py"),
+                  encoding="utf-8").read()
+    mk_fig = open(os.path.join(ROOT, "scripts", "make_figures.py"), encoding="utf-8").read()
+    mk_con = open(os.path.join(ROOT, "scripts", "make_concept_figures.py"),
+                  encoding="utf-8").read()
+
+    # --- B1 globally forbidden stale claims ---
+    for pat, name in [
+        (r"no clean causal measurement", "stale 'no clean causal measurement' claim"),
+        (r"needs correction", "stale 'needs correction' claim"),
+        (r"diversity lever still", "stale 'diversity lever still ...' claim"),
+        (r"phrasing diversity is what separates", "stale isolated-phrasing-factor claim"),
+        (re.escape(STALE_COMMIT), "stale release commit ae1ec01"),
+    ]:
+        ok = not re.search(pat, all_ms) and not re.search(pat, md_tex)
+        ok_all &= check("B", f"absent everywhere in manuscript + md_to_latex: {name}", ok)
+
+    # --- B2 corrupted / wrong-denominator digits ---
+    ok, det = window_ok(all_ms, None, r"0\.143")
+    ok_all &= check("B", "manuscript: no 0.143 (corrupted 0.743) anywhere", ok, det)
+    ok, det = window_ok(all_ms, None, r"(?<![\d,])000 records")
+    ok_all &= check("B", "manuscript: no corrupted '000 records' cell size", ok, det)
+    ok, det = window_ok(all_ms, None, r"\b420 records")
+    ok_all &= check("B", "manuscript: no '420 records' cell-size claim", ok, det)
+    # 0.350 / 0.500 / 1.000-diversity only inside labeled historical windows
+    ok, det = window_ok(all_ms, None, r"0\.350")
+    ok_all &= check("B", "manuscript: every 0.350 is inside a labeled "
+                         "superseded/Stage-3/mixed-factor window", ok, det)
+    ok, det = window_ok(all_ms, None, r"0\.000\s*(?:→|->|vs\.?|versus|to)\s*1\.000")
+    ok_all &= check("B", "manuscript: every 0.000→1.000 diversity reading is labeled "
+                         "flawed/superseded (or is continual-retention)", ok, det)
+    ok, det = window_ok(all_ms, None, r"0\.500\s*(?:→|->|vs\.?|versus|to)\s*1\.000")
+    ok_all &= check("B", "manuscript: every 0.500-versus-1.000 reading is labeled "
+                         "flawed/superseded", ok, det)
+    # ch13 must carry NO stale diversity digits at all
+    ch13 = ms_text["ch13_same_data_more_diverse_data.md"]
+    ok = not re.search(r"0\.350|0\.143", ch13)
+    ok_all &= check("B", "ch13: no 0.350/0.143 anywhere", ok)
+
+    # --- B3 ch11 required/forbidden content ---
+    ch11 = ms_text["ch11_how_much_data.md"]
+    ch11_flat = re.sub(r"\s+", " ", ch11)   # md hard-wraps lines mid-sentence
+    for sub, name in [
+        ("no consistent monotonic effect on familiar-prompt accuracy",
+         "ch11 softened data-size wording (>=2x)"),
+        ("0.997", "ch11 flags the seed-2 size-1000 0.997 outlier"),
+        ("299/300", "ch11 gives the outlier's raw count"),
+        ("cond_abs_max", "ch11 per-op cond_abs_max note"),
+        ("0.000 (low diversity) versus 0.550 mean",
+         "ch11 points at Ch13's equal-count 0.000 vs 0.550 result"),
+        ("42 versus 1,200 records — P0-02",
+         "ch11 keeps the 42-vs-1,200 history as P0-02"),
+    ]:
+        n = ch11_flat.count(sub)
+        need = 2 if ">=2x" in name else 1
+        ok_all &= check("B", name, n >= need, f"found {n}")
+    ok = not re.search(r"diversity lever still has no clean|"
+                       r"construction still needs correction", ch11)
+    ok_all &= check("B", "ch11: stale Ch13-claim passages removed", ok)
+
+    # --- B4 ch13 combined-intervention labeling ---
+    n = ch13.count("combined phrasing/identifier")
+    ok_all &= check("B", "ch13: diversity labeled as the combined "
+                         "phrasing/identifier/uniqueness intervention (>=3x)",
+                    n >= 3, f"found {n}")
+    for sub in ("0.950", "0.743", "0.550", "605", "20 unique", "1,200"):
+        ok_all &= check("B", f"ch13: canonical value present: {sub}",
+                        sub in re.sub(r"\s+", " ", ch13))
+
+    # --- B5 ch15 denominators ---
+    ch15 = ms_text["ch15_new_words_same_problem.md"]
+    ch15_flat = re.sub(r"\s+", " ", ch15)
+    for sub in ("539/600", "480/600", "420/480", "60/480", "600/600",
+                "**600** records each", "**480** (8 operations"):
+        ok_all &= check("B", f"ch15: canonical denominator text present: {sub}",
+                        sub in ch15_flat)
+    bad = [ln for ln in ch15.splitlines()
+           if re.search(r"\b420\b", ln) and "480" not in ln]
+    ok_all &= check("B", "ch15: every '420' line also carries the 480 denominator "
+                         "(420 only as TEMPLATE numerator)", not bad,
+                    f"offenders: {bad[:2]}")
+
+    # --- B6 Appendix C section refs ---
+    appc = ms_text["appendix_c_experiment_registry.md"]
+    heads = [h for h in re.findall(r"^## (.+)$", appc, re.M)]
+    idx = {h: i + 1 for i, h in enumerate(heads)}
+    nov = [h for h in heads if h.lower().startswith("the novelty audit")]
+    seq = [h for h in heads if h.lower().startswith("the sequential before")]
+    rep = [h for h in heads if h.lower().startswith("reproducibility")]
+    ok_all &= check("B", "Appendix C: novelty audit is section C.8 (kept)",
+                    nov and idx[nov[0]] == 8, str(idx))
+    ok_all &= check("B", "Appendix C: sequential before/after is section C.9",
+                    seq and idx[seq[0]] == 9 and "(C.9)" in seq[0], str(seq))
+    ok_all &= check("B", "Appendix C: reproducibility is section C.11",
+                    rep and idx[rep[0]] == 11, str(rep))
+    for f, good, bad_pat, name in [
+        ("ch20_what_happens_when_we_teach_it_something_new.md",
+         "(Appendix C.9)", r"Appendix C\.8", "ch20 sequential ref -> C.9"),
+        ("ch22_the_capability_map.md", "(Appendix C.9)", r"Appendix C\.8",
+         "ch22 sequential ref -> C.9"),
+        ("ch09_the_first_brew.md", "Appendix C.11", r"Appendix C\.10",
+         "ch09 reproducibility ref -> C.11"),
+    ]:
+        t = ms_text[f]
+        ok_all &= check("B", name, good in t and not re.search(bad_pat, t))
+    ok = not re.search(r"Appendix C\.8\b", all_ms) and \
+        not re.search(r"Appendix C\.10\b", all_ms)
+    ok_all &= check("B", "manuscript: no leftover 'Appendix C.8'/'Appendix C.10' "
+                         "section refs", ok)
+
+    # --- B7 LOF caption dict + image alts ---
+    m = re.search(r"SHORT_FIG_CAPTIONS\s*=\s*\{(.*?)\}", md_tex, re.S)
+    lof = m.group(1) if m else ""
+    ok_all &= check("B", "LOF: Fig 13.1 short caption is "
+                         "'Diversity at equal count (corrected: 0.950 vs 0.743)'",
+                    "Diversity at equal count (corrected: 0.950 vs 0.743)" in lof)
+    ok_all &= check("B", "LOF: no '42 vs 1,200' in any short caption",
+                    "42 vs" not in lof and "1,200" not in lof)
+    alts = {
+        "ch11_how_much_data.md": "Data scaling — corrected balanced sweep",
+        "ch13_same_data_more_diverse_data.md":
+            "Diversity at equal count — low vs high diversity, in-distribution "
+            "and held-out family",
+        "ch15_new_words_same_problem.md": "Surface generalization — corrected 2x2 factorial",
+    }
+    for f, alt in alts.items():
+        ok_all &= check("B", f"image alt intact: {f}", f"![{alt}]" in ms_text[f])
+
+    # --- B8 figure scripts ---
+    for sub, name in [
+        ("0.950", "make_figures: low-arm in-dist 0.950"),
+        ("0.743", "make_figures: high-arm in-dist mean 0.743"),
+        ("0.550", "make_figures: high-arm held-out mean 0.550"),
+        ("cell_n = [600, 600, 480, 480]", "make_figures: Fig 15.1 cell denominators"),
+        ("0.997 (299/300)", "make_figures: Fig 11.1 seed-2 outlier marked"),
+        ("0.9967", "make_figures: Fig 11.1 outlier value plotted"),
+        ("n = {n}", "make_figures: Fig 15.1 separate n row"),
+    ]:
+        ok_all &= check("B", name, sub in mk_fig)
+    for pat, name in [(r"0\.350", "make_figures: no stale 0.350"),
+                      (r"0\.143", "make_figures: no stale 0.143")]:
+        ok_all &= check("B", name, not re.search(pat, mk_fig))
+    ok_all &= check("B", "make_concept_figures: Fig 13.2 right panel labeled "
+                         "'flawed original vs corrected measured (n=100)'",
+                    "flawed original vs corrected measured (n=100)" in mk_con)
+    ok_all &= check("B", "make_concept_figures: no stale 0.350 chart label",
+                    not re.search(r"0\.350", mk_con))
+    ok_all &= check("B", "make_concept_figures: corrected 0.743/0.550 in "
+                         "capability-map rows", "0.743" in mk_con and "0.550" in mk_con)
+
+    # --- B9 provenance ---
+    ok_all &= check("B", f"appendix C names the release commit {RELEASE_COMMIT}",
+                    RELEASE_COMMIT in appc)
+    ok_all &= check("B", f"appendix C names the PDF build commit {BUILD_COMMIT}",
+                    BUILD_COMMIT in appc)
+    ok_all &= check("B", "md_to_latex colophon names the release commit",
+                    RELEASE_COMMIT in md_tex)
+    ok_all &= check("B", "md_to_latex colophon names the PDF build commit",
+                    BUILD_COMMIT in md_tex)
+    ok_all &= check("B", "manuscript: no stale commit ae1ec01",
+                    STALE_COMMIT not in all_ms)
+    # exactly one release identifier: no other 7-40 hex commit strings
+    others = set()
+    for f, t in list(ms_text.items()) + [("md_to_latex.py", md_tex)]:
+        for m2 in re.finditer(r"(?<![0-9a-zA-Z/])([0-9a-f]{7,39})(?![0-9a-zA-Z])", t):
+            h = m2.group(1)
+            if h in (RELEASE_COMMIT[:len(h)], BUILD_COMMIT[:len(h)]):
+                continue
+            ctx = t[max(0, m2.start() - 40):m2.end() + 40]
+            if re.search(r"[0-9a-f]{32}", ctx):   # part of a longer sha
+                continue
+            if re.fullmatch(r"[0-9]+", h):        # pure digits (dates, versions)
+                continue
+            others.add((f, h))
+    ok_all &= check("B", "no other commit-like identifiers besides release + build "
+                         "commits", not others, str(sorted(others)[:5]))
+    # git ground truth
+    try:
+        tag = subprocess.run(["git", "rev-parse", f"{RELEASE_TAG}^{{commit}}"],
+                             cwd=ROOT, capture_output=True, text=True,
+                             timeout=30).stdout.strip()
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                              capture_output=True, text=True,
+                              timeout=30).stdout.strip()
+        ok_all &= check("B", f"git: {RELEASE_TAG}^{{commit}} == {RELEASE_COMMIT}",
+                        tag == RELEASE_COMMIT, f"got {tag}")
+        ok_all &= check("B", "git: HEAD == the recorded PDF build commit",
+                        head == BUILD_COMMIT, f"got {head}")
+    except Exception as e:  # pragma: no cover
+        ok_all &= check("B", "git provenance query", False, str(e))
+
+    # --- B10 tokenizer disk hashes, scope statements, release record refs ---
+    ok_all &= check("B", "ch11 cites the data-scaling tokenizer DISK sha256",
+                    TOK_DATA in ch11)
+    ok_all &= check("B", "ch15 cites the surface tokenizer DISK sha256",
+                    TOK_SURF in ch15)
+    for h, name in [(TOK_DATA, "data_scaling"), (TOK_DIV, "diversity"),
+                    (TOK_SURF, "surface"), (TOK_COMP, "composition controls")]:
+        ok_all &= check("B", f"appendix C cites the {name} tokenizer DISK sha256",
+                        h in appc)
+    for h, name in [(TOK_DATA_VOCAB, "data_scaling"), (TOK_DIV_VOCAB, "diversity"),
+                    (TOK_SURF_VOCAB, "surface")]:
+        ok_all &= check("B", f"manuscript no longer cites the in-memory {name} "
+                             f"vocab hash {h[:8]}…", h not in all_ms)
+    ch15_flat2 = re.sub(r"\s+", " ", ch15)
+    ok_all &= check("B", "ch15 scopes aggregate wording comparisons to the 8 "
+                         "shared ops (480/480 vs 0/480)",
+                    "480/480 (familiar) versus 0/480" in ch15_flat2)
+    ok_all &= check("B", "ch15: held-out wording is a single deterministic "
+                         "family per op, not sampled across families",
+                    "single deterministic family per operation" in ch15_flat2 and
+                    "not sampled across families" in ch15_flat2)
+    ch16 = ms_text["ch16_same_pieces_new_combination.md"]
+    ch16_flat = re.sub(r"\s+", " ", ch16)
+    ok_all &= check("B", "ch16 scopes the 0-wrong-semantics reading to the "
+                         "held-out composites and controls (b)/(c)",
+                    "scoped to the held-out composites and to controls (b) and (c)"
+                    in ch16_flat)
+    ok_all &= check("B", "ch16 states control (a) recorded 2/300 "
+                         "wrong-semantics at seed 0",
+                    "2/300 wrong-semantics" in ch16_flat)
+    ok_all &= check("B", "appendix C references the pinned requirements-lock.txt",
+                    "requirements-lock.txt" in appc)
+    ok_all &= check("B", "appendix C references docs/release_manifest.json",
+                    "docs/release_manifest.json" in appc)
+    lock_ok = os.path.exists(LOCKFILE)
+    lock_detail = LOCKFILE
+    if lock_ok:
+        lock_txt = open(LOCKFILE, encoding="utf-8").read()
+        for pin in ("torch==2.14.0+cpu", "numpy==2.2.6", "matplotlib==3.11.2",
+                    "scikit-learn==1.9.1"):
+            lock_ok = lock_ok and pin in lock_txt
+            if pin not in lock_txt:
+                lock_detail = f"missing pin {pin}"
+    ok_all &= check("B", "requirements-lock.txt exists and pins torch/numpy/"
+                         "matplotlib/scikit-learn (CPU-only)", lock_ok, lock_detail)
+    return ok_all
+
+
+# ===========================================================================
+# PHASE C — rebuilt-PDF invariants
+# ===========================================================================
+def _loose(pages):
+    """Page text normalized for phrase matching: running headers and lone
+    page numbers stripped (they interrupt sentences at page breaks),
+    end-of-line hyphenation rejoined, whitespace collapsed."""
+    out = []
+    for t in pages:
+        lines = t.splitlines()
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        if lines and (re.match(r"^Chapter \d+\.", lines[0]) or
+                      lines[0].strip() in ("Let Us Brew an AI Model",)):
+            lines.pop(0)
+        if lines and re.fullmatch(r"\d{1,3}", lines[0].strip()):
+            lines.pop(0)
+        if lines and re.fullmatch(r"\d{1,3}", lines[-1].strip()):
+            lines.pop()
+        out.append("\n".join(lines))
+    s = " ".join(out)
+    s = re.sub(r"(?<=[a-z])-\s+(?=[a-z])", "", s)   # break hyphenation
+    return re.sub(r"\s+", " ", s)
+
+
+def _st(s):
+    """Supertight: case-folded, no spaces/hyphens -- immune to line breaks,
+    hyphenation, and word spacing in the extracted text."""
+    return re.sub(r"[-\s]", "", s.lower())
+
+
+def phase_c(pdf_path):
+    print(f"\n== PHASE C: PDF invariants ({pdf_path}) ==")
+    if not os.path.exists(pdf_path):
+        check("C", "PDF exists", False, pdf_path)
+        return False
+    import pymupdf
+    doc = pymupdf.open(pdf_path)
+    pages = [p.get_text() for p in doc]
+    txt = "\n".join(pages)
+    flat = _loose(pages)          # header/hyphenation-normalized
+    st = _st(flat)                # supertight for phrase presence
+    ok_all = True
+
+    # --- C1 canonical values present ---
+    for sub, name in [
+        ("0.950", "diversity low in-dist 0.950"),
+        ("0.743", "diversity high in-dist mean 0.743"),
+        ("0.550", "diversity high held-out mean 0.550"),
+        ("0.997", "data-scaling seed-2 outlier 0.997"),
+        ("299/300", "outlier raw count 299/300"),
+        ("269/300", "ch11 seed-0 counts"),
+        ("539/600", "surface MODEL familiar count"),
+        ("480/600", "surface TEMPLATE kept-cell numerator"),
+        ("420/480", "surface TEMPLATE held-out numerator"),
+        ("60/480", "surface RETRIEVAL held-out numerator"),
+        ("600/600", "surface RETRIEVAL kept-cell numerator"),
+        ("605", "diversity high-arm unique pairs"),
+        (RELEASE_COMMIT, "release commit (full hash)"),
+        (BUILD_COMMIT, "PDF build commit (full hash)"),
+        ("no consistent monotonic effect on familiar-prompt accuracy",
+         "ch11 softened claim in the built book"),
+        ("combined phrasing/identifier", "ch13 combined-intervention label"),
+        ("0.000 (low diversity) versus 0.550 mean",
+         "ch11 equal-count diversity pointer"),
+    ]:
+        ok_all &= check("C", f"PDF contains: {name}", _st(sub) in st)
+
+    # --- C2 stale values absent (outside labeled historical windows) ---
+    for pat, name in [
+        (r"0\.143", "no corrupted 0.143 anywhere"),
+        (r"no clean causal measurement", "no stale 'no clean causal measurement'"),
+        (r"needs correction", "no stale 'needs correction'"),
+        (re.escape(STALE_COMMIT), "no stale commit ae1ec01"),
+        (r"(?<![\d,])000 records", "no corrupted '000 records' cell size"),
+        (r"\b420 records", "no '420 records' cell-size claim"),
+        (r"flawed: 42 vs 1,200", "no stale LOF 'flawed: 42 vs 1,200'"),
+        (r"\?\?", "no unresolved '??' cross-references"),
+        (r"\bundefined\b", "no 'undefined' artifacts"),
+    ]:
+        ok, det = window_ok(flat, None, pat)
+        ok_all &= check("C", f"PDF: {name}", ok, det)
+    ok, det = window_ok(flat, None, r"0\.350")
+    ok_all &= check("C", "PDF: every 0.350 sits in a labeled superseded/Stage-3 "
+                         "window (font corruption would break this)", ok, det)
+    ok, det = window_ok(flat, None, r"0\.000\s*(?:→|->|vs\.?|versus|to)\s*1\.000")
+    ok_all &= check("C", "PDF: every 0.000→1.000 reading is labeled flawed/"
+                         "superseded (or is continual-retention)", ok, det)
+
+    # --- C3 LOF entries ---
+    i = txt.find("List of Figures")
+    lof = txt[i:i + 2600] if i >= 0 else ""
+    ok_all &= check("C", "LOF: Fig 13.1 entry is the corrected short caption",
+                    "Diversity at equal count (corrected: 0.950 vs 0.743)" in lof)
+    ok_all &= check("C", "LOF: Fig 11.1 entry present",
+                    "Data scaling" in lof)
+    ok_all &= check("C", "LOF: Fig 15.1 entry present",
+                    "Surface generalization" in lof)
+    ok_all &= check("C", "LOF: no '42 vs 1,200' entry",
+                    "42 vs 1,200" not in lof)
+
+    # --- C4 surface denominators in the ch15 caption text ---
+    for sub, name in [
+        ("600 records each", "familiar/id cells: 600 records each"),
+        ("480 (8 operations", "held-out cells: 480 (8 operations x 60)"),
+        ("539/600, 0/600, 0/480, 0/480", "MODEL cell counts over 600/600/480/480"),
+    ]:
+        ok_all &= check("C", f"PDF: {name}", _st(sub) in st)
+
+    # --- C5 ch13 caption page carries corrected digits, not corrupted ones ---
+    cap_pages = [n for n, t in enumerate(pages)
+                 if "Diversity at equal count" in t and "0.950" in t]
+    ok_all &= check("C", "PDF: a page carries the corrected Fig 13.1 caption "
+                         "with 0.950", bool(cap_pages))
+    for n, t in enumerate(pages):
+        if "0.350 in-distribution" in t or "0.143" in t:
+            ok_all &= check("C", f"PDF: page {n + 1} has corrupted caption digits",
+                            False)
+            break
+    # --- C6 Appendix refs in the built book ---
+    for sub, name in [("(C.9)", "sequential before/after ref (C.9)"),
+                      ("(C.11)", "reproducibility ref (C.11) or registry ref")]:
+        ok_all &= check("C", f"PDF: {name} present", sub in txt or
+                        sub.replace("(", "").replace(")", "") in txt)
+    ok_all &= check("C", "PDF: no 'Appendix C.8'/'Appendix C.10' refs",
+                    not re.search(r"Appendix C\.8\b|Appendix C\.10\b", flat))
+    return ok_all
+
+
+# ===========================================================================
+# PHASE D — tokenizer disk hashes + the canonical release manifest
+# ===========================================================================
+def _sha256(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def phase_d(pdf_required=True):
+    print("\n== PHASE D: tokenizer disk hashes + release manifest ==")
+    ok_all = True
+    # --- D1 the four corrected tokenizer files hash to the cited constants ---
+    for tid, fname in TOK_FILES.items():
+        p = os.path.join(ROOT, "artifacts", "tokenizer", fname)
+        if not os.path.exists(p):
+            ok_all &= check("D", f"tokenizer file exists: {fname}", False, p)
+            continue
+        got = _sha256(p)
+        ok_all &= check("D", f"disk sha256({fname}) == cited "
+                             f"{TOK_EXPECTED[tid][:12]}…",
+                        got == TOK_EXPECTED[tid], f"got {got}")
+    # --- D2 the release manifest records exactly those values ---
+    if not os.path.exists(RELEASE_MANIFEST):
+        check("D", "docs/release_manifest.json exists", False, RELEASE_MANIFEST)
+        return False
+    with open(RELEASE_MANIFEST, encoding="utf-8") as f:
+        rm = json.load(f)
+    ok_all &= check("D", f"release manifest names tag {RELEASE_TAG}",
+                    rm.get("tag") == RELEASE_TAG, str(rm.get("tag")))
+    ok_all &= check("D", "release manifest tag-target commit == "
+                         f"{RELEASE_COMMIT[:12]}…",
+                    rm.get("tag_target_commit") == RELEASE_COMMIT,
+                    str(rm.get("tag_target_commit")))
+    ok_all &= check("D", "release manifest PDF build commit == "
+                         f"{BUILD_COMMIT[:12]}…",
+                    rm.get("pdf_build_commit") == BUILD_COMMIT,
+                    str(rm.get("pdf_build_commit")))
+    want_tok = {k: TOK_EXPECTED[k] for k in TOK_FILES}
+    ok_all &= check("D", "release manifest tokenizer_sha256 == the disk hashes",
+                    rm.get("tokenizer_sha256") == want_tok,
+                    json.dumps(rm.get("tokenizer_sha256")))
+    pdf_rel = (rm.get("pdf") or {}).get("path")
+    pdf_abs = os.path.join(ROOT, pdf_rel) if pdf_rel else None
+    if pdf_abs and os.path.exists(pdf_abs):
+        got = _sha256(pdf_abs)
+        ok_all &= check("D", f"release manifest PDF sha256 == sha256({pdf_rel})",
+                        (rm.get("pdf") or {}).get("sha256") == got,
+                        f"manifest {(rm.get('pdf') or {}).get('sha256')}, file {got}")
+    else:
+        ok_all &= check("D", "release manifest PDF exists to hash",
+                        not pdf_required, pdf_rel or "(no path recorded)")
+    return ok_all
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--pdf", action="append", default=None,
+                    help="PDF to verify (repeatable); default: the release PDF "
+                         "and book/latex/book.pdf if present")
+    ap.add_argument("--no-pdf", action="store_true", help="skip phase C")
+    ap.add_argument("--json", action="store_true", help="print a JSON summary")
+    args = ap.parse_args()
+
+    phase_a()
+    phase_b()
+    phase_d(pdf_required=not args.no_pdf)
+    pdfs = args.pdf
+    if pdfs is None and not args.no_pdf:
+        pdfs = [p for p in (
+            os.path.join(ROOT, "book", "let-us-brew-an-ai-model-v20261001.pdf"),
+            os.path.join(ROOT, "book", "latex", "book.pdf"),
+        ) if os.path.exists(p)]
+    if pdfs and not args.no_pdf:
+        for p in pdfs:
+            phase_c(p)
+    elif not args.no_pdf:
+        check("C", "a built PDF exists to verify", False,
+              "run book/build_book.py first or pass --no-pdf")
+
+    fails = [r for r in results if not r[2]]
+    print(f"\n== verify_release: {len(results) - len(fails)}/{len(results)} "
+          f"checks passed, {len(fails)} mismatches ==")
+    for ph, name, _, det in fails:
+        print(f"  MISMATCH [{ph}] {name}" + (f" -- {det}" if det else ""))
+    if args.json:
+        print(json.dumps({
+            "total": len(results),
+            "passed": len(results) - len(fails),
+            "failed": len(fails),
+            "mismatches": [{"phase": ph, "name": n, "detail": d}
+                           for ph, n, _, d in fails],
+        }, indent=2))
+    sys.exit(0 if not fails else 1)
+
+
+if __name__ == "__main__":
+    main()

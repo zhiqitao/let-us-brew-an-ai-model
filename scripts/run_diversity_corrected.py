@@ -476,6 +476,10 @@ def main():
             expected_n = test_meta[test_name]["n"]
             if key in partial:
                 results[test_name][arm] = partial[key]
+                # A fully-cached resume must still satisfy the final
+                # tokenizer-drift assert below, or the manifest is never
+                # written (cached entries carry no tokenizer field to check).
+                shas.add(tok_sha)
                 m = results[test_name][arm]["systems"]["MODEL"]
                 print(f"  {arm:4s} {test_name:17s}: cached (partial) "
                       f"{m['successes']}/{m['denominator']}", flush=True)

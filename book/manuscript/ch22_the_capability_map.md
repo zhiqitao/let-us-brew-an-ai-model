@@ -149,7 +149,7 @@ These conditions are not "one bigger model"; they test whether *training content
 
 Note the "sequential" A figure: the **final** A accuracy (0.000) is measured after phase B.
 We also measured A **right after phase A** (before B) on the same run — it was **1.000**
-(Appendix C.8), so the sequential drop is a same-run before/after forgetting result, not a
+(Appendix C.9), so the sequential drop is a same-run before/after forgetting result, not a
 case of A never being acquired. A true replay-after-A-first continuation (which *would*
 start from an A-trained checkpoint and continue with B plus A replay) was **not** run.
 

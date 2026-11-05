@@ -17,11 +17,16 @@ Corrections:
   * identical training protocol for every arm: n_embd 128, 4 layers, 4 heads,
     block 128, 1000 steps, batch 16, lr 1e-3;
   * ONE fixed held-out test set (30/op, 10/10 ops, seed 777) shared by all
-    arms and seeds, content-disjoint from every train set;
+    arms and seeds, INSTANCE-SEED disjoint from every train set (new
+    construction seeds + new hidden tests; prompt content overlaps training by
+    design — a content-level holdout is impossible in-distribution);
   * aggregate AND per-operation pass@1 with exact integer successes.
 
 Resume-safe: per-arm results go to a partial file and per-arm checkpoints to
-artifacts/checkpoints/, so the retry-on-SIGILL wrapper restarts cheaply.
+artifacts/checkpoints/, so the retry-on-SIGILL wrapper restarts cheaply. Every
+arm reseeds BOTH torch and global `random` before training, so a resumed run
+reproduces a fresh run's per-arm batch streams (Dataset.batch samples with the
+global `random`).
 
 Usage: python scripts/run_data_scaling_corrected.py --seed 0
 """
@@ -190,6 +195,11 @@ def main():
             print(f"  size {size:5d}: loaded checkpoint {ckpt_path}", flush=True)
         if model is None:
             torch.manual_seed(seed * 10007 + size)  # per-arm init
+            # Per-arm reseed of global `random` (Dataset.batch samples with
+            # it): a RESUMED run then trains each arm with the same batch
+            # stream a fresh run would produce, instead of inheriting whatever
+            # random state the skipped arms left behind.
+            random.seed(seed * 10007 + size + 1)
             model = GPT(cfg)
             ds = Dataset(train, tok)
             t0 = time.time()

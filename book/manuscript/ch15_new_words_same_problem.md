@@ -55,7 +55,7 @@ across the four cells:
   identifiers × kept wording families;
 - **one fixed tokenizer**, fit on those training texts only and reused unchanged across
   every cell and every seed (vocabulary 291; SHA-256
-  `3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e`);
+  `2c5c800b21e6a9a39d2688aec50cd4e092b3f99ea673b0618ffa6ffc65eb0a2b`);
 - **identical task sets per cell**, scored by the MODEL and by both baselines on the
   same records, after the same 1,500-step training budget (batch 16, learning rate
   1e-3), under seeds 0, 1, and 2.
@@ -74,6 +74,20 @@ The held-out-wording cells have **480** records, not 600, because `abs_of` and
 test — they are excluded from those two cells (P0-04). With the factors unmixed and the
 denominators recorded in the manifest, any difference between cells is attributable to
 the surface change that cell applies.
+
+**Scope of the aggregate comparisons.** The wording cells cover the 8 operations that
+have a held-out family (480 records); the familiar and identifiers-only cells cover all
+10 (600). Any **aggregate** wording-effect comparison in this chapter is restricted to
+those 8 operations shared by all four cells — per-operation scores are reported for
+every cell, so the restriction is checkable against the manifest — and on that shared
+set the comparison is 480/480 (familiar) versus 0/480 (wording only) in every seed, so
+the 480-versus-600 aggregate never conflates operation coverage with a wording effect:
+`abs_of` and `cond_abs_max` are excluded from *both* sides of the wording contrast, and
+their familiar-surface scores remain visible in the per-operation breakdown. One
+further scope note: the held-out wording is a **single deterministic family per
+operation** — the last family in the fixed family inventory, chosen by rule, not
+sampled across families — so each wording cell is one fixed re-rendering per operation,
+not an average over possible rephrasings.
 
 ## The result
 
@@ -120,7 +134,9 @@ superseded row in Appendix C; the corrected factorial above is this chapter's re
 The most revealing number isn't the model's collapse — it's what the other two did.
 ![Surface generalization — corrected 2x2 factorial](figures/fig_surface.pdf)
 
-*Corrected 2×2 factorial (fixes P0-03 and P0-04), seed 0 shown; each pass@1 is over the
+*Corrected 2×2 factorial (fixes P0-03 and P0-04); all three seeds are shown — seed-0
+bars with seeds 1 and 2 as open markers — and each cell's denominator **n** is printed
+under that cell. Each pass@1 is over the
 cell's own held-out task set, with the MODEL and both baselines scored on identical
 records: the familiar and identifiers-only cells have **600** records each (10
 operations × 60), the wording-only and both-changes cells have **480** (8 operations ×

@@ -156,29 +156,33 @@ unchanged from the run manifests.
 | `composition_match_controls` | 128/4/4 · 1500 · 0/1 · 884,224 | composition_match_controls_seed{0,1}.json | composition_match_controls_seed{0,1}.pt |
 
 **Corrected-run tokenizer provenance.** Each corrected run pins exactly one tokenizer
-across all arms and seeds, recorded in every manifest. `data_scaling_corrected` uses
+across all arms and seeds. The canonical identifier cited throughout this book is the
+SHA-256 of the tokenizer *file on disk* — reproducible by hashing the file itself
+(`sha256sum artifacts/tokenizer/<file>.json`); each run manifest additionally records
+that tokenizer's in-memory vocabulary hash (a vocab-content hash — a different
+quantity, not the file hash). `data_scaling_corrected` uses
 `artifacts/tokenizer/data_scaling_corrected_tok.json`, SHA-256
-`ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae` (vocabulary 291, fit
+`361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5` (vocabulary 291, fit
 once on the union of the training texts at the largest size — `generate_dataset(n_per_op=300,
 id_set='letters', seed=4242)` — and never refit per size or seed). `surface_corrected`
 uses `artifacts/tokenizer/surface_corrected_tok.json`, SHA-256
-`3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e` (vocabulary 291, fit
+`2c5c800b21e6a9a39d2688aec50cd4e092b3f99ea673b0618ffa6ffc65eb0a2b` (vocabulary 291, fit
 on train-only texts — letters × kept families — and never refit per cell or seed).
 `diversity_corrected` uses `artifacts/tokenizer/diversity_corrected_tok.json`,
 SHA-256
-`d43d4a09d7b1f57e0bb4d8898560ce830176d4546f4fe654b5e676edf2396c1c` (vocabulary 293,
+`2282c2fe22c34467e193651b92a5b59da1e4820f5add778196e145170d081dce` (vocabulary 293,
 fit once on the union of *both* arms' train texts — never any test text — and
-never refit per arm or seed; the same hash is asserted in all three seed
+never refit per arm or seed; the same file is pinned in all three seed
 manifests). The
-manifests record the same hash for every seed, so a checkpoint must still be evaluated
+manifests pin the same tokenizer for every seed, so a checkpoint must still be evaluated
 with the tokenizer it was trained with.
 
 **Matched-control tokenizer provenance.** `composition_match_controls` pins one
 tokenizer across both seeds: `artifacts/tokenizer/composition_match_controls_tok.json`,
-SHA-256 `6daf6cf5066745b7ff1d5b20aad2792bb447fb2020d77e524dfd23e0cf9e3abf`, vocabulary 291,
+SHA-256 `fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c`, vocabulary 291,
 fit on the train+exposed corpus then the held-out text (the exact exposure order)
-with a complete byte alphabet for the control prompts — the same hash recorded in
-both seed manifests (full detail in Table C.16).
+with a complete byte alphabet for the control prompts — the same tokenizer file
+pinned in both seed manifests (full detail in Table C.16).
 
 ## Run provenance ledger
 
@@ -204,7 +208,7 @@ uses, so the two tables can be read against each other.
 | `composition_match_controls_seed0.json` | `composition_match_controls` | 0 · 1500 · 200 · 884,224 · 0.0169 · 291 | **Matched controls for the composition zero — MEASURED (P1-09)**; seven structure × surface conditions with paired prompts; Table C.16 |
 | `composition_match_controls_seed1.json` | `composition_match_controls` | 1 · 1500 · 200 · 884,224 · 0.0187 · 291 | **Matched controls — MEASURED (P1-09)**, matched to the seed-0 configuration; Table C.16 |
 | `continual.json` | `continual.json` | 0 · 700 · 70 · — · — · — | Scored sequential continual-learning run (Ch. 18) |
-| `continual_preB.json` | `continual_preB.json` | 0 · 700 · 70 · — · — · — | Same-run pre-B intermediate evaluation (Appendix C.8) |
+| `continual_preB.json` | `continual_preB.json` | 0 · 700 · 70 · — · — · — | Same-run pre-B intermediate evaluation (Appendix C.9) |
 | `continual_seed1.json` | `continual_seed1.json` | 1 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 steps / `n_per_op` 80 vs 700 / 70): not a matched replication |
 | `continual_seed2.json` | `continual_seed2.json` | 2 · 600 · 80 · — · — · — | Multi-seed re-run — **config mismatch** vs seed 0 (600 / 80 vs 700 / 70): not a matched replication |
 | `data_scaling.json` | `data_scaling.json` | 0 · 800 · — · — · — · — | Scored data-scaling sweep — **superseded flawed historical run** (P0-01); replaced by `data_scaling_corrected_seed*` |
@@ -422,7 +426,7 @@ cannot claim the 59/60 probe established unseen-prompt generalization; we can on
 reported how many of those 60 records produced a general program. We treat it as a scoped
 probe, not a proof of a general rule or of the absence of memorization.
 
-## The sequential before/after measurement (Appendix C.8)
+## The sequential before/after measurement (C.9)
 
 The continuing-learning result reports final A/B task accuracy. Because **final** A alone
 cannot distinguish "learned then forgotten" from "never acquired," we re-ran the identical
@@ -512,8 +516,16 @@ plus `train.py` and `eval_ckpt.py`).
 **Publication status.** The companion repository is published at
 `https://github.com/zhiqitao/let-us-brew-an-ai-model` and carries a release tag
 **`v20261001`** pointing at release commit **`a45a881158ed076f615f6d3bc2e72640dc5cdced`**
-(full hash). We cite the **full commit hash**, not just the tag, because a Git tag is a
-movable reference and is not by itself immutable. The repository ships the experiment
+(full hash; verified with `git rev-parse v20261001^{commit}` — this full hash is the
+*single* release identifier cited throughout the book). The PDF you are reading was
+built from repository commit **`eaa8cc02d1d989b96bea5f53caa07136a95589ad`** (the PDF
+build commit, recorded separately from the release commit; `git rev-parse HEAD` at
+build time). We cite the **full commit hash**, not just the tag, because a Git tag is a
+movable reference and is not by itself immutable. The single canonical release record
+is `docs/release_manifest.json`, which pins in one place the tag name, the tag-target
+commit, the PDF build commit, the SHA-256 of this PDF, and the four corrected-run
+tokenizer file hashes; `scripts/verify_release.py` asserts every one of those values
+against git, the built PDF, and the files on disk. The repository ships the experiment
 code, the run manifests under `artifacts/manifests/`, and the scored dataset files under
 `artifacts/datasets/`. The trained checkpoints are large and are **not** included
 (regenerable via `train.py` from the recorded config and seed); raw per-candidate
@@ -646,7 +658,7 @@ parentheses:
 | 3,000 (300/op) | 0.897 (269/300) | 0.900 (270/300) | 0.900 (270/300) |
 
 Every arm covers 10 of 10 operations (balanced nested per-op prefixes, shuffled), uses
-the one fixed tokenizer (SHA-256 `ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae`),
+the one fixed tokenizer (SHA-256 `361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5`),
 and trains 1,000 steps at batch 16, learning rate 1e-3 on the 884,224-parameter model.
 TEMPLATE is 0.800 (240/300) and RETRIEVAL 1.000 in eleven arms and 0.943 (283/300) in
 one; final training losses span 0.0177–0.0243 with no trend by size. Per operation,
@@ -667,7 +679,7 @@ P0-04)** — model pass@1 by cell, successes in parentheses:
 
 One fixed 600-record training set (60 per operation × 10 operations, letters × kept
 families) and one fixed train-only tokenizer (SHA-256
-`3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e`) underlie every cell;
+`2c5c800b21e6a9a39d2688aec50cd4e092b3f99ea673b0618ffa6ffc65eb0a2b`) underlie every cell;
 model, TEMPLATE, and RETRIEVAL are scored on identical records per cell. The two
 held-out-wording cells have 480 records (8 operations × 60) because `abs_of` and
 `cond_abs_max` have a single wording family and are excluded from those cells. TEMPLATE
@@ -688,7 +700,7 @@ operations), identical across arms and seeds:
 Three-seed means: LOW **0.950** in-distribution / **0.000** held-out family; HIGH
 **0.743** in-distribution / **0.550** held-out family. Both arms hold exactly 1,200
 records covering 10 of 10 operations at 120 per operation, under one fixed tokenizer
-(SHA-256 `d43d4a09d7b1f57e0bb4d8898560ce830176d4546f4fe654b5e676edf2396c1c`,
+(SHA-256 `2282c2fe22c34467e193651b92a5b59da1e4820f5add778196e145170d081dce`,
 vocabulary 293) and a matched protocol (1,000 steps, batch 16, learning rate 1e-3,
 884,224 parameters, the same initialization for both arms within each seed). The
 in-distribution test uses the LOW arm's families × letters — familiar to both arms by
@@ -734,10 +746,10 @@ for seed 1), seeds 0 and 1, manifests
 `scripts/run_composition_match_controls.py`, raw generations under
 `artifacts/raw_outputs/composition_match_controls/`. One tokenizer pins both
 seeds: `artifacts/tokenizer/composition_match_controls_tok.json`, SHA-256
-`6daf6cf5066745b7ff1d5b20aad2792bb447fb2020d77e524dfd23e0cf9e3abf`, vocabulary 291,
+`fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c`, vocabulary 291,
 fit on the train+exposed corpus then the held-out text (the exact exposure
-order) with a complete byte alphabet for the control prompts, the same hash
-recorded in both seed manifests. Decoding is the book's temperature-0.8
+order) with a complete byte alphabet for the control prompts, the same tokenizer
+file pinned in both seed manifests. Decoding is the book's temperature-0.8
 sampling with `max_new` 256, NUL truncation, and early stop after 16
 consecutive NUL tokens; both recorded extractions (`book_prefix80` at
 `max_new` 80, `favorable256` at `max_new` 256) give identical rates. Paired
@@ -805,10 +817,13 @@ in the current environment; they alter no reported number.
    python -m pip install scikit-learn matplotlib
    ```
 
-   We did not ship a lockfile, and the exact `scikit-learn`/`matplotlib` versions used
-   for the printed audits were not recorded, so only `torch` is pinned above; after a
-   known-good install, capture the whole environment with
-   `python -m pip freeze > requirements.lock` and keep it with the run record. The same
+   The repository ships a pinned lockfile, `requirements-lock.txt`, recording the exact
+   CPU-only environment the reported runs and the printed audits used (Python 3.11,
+   `torch==2.14.0+cpu`, `numpy==2.2.6`, `matplotlib==3.11.2`, `scikit-learn==1.9.1`);
+   install it with `python -m pip install --extra-index-url
+   https://download.pytorch.org/whl/cpu -r requirements-lock.txt` (the `+cpu` torch
+   build comes from the CPU wheel index above). The intended environment is CPU-only —
+   no CUDA — matching the lab described under **Runtime**. The same
    CPU index URL also serves the macOS and Windows CPU wheels (keep `--index-url` there
    too); a CUDA-enabled Linux install should omit `--index-url` and take the default
    wheels. We ran only the Linux CPU lab described under **Runtime**, so treat the

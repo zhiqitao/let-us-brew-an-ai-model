@@ -50,10 +50,12 @@ exposed_native (training composites; pipeline upper bound), heldout_native
 TRAINING: identical to scripts/run_composition_exposure.py — primitives
 (n_per_op=200, 70/15/15 split) + EXPOSED composites (abs_add, sub_abs,
 sum_of_abs), 1500 steps, bs=16, lr=1e-3, GPT 128/4/4, block 128 — one model
-per run seed. Deviation from the original exposure script (documented in the
-manifest): this script seeds BOTH random and torch (corrected-pipeline
-pattern); the original seeded only torch, so its checkpoint was not
-bitwise-reproducible (Dataset.batch samples with global `random`).
+per run seed, seeded EXACTLY like the original exposure script:
+`torch.manual_seed(seed)` only — global `random` (the `Dataset.batch` sampler)
+is left unseeded, as in the original runs. A prior attempt that also seeded
+`random` is archived as the `*_bothseeded.*` manifests and is not reported
+(its seed-1 batch stream diverged late in training); completed checkpoints are
+archived, so every reported number is exact.
 
 DECODE: one sampled stream per task (T=0.8, max_new=256, NUL-truncation), with
 an early stop after 16 consecutive NUL tokens (NUL is absorbing — the decode

@@ -19,7 +19,21 @@
 
 % Text serif font (professional book face present on the system)
 \IfFontExistsTF{Linux Libertine O}{%
-  \setmainfont{Linux Libertine O}[Numbers=OldStyle]%
+  \setmainfont{Linux Libertine O}[
+    Numbers=OldStyle,
+    ItalicFeatures={Numbers=Lining},
+    BoldItalicFeatures={Numbers=Lining},
+  ]%
+  % PRINT-SAFETY (release gate, scripts/verify_release.py): the installed
+  % Linux Libertine O has a broken old-style figure mapping in its ITALIC
+  % faces — inside \emph{...\textbf{...}} (every figure caption's bold
+  % numbers) the digits 6-9 print AND extract as 0-3, so "0.950" came out
+  % as "0.350", "0.743" as "0.143", "600" as "000", "480" as "420" in the
+  % built PDF. Fix at the font declaration: the italic and bold-italic
+  % faces use LINING figures, set once per face (a per-\emph
+  % \addfontfeatures accumulates the feature list without bound and stalls
+  % xelatex); upright body text keeps the old-style figures. Declared at
+  % \setmainfont time, so it is robust in moving arguments (captions, LOF).
 }{%
   \IfFontExistsTF{EB Garamond}{%
     \setmainfont{EB Garamond}%

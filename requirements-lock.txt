@@ -1,0 +1,19 @@
+# Pinned dependency lockfile for "Let Us Brew an AI Model".
+#
+# Intended environment: CPU-only (no CUDA), Python 3.11, Linux — the lab the
+# book's [MEASURED] numbers were produced on. torch's +cpu build is only on
+# the official CPU wheel index, so install with:
+#
+#   python -m pip install --extra-index-url https://download.pytorch.org/whl/cpu \
+#       -r requirements-lock.txt
+#
+# Training / evaluation core:
+torch==2.14.0+cpu
+numpy==2.2.6
+# Printed audits and diagnostics (scripts/audit.py and friends):
+scikit-learn==1.9.1
+# Figure scripts (scripts/make_figures.py, scripts/make_concept_figures.py):
+matplotlib==3.11.2
+# Book build + release verification only (book/build_book.py,
+# scripts/verify_release.py phase C) — not needed to train or evaluate:
+pymupdf==2.1

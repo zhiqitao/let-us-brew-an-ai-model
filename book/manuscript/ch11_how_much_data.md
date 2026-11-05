@@ -11,9 +11,10 @@ measurement did not survive code audit: the sweep changed the operation mix alon
 the count, so its rising curve was an artifact of coverage, not of data (Appendix B,
 P0-01). The balanced, operation-stratified rerun that audit called for has since been
 done — three seeds, one fixed tokenizer, one fixed test set — and its answer is the
-opposite of the folklore: **the curve is flat.** Once every size covers the same ten
-operations, more records of the same kind buy nothing we can measure, across a 30× range
-in the number of examples per operation.
+opposite of the folklore: **no consistent monotonic effect on familiar-prompt accuracy is
+detected here.** Once every size covers the same ten operations, the scores sit in a
+narrow band around 0.90 across a 30× range in the number of examples per operation —
+with one flagged outlier (seed 2 at size 1,000, 0.997), called out below.
 
 ## How to read the evidence
 
@@ -28,7 +29,7 @@ points back to this table instead of re-arguing it.
 
 | Caveat | What it means | Where it bites |
 |---|---|---|
-| **Coverage is not transfer.** | A score on prompts, surfaces, or operations the training pool already covers measures *coverage*, not generalization to something never seen. The pilot's 0.897 is single-sample correctness on reused training prompt strings; the corrected data-scaling sweep's ~0.90 is an instance-level holdout (new construction seeds and new hidden tests) over the same 21 prompt strings; Chapter 13's 1.000 is coverage of its own training families. | Ch. 10, 11, 13, 14, 20 |
+| **Coverage is not transfer.** | A score on prompts, surfaces, or operations the training pool already covers measures *coverage*, not generalization to something never seen. The pilot's 0.897 is single-sample correctness on reused training prompt strings; the corrected data-scaling sweep's ~0.90 is an instance-level holdout (new construction seeds and new hidden tests) over the same 21 prompt strings; Chapter 13's superseded flawed-run 1.000 was coverage of its own training families; its corrected equal-count run tests an audited held-out family instead (0.550 mean). | Ch. 10, 11, 13, 14, 20 |
 | **The 0.88M baseline denominator.** | The familiar-prompt numbers — 0.897 (pilot, 300-record test), 0.898–0.940 (corrected surface factorial, 600 records), 0.9167 (Stage-4 baseline, n=60) — are different evaluation sets, not a discrepancy. The figure they agree on is composition 0.000. | Ch. 12, 16, 19, 20 |
 | **Model-size budget differences.** | The size sweep varied training budget and tokenizer alongside size (1,500 / 1,000 / 800 / 800 steps; pilot vs. composition tokenizer), so it is not a size-only intervention. | Ch. 12, 19, 20 |
 | **Old vs. new novelty audits.** | The pilot was audited on the original scored files; the Stage-3 and Stage-4 holdouts were audited on *regenerated* reproductions with the current generator — corroborating, but not proof on the scored artifacts. | Ch. 13, 15, App. C |
@@ -66,7 +67,7 @@ the first attempt let drift:
   changes across arms is only how many records each operation contributes.
 - **The tokenizer.** One tokenizer, fit once on the union of the training texts at the
   largest size and reused unchanged across every size and every seed (vocabulary 291;
-  SHA-256 `ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae`).
+  SHA-256 `361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5`).
 - **The test set.** One fixed held-out set of 300 tasks — 30 per operation × 10
   operations — generated once and reused for every size and every seed, so all twelve
   arms are scored against the identical denominator.
@@ -101,17 +102,20 @@ Final training losses sit in a narrow band, 0.0177–0.0243, with no trend by si
 the rates are integer fractions over 300 (seed 0: 269/300, 270/300, 268/300, 269/300).
 All four arms cover all ten operations — 10/30/100/300 records per operation — under one
 fixed tokenizer and one 1,000-step budget, so the only thing that changes along the axis
-is the record count. The curve is flat: **there is no data-size-dependent benefit once
-operation coverage is held fixed.** The earlier 0.100 → 0.641 rise was the
+is the record count. **No consistent monotonic effect on familiar-prompt accuracy is
+detected here** once operation coverage is held fixed: eleven of the twelve arms sit at
+0.893–0.900, and the twelfth — seed 2 at size 1,000, 0.997 (299/300) — is the outlier
+flagged below, not a trend. The earlier 0.100 → 0.641 rise was the
 operation-coverage confound, preserved only as a labeled flawed historical run in the
 failure ledger (Appendix B, P0-01). Decoding is temperature-0.8 single-sample.*
 
-The flat line is the result. Across a 30× range — from 10 to 300 examples per
-operation — pass@1 stays at ~0.90. Whatever the model learns from these records, it has
+The near-flat line is the result. Across a 30× range — from 10 to 300 examples per
+operation — pass@1 stays at ~0.90, and no consistent monotonic effect on familiar-prompt
+accuracy is detected here. Whatever the model learns from these records, it has
 learned essentially all of it by the smallest arm; the additional records at the largest
 arm move the score by hundredths, within seed noise. This is what a one-variable data
 experiment looks like when it is actually one variable: no knee, no threshold, no ramp —
-just a plateau that was already there at 100 records.
+just a plateau (one seed-2 outlier excepted) that was already there at 100 records.
 
 The per-operation picture sharpens the same point. Nine of the ten operations score
 0.967–1.000 in every arm (one exception: `list_len` at 0.433 in seed 1's smallest arm).
@@ -119,6 +123,14 @@ The lone persistent failure is `cond_abs_max`, which scores 0.0 in nine of the t
 arms — and more data does not rescue it: at the largest size, 300 examples per
 operation, it is still 0.0 in all three seeds. An aggregate over operations can hide a
 per-operation hole, and record count did not fill this one.
+
+**The one aggregate that breaks the band is flagged, not smoothed over:** seed 2 at size
+1,000 scores **0.997 (299/300)**, the only arm above 0.900. Its per-operation breakdown
+shows it is a one-arm fluke, not a data-size effect: that is the arm where
+`cond_abs_max` scored 1.0 — the same operation that scores 0.0 in nine of the twelve
+arms — and its only miss is `max_of` at 29/30. So the outlier is the per-operation hole
+above happening to close in one arm, not evidence that 100 records per operation beat
+300.
 
 **The earlier curve was an operation-coverage confound.** The first sweep recorded
 0.100 → 0.641 from 100 to 3,000 records and was read as data scaling. It was not: the
@@ -183,9 +195,11 @@ of the same kind do not raise the familiar-prompt score. What it does *not* meas
 whether more *diverse* data would help. Quantity and diversity are different levers:
 within an operation family, records share the same prompt→program mapping and differ
 only in hidden-test input values, so 3,000 records are not 30× more distinct
-information than 100. Chapter 13 was designed to vary the wording families, but its own
-construction did not survive code audit (42 versus 1,200 records — P0-02), so the
-diversity lever still has no clean causal measurement. Chapter 15 — now backed by a
+information than 100. Chapter 13's first attempt at varying the wording families did
+not survive code audit (42 versus 1,200 records — P0-02), but Chapter 13 subsequently
+ran an equal-count diversity comparison — both arms exactly 1,200 records, three seeds —
+that measures the diversity lever cleanly: held-out-family pass@1 of 0.000 (low
+diversity) versus 0.550 mean (high diversity). Chapter 15 — now backed by a
 corrected factorial — shows the model's real weakness is a *surface* gap: it collapses on
 any prompt-surface change, which none of this same-surface data addressed. Composition
 (Chapter 16) is a separate question this sweep did not test: the corrected arms were
@@ -241,10 +255,11 @@ labeled as superseded flawed historical runs.
 
 Four points, each read honestly.
 
-First, the corrected sweep gives the quantity question a real answer, and the answer is
-**flat**: 0.893–0.997 across 100 → 3,000 records (eleven of the twelve arms 0.893–0.900),
-with all ten operations covered at every size, one fixed tokenizer, and one shared
-300-task test. We make **no** claim of the form "performance improves as example count
+First, the corrected sweep gives the quantity question a real answer: **no consistent
+monotonic effect on familiar-prompt accuracy detected here** — 0.893–0.997 across
+100 → 3,000 records (eleven of the twelve arms 0.893–0.900; the twelfth is the flagged
+seed-2 size-1,000 outlier at 0.997), with all ten operations covered at every size, one
+fixed tokenizer, and one shared 300-task test. We make **no** claim of the form "performance improves as example count
 grows," because the measurement says it does not — within this regime. The earlier
 0.100 → 0.641 curve is not a data-count trend at all; it is the coverage confound,
 preserved only as a labeled flawed historical run (Appendix B, P0-01).
@@ -271,10 +286,11 @@ separate question this sweep did not measure; we do not claim anything about whe
 data of any kind would help it, and we say so rather than assume the answer.
 
 The practical takeaway on quantity is therefore a genuine result: **more of the same data
-did not help, and we measured that rather than assumed it.** What remains is the method
+produced no consistent monotonic effect on familiar-prompt accuracy detected here, and we
+measured that rather than assumed it.** What remains is the method
 lesson — an innocent `pool[:size]` slice can turn a one-variable experiment into a
 two-variable one, and the corrected rerun is what it takes to get the variable back,
-which is exactly why the failure ledger exists (Appendix B). Chapter 13 asks whether more
-*diverse* data buys surface robustness (its own construction still needs correction
-before it can answer), and Chapter 16 asks about composition — each with its own caveats
-about what it can and cannot show.
+which is exactly why the failure ledger exists (Appendix B). Chapter 13 answers whether
+more *diverse* data buys surface robustness — its corrected equal-count rerun moves a
+held-out family from 0.000 to 0.550 mean — and Chapter 16 asks about composition — each
+with its own caveats about what it can and cannot show.

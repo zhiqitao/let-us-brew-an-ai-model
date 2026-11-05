@@ -119,68 +119,82 @@ fig.tight_layout()
 save(fig, "fig_model_size.png")
 
 # ==========================================================================
-# 2. Surface generalization -- Figure 15.1 (CORRECTED 2x2 factorial, seed 0)
-# Values exact to artifacts/manifests/surface_corrected_seed0.json (fixes
+# 2. Surface generalization -- Figure 15.1 (CORRECTED 2x2 factorial)
+# Values exact to artifacts/manifests/surface_corrected_seed{0,1,2}.json (fixes
 #   P0-03 + P0-04; supersedes the mixed-factor stage3_surface rows):
-#   model 0.898/0.000/0.000/0.000, template 0.800/0.800/0.875/0.875,
-#   retrieval 1.000/1.000/0.125/0.125 over cells of 600/600/480/480 records.
-# Raw counts: MODEL 539/600, 0/600, 0/480, 0/480;
-#   TEMPLATE 480/600, 480/600, 420/480, 420/480;
+#   model by seed: familiar 0.898/0.900/0.940, ids-only 0.000/0.003/0.005,
+#   wording-only 0.000/0.000/0.000, both 0.000/0.025/0.000;
+#   template 0.800/0.800/0.875/0.875, retrieval 1.000/1.000/0.125/0.125
+#   (baselines identical across seeds) over cells of 600/600/480/480 records.
+# Raw counts (seed 0): MODEL 539/600, 0/600, 0/480, 0/480;
+#   TEMPLATE 480/600, 480/600, 420/480, 420/480 (numerators over cell n);
 #   RETRIEVAL 600/600, 600/600, 60/480, 60/480.
 # Held-out cells exclude abs_of + cond_abs_max (single wording family),
 #   so they are 8 ops x 60 = 480, not 600 (P0-04).
-# Model across seeds: familiar 0.898-0.940; identifiers-only 0.000-0.005;
-#   wording-only 0.000 (all seeds); both-changes 0.000-0.025.
-# "new IDs" -> "new variable identifiers" (P2-PROD-05 / 15.1 variable naming).
-# Grayscale-safe: distinct hatching per series + direct value labels; counts in
-#   a note (they would overlap if stacked under the 12 tightly-grouped bars).
+# LAYOUT (release gate): deterministic add_axes + figure-level text -- NO
+#   tight_layout/transAxes notes (the old note block printed ON TOP of the
+#   3-line x tick labels). Separate 'n' row under every cell; totals,
+#   tokenizer and caveat BELOW the chart; all three seeds shown (seed-0
+#   bars + open markers for seeds 1/2); value labels rotated 90 deg so
+#   they stay inside their own bar column; every label >= 11pt in a
+#   ~6in figure (>= ~8.7pt at the book's 4.507in render width).
 # ==========================================================================
-fig, ax = plt.subplots(figsize=(5.8, 4.6))
-labels = ["familiar\n(letters, kept)", "new variable\nidentifiers\n(words, kept)",
-          "new wording\n(letters,\nheld-out)", "both changes\n(words,\nheld-out)"]
-model = [0.898, 0.000, 0.000, 0.000]
+fig = plt.figure(figsize=(6.0, 5.0))
+ax = fig.add_axes([0.085, 0.44, 0.90, 0.34])
+labels = ["familiar\n(letters, kept)", "new identifiers\n(words, kept)",
+          "new wording\n(held-out)", "both changes\n(held-out)"]
+model = [0.898, 0.000, 0.000, 0.000]                  # seed 0 (bars)
+model_s1 = [0.900, 0.003, 0.000, 0.025]               # seed 1 (markers)
+model_s2 = [0.940, 0.005, 0.000, 0.000]               # seed 2 (markers)
 template = [0.800, 0.800, 0.875, 0.875]
 retrieval = [1.000, 1.000, 0.125, 0.125]
+cell_n = [600, 600, 480, 480]
 C_MODEL, C_TEMPLATE, C_RETRIEVAL = BLUE, GREEN, RED
-x = np.arange(len(labels)); w = 0.25
-ax.bar(x-w, model, w, label="MODEL", color=C_MODEL, edgecolor=INK)
+x = np.arange(len(labels)); w = 0.26
+ax.bar(x - w, model, w, label="MODEL (seed-0 bar)", color=C_MODEL, edgecolor=INK)
 ax.bar(x, template, w, label="TEMPLATE", color=C_TEMPLATE, edgecolor=INK, hatch="//")
-ax.bar(x+w, retrieval, w, label="RETRIEVAL", color=C_RETRIEVAL, edgecolor=INK, hatch="xx")
-# value labels rotated 90 deg so each stays within its own bar column and
-# cannot run into a taller neighbouring bar
-for xi, v in zip(x-w, model):
-    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", va="bottom", rotation=90,
+ax.bar(x + w, retrieval, w, label="RETRIEVAL", color=C_RETRIEVAL, edgecolor=INK, hatch="xx")
+# seeds 1 and 2 of the MODEL, as open markers on the model bar column
+ax.plot(x - w - 0.075, model_s1, "o", ms=6, mfc="white", mec=INK, mew=1.4,
+        ls="none", zorder=5, label="MODEL seeds 1 / 2 (markers)")
+ax.plot(x - w + 0.075, model_s2, "o", ms=6, mfc="white", mec="#444444",
+        mew=1.4, ls="none", zorder=5)
+# value labels rotated 90 deg: each stays within its own bar column
+for xi, v in zip(x - w, model):
+    ax.text(xi, v + 0.02, f"{v:.3f}", ha="center", va="bottom", rotation=90,
             fontsize=FS_VALUE, color=INK, fontweight="bold")
 for xi, v in zip(x, template):
-    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", va="bottom", rotation=90,
+    ax.text(xi, v + 0.02, f"{v:.3f}", ha="center", va="bottom", rotation=90,
             fontsize=FS_VALUE, color=INK, fontweight="bold")
-for xi, v in zip(x+w, retrieval):
-    ax.text(xi, v+0.02, f"{v:.3f}", ha="center", va="bottom", rotation=90,
+for xi, v in zip(x + w, retrieval):
+    ax.text(xi, v + 0.02, f"{v:.3f}", ha="center", va="bottom", rotation=90,
             fontsize=FS_VALUE, color=INK, fontweight="bold")
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=FS_TICK)
-ax.set_ylim(0, 1.30)  # headroom for the rotated value labels
+ax.set_xticklabels(labels, fontsize=12)
+ax.set_ylim(-0.06, 1.34)
+ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0, 1.25])
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
-ax.set_title("Surface generalization (corrected 2x2)\nseed 0; 600 / 600 / 480 / 480 records",
-             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=34)
-# legend above the axes (outside the plot) so it cannot collide with the tall
-# familiar bar's 0.898 value label
-ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=3,
-          frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
 ax.grid(axis="y", alpha=0.28)
-# raw counts + provenance (fixes P0-03 / P0-04): familiar and identifiers-only
-# cells are 600 records each (10 ops x 60); the two held-out-wording cells are
-# 480 (8 ops x 60 -- abs_of and cond_abs_max have no held-out family). One fixed
-# 600-record train set + one fixed train-only tokenizer underlie every cell.
-ax.text(0.5, -0.30,
-        "seed-0 counts (cells of 600 / 600 / 480 / 480):\n"
-        "MODEL 539/0/0/0  ·  TEMPLATE 480/480/420/420  ·  RETRIEVAL 600/600/60/60\n"
-        "model across seeds: familiar 0.898-0.940, new IDs 0.000-0.005,\n"
-        "new wording 0.000 (all seeds), both 0.000-0.025; held-out cells exclude\n"
-        "abs_of + cond_abs_max (8 ops x 60 = 480); fixes P0-03/P0-04",
-        transform=ax.transAxes, ha="center", va="top",
-        fontsize=FS_NOTE, color=INK)
-fig.tight_layout()
+# legend ABOVE the axes (4 entries, 2 rows), title above the legend
+ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=2,
+          frameon=False, fontsize=FS_LEGEND, labelcolor=INK,
+          columnspacing=1.2, handlelength=1.6)
+ax.set_title("Surface generalization (corrected 2x2 factorial)\n"
+             "MODEL: seed-0 bars, seeds 1 / 2 as open markers",
+             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=42)
+# ---- separate 'n' row: one entry under every cell (the cell denominator) ----
+for xi, n in zip(x, cell_n):
+    ax.text(xi, -0.36, f"n = {n}", transform=ax.get_xaxis_transform(),
+            ha="center", va="top", fontsize=FS_NOTE, color=INK,
+            fontweight="bold", clip_on=False)
+# ---- everything else BELOW the chart (figure coords; no overlap possible) ----
+fig.text(0.5, 0.245,
+         "n = records per cell: familiar 600, new IDs 600, wording 480, both 480\n"
+         "MODEL seed-0 counts 539/600, 0/600, 0/480, 0/480; seeds 1, 2 marked\n"
+         "TEMPLATE 480/600, 480/600, 420/480, 420/480 (over the cell n)\n"
+         "RETRIEVAL 600/600, 600/600, 60/480, 60/480; baselines seed-invariant\n"
+         "one fixed 600-record train set + train-only tokenizer; fixes P0-03/P0-04",
+         ha="center", va="top", fontsize=FS_NOTE, color=INK)
 save(fig, "fig_surface.png")
 
 # ==========================================================================
@@ -190,14 +204,19 @@ save(fig, "fig_surface.png")
 #   seed 1: 0.893 / 0.900 / 0.900 / 0.900 (268/270/270/270 of 300)
 #   seed 2: 0.900 / 0.900 / 0.997 / 0.900 (270/270/299/270 of 300)
 # Balanced 10/30/100/300 records per operation, 10/10 operations at every
-#   size, ONE fixed tokenizer (sha256 ddbbc0ed...c1ae), one shared 300-task
+#   size, ONE fixed tokenizer (sha256 361f6d89...0eb5), one shared 300-task
 #   test (30/op), 1000 steps, bs16, lr1e-3, arch 128/4L, three seeds.
 # Template 0.800 (240/300) and retrieval 0.943-1.000 in every arm.
-# FLAT: no data-size benefit once operation coverage is held fixed; the old
-#   0.100->0.641 curve is a flawed historical run (P0-01), kept in the ledger.
-# Grayscale-safe: distinct markers/linestyles per seed + direct labels.
+# cond_abs_max is 0.0 in 9/12 arms; the seed-2 size-1,000 arm is the
+#   0.997 (299/300) OUTLIER -- explicitly annotated on the chart, not
+#   smoothed over (that arm is where cond_abs_max happened to score 1.0).
+# LAYOUT (release gate): deterministic subplots_adjust + figure-level text
+#   below the chart -- the old top banner collided with the value labels and
+#   the old transAxes note collided with the x-axis title. Totals / tokenizer
+#   / caveat all BELOW the chart; all three seeds shown; labels >= 11pt.
 # ==========================================================================
-fig, ax = plt.subplots(figsize=(5.6, 4.3))
+fig = plt.figure(figsize=(5.6, 5.0))
+ax = fig.add_axes([0.095, 0.44, 0.89, 0.40])
 sizes = [100, 300, 1000, 3000]
 perf_s1 = [0.8933, 0.900, 0.900, 0.900]
 perf_s2 = [0.900, 0.900, 0.9967, 0.900]
@@ -207,98 +226,125 @@ labelsize = {100: "100", 300: "300", 1000: "1,000", 3000: "3,000"}
 ax.plot(sizes, perf_s1, "^--", color=GREY, lw=1.6, ms=8, label="seed 1", zorder=2)
 ax.plot(sizes, perf_s2, "s:", color=GREEN, lw=1.6, ms=8, label="seed 2", zorder=2)
 ax.plot(sizes, perf, "o-", color=BLUE, lw=2.2, ms=9, label="seed 0", zorder=3)
-for x, y, c in zip(sizes, perf, counts):
-    ax.annotate(f"{y:.3f}", (x, y), textcoords="offset points", xytext=(0, 14),
+for x_, y, c in zip(sizes, perf, counts):
+    ax.annotate(f"{y:.3f}", (x_, y), textcoords="offset points", xytext=(0, 13),
                 ha="center", fontsize=FS_VALUE, color=BLUE, fontweight="bold")
-    ax.annotate(c, (x, y), textcoords="offset points", xytext=(0, -24),
+    ax.annotate(c, (x_, y), textcoords="offset points", xytext=(0, -26),
                 ha="center", fontsize=FS_COUNT, color=INK)
+# seed-2 outlier, explicitly marked (arrow + two-line label in the empty
+# band above the flat lines; nothing else lives at y > 1.02 now)
+ax.annotate("seed 2 outlier:\n0.997 (299/300)",
+            xy=(1000, 0.9967), xycoords="data",
+            xytext=(860, 1.36), textcoords="data",
+            ha="right", va="center", fontsize=FS_NOTE, color=RED,
+            fontweight="bold",
+            arrowprops=dict(arrowstyle="->", color=RED, lw=1.4,
+                            shrinkA=4, shrinkB=5))
 ax.set_xscale("log")
-ax.margins(x=0.10)  # first point off the left edge so its count label clears the 0.0 tick
-ax.set_xlabel("training examples (log scale)\n"
-              "10/30/100/300 per op · 10/10 ops at every size",
-              fontsize=FS_LABEL)
-ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.margins(x=0.10)
 ax.set_xticks(sizes)
 ax.set_xticklabels([labelsize[s] for s in sizes], fontsize=FS_TICK)
-ax.set_ylim(-0.14, 1.18)
-ax.set_title("Data scaling (corrected): flat\n~0.90 from 10 to 300 examples per op",
+ax.set_ylim(-0.16, 1.55)
+ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.set_title("Data scaling (corrected): flat\n"
+             "~0.90 from 10 to 300 examples per op",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
 ax.grid(alpha=0.28)
 ax.legend(loc="lower left", frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
-# corrected-scope banner: balanced arms, one fixed tokenizer, three seeds.
-ax.text(0.5, 0.99,
-        "10/10 operations at every size  ·  one fixed tokenizer  ·  3 seeds",
-        transform=ax.transAxes, ha="center", va="top",
-        fontsize=FS_NOTE, color=INK, fontweight="bold")
-ax.text(0.5, -0.28,
-        "labels/counts = seed 0 (successes / 300 shared test, 30/op x 10 ops);\n"
-        "template 0.800 and retrieval 0.943-1.000 in all 12 arms; 1,000 steps;\n"
-        "the earlier 0.100->0.641 curve is a flawed historical run (P0-01)",
-        transform=ax.transAxes, ha="center", va="top",
-        fontsize=FS_NOTE, color=INK)
-fig.tight_layout()
+# ---- axis title + totals/tokenizer/caveat, ALL below the chart ----
+fig.text(0.5, 0.335,
+         "training examples (log scale)  ·  10/30/100/300 per op  ·  "
+         "10/10 ops at every size",
+         ha="center", va="top", fontsize=FS_LABEL, color=INK)
+fig.text(0.5, 0.285,
+         "labels/counts = seed 0 (successes / 300 shared test, 30/op x 10 ops)\n"
+         "one fixed tokenizer  ·  1,000 steps  ·  3 seeds  ·  all 12 arms cover 10/10 ops\n"
+         "template 0.800; retrieval 0.943-1.000 in all 12 arms\n"
+         "per seed (100/300/1k/3k): s0 .897/.900/.893/.897   s1 .893/.900/.900/.900\n"
+         "s2 .900/.900/.997/.900 -- the 0.997 (size 1,000) is the marked outlier\n"
+         "cond_abs_max is 0.0 in 9/12 arms; 0.100->0.641 = flawed run (P0-01)",
+         ha="center", va="top", fontsize=FS_NOTE, color=INK)
 save(fig, "fig_data_scaling.png")
 
 # ==========================================================================
 # 4. Diversity at equal count -- Figure 13.1 (CORRECTED, fixes P0-02)
 # Values exact to artifacts/manifests/diversity_corrected_seed{0,1,2}.json:
 #   LOW  arm (1,200 records, 20 unique pairs):  in-dist 0.950/0.950/0.950
-#        (mean 0.950, range 0.950-0.950); held-out family 0.000 x3 (mean 0.000).
+#        (mean 0.950); held-out family 0.000 x3 (mean 0.000).
 #   HIGH arm (1,200 records, 605 unique pairs): in-dist 0.820/0.570/0.840
-#        (mean 0.743, range 0.570-0.840); held-out family 0.640/0.300/0.710
-#        (mean 0.550, range 0.300-0.710).
+#        (mean 0.743); held-out family 0.640/0.300/0.710 (mean 0.550).
 # Both arms: exactly 1,200 records, 10/10 ops at 120/op, one fixed tokenizer
 #   (vocab 293), matched 1,000 steps/arch/lr/init; held-out families h01/h02
 #   used by NO training arm (0 family/prompt collisions, audited).
 # The earlier 0.000-vs-1.000 figure was the flawed 42-record historical run
 #   (P0-02), superseded by this corrected comparison.
-# Grayscale-safe: solid vs hatched bars + direct value labels; whiskers = the
-#   per-seed min-max range around the 3-seed mean.
+# LAYOUT (release gate): deterministic -- legend moved OUT of the plot's
+#   upper-left (it used to print on top of the 0.950 label), single-line
+#   mean labels anchored above each whisker (the old two-line labels
+#   interleaved in the right group), per-seed dots so ALL THREE SEEDS are
+#   shown, note BELOW the chart clear of the x tick labels; labels >= 11pt.
 # ==========================================================================
-fig, ax = plt.subplots(figsize=(5.6, 4.4))
+fig = plt.figure(figsize=(5.6, 5.0))
+ax = fig.add_axes([0.10, 0.40, 0.885, 0.36])
 labels = ["low diversity\n(1,200 records;\n20 unique pairs)",
           "high diversity\n(1,200 records;\n605 unique pairs)"]
 # 3-seed means, with per-seed min-max ranges for the whiskers
-in_d_mean  = [0.950, 0.743]
-in_d_lo    = [0.950, 0.570]   # seed min: 0.950/0.950/0.950 ; 0.820/0.570/0.840
-in_d_hi    = [0.950, 0.840]
-fam_mean   = [0.000, 0.550]
-fam_lo     = [0.000, 0.300]   # seed min: 0.000/0.000/0.000 ; 0.640/0.300/0.710
-fam_hi     = [0.000, 0.710]
+in_d_mean = [0.950, 0.743]
+in_d_lo = [0.950, 0.570]   # seed min: 0.950/0.950/0.950 ; 0.820/0.570/0.840
+in_d_hi = [0.950, 0.840]
+fam_mean = [0.000, 0.550]
+fam_lo = [0.000, 0.300]    # seed min: 0.000x3 ; 0.640/0.300/0.710
+fam_hi = [0.000, 0.710]
+# the individual seed values (shown as dots on every bar)
+in_d_seeds = [[0.950, 0.950, 0.950], [0.820, 0.570, 0.840]]
+fam_seeds = [[0.000, 0.000, 0.000], [0.640, 0.300, 0.710]]
 x = np.arange(len(labels)); w = 0.3
-ax.bar(x-w/2, in_d_mean, w, label="in-distribution", color=BLUE,
-       edgecolor=INK, yerr=[np.array(in_d_mean)-np.array(in_d_lo),
-                            np.array(in_d_hi)-np.array(in_d_mean)],
+ax.bar(x - w / 2, in_d_mean, w, label="in-distribution", color=BLUE,
+       edgecolor=INK, yerr=[np.array(in_d_mean) - np.array(in_d_lo),
+                            np.array(in_d_hi) - np.array(in_d_mean)],
        capsize=6, error_kw=dict(ecolor=INK, lw=1.6, capthick=1.6))
-ax.bar(x+w/2, fam_mean, w, label="held-out phrasing family\n(never trained)",
+ax.bar(x + w / 2, fam_mean, w, label="held-out phrasing family\n(never trained)",
        color=GREEN, edgecolor=INK, hatch="//",
-       yerr=[np.array(fam_mean)-np.array(fam_lo),
-             np.array(fam_hi)-np.array(fam_mean)],
+       yerr=[np.array(fam_mean) - np.array(fam_lo),
+             np.array(fam_hi) - np.array(fam_mean)],
        capsize=6, error_kw=dict(ecolor=INK, lw=1.6, capthick=1.6))
-for xi, v, lo, hi in zip(x-w/2, in_d_mean, in_d_lo, in_d_hi):
-    rng = f"{lo:.3f}-{hi:.3f}" if hi > lo else f"{v:.3f}"
-    ax.text(xi, hi+0.03, f"{v:.3f}\n({rng})", ha="center", fontsize=FS_VALUE,
-            color=INK, fontweight="bold")
-for xi, v, lo, hi in zip(x+w/2, fam_mean, fam_lo, fam_hi):
-    rng = f"{lo:.3f}-{hi:.3f}" if hi > lo else f"{v:.3f}"
-    ax.text(xi, hi+0.03, f"{v:.3f}\n({rng})", ha="center", fontsize=FS_VALUE,
-            color=INK, fontweight="bold")
+# per-seed dots (all three seeds), jittered inside their own bar
+jit = [-0.06, 0.0, 0.06]
+for gi, (c0, seeds) in enumerate([(x[0] - w / 2, in_d_seeds[0]),
+                                  (x[1] - w / 2, in_d_seeds[1]),
+                                  (x[0] + w / 2, fam_seeds[0]),
+                                  (x[1] + w / 2, fam_seeds[1])]):
+    for j, v in zip(jit, seeds):
+        ax.plot(c0 + j, max(v, 0.006), "o", ms=5.5, mfc="white", mec=INK,
+                mew=1.3, zorder=6, clip_on=False)
+# single-line mean labels, anchored above each whisker (no interleaving)
+for xi, v, hi in zip(x - w / 2, in_d_mean, in_d_hi):
+    ax.text(xi, hi + 0.03, f"{v:.3f}", ha="center", va="bottom",
+            fontsize=FS_VALUE, color=INK, fontweight="bold")
+for xi, v, hi in zip(x + w / 2, fam_mean, fam_hi):
+    ax.text(xi, hi + 0.03, f"{v:.3f}", ha="center", va="bottom",
+            fontsize=FS_VALUE, color=INK, fontweight="bold")
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=FS_TICK)
-ax.set_ylim(0, 1.28)
+ax.set_ylim(-0.05, 1.30)
+ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0, 1.25])
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
-ax.set_title("Diversity at equal count (corrected):\nunseen-family transfer 0.000 -> 0.550",
-             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
-ax.text(0.5, -0.30,
-        "both arms 1,200 records, 10/10 ops at 120/op, one fixed\n"
-        "tokenizer, matched 1,000 steps; bars = 3-seed mean, whiskers =\n"
-        "seed range (0/1/2); held-out families used by NO arm (0 collisions);\n"
-        "the earlier 0.000-vs-1.000 was the flawed 42-record run (P0-02)",
-        transform=ax.transAxes, ha="center", va="top",
-        fontsize=FS_NOTE, color=INK)
-ax.legend(loc="upper left", frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
+ax.set_title("Diversity at equal count (corrected):\n"
+             "unseen-family transfer 0.000 -> 0.550",
+             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=40)
+# legend ABOVE the axes (outside the plot): it used to sit in the upper
+# left INSIDE the plot and printed on top of the 0.950 value label
+ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=2,
+          frameon=False, fontsize=FS_LEGEND, labelcolor=INK,
+          columnspacing=1.4, handlelength=1.8)
 ax.grid(axis="y", alpha=0.28)
-fig.tight_layout()
+# ---- totals/tokenizer/caveat BELOW the chart (clear of the tick labels) ----
+fig.text(0.5, 0.245,
+         "both arms 1,200 records, 10/10 ops at 120/op, one fixed tokenizer,\n"
+         "matched 1,000 steps; bars = 3-seed mean, whiskers = seed range,\n"
+         "dots = per-seed values (seeds 0/1/2); held-out families used by NO\n"
+         "arm (0 collisions); earlier 0.000-vs-1.000 = flawed 42-record run",
+         ha="center", va="top", fontsize=FS_NOTE, color=INK)
 save(fig, "fig_diversity.png")
 
 # ==========================================================================
