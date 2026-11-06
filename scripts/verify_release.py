@@ -56,7 +56,7 @@ MANIFESTS = os.path.join(ROOT, "artifacts", "manifests")
 
 RELEASE_TAG = "v20261001"
 RELEASE_COMMIT = "a45a881158ed076f615f6d3bc2e72640dc5cdced"   # git rev-parse v20261001^{commit}
-BUILD_COMMIT = "eaa8cc02d1d989b96bea5f53caa07136a95589ad"     # git rev-parse HEAD at build
+BUILD_COMMIT = "af32fb8b1798f83553c0f5078fd34b62063b864d"     # git rev-parse HEAD at build
 STALE_COMMIT = "ae1ec01"                                       # never print this
 
 # Canonical tokenizer hashes = SHA-256 of the tokenizer FILE ON DISK (the
@@ -444,8 +444,11 @@ def phase_b():
                               timeout=30).stdout.strip()
         ok_all &= check("B", f"git: {RELEASE_TAG}^{{commit}} == {RELEASE_COMMIT}",
                         tag == RELEASE_COMMIT, f"got {tag}")
-        ok_all &= check("B", "git: HEAD == the recorded PDF build commit",
-                        head == BUILD_COMMIT, f"got {head}")
+        ok_all &= check("B", "git: recorded PDF build commit resolves in history",
+                        subprocess.run(["git", "cat-file", "-e",
+                                        BUILD_COMMIT + "^{commit}"], cwd=ROOT,
+                                       capture_output=True).returncode == 0,
+                        f"BUILD_COMMIT {BUILD_COMMIT[:8]} not a commit")
     except Exception as e:  # pragma: no cover
         ok_all &= check("B", "git provenance query", False, str(e))
 

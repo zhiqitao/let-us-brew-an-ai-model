@@ -3,10 +3,10 @@
   "description": "Canonical single release record: tag, tag-target commit, PDF build commit, PDF sha256, and the four corrected-run tokenizer file hashes. Asserted by scripts/verify_release.py (phase D) against git, the built PDF, and the files on disk. The tokenizer hashes are the SHA-256 of each tokenizer FILE ON DISK (the reproducible identifier the book cites); run manifests additionally record each tokenizer's in-memory vocabulary hash, which is a different quantity.",
   "tag": "v20261001",
   "tag_target_commit": "a45a881158ed076f615f6d3bc2e72640dc5cdced",
-  "pdf_build_commit": "eaa8cc02d1d989b96bea5f53caa07136a95589ad",
+  "pdf_build_commit": "af32fb8b1798f83553c0f5078fd34b62063b864d",
   "pdf": {
     "path": "book/let-us-brew-an-ai-model-v20261001.pdf",
-    "sha256": "2045c54f6f0f2e3b742e0492ac7dc7911964b23fdca4e38cbfea9fa5dec9a47a"
+    "sha256": "bf4c673aea9c040856114556f6b2fc11681770cf2b6363835425b7758e49d88b"
   },
   "tokenizer_sha256": {
     "data_scaling": "361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5",

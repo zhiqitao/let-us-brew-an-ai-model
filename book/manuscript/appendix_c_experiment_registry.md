@@ -518,7 +518,7 @@ plus `train.py` and `eval_ckpt.py`).
 **`v20261001`** pointing at release commit **`a45a881158ed076f615f6d3bc2e72640dc5cdced`**
 (full hash; verified with `git rev-parse v20261001^{commit}` — this full hash is the
 *single* release identifier cited throughout the book). The PDF you are reading was
-built from repository commit **`eaa8cc02d1d989b96bea5f53caa07136a95589ad`** (the PDF
+built from repository commit **`af32fb8b1798f83553c0f5078fd34b62063b864d`** (the PDF
 build commit, recorded separately from the release commit; `git rev-parse HEAD` at
 build time). We cite the **full commit hash**, not just the tag, because a Git tag is a
 movable reference and is not by itself immutable. The single canonical release record

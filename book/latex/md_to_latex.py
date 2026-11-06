@@ -935,7 +935,7 @@ tag \\href{{https://github.com/zhiqitao/let-us-brew-an-ai-model/releases/tag/v20
 commit the release tag points to --- the single release identifier;
 the reproduction quick start and the exact release identifiers are in Appendix C).
 This PDF was built from repository commit
-\\texttt{{eaa8cc02d1d989b96bea5f53caa07136a95589ad}} (the PDF build commit, stated
+\\texttt{{af32fb8b1798f83553c0f5078fd34b62063b864d}} (the PDF build commit, stated
 separately from the release commit above). To report an error
 or request an erratum, open an issue at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model/issues}}.
