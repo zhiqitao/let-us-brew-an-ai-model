@@ -980,7 +980,7 @@ the reproduction quick start and the exact release identifiers are in Appendix C
 This PDF was built from repository commit
 \\texttt{{{_build_commit()}}} (the PDF build commit, stated
 separately from the release commit above; the same value is recorded in
-docs/release_manifest.json as pdf_build_commit and stamped into this PDF's
+docs/release\\_manifest.json as pdf\\_build\\_commit and stamped into this PDF's
 document metadata at build time). To report an error
 or request an erratum, open an issue at
 \\texttt{{https://github.com/zhiqitao/let-us-brew-an-ai-model/issues}}.
