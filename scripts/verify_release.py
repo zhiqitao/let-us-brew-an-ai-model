@@ -28,11 +28,15 @@ CHECKED invariants in four phases:
      digest prints all 64 hex characters on its page AND ends at or before
      the text block's right edge (a digest severed at the 6in trim edge is
      the P1 clipping class this check exists to catch).
-  D. release record       — hash the four corrected tokenizer files on disk
+  D. release record       — hash ALL SEVEN tokenizer files on disk
      and assert they equal the cited constants, then assert
      docs/release_manifest.json (tag, tag-target commit, PDF build commit,
      PDF sha256, tokenizer disk hashes) matches git, the built PDF, and the
-     files on disk.
+     files on disk; assert the manifest's tokenizer pin list is exactly the
+     set of tokenizer files on disk AND the set of tokenizer files the book
+     cites (an unpinned cited tokenizer = the drift gap this check closes);
+     and assert the manifest documents the two-commit reproduction structure
+     (tag = experiment snapshot, build commit = gate/runners).
 
 Historical values (the flawed 42-record run's 0.500/1.000, the Stage-3
 mixed-factor 0.350, "42 versus 1,200") are legitimate WHENEVER they sit inside
@@ -82,14 +86,21 @@ TOK_DATA = "361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5"
 TOK_DIV = "2282c2fe22c34467e193651b92a5b59da1e4820f5add778196e145170d081dce"
 TOK_SURF = "2c5c800b21e6a9a39d2688aec50cd4e092b3f99ea673b0618ffa6ffc65eb0a2b"
 TOK_COMP = "fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c"
-TOK_FILES = {  # tokenizer id -> file under artifacts/tokenizer/
+TOK_PILOT = "29f07823a6d978ae971ea4f0d9293b3a9651a772acdb5f0c0289bea775705a54"
+TOK_SURF_LEGACY = "1e61f0943d77ab348254d446380e09362c2e797d804148f495f457e105f1ae50"
+TOK_FILES = {  # tokenizer id -> file under artifacts/tokenizer/ (ALL SEVEN on disk)
     "data_scaling": "data_scaling_corrected_tok.json",
     "diversity": "diversity_corrected_tok.json",
     "surface": "surface_corrected_tok.json",
     "composition_controls": "composition_match_controls_tok.json",
+    "composition_legacy": "comp_tok.json",          # clobbered once; 75/291 indices
+    "pilot": "pilot_tok.json",
+    "surface_legacy": "surface_tok.json",
 }
 TOK_EXPECTED = {"data_scaling": TOK_DATA, "diversity": TOK_DIV,
-                "surface": TOK_SURF, "composition_controls": TOK_COMP}
+                "surface": TOK_SURF, "composition_controls": TOK_COMP,
+                "composition_legacy": TOK_COMP,     # same bytes as composition_controls
+                "pilot": TOK_PILOT, "surface_legacy": TOK_SURF_LEGACY}
 # In-memory VOCABULARY hashes recorded in the run manifests (vocab-content
 # hash, NOT the file hash) — phase A asserts the manifests still carry these.
 TOK_DATA_VOCAB = "ddbbc0edf257842619766f52b773e079e2db8b599ca5fb77224f27d3c914c1ae"
@@ -473,10 +484,9 @@ def phase_b():
                     TOK_DATA in ch11)
     ok_all &= check("B", "ch15 cites the surface tokenizer DISK sha256",
                     TOK_SURF in ch15)
-    for h, name in [(TOK_DATA, "data_scaling"), (TOK_DIV, "diversity"),
-                    (TOK_SURF, "surface"), (TOK_COMP, "composition controls")]:
-        ok_all &= check("B", f"appendix C cites the {name} tokenizer DISK sha256",
-                        h in appc)
+    for tid in sorted(TOK_EXPECTED):
+        ok_all &= check("B", f"appendix C cites the {tid} tokenizer DISK sha256 "
+                             f"({TOK_FILES[tid]})", TOK_EXPECTED[tid] in appc)
     for h, name in [(TOK_DATA_VOCAB, "data_scaling"), (TOK_DIV_VOCAB, "diversity"),
                     (TOK_SURF_VOCAB, "surface")]:
         ok_all &= check("B", f"manuscript no longer cites the in-memory {name} "
@@ -807,9 +817,54 @@ def phase_d(pdf_required=True):
                     rm.get("pdf_build_commit") == BUILD_COMMIT,
                     str(rm.get("pdf_build_commit")))
     want_tok = {k: TOK_EXPECTED[k] for k in TOK_FILES}
-    ok_all &= check("D", "release manifest tokenizer_sha256 == the disk hashes",
+    ok_all &= check("D", "release manifest tokenizer_sha256 == the disk hashes "
+                         "(all 7 tokenizer files)",
                     rm.get("tokenizer_sha256") == want_tok,
                     json.dumps(rm.get("tokenizer_sha256")))
+    # --- D3 the pin list covers every tokenizer file on disk, and equals the set
+    # --- of tokenizer files the book cites (closes the unpinned-tokenizer gap) ---
+    tok_dir = os.path.join(ROOT, "artifacts", "tokenizer")
+    disk = sorted(f for f in os.listdir(tok_dir) if f.endswith(".json"))
+    pins = rm.get("tokenizer_files") or {}
+    pin_paths = set(pins.values())
+    ok_all &= check("D", "release manifest pins every tokenizer file on disk "
+                         "(7/7 under artifacts/tokenizer/)",
+                    pin_paths == {f"artifacts/tokenizer/{f}" for f in disk} and
+                    len(disk) == 7,
+                    f"on disk {disk}; pinned {sorted(pin_paths)}")
+    ok_all &= check("D", "release manifest tokenizer_sha256 keys == tokenizer_files keys",
+                    set(rm.get("tokenizer_sha256") or {}) == set(pins),
+                    f"sha256 {sorted(rm.get('tokenizer_sha256') or {})}, "
+                    f"files {sorted(pins)}")
+    cited = set()
+    for fn in sorted(os.listdir(MS)):
+        if fn.endswith(".md"):
+            cited |= set(re.findall(r"artifacts/tokenizer/([A-Za-z0-9_.]+\.json)",
+                                    read_ms(fn)))
+    pin_names = {os.path.basename(p) for p in pin_paths}
+    ok_all &= check("D", "manifest pin list == the set of tokenizer files the book "
+                         "cites (no cited tokenizer left unpinned)",
+                    pin_names == cited and len(cited) == 7,
+                    f"pinned {sorted(pin_names)}; cited by the book {sorted(cited)}")
+    # --- D4 the two-commit reproduction structure is documented, in the manifest
+    # --- and in the appendix C publication status a clean clone actually reads ---
+    repro = rm.get("reproduction_from_a_clean_clone") or {}
+    repro_txt = json.dumps(repro)
+    ok_all &= check("D", "release manifest documents the two-commit structure "
+                         "(tag = experiment-data snapshot; build commit = gate + "
+                         "corrected runners) with the exact checkout/verify commands",
+                    RELEASE_COMMIT in repro_txt and BUILD_COMMIT in repro_txt and
+                    "verify_release.py" in repro_txt and
+                    bool(repro.get("run_the_release_gate")) and
+                    bool(repro.get("read_the_experiment_snapshot")),
+                    repro_txt[:200])
+    appc_txt = read_ms("appendix_c_experiment_registry.md")
+    ok_all &= check("D", "appendix C publication status gives the exact "
+                         "'git checkout <build commit>' + verify_release.py commands",
+                    f"git checkout {BUILD_COMMIT}" in appc_txt and
+                    "scripts/verify_release.py" in appc_txt and
+                    "experiment-data snapshot" in appc_txt,
+                    "two-commit instructions missing from Appendix C")
     pdf_rel = (rm.get("pdf") or {}).get("path")
     pdf_abs = os.path.join(ROOT, pdf_rel) if pdf_rel else None
     if pdf_abs and os.path.exists(pdf_abs):

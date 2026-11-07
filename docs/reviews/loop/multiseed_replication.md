@@ -115,3 +115,14 @@ Reproduces the published pilot in-dist result (~0.90; the book's 0.897). Seed-0'
 Stable: sequential training catastrophically forgets A (retention 0.0) while
 acquiring B (~0.87-0.89); replay retains A (1.0) and acquires B (0.889). The
 replay-vs-sequential distinction is robust.
+
+> **Caveat — this replication was not a seed-only change.** The seed-0 run
+> (`continual.json`) used `steps_a` 700 + `steps_b` 700 (1,400 steps, `n_per` 70);
+> the seeds-1 and 2 re-runs (`continual_seed1.json`, `continual_seed2.json`) used a
+> **smaller step budget**, `steps_a` 600 + `steps_b` 600 (1,200 steps, `n_per` 80).
+> Two variables therefore moved — the seed *and* the step budget — so these rows are
+> a robustness check on the recorded *pattern* (sequential forgets A while still
+> acquiring B; joint/interleaved keeps A while acquiring B just as well), not a
+> like-for-like, single-variable replication of the seed-0 numbers. Within each run
+> both protocols share the same budget, so the sequential-vs-replay contrast itself
+> stays controlled. The retention/acquisition values above are as measured.

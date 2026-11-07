@@ -55,6 +55,20 @@ TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 # rebuild the PDF first if needed:  python book/build_book.py
 ```
 
+**Which commit to check out:** the release tag `v20261001` (commit `a45a881`) is the
+experiment-data snapshot the book's numbers cite, but it predates this gate — a clean
+clone must check out the PDF build commit (`af32fb8b`) or later to find
+`scripts/verify_release.py` and the corrected run scripts:
+
+```bash
+git checkout af32fb8b
+source .venv-311/bin/activate
+TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
+```
+
+Both roles are recorded in `docs/release_manifest.json` (`tag_target_commit`,
+`pdf_build_commit`, `reproduction_from_a_clean_clone`).
+
 Without `pymupdf` the gate does not crash: the PDF phase prints a warning and is
 skipped, so a green run over a python that lacks it has **not** checked the PDF —
 confirm the report lists the phase C checks before trusting it.

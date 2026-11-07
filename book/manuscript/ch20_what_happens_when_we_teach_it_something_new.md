@@ -127,6 +127,22 @@ chapter) retains A at
 forgets A completely while acquiring B (~0.87–0.89), and joint/interleaved keeps A at 1.0
 while acquiring B just as well — the distinction is not a single-seed artifact.
 
+**Scope caveat: the seed re-runs were not a seed-only change.** The seed-0 run recorded
+in the table above used `steps_a` 700 + `steps_b` 700 (1,400 steps total, `n_per` 70);
+the seeds-1 and 2 re-runs used a **smaller step budget**, `steps_a` 600 + `steps_b` 600
+(1,200 steps total, `n_per` 80) — exactly as the shipped manifests record
+(`continual.json` versus `continual_seed1.json` and `continual_seed2.json`). So the
+replication varied **two** variables, the seed *and* the step budget, not the seed alone,
+and it is not a single-variable replication of the seed-0 cells. Within each seed the two
+protocols still share one budget (both arms of a manifest run at the same
+`steps_a + steps_b`), so the sequential-versus-joint/interleaved contrast is controlled
+*inside* each run; what is not held fixed is the budget *across* seeds. The
+retention/acquisition values above are reported as measured, and the pattern they show —
+sequential forgets A while still acquiring B, joint/interleaved keeps A while acquiring B
+just as well — repeats under a fresh seed at a nearby budget; we read them as a
+robustness check on that pattern, not as like-for-like replications of the seed-0 numbers
+(Appendix C, run provenance ledger).
+
 ## Why this result is so striking
 
 The symmetry is what makes this remarkable. Under sequential training, the model

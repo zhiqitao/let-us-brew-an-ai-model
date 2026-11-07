@@ -1,24 +1,40 @@
 {
-  "name": "Let Us Brew an AI Model \u2014 release manifest",
-  "description": "Canonical single release record: tag, tag-target commit, PDF build commit, PDF sha256, and the four corrected-run tokenizer file hashes. Asserted by scripts/verify_release.py (phase D) against git, the built PDF, and the files on disk. The tokenizer hashes are the SHA-256 of each tokenizer FILE ON DISK (the reproducible identifier the book cites); run manifests additionally record each tokenizer's in-memory vocabulary hash, which is a different quantity.",
+  "name": "Let Us Brew an AI Model — release manifest",
+  "description": "Canonical single release record: tag, tag-target commit, PDF build commit, PDF sha256, and the SHA-256 of ALL SEVEN tokenizer files under artifacts/tokenizer/. Asserted by scripts/verify_release.py (phase D) against git, the built PDF, and the files on disk — including a check that the pin list below is exactly the set of tokenizer files the book cites, so an unpinned tokenizer cannot pass the gate. The tokenizer hashes are the SHA-256 of each tokenizer FILE ON DISK (the reproducible identifier the book cites); run manifests additionally record each tokenizer's in-memory vocabulary hash, which is a different quantity.",
   "tag": "v20261001",
   "tag_target_commit": "a45a881158ed076f615f6d3bc2e72640dc5cdced",
   "pdf_build_commit": "af32fb8b1798f83553c0f5078fd34b62063b864d",
+  "reproduction_from_a_clean_clone": {
+    "structure": "Two commits, two roles. The tag v20261001 (tag_target_commit a45a881158ed076f615f6d3bc2e72640dc5cdced) is the experiment-data snapshot whose manifests, datasets and manuscript state the book's numbers cite. The release gate (scripts/verify_release.py) and the corrected run scripts live at the PDF build commit (pdf_build_commit af32fb8b1798f83553c0f5078fd34b62063b864d) and later — the tag predates the verifier, so a checkout of the tag alone CANNOT run the release gate.",
+    "read_the_experiment_snapshot": "git checkout v20261001",
+    "run_the_release_gate": [
+      "git checkout af32fb8b1798f83553c0f5078fd34b62063b864d",
+      "source .venv-311/bin/activate",
+      "TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py"
+    ],
+    "documented_in": "book/manuscript/appendix_c_experiment_registry.md (Publication status) and README.md (Release gate)"
+  },
   "pdf": {
     "path": "book/let-us-brew-an-ai-model-v20261001.pdf",
-    "sha256": "75f95f77d035f6006227466574588213a903aef7508e74d572a27b299103b817"
+    "sha256": "41e71d076a48e44e5781625091f809d502039fb4d15ca9185474aebd700d2c35"
   },
   "tokenizer_sha256": {
     "data_scaling": "361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5",
     "diversity": "2282c2fe22c34467e193651b92a5b59da1e4820f5add778196e145170d081dce",
     "surface": "2c5c800b21e6a9a39d2688aec50cd4e092b3f99ea673b0618ffa6ffc65eb0a2b",
-    "composition_controls": "fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c"
+    "composition_controls": "fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c",
+    "composition_legacy": "fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c",
+    "pilot": "29f07823a6d978ae971ea4f0d9293b3a9651a772acdb5f0c0289bea775705a54",
+    "surface_legacy": "1e61f0943d77ab348254d446380e09362c2e797d804148f495f457e105f1ae50"
   },
   "tokenizer_files": {
     "data_scaling": "artifacts/tokenizer/data_scaling_corrected_tok.json",
     "diversity": "artifacts/tokenizer/diversity_corrected_tok.json",
     "surface": "artifacts/tokenizer/surface_corrected_tok.json",
-    "composition_controls": "artifacts/tokenizer/composition_match_controls_tok.json"
+    "composition_controls": "artifacts/tokenizer/composition_match_controls_tok.json",
+    "composition_legacy": "artifacts/tokenizer/comp_tok.json",
+    "pilot": "artifacts/tokenizer/pilot_tok.json",
+    "surface_legacy": "artifacts/tokenizer/surface_tok.json"
   },
   "dependency_lockfile": "requirements-lock.txt",
   "environment": "CPU-only (no CUDA), Python 3.11, torch 2.14.0+cpu",

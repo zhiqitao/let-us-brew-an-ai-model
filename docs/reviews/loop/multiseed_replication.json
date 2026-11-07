@@ -120,6 +120,7 @@
       "seed1": 0.889,
       "seed2": 0.889
     },
+    "caveat": "This replication was NOT a seed-only change: the seed-0 run (continual.json) used steps_a 700 + steps_b 700 (1400 steps, n_per 70) while the seeds-1 and 2 re-runs (continual_seed1.json, continual_seed2.json) used a smaller step budget, steps_a 600 + steps_b 600 (1200 steps, n_per 80). Two variables moved -- the seed AND the step budget -- so these rows are a robustness check on the recorded pattern, not a like-for-like single-variable replication of the seed-0 numbers. Within each run both protocols share the same budget, so the sequential-vs-replay contrast stays controlled. Values are as measured.",
     "conclusion": "Stable across seeds: sequential training catastrophically forgets A (retention 0.0) while acquiring B (~0.87-0.89); replay retains A (1.0) and acquires B (0.889). The replay-vs-sequential distinction is robust."
   }
 }

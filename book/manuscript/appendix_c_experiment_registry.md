@@ -184,6 +184,31 @@ fit on the train+exposed corpus then the held-out text (the exact exposure order
 with a complete byte alphabet for the control prompts — the same tokenizer file
 pinned in both seed manifests (full detail in Table C.16).
 
+**All seven tokenizer files are pinned.** Three further tokenizer files live under
+`artifacts/tokenizer/` and are cited by this book, so they are pinned here and in
+`docs/release_manifest.json` by the SHA-256 of the file on disk:
+
+- `artifacts/tokenizer/pilot_tok.json`, SHA-256
+  `29f07823a6d978ae971ea4f0d9293b3a9651a772acdb5f0c0289bea775705a54` — the Stage-1
+  pilot tokenizer (vocabulary 291), the file `train.py` writes and the quick start
+  below names.
+- `artifacts/tokenizer/surface_tok.json`, SHA-256
+  `1e61f0943d77ab348254d446380e09362c2e797d804148f495f457e105f1ae50` — the file
+  `scripts/run_surface.py` loads for the Stage-3 surface run (vocabulary 291; that run
+  is the superseded P0-03/P0-04 construction — the corrected 2×2 factorial pins
+  `surface_corrected_tok.json` instead).
+- `artifacts/tokenizer/comp_tok.json`, SHA-256
+  `fbb9c903d0e5c1e2fbcd57dd7dfe27ff90ed74762a55e0cad1c776d8cf2ad17c` — the composition
+  tokenizer discussed under the clobber note in the quick start below; it currently
+  hashes to the *same bytes* as `composition_match_controls_tok.json`, and it is exactly
+  the file that was clobbered once before, so it is pinned too.
+
+That is all **seven** files under `artifacts/tokenizer/`. `scripts/verify_release.py`
+(phase D) hashes every one of the seven against the files on disk *and* asserts that the
+manifest's pin list is exactly the set of tokenizer files this book cites, so an
+unpinned or drifted tokenizer — a re-clobber of `comp_tok.json`, a silently refit
+`pilot_tok.json` — fails the release gate instead of passing unnoticed.
+
 ## Run provenance ledger
 
 Tables C.4 and C.5 cover the headline runs. The ledger below is the compact,
@@ -521,10 +546,37 @@ plus `train.py` and `eval_ckpt.py`).
 built from repository commit **`af32fb8b1798f83553c0f5078fd34b62063b864d`** (the PDF
 build commit, recorded separately from the release commit; `git rev-parse HEAD` at
 build time). We cite the **full commit hash**, not just the tag, because a Git tag is a
-movable reference and is not by itself immutable. The single canonical release record
+movable reference and is not by itself immutable.
+
+**Two commits, two roles — check out the right one.** The release is deliberately split
+across two commits, and a clean clone must know which is which:
+
+- **Tag `v20261001` → release commit `a45a881158ed076f615f6d3bc2e72640dc5cdced`** is the
+  *experiment-data snapshot*: the manifests, datasets, and manuscript state whose numbers
+  this book cites. It is the provenance anchor, not the tooling snapshot.
+- **PDF build commit `af32fb8b1798f83553c0f5078fd34b62063b864d`** (and the commits after
+  it) carries the release gate and the corrected run scripts. The tag predates
+  `scripts/verify_release.py`, so **a checkout of the tag alone cannot run the release
+  gate** — the verifier and the corrected runners simply are not in that tree.
+
+So to *verify* a clean clone rather than merely read it, check out the build commit, then
+run the gate under the repository's Python 3.11 venv:
+
+```bash
+git checkout af32fb8b1798f83553c0f5078fd34b62063b864d
+source .venv-311/bin/activate
+TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
+```
+
+(`git checkout v20261001` remains the correct command for reading the experiment-data
+snapshot the numbers cite; the two roles are recorded side by side in
+`docs/release_manifest.json` under `tag_target_commit`, `pdf_build_commit`, and
+`reproduction_from_a_clean_clone`.)
+
+The single canonical release record
 is `docs/release_manifest.json`, which pins in one place the tag name, the tag-target
-commit, the PDF build commit, the SHA-256 of this PDF, and the four corrected-run
-tokenizer file hashes; `scripts/verify_release.py` asserts every one of those values
+commit, the PDF build commit, the SHA-256 of this PDF, and all **seven** corrected- and
+legacy-run tokenizer file hashes; `scripts/verify_release.py` asserts every one of those values
 against git, the built PDF, and the files on disk. **Run that gate under the
 repository's Python 3.11 environment (`.venv-311`)**: its PDF phase extracts the
 built book with `pymupdf`, which the bare system `python3` does not provide —
@@ -648,6 +700,18 @@ naming caveat as Chapter 18. Stable across seeds: sequential
 training catastrophically forgets A (retention 0.000) while still acquiring B
 (~0.87–0.89), and joint/interleaved retains A (1.000) while acquiring B (0.889). The
 joint/interleaved-vs-sequential distinction is robust, not a single-seed artifact.
+
+**Step-budget caveat for Table C.11 — the re-runs were not a seed-only change.** The
+seed-0 run (`continual.json`) used `steps_a` 700 + `steps_b` 700 (1,400 steps, `n_per`
+70); the seeds-1 and 2 re-runs (`continual_seed1.json`, `continual_seed2.json`) used a
+**smaller** budget, `steps_a` 600 + `steps_b` 600 (1,200 steps, `n_per` 80). The
+replication therefore varied the step budget *and* the seed, so it is not a
+single-variable replication of the seed-0 cells. Within each seed both protocols share
+one budget, so the sequential-versus-joint/interleaved contrast stays controlled inside
+each run; only the budget *across* seeds differs. The retention/acquisition values in the
+table are reported as measured, and support the narrower claim that the recorded
+*pattern* repeats under a fresh seed at a nearby budget — the same reading the ledger
+gives the continual re-runs above.
 
 **The three corrected reruns.** The corrected experiments were built as three-seed runs
 from the start, so their seed tables come first-class rather than as re-runs. They
@@ -808,7 +872,11 @@ in the current environment; they alter no reported number.
 
 **The quick start:**
 
-1. **Clone the companion repository** and check out the `v20261001` tag.
+1. **Clone the companion repository** and check out the `v20261001` tag — that tag is the
+   experiment-data snapshot whose numbers this book cites. To *run the release gate*
+   (`scripts/verify_release.py`) or the corrected run scripts, check out the PDF build
+   commit instead: the tag predates the verifier, so `git checkout v20261001` alone has no
+   gate to run (see **Publication status** above for the exact commands).
 2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). The
    training and evaluation core depends on `torch` and the standard library; the
    *printed audits and diagnostics* additionally use `scikit-learn` (and the figure
