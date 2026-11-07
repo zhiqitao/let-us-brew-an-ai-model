@@ -19,7 +19,7 @@ stage1:
 	$(PYTHON) scripts/train.py --stage 1
 
 reproduce:
-	$(PYTHON) scripts/reproduce.py
+	$(PYTHON) scripts/reproduce.py --dry-run
 
 clean:
 	find . -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null; true

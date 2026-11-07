@@ -54,13 +54,17 @@ find a *procedure* finding, exactly the thing we want to isolate.
 | Protocol | **A right after phase A (same run, pre-B)** | **A accuracy (final)** | **B accuracy (final)** |
 |----------|---------------------------|-----------------|-------------------|
 | **sequential** | **1.000** | **0.000** | 0.889 |
-| **joint/interleaved (A+B from start)** | — (A and B trained together) | **1.000** | 0.889 |
+| **joint/interl.** | — (A and B trained together) | **1.000** | 0.889 |
 
 *Both A measurements in the sequential row come from the **same run**: the 1.000 is
 measured right after phase A and before any B exposure, the 0.000 after phase B
 (Appendix C.9); the final is measured after phase B.
+The **joint/interl.** row is the **joint/interleaved (A+B from start)** condition — the
+label is shortened here so the first column does not overflow into the second.
 The joint/interleaved model has no separate "after A" point because A and B are trained together from
-the start.*
+the start. **Denominators:** A accuracy is on 60 held-out A tasks (12 × 5 operations)
+and B accuracy on 36 held-out B tasks (12 × 3); at n = 36 one item = 0.028, so equal
+B accuracy = within one test item.*
 
 This is as clean a result as this book produced.
 
@@ -85,7 +89,9 @@ forgetting, not under-acquisition.
 
 **Training A and B together keeps A's final accuracy high.** When A and B are simply trained
 together from the start (interleaved throughout), the model's final A accuracy is a
-perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential. So
+perfect **1.000**, and its final B accuracy is **0.889** — identical to sequential at
+seed 0 (32/36 vs 32/36; across seeds the two protocols' B accuracy is within one test
+item). So
 training both from the start keeps A **with no behavioral trade-off** in B. Note that
 this jointly trained model has no separate "after A" point (A and B were trained
 together from the start), so its A accuracy is a final accuracy, not a retention score
@@ -125,7 +131,7 @@ chapter) retains A at
 **1.000 / 1.000** while acquiring B at **0.889 / 0.889** (report:
 `docs/reviews/loop/multiseed_replication.md`). So across seeds, sequential
 forgets A completely while acquiring B (~0.87–0.89), and joint/interleaved keeps A at 1.0
-while acquiring B just as well — the distinction is not a single-seed artifact.
+while acquiring B within one test item as well — the distinction is not a single-seed artifact.
 
 **Scope caveat: the seed re-runs were not a seed-only change.** The seed-0 run recorded
 in the table above used `steps_a` 700 + `steps_b` 700 (1,400 steps total, `n_per` 70);
@@ -139,7 +145,8 @@ protocols still share one budget (both arms of a manifest run at the same
 *inside* each run; what is not held fixed is the budget *across* seeds. The
 retention/acquisition values above are reported as measured, and the pattern they show —
 sequential forgets A while still acquiring B, joint/interleaved keeps A while acquiring B
-just as well — repeats under a fresh seed at a nearby budget; we read them as a
+just as well (B accuracy within one test item in both: 32/36 vs 32/36 seed0; 32/36 vs
+31/36 seed2) — repeats under a fresh seed at a nearby budget; we read them as a
 robustness check on that pattern, not as like-for-like replications of the seed-0 numbers
 (Appendix C, run provenance ledger).
 
@@ -147,7 +154,8 @@ robustness check on that pattern, not as like-for-like replications of the seed-
 
 The symmetry is what makes this remarkable. Under sequential training, the model
 forgets A completely (0.000) but learns B fine (0.889). Under joint training, it keeps A
-perfectly (1.000) *and* learns B just as well (0.889). Nothing about the model, the
+perfectly (1.000) *and* B accuracy within one test item in both (32/36 vs 32/36
+seed0; 32/36 vs 31/36 seed2). Nothing about the model, the
 data, or the optimizer changed — only whether the old examples stayed in the mix while
 the new ones were learned.
 
@@ -205,7 +213,8 @@ to always measure *both* the new and the old.
 
 This is a controlled, reproducible demonstration that the *training schedule* affects final
 task accuracy: the same workload produces a 0.000 final A accuracy when learned sequentially
-and a 1.000 final A accuracy when learned jointly, with identical B accuracy in both. The
+and a 1.000 final A accuracy when learned jointly, with B accuracy within one test
+item in both (32/36 vs 32/36 seed0; 32/36 vs 31/36 seed2). The
 same-trajectory pre-B measurement (a dedicated re-run, Appendix C.9) confirms the
 sequential drop is genuine forgetting: A was 1.000 right after phase A and fell to 0.000
 after B, so it was acquired and then lost rather than never learned. We make no

@@ -7,6 +7,26 @@ visual language (rounded boxes, semantic color, hand-muted palette) that matches
 the book's typeset graphs. Every label is plain text drawn directly -- no image
 model, so every word is byte-correct.
 
+LEGIBILITY CONTRACT (round-1 review R1P-004 / R4G-001 / R4G-002 / R4G-005):
+  The book includes every figure at \\textwidth = 4.5in = 324pt
+  (book.sty: paperwidth 6in - 2*0.75in; \\includegraphics[width=\\maxwidth{\\textwidth}]).
+  A span's EFFECTIVE (printed) size is therefore
+
+        eff_pt = fontsize * 324 / pdf_width_pt
+
+  so the old 9-9.6in canvases printed 10pt labels at only 4.3-6.4pt.
+  Every concept figure is now drawn on a 4.5in-wide canvas with the axes
+  filling the figure, which makes the tight crop 4.56in and
+
+        eff_pt ~= 0.987 * fontsize
+
+  i.e. the fontsize you set IS the printed size.  All interior text is
+  >= 8.5pt (8.39pt effective; >= 8.0pt floor for full sentences) and no
+  label is smaller than 7.6pt (7.50pt effective; >= 7.0pt floor).
+  Line breaks below are part of the layout: every line is wrapped to the
+  width of the box it sits in (max chars ~= 0.69 * box_width_in_data_units
+  at 8.5pt).
+
 Run: python scripts/make_concept_figures.py
 """
 import os
@@ -29,9 +49,22 @@ RED      = "#C44E52"   # rejection / bottleneck / annotation
 GREY     = "#c7c7c7"
 PAPER    = "#fdfbf7"
 
+# ---- printed-size type scale (see LEGIBILITY CONTRACT above) ----
+BOOK_W = 4.5    # inches every figure occupies in the book (\textwidth)
+FS  = 8.5       # interior sentence text  -> 8.39pt printed (>= 8.0 floor)
+FSS = 7.6       # interior short labels   -> 7.50pt printed (>= 7.0 floor)
+FST = 10.5      # figure title            -> 10.36pt printed
 
-def new_fig(w=9.0, h=5.4):
+
+def new_fig(w=BOOK_W, h=4.5):
+    """Canvas at (or near) the book's printed size.
+
+    The axes fill the figure so the tight crop is exactly figsize + 0.06in of
+    padding -- that keeps eff_pt = fontsize * 324 / (72*w + 4.32) predictable
+    and stops the crop from inflating (which silently shrank the type before).
+    """
     fig, ax = plt.subplots(figsize=(w, h))
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
     ax.set_xlim(0, 100)
@@ -40,7 +73,7 @@ def new_fig(w=9.0, h=5.4):
     return fig, ax
 
 
-def box(ax, x, y, w, h, label, fc=BLUE, ec=None, fs=10, tc="white", rounded=True,
+def box(ax, x, y, w, h, label, fc=BLUE, ec=None, fs=FS, tc="white", rounded=True,
         bold=False, lw=1.6):
     ec = ec or "#00000000"
     style = "round,pad=0.02,rounding_size=2.2" if rounded else "square,pad=0.02"
@@ -59,7 +92,7 @@ def arrow(ax, x1, y1, x2, y2, color=INK, lw=1.6, style="-|>", ls="-", rad=0.0):
                                  mutation_scale=14))
 
 
-def note(ax, x, y, text, color=INK, fs=10, ha="left", wrap=True):
+def note(ax, x, y, text, color=INK, fs=FS, ha="left", wrap=True):
     ax.text(x, y, text, ha=ha, va="top", fontsize=fs, color=color,
             wrap=wrap, style="italic")
 
@@ -81,94 +114,99 @@ def save(fig, name):
 
 
 # =========================================================================
-# 1. THE APPARATUS (ch03) — teacher -> dataset -> student -> judge -> verdict,
+# 1. THE APPARATUS (ch04) — teacher -> dataset -> student -> judge -> verdict,
 #    with the world as the enclosing boundary and both gates annotated.
 # =========================================================================
 def fig_apparatus():
     """Figure 4.1 -- the laboratory, two clean lanes inside the world boundary."""
-    fig, ax = new_fig(w=9.6, h=6.0)
-    ax.add_patch(FancyBboxPatch((3, 3), 94, 94, boxstyle="round,pad=0.02,rounding_size=3",
+    fig, ax = new_fig(w=BOOK_W, h=4.6)
+    ax.add_patch(FancyBboxPatch((3, 3), 94, 90, boxstyle="round,pad=0.02,rounding_size=3",
                                 fc="#fbfaf6", ec=GREY, lw=1.2, linestyle="--"))
-    ax.text(50, 97, "THE WORLD — a bounded universe we control", ha="center",
-            va="center", fontsize=10.5, color=INK, fontweight="bold")
+    ax.text(50, 96.5, "THE WORLD — a bounded universe we control", ha="center",
+            va="center", fontsize=FST, color=INK, fontweight="bold")
 
     # TRAINING lane
-    ax.text(6, 88, "TRAINING", ha="left", fontsize=10, fontweight="bold", color=BLUE)
-    box(ax, 8, 72, 22, 11, "TEACHER\nsemantic\nrecord", fc=GREEN, fs=10)
-    box(ax, 36, 72, 26, 11, "PROMPT +\nREFERENCE", fc=BLUE, fs=10)
-    box(ax, 68, 72, 20, 11, "STUDENT\n0.9M", fc=ORANGE, fs=10, tc="white")
-    arrow(ax, 30, 77.5, 36, 77.5)
-    arrow(ax, 62, 77.5, 68, 77.5)
-    ax.text(52, 68, "→ training only", ha="center", fontsize=10, color=BLUE, style="italic")
+    ax.text(5, 89, "TRAINING", ha="left", fontsize=FS, fontweight="bold", color=BLUE)
+    box(ax, 5, 75, 26, 12, "TEACHER\nsemantic record", fc=GREEN)
+    box(ax, 37, 75, 26, 12, "PROMPT +\nREFERENCE", fc=BLUE)
+    box(ax, 69, 75, 26, 12, "STUDENT\n0.9M", fc=ORANGE, tc="white")
+    arrow(ax, 31, 81, 37, 81)
+    arrow(ax, 63, 81, 69, 81)
+    ax.text(50, 71, "→ training only", ha="center", fontsize=FS, color=BLUE,
+            style="italic")
 
     # EVALUATION lane
-    ax.text(6, 64, "EVALUATION", ha="left", fontsize=10, fontweight="bold", color=PURPLE)
-    box(ax, 8, 50, 22, 11, "REQUESTS\n(familiar prompts,\nnew inputs)", fc=BLUE, fs=10)
-    box(ax, 36, 50, 26, 11, "STUDENT\ngenerates", fc=ORANGE, fs=10, tc="white")
-    box(ax, 68, 50, 16, 11, "JUDGE", fc=PURPLE, fs=10)
-    arrow(ax, 30, 55.5, 36, 55.5)
-    arrow(ax, 62, 55.5, 68, 55.5)
+    ax.text(5, 67, "EVALUATION", ha="left", fontsize=FS, fontweight="bold", color=PURPLE)
+    box(ax, 4, 53, 27, 12, "REQUESTS\n(familiar prompts,\nnew inputs)", fc=BLUE)
+    box(ax, 36, 53, 27, 12, "STUDENT\ngenerates", fc=ORANGE, tc="white")
+    box(ax, 68, 53, 14, 12, "JUDGE", fc=PURPLE)
+    box(ax, 84, 53, 13, 12, "VERDICT\npass/fail", fc="#dff0e3", ec=GREEN,
+        tc="#1b5e20")
+    arrow(ax, 31, 59, 36, 59)
+    arrow(ax, 63, 59, 68, 59)
+    arrow(ax, 82, 59, 84, 59, color=GREEN)
 
     # hidden tests box below the judge, feeding up into the judge
-    box(ax, 66, 34, 18, 11, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE, fs=10)
-    arrow(ax, 75, 45, 75, 50)
+    box(ax, 54, 37, 24, 11, "HIDDEN TESTS\n(evaluator-only)", fc=PURPLE)
+    arrow(ax, 66, 48, 66, 53)
 
-    # verdict node after/right of the judge, INSIDE the boundary
-    box(ax, 88, 50, 9, 11, "VERDICT\npass/fail", fc="#dff0e3", ec=GREEN, fs=10, tc="#1b5e20")
-    arrow(ax, 84, 55.5, 88, 55.5, color=GREEN)
-
-    # bottom: explanation caption on the LEFT half, call-out on the RIGHT half
-    # These two dense caveat paragraphs stay at ~7.2pt (original): at 10pt the
-    # long left paragraph overflows its box and collides with the right call-out.
-    # The review (4.1) says to enlarge the internal node labels (done: 10pt)
-    # and move caveats to the caption -- so the caveats remain small secondary
-    # text while the primary node labels are large.
-    box(ax, 6, 16, 52, 12,
-        "Only the prompt + reference enter training; the hidden tests go to the judge,\nnever to the model. The judge runs the model's generated program against those\ntests. Prompt novelty differs by split: see the novelty audit in Appendix C.",
-        fc="#fbfaf6", ec=PURPLE, fs=7.2, tc=INK)
-    box(ax, 62, 16, 34, 12, "the model is the instrument;\nthe experiment is the subject\n(the gates sit outside this view)",
-        fc="#fbfaf6", ec=INK, fs=7.2, tc=INK)
+    # bottom: full-width caveat + full-width call-out, each on its own row so
+    # neither can collide with the other or with the lane above (R4G-001 class).
+    box(ax, 4, 6, 93, 17,
+        "Only the prompt + reference enter training; the hidden tests\n"
+        "go to the judge, never to the model. The judge runs the model's\n"
+        "generated program against those tests. Prompt novelty differs by\n"
+        "split: see the novelty audit in Appendix C.",
+        fc="#fbfaf6", ec=PURPLE)
+    box(ax, 4, 25, 93, 10,
+        "the model is the instrument; the experiment is the subject\n"
+        "(the gates sit outside this view)",
+        fc="#fbfaf6", ec=INK)
     save(fig, "fig_apparatus.png")
 
 def fig_two_gates():
-    fig, ax = new_fig()
-    ax.text(50, 95, "TWO GATES: neither lives inside the model", ha="center",
-            va="center", fontsize=11, fontweight="bold", color=INK)
+    fig, ax = new_fig(w=BOOK_W, h=4.0)
+    ax.text(50, 96, "TWO GATES: neither lives inside the model", ha="center",
+            va="center", fontsize=FST, fontweight="bold", color=INK)
 
     # incoming request
-    box(ax, 2, 44, 18, 16, "REQUEST\n(natural language)", fc=BLUE, fs=10)
-    box(ax, 26, 44, 16, 16, "GATE B\ninput\nvalidator", fc=RED, fs=10)
-    box(ax, 48, 44, 18, 16, "MODEL", fc=ORANGE, fs=10, bold=True)
-    box(ax, 72, 44, 16, 16, "GATE A\noutput\nsandbox", fc=RED, fs=10)
-    # PYTHON box moved to x=90 (right edge 98, not 100): at x=100 its
-    # pad-extended edge sat on the axes boundary and was clipped by the crop.
-    box(ax, 90, 44, 8, 16, "PYTHON\nexecutes", fc=GREEN, fs=10)
+    box(ax, 2, 52, 17, 16, "REQUEST\n(natural\nlanguage)", fc=BLUE)
+    box(ax, 24, 52, 15, 16, "GATE B\ninput\nvalidator", fc=RED)
+    box(ax, 45, 52, 14, 16, "MODEL", fc=ORANGE, bold=True)
+    box(ax, 65, 52, 14, 16, "GATE A\noutput\nsandbox", fc=RED)
+    # PYTHON box right edge at 98 (not 100): a pad-extended edge on the axes
+    # boundary is clipped by the crop.
+    box(ax, 85, 52, 13, 16, "PYTHON\nexecutes", fc=GREEN)
 
-    arrow(ax, 20, 52, 26, 52, color=INK)
-    arrow(ax, 42, 52, 48, 52, color=INK)
-    arrow(ax, 66, 52, 72, 52, color=INK)
-    arrow(ax, 88, 52, 90, 52, color=GREEN)
+    arrow(ax, 19, 60, 24, 60, color=INK)
+    arrow(ax, 39, 60, 45, 60, color=INK)
+    arrow(ax, 59, 60, 65, 60, color=INK)
+    arrow(ax, 79, 60, 85, 60, color=GREEN)
 
     # rejection branches drop down from each gate (downward exit)
-    arrow(ax, 34, 44, 34, 34, color=RED)          # Gate B rejection drops down
-    arrow(ax, 80, 44, 80, 34, color=RED)          # Gate A rejection drops down
-    box(ax, 24, 16, 20, 14, "REJECTED at\nGate B", fc="#f6dede", ec=RED, fs=10, tc=RED)
-    box(ax, 70, 16, 20, 14, "REJECTED at\nGate A", fc="#f6dede", ec=RED, fs=10, tc=RED)
+    arrow(ax, 31.5, 52, 31.5, 40, color=RED)        # Gate B rejection drops down
+    arrow(ax, 72, 52, 72, 40, color=RED)            # Gate A rejection drops down
+    box(ax, 22, 27, 20, 13, "REJECTED at\nGate B", fc="#f6dede", ec=RED, tc=RED)
+    box(ax, 64, 27, 20, 13, "REJECTED at\nGate A", fc="#f6dede", ec=RED, tc=RED)
 
-    # yes/no labels ON THE OUTGOING branches: "no" on the downward rejection edge,
-    # "yes" on the rightward accepted edge past each gate.
-    ax.text(34, 39, "no", ha="center", va="bottom", fontsize=10, color=RED, style="italic", fontweight="bold")
-    ax.text(45, 55, "yes", ha="center", va="bottom", fontsize=10, color=GREEN, style="italic", fontweight="bold")
-    ax.text(80, 39, "no", ha="center", va="bottom", fontsize=10, color=RED, style="italic", fontweight="bold")
-    ax.text(69, 55, "yes", ha="center", va="bottom", fontsize=10, color=GREEN, style="italic", fontweight="bold")
+    # yes/no labels ON THE OUTGOING branches, offset clear of the shaft so no
+    # glyph sits on the line (R4G-005 class).
+    ax.text(33, 43, "no", ha="left", va="bottom", fontsize=FS, color=RED,
+            style="italic", fontweight="bold")
+    ax.text(41, 61.5, "yes", ha="left", va="bottom", fontsize=FS, color=GREEN,
+            style="italic", fontweight="bold")
+    ax.text(73.5, 43, "no", ha="left", va="bottom", fontsize=FS, color=RED,
+            style="italic", fontweight="bold")
+    ax.text(80, 61.5, "yes", ha="left", va="bottom", fontsize=FS, color=GREEN,
+            style="italic", fontweight="bold")
 
-    # short, non-overlapping annotations above each gate
-    note(ax, 24, 68, "is this request one of the\ndesigned tasks?", fs=10, color=RED)
-    note(ax, 70, 68, "is this program inside\nthe whitelist?", fs=10, color=RED)
-    note(ax, 24, 14, "refused before it\nreaches the model", fs=10, color=RED)
-    note(ax, 70, 14, "refused before it\nruns", fs=10, color=RED)
-    note(ax, 4, 90, "Gate A prevents the program being accepted/executed, not the model from\nemitting text; Gate B was NOT in the reported surface/human tests.",
-         fs=10, color=INK)
+    # short, non-overlapping annotations below each rejection box
+    note(ax, 22, 24, "refused before it\nreaches the model", color=RED)
+    note(ax, 64, 24, "refused before it\nruns", color=RED)
+    note(ax, 4, 92,
+         "Gate A prevents the program being accepted/executed, not the\n"
+         "model from emitting text; Gate B was NOT in the reported\n"
+         "surface/human tests.", color=INK)
     save(fig, "fig_two_gates.png")
 
 
@@ -182,30 +220,37 @@ def fig_teacher():
     tests. The note about reducing drift is placed in a clear call-out, fully
     contained, and states that a shared record reduces drift but does not make
     disagreement impossible (renderer bugs can still occur).
+
+    R4G-001: the gloss row and the call-out are separate rows with a >= 10pt
+    gap, and the call-out box is 23 units tall for 5 lines of 3.08 units, so
+    its first line sits ~9pt below the top border (>= 8pt top padding).
     """
-    fig, ax = new_fig(w=9.0, h=5.0)
-    ax.text(50, 95, "THE TEACHER: one semantic record, three artefacts",
-            ha="center", va="center", fontsize=10.5, fontweight="bold", color=INK)
+    fig, ax = new_fig(w=BOOK_W, h=4.6)
+    ax.text(50, 96, "THE TEACHER: one semantic record, three artefacts",
+            ha="center", va="center", fontsize=FST, fontweight="bold", color=INK)
     # semantic record box — use the real record fields (operation / args / output_type)
-    box(ax, 34, 66, 32, 16, "SEMANTIC RECORD\noperation=add\nargs=[a:int, b:int]\noutput_type=int", fc=GREEN, fs=10)
+    box(ax, 33, 74, 34, 17,
+        "SEMANTIC RECORD\noperation=add\nargs=[a:int, b:int]\noutput_type=int",
+        fc=GREEN)
     for dx in (21, 50, 79):
-        arrow(ax, 50, 66, dx, 52)
+        arrow(ax, 50, 74, dx, 60)
     # three artefacts
-    box(ax, 8, 34, 26, 16, "REFERENCE\nPROGRAM\n(ground truth)", fc=GREEN, fs=10)
-    box(ax, 37, 34, 26, 16, "NL TASK\n(what the model\nreads)", fc=BLUE, fs=10)
-    box(ax, 66, 34, 26, 16, "HIDDEN TESTS\n(input/expected\npairs)", fc=PURPLE, fs=10)
-    note(ax, 10, 30, "one correct\nimplementation", fs=10, color=GREEN, ha="center")
-    note(ax, 50, 30, "the instruction, in\nthe teacher's phrasing", fs=10, color=BLUE, ha="center")
-    note(ax, 79, 30, "oracle outputs;\nchecked independently", fs=10, color=PURPLE, ha="center")
-    # drift note in a clear call-out box at the bottom (no overlap, fully contained)
-    # moved down (y6 -> y3) so the 10pt italic captions above clear its top border
-    box(ax, 6, 3, 88, 16,
+    box(ax, 8, 44, 26, 15, "REFERENCE\nPROGRAM\n(ground truth)", fc=GREEN)
+    box(ax, 37, 44, 26, 15, "NL TASK\n(what the model\nreads)", fc=BLUE)
+    box(ax, 66, 44, 26, 15, "HIDDEN TESTS\n(input/expected\npairs)", fc=PURPLE)
+    # italic gloss row (own row, wrapped to clear its neighbours)
+    note(ax, 21, 42, "one correct\nimplementation", color=GREEN, ha="center")
+    note(ax, 50, 42, "the instruction,\nin the teacher's\nphrasing", color=BLUE, ha="center")
+    note(ax, 79, 42, "oracle outputs;\nchecked\nindependently", color=PURPLE, ha="center")
+    # drift note in a clear call-out box at the bottom: its own row, 3.4 units
+    # (≈10pt) below the gloss row, with ~9pt of padding above its first line.
+    box(ax, 6, 5.5, 88, 23,
         "Semantic-first: the program, task, and tests all derive from ONE record.\n"
         "This reduces drift, but is not a guarantee — and the tests being\n"
         "independently implemented does not mean the oracle is independently\n"
         "validated. Renderer bugs or a shared wrong assumption can still make all\n"
         "three consistently wrong.",
-        fc="#fbfaf6", ec=GREEN, fs=10, tc=INK)
+        fc="#fbfaf6", ec=GREEN)
     save(fig, "fig_teacher.png")
 
 def fig_judge():
@@ -292,63 +337,75 @@ def fig_judge():
 # =========================================================================
 def fig_ladder():
     """Figure 2.1 -- four DISTINCT questions about a result, not an ordered trust ladder."""
-    fig, ax = new_fig(w=9.0, h=5.2)
-    ax.text(50, 95, "THE FOUR EVALUATION QUESTIONS", ha="center", va="center",
-            fontsize=10.5, fontweight="bold", color=INK)
-    ax.text(50, 89, "four distinct questions -- they are not a ladder, and passing one\ndoes not establish the next.", ha="center", va="center", fontsize=10, color=INK)
+    fig, ax = new_fig(w=BOOK_W, h=4.0)
+    ax.text(50, 96, "THE FOUR EVALUATION QUESTIONS", ha="center", va="center",
+            fontsize=FST, fontweight="bold", color=INK)
+    ax.text(50, 91,
+            "four distinct questions -- they are not a ladder, and passing one\n"
+            "does not establish the next.",
+            ha="center", va="top", fontsize=FS, color=INK)
     levels = [
-        (64, "Q1  MEMORIZATION\nCould it just be remembering\na stored answer?", "bar1", "#c44e52"),
-        (46, "Q2  DISTRIBUTIONAL GENERALIZATION\nDoes it work on new examples\nof the same task?", "bar2", "#dd8452"),
-        (28, "Q3  SURFACE GENERALIZATION\nDoes it survive a change of\nwording or identifiers?", "bar3", "#55a868"),
-        (10, "Q4  STRUCTURAL GENERALIZATION\nCan it combine things it knows\nin a way it never saw?", "bar4", "#4c72b0"),
+        (68, "Q1  MEMORIZATION\nCould it just be remembering a stored answer?", "#c44e52"),
+        (52, "Q2  DISTRIBUTIONAL GENERALIZATION\nDoes it work on new examples of the same task?", "#dd8452"),
+        (36, "Q3  SURFACE GENERALIZATION\nDoes it survive a change of wording or identifiers?", "#55a868"),
+        (20, "Q4  STRUCTURAL GENERALIZATION\nCan it combine things it knows in a way it never saw?", "#4c72b0"),
     ]
-    for y, lab, _k, c in levels:
-        box(ax, 6, y, 88, 14, lab, fc=c, fs=10)
+    for y, lab, c in levels:
+        box(ax, 6, y, 88, 12, lab, fc=c)
     # compact footer; the fuller qualification lives in the chapter text
-    note(ax, 6, 5, "Report these separately — passing one question does not establish the next.", fs=10, color=INK)
+    note(ax, 6, 16,
+         "Report these separately — passing one question does not\n"
+         "establish the next.", color=INK)
     save(fig, "fig_ladder.png")
 
 def fig_task():
     """D01 -- WHO SEES WHAT (ch03): the model generates source; Python executes it;
     hidden tests are evaluator-only. Two lanes so the model / execution / tests are
     impossible to conflate."""
-    fig, ax = new_fig(w=9.2, h=5.6)
-    ax.text(50, 96, "WHO SEES WHAT: the model generates code, Python runs it", ha="center",
-            va="center", fontsize=10.5, fontweight="bold", color=INK)
+    fig, ax = new_fig(w=BOOK_W, h=5.0)
+    ax.text(50, 96.5, "WHO SEES WHAT: the model generates code, Python runs it",
+            ha="center", va="center", fontsize=10, fontweight="bold", color=INK)
     # TRAINING lane (top)
-    ax.text(7, 86, "TRAINING lane", ha="left", fontsize=10, fontweight="bold", color=BLUE)
-    box(ax, 7, 70, 26, 13, "NL SPEC + REFERENCE\n(the teacher's pair)", fc=BLUE, fs=10)
-    box(ax, 40, 70, 26, 13, "MODEL\n(0.9M, trained)", fc=ORANGE, fs=10, tc="white")
-    arrow(ax, 33, 76.5, 40, 76.5)
-    note(ax, 30, 66, "learns a mapping\nrequest → program text", fs=10, color=ORANGE)
+    ax.text(4, 92, "TRAINING lane", ha="left", fontsize=FS, fontweight="bold", color=BLUE)
+    box(ax, 4, 78, 30, 13, "NL SPEC + REFERENCE\n(the teacher's pair)", fc=BLUE)
+    box(ax, 40, 78, 30, 13, "MODEL\n(0.9M, trained)", fc=ORANGE, tc="white")
+    arrow(ax, 34, 84.5, 40, 84.5)
+    note(ax, 6, 74, "learns a mapping\nrequest → program text", color=ORANGE)
+    # trained checkpoint transfer (training MODEL -> eval MODEL)
+    arrow(ax, 48, 78, 44, 65, color=ORANGE, lw=1.4)
+    ax.text(50, 74, "trained checkpoint", ha="left", va="top", fontsize=FS,
+            color=ORANGE, style="italic")
 
     # EVALUATION lane (bottom), two rows
-    ax.text(7, 56, "EVALUATION lane", ha="left", fontsize=10, fontweight="bold", color=PURPLE)
+    ax.text(4, 66, "EVALUATION lane", ha="left", fontsize=FS, fontweight="bold", color=PURPLE)
     # row 1: request -> model -> candidate -> python
-    box(ax, 7, 40, 21, 13, "REQUESTS\n(familiar prompts,\nnew inputs)", fc=BLUE, fs=10)
-    box(ax, 32, 40, 21, 13, "TRAINED MODEL\n(generates source)", fc=ORANGE, fs=10, tc="white")
-    box(ax, 57, 40, 21, 13, "CANDIDATE SOURCE\n(the program text)", fc=GREEN, fs=10)
-    box(ax, 82, 40, 15, 13, "PYTHON\nRUNNER\n(executes)", fc="#e9f5eb", ec=GREEN, fs=10, tc=INK)
-    arrow(ax, 28, 46.5, 32, 46.5)
-    arrow(ax, 53, 46.5, 57, 46.5)
-    arrow(ax, 78, 46.5, 82, 46.5)
-    # trained checkpoint transfer (training MODEL -> eval MODEL) - placed to avoid overlap
-    arrow(ax, 53, 70, 53, 55, color=ORANGE, lw=1.4)
-    ax.text(55.5, 62.5, "trained checkpoint", ha="left", fontsize=10, color=ORANGE, style="italic")
+    box(ax, 2, 50, 21, 15, "REQUESTS\n(familiar\nprompts,\nnew inputs)", fc=BLUE)
+    box(ax, 27, 50, 21, 15, "TRAINED MODEL\n(generates\nsource)", fc=ORANGE, tc="white")
+    box(ax, 52, 50, 21, 15, "CANDIDATE\nSOURCE\n(the program\ntext)", fc=GREEN)
+    box(ax, 77, 50, 21, 15, "PYTHON\nRUNNER\n(executes)", fc="#e9f5eb", ec=GREEN, tc=INK)
+    arrow(ax, 23, 57.5, 27, 57.5)
+    arrow(ax, 48, 57.5, 52, 57.5)
+    arrow(ax, 73, 57.5, 77, 57.5)
 
     # row 2: test inputs -> python, expected & actual -> comparator
-    box(ax, 7, 22, 30, 12, "TEST INPUTS\n(go to the Python runner)", fc="#eaf2fb", ec=BLUE, fs=10, tc=INK)
-    box(ax, 41, 22, 28, 12, "EXPECTED VALUES\n(from the semantics)", fc=PURPLE, fs=10)
-    box(ax, 82, 22, 15, 12, "ACTUAL\nVALUES", fc=GREEN, fs=10, tc="white")
-    box(ax, 41, 4, 56, 12, "COMPARATOR — compares the Python output to the\nexpected values and issues the verdict", fc="white", ec=PURPLE, fs=10, tc=INK)
-    # wiring: test inputs -> python runner; expected -> comparator; actual -> comparator
-    arrow(ax, 22, 34, 82, 34, color=BLUE, rad=-0.15)          # test inputs rise to the runner
-    arrow(ax, 69, 22, 69, 16, color=PURPLE)                   # expected -> comparator
-    arrow(ax, 89.5, 22, 89.5, 16, color=GREEN)                # actual -> comparator
+    box(ax, 2, 34, 30, 13, "TEST INPUTS\n(go to the\nPython runner)", fc="#eaf2fb", ec=BLUE, tc=INK)
+    box(ax, 38, 34, 28, 13, "EXPECTED VALUES\n(from the\nsemantics)", fc=PURPLE)
+    box(ax, 80, 34, 18, 13, "ACTUAL\nVALUES", fc=GREEN, tc="white")
+    box(ax, 20, 16, 76, 12,
+        "COMPARATOR — compares the Python output to the\n"
+        "expected values and issues the verdict",
+        fc="white", ec=PURPLE, tc=INK)
+    # wiring: test inputs -> python runner (through the clear corridor between
+    # the two rows); expected / actual -> comparator
+    arrow(ax, 17, 48.5, 87, 48.5, color=BLUE)
+    arrow(ax, 52, 34, 52, 28, color=PURPLE)
+    arrow(ax, 89, 34, 89, 28, color=GREEN)
 
     # constraint strip, scoped to candidate execution
-    ax.text(50, 1.5, "CANDIDATE EXECUTION · PURE FUNCTION (no I/O, no network, no random) · AST-WHITELISTED",
-            ha="center", va="center", fontsize=10, color="#333333", style="italic")
+    ax.text(50, 12,
+            "CANDIDATE EXECUTION · PURE FUNCTION (no I/O, no network,\n"
+            "no random) · AST-WHITELISTED",
+            ha="center", va="top", fontsize=FS, color="#333333", style="italic")
     save(fig, "fig_task.png")
 
 
@@ -356,18 +413,20 @@ def fig_task():
 # 7. THE RIVALS (ch07) — model vs template vs retrieval baselines.
 # =========================================================================
 def fig_rivals():
-    fig, ax = new_fig()
-    ax.text(50, 95, "THE RIVALS: baselines keep us honest", ha="center",
-            va="center", fontsize=11, fontweight="bold", color=INK)
-    box(ax, 6, 62, 28, 18, "TEMPLATE\n'if task==add:\nreturn a+b'", fc=GREY, fs=10, tc=INK)
-    box(ax, 38, 62, 26, 18, "RETRIEVAL\nnearest-neighbour\ncopy", fc=GREY, fs=10, tc=INK)
-    box(ax, 70, 62, 24, 18, "OUR MODEL\n0.88M", fc=ORANGE, fs=10)
-    note(ax, 6, 48, "a fixed hand-written\npattern. A sanity floor.", fs=10, color=INK)
-    note(ax, 39, 48, "copies the closest\nmemory. A sanity check.", fs=10, color=INK)
-    note(ax, 71, 48, "the actual question:\ndoes it beat them?", fs=10, color=INK)
-    box(ax, 6, 14, 88, 18,
-        "The baselines are sanity checks, not a score ceiling. A result is truthful\nif we know which baseline already solves it and whether the model adds anything.",
-        fc="#fbfaf6", ec=INK, fs=10, tc=INK)
+    fig, ax = new_fig(w=BOOK_W, h=3.8)
+    ax.text(50, 96, "THE RIVALS: baselines keep us honest", ha="center",
+            va="center", fontsize=FST, fontweight="bold", color=INK)
+    box(ax, 6, 64, 28, 16, "TEMPLATE\n'if task==add:\nreturn a+b'", fc=GREY, tc=INK)
+    box(ax, 38, 64, 26, 16, "RETRIEVAL\nnearest-neighbour\ncopy", fc=GREY, tc=INK)
+    box(ax, 68, 64, 26, 16, "OUR MODEL\n0.88M", fc=ORANGE)
+    note(ax, 6, 61, "a fixed\nhand-written pattern.\nA sanity floor.", color=INK)
+    note(ax, 38, 61, "copies the\nclosest memory.\nA sanity check.", color=INK)
+    note(ax, 68, 61, "the actual\nquestion: does it\nbeat them?", color=INK)
+    box(ax, 6, 14, 88, 16,
+        "The baselines are sanity checks, not a score ceiling. A\n"
+        "result is truthful if we know which baseline already\n"
+        "solves it and whether the model adds anything.",
+        fc="#fbfaf6", ec=INK)
     save(fig, "fig_rivals.png")
 
 
@@ -375,59 +434,83 @@ def fig_rivals():
 # 8. THE SMALLEST BRAIN (ch08) — tokens -> embedding -> transformer -> output.
 # =========================================================================
 def fig_brain():
-    """Figure 8.1 -- the architecture with actual numbers (emb dim, layers, heads)."""
-    fig, ax = new_fig(w=9.4, h=5.0)
+    """Figure 8.1 -- the architecture with actual numbers (emb dim, layers, heads).
+
+    R4G-005: the autoregressive feedback loop is routed down the RIGHT edge,
+    along y=46 and back up the LEFT edge at x=12 -- the parameters block moved
+    to x=30..98, y=53..66, so no shaft crosses it.
+    """
+    fig, ax = new_fig(w=BOOK_W, h=4.6)
     ax.text(50, 96, "THE SMALLEST BRAIN: a 0.88M decoder-only GPT", ha="center",
-            va="center", fontsize=10.5, fontweight="bold", color=INK)
+            va="center", fontsize=FST, fontweight="bold", color=INK)
     # pipeline with real dimensions
-    box(ax, 4, 70, 20, 14, "TOKENS\n(291 vocab)", fc=BLUE, fs=10)
-    box(ax, 31, 70, 18, 14, "EMBED\ntok=291×128\npos=128×128", fc=BLUE, fs=10)
-    box(ax, 56, 70, 20, 14, "4 BLOCKS\ncausal attention\nMLP 128→512→128", fc=ORANGE, fs=10)
-    box(ax, 82, 70, 16, 14, "OUTPUT\n291 logits\n→ sampled token", fc=GREEN, fs=10)
-    arrow(ax, 24, 77, 31, 77)
-    arrow(ax, 49, 77, 56, 77)
-    arrow(ax, 76, 77, 82, 77)
-    # autoregressive feedback loop routed BELOW the block (high-contrast, avoids the title)
-    arrow(ax, 90, 70, 90, 46, color=INK, lw=1.2, style="-|>", ls="--")
-    arrow(ax, 90, 46, 8, 46, color=INK, lw=1.2, ls="--")
-    arrow(ax, 8, 46, 8, 70, color=INK, lw=1.2, style="-|>", ls="--")
-    # label centred at x=27 (left of the size-sweep box at x=56) so the 10pt
-    # line does not overflow/collide with that box.
-    ax.text(27, 42, "the sampled output token is fed back as the next input",
-            ha="center", fontsize=10, color=INK, style="italic")
-    # key dimensions note
-    note(ax, 4, 64, "parameters: 884,224 total (53,632 embedding\n+ 830,592 non-embedding). 4 layers × 4 heads,\nn_embd=128, block_size=128, temperature-0.8\nsampled decoding.", fs=10, color=INK)
-    box(ax, 56, 26, 42, 22, "same architecture, just wider / deeper\nfor the size sweep (6.5M, 10.2M, 29.3M).",
-        fc="#fbfaf6", ec=INK, fs=10, tc=INK)
-    box(ax, 4, 6, 94, 14, "This is the instrument. The experiment is the subject — the book is about what\nthe model learns, not about how big it is.",
-        fc="#fbfaf6", ec=INK, fs=10, tc=INK)
+    box(ax, 2, 74, 20, 16, "TOKENS\n(291 vocab)", fc=BLUE)
+    box(ax, 27, 74, 21, 16, "EMBED\ntok=291×128\npos=128×128", fc=BLUE)
+    box(ax, 53, 74, 25, 16, "4 BLOCKS\ncausal attention\nMLP 128→512→128", fc=ORANGE)
+    box(ax, 81, 74, 17, 16, "OUTPUT\n291 logits\n→ sampled\ntoken", fc=GREEN)
+    arrow(ax, 22, 82, 27, 82)
+    arrow(ax, 48, 82, 53, 82)
+    arrow(ax, 78, 82, 81, 82)
+    # autoregressive feedback loop: down the right edge, along y=46, up the
+    # left edge into the TOKENS box -- clear of every label.
+    arrow(ax, 89, 74, 89, 46, color=INK, lw=1.2, style="-|>", ls="--")
+    arrow(ax, 89, 46, 12, 46, color=INK, lw=1.2, ls="--")
+    arrow(ax, 12, 46, 12, 74, color=INK, lw=1.2, style="-|>", ls="--")
+    # label centred below the loop line so neither touches the other
+    ax.text(50, 43, "the sampled output token is fed back as the next input",
+            ha="center", va="top", fontsize=FS, color=INK, style="italic")
+    # key dimensions note -- right of the loop's left riser (x=12)
+    note(ax, 30, 66,
+         "parameters: 884,224 total (53,632 embedding\n"
+         "+ 830,592 non-embedding). 4 layers × 4 heads,\n"
+         "n_embd=128, block_size=128, temperature-0.8\n"
+         "sampled decoding.", color=INK)
+    box(ax, 52, 22, 46, 14,
+        "same architecture, just wider /\n"
+        "deeper for the size sweep\n"
+        "(6.5M, 10.2M, 29.3M).",
+        fc="#fbfaf6", ec=INK)
+    box(ax, 2, 3, 96, 11,
+        "This is the instrument. The experiment is the subject — the\n"
+        "book is about what the model learns, not about how big it is.",
+        fc="#fbfaf6", ec=INK)
     save(fig, "fig_brain.png")
 
 def fig_brew():
     """Figure 9.1 -- the brew loop, distinguishing training from the final audit."""
-    fig, ax = new_fig(w=9.4, h=5.6)
-    ax.text(50, 96, "THE BREW LOOP", ha="center", va="center", fontsize=11,
+    fig, ax = new_fig(w=BOOK_W, h=4.6)
+    ax.text(50, 97, "THE BREW LOOP", ha="center", va="center", fontsize=11,
             fontweight="bold", color=INK)
     # --- DEV LOOP (top): generate -> train -> dev evaluate (-> back to generate) ---
-    box(ax, 8, 70, 26, 14, "GENERATE DATA\n(semantic-first)", fc=GREEN, fs=10)
-    box(ax, 40, 70, 26, 14, "TRAIN\nfixed step budget\n(e.g. 1500 steps)", fc=ORANGE, fs=10)
-    box(ax, 72, 70, 22, 14, "DEV EVALUATE\n(informs iteration)", fc=PURPLE, fs=10)
-    arrow(ax, 34, 77, 40, 77)
-    arrow(ax, 66, 77, 72, 77)
+    box(ax, 6, 72, 28, 14, "GENERATE DATA\n(semantic-first)", fc=GREEN)
+    box(ax, 40, 72, 28, 14, "TRAIN\nfixed step budget\n(e.g. 1500 steps)", fc=ORANGE)
+    box(ax, 73, 72, 25, 14, "DEV EVALUATE\n(informs iteration)", fc=PURPLE)
+    arrow(ax, 34, 79, 40, 79)
+    arrow(ax, 68, 79, 73, 79)
     # dev feedback edge: a separate loop above the boxes, back to GENERATE DATA
-    arrow(ax, 83, 84, 21, 84, color=PURPLE, lw=1.2)
-    arrow(ax, 21, 84, 21, 76, color=PURPLE, lw=1.2)
-    ax.text(51, 88, "dev feedback: what we measure (loss / dev score) shapes the next round of data & hyperparams.",
-            ha="center", fontsize=10, color=PURPLE, style="italic")
+    arrow(ax, 85, 93, 20, 93, color=PURPLE, lw=1.2)
+    arrow(ax, 20, 93, 20, 86, color=PURPLE, lw=1.2)
+    # its label sits in its own column (x>=56) so the audit arrow (x=54) and
+    # the label can never cross.
+    ax.text(56, 68,
+            "dev feedback: what we\n"
+            "measure (loss / dev\n"
+            "score) shapes the next\n"
+            "round of data & hyperparams.",
+            ha="left", va="top", fontsize=FS, color=PURPLE, style="italic")
 
     # --- FINAL AUDIT (bottom, separate lane) ---
-    box(ax, 36, 40, 34, 14, "FINAL AUDIT\n(one report on the\nfrozen test records)", fc=BLUE, fs=10)
-    arrow(ax, 53, 70, 53, 56, color=BLUE)
-    note(ax, 72, 44, "recommended workflow: the final audit runs once\non the frozen records and is NOT fed back to\nchange training. (In our runs the pilot test records\nreused the training prompt strings -- see the novelty\naudit -- so 'frozen' refers to the record list, not to\ngenuinely-seen-new prompts.)", fs=10, color=INK)
-    note(ax, 8, 44, "the dev loop that iterates is separate\nfrom the one-time final audit.", fs=10, color=INK, ha="center")
-
-    note(ax, 8, 18, "each dev pass feeds the next: what we measure shapes what we generate;\nbut the headline numbers come from a single frozen audit, not an adaptive one.",
-         fs=10, color=INK, ha="center")
+    box(ax, 6, 46, 34, 14, "FINAL AUDIT\n(one report on the\nfrozen test records)", fc=BLUE)
+    arrow(ax, 54, 72, 54, 60, color=BLUE)
+    note(ax, 6, 44, "the dev loop that iterates is separate\nfrom the one-time final audit.",
+         color=INK)
+    note(ax, 6, 34,
+         "recommended workflow: the final audit runs once on the frozen\n"
+         "records and is NOT fed back to change training. (In our runs\n"
+         "the pilot test records reused the training prompt strings -- see\n"
+         "the novelty audit -- so 'frozen' refers to the record list, not\n"
+         "to genuinely-seen-new prompts.)",
+         color=INK)
     save(fig, "fig_brew.png")
 
 def fig_capability_map():
@@ -488,7 +571,7 @@ def fig_capability_map():
             elif v == "-":
                 txt, tc = "-", "#888888"
             else:
-                txt, tc = v, "#2b8a3e"
+                txt, tc = v, "#2e7d32"
             ax.text(x+(cw-0.6)/2, y+rh*0.45, txt, ha="center", va="center", fontsize=10, color=tc)
     note(ax, 3, 4, "Green = measured strong result. Red = measured zero. NT = not tested. " +
           "Corrected equal-count run: high-diversity 0.743 in-dist / 0.550 held-out family (the earlier 1.000 was coverage of a 42-record pool, P0-02).",
@@ -504,38 +587,42 @@ def fig_continual_timelines():
     joint/interleaved condition (A+B from start, formerly labeled 'replay/mixed')
     is actually JOINT training.
     """
-    fig, ax = new_fig(w=9.2, h=5.2)
-    ax.text(50, 96, "SEQUENTIAL VS JOINT VS REPLAY: three different designs", ha="center",
-            va="center", fontsize=10, fontweight="bold", color=INK)
-    # labels wrapped to 2 lines so the 10pt text clears the bars (which start at
-    # x=30); a single 10pt line for row 2/3 overran into the bar.
+    fig, ax = new_fig(w=BOOK_W, h=4.4)
+    ax.text(50, 96, "SEQUENTIAL VS JOINT VS REPLAY: three different designs",
+            ha="center", va="center", fontsize=10, fontweight="bold", color=INK)
+    # labels wrapped so the longest line clears the bars (which start at x=36)
     labels = ["1. Sequential\n(measured)",
               "2. Joint (measured)\nA and B interleaved",
               "3. True replay-after-A\n(not run)"]
     for row, (lab, style) in enumerate(zip(labels, ["solid", "solid", "dashed"])):
-        y = 78 - row*24
-        ax.text(2, y+4, lab, ha="left", fontsize=10, color=INK)
+        y = 76 - row*24
+        ax.text(2, y+3, lab, ha="left", va="center", fontsize=FS, color=INK)
         # timeline bar
-        ax.add_patch(FancyBboxPatch((30, y), 62, 6, boxstyle="round,pad=0.02,rounding_size=1",
+        ax.add_patch(FancyBboxPatch((36, y), 60, 6, boxstyle="round,pad=0.02,rounding_size=1",
                                     fc="#eef1f5", ec=INK, lw=1.0, linestyle="--" if style=="dashed" else "-"))
-        # A and B segments
-        seg = (30, 30, 30)  # x start widths for A, B
         if row == 0:   # sequential: full A then full B
-            ax.add_patch(FancyBboxPatch((30, y+1), 31, 4, fc=BLUE, ec=BLUE, lw=0.5))
-            ax.add_patch(FancyBboxPatch((61, y+1), 31, 4, fc=GREEN, ec=GREEN, lw=0.5))
-            ax.text(45.5, y+3, "A", ha="center", va="center", fontsize=10, color="white")
-            ax.text(76.5, y+3, "B", ha="center", va="center", fontsize=10, color="white")
+            ax.add_patch(FancyBboxPatch((37, y+1), 29, 4, fc=BLUE, ec=BLUE, lw=0.5))
+            ax.add_patch(FancyBboxPatch((66, y+1), 29, 4, fc=GREEN, ec=GREEN, lw=0.5))
+            ax.text(51.5, y+3, "A", ha="center", va="center", fontsize=FS, color="white")
+            ax.text(80.5, y+3, "B", ha="center", va="center", fontsize=FS, color="white")
         elif row == 1: # joint: A and B interleaved
-            ax.add_patch(FancyBboxPatch((30, y+1), 62, 4, fc=GREY, ec=GREY, lw=0.5))
-            ax.text(61, y+3, "A + B (interleaved)", ha="center", va="center", fontsize=10, color=INK)
+            ax.add_patch(FancyBboxPatch((37, y+1), 58, 4, fc=GREY, ec=GREY, lw=0.5))
+            ax.text(66, y+3, "A + B (interleaved)", ha="center", va="center",
+                    fontsize=FS, color=INK)
         else:          # true replay (not run)
-            ax.add_patch(FancyBboxPatch((30, y+1), 31, 4, fc=BLUE, ec=BLUE, lw=0.5))
-            ax.add_patch(FancyBboxPatch((61, y+1), 31, 4, fc=GREEN, ec=GREEN, lw=0.5))
-            ax.text(45.5, y+3, "A", ha="center", va="center", fontsize=10, color="white")
-            ax.text(76.5, y+3, "B (+ replay of A)", ha="center", va="center", fontsize=10, color="white")
-    note(ax, 2, 6, "The book's joint/interleaved condition (A+B from start, formerly labeled 'replay/mixed') interleaves A and B from the start --- that is JOINT training (row 2), not replay-after-A-first (row 3). Solid rows were measured; the dashed row is a design we did not run. (Rows are schematic, not to scale.)",
-         fs=10, color=INK)
-    save(fig, "fig_continual_timelines.png")
+            ax.add_patch(FancyBboxPatch((37, y+1), 29, 4, fc=BLUE, ec=BLUE, lw=0.5))
+            ax.add_patch(FancyBboxPatch((66, y+1), 29, 4, fc=GREEN, ec=GREEN, lw=0.5))
+            ax.text(51.5, y+3, "A", ha="center", va="center", fontsize=FS, color="white")
+            ax.text(80.5, y+3, "B (+ replay of A)", ha="center", va="center",
+                    fontsize=FS, color="white")
+    note(ax, 4, 24,
+         "The book's joint/interleaved condition (A+B from start, formerly\n"
+         "labeled 'replay/mixed') interleaves A and B from the start --- that\n"
+         "is JOINT training (row 2), not replay-after-A-first (row 3). Solid\n"
+         "rows were measured; the dashed row is a design we did not run.\n"
+         "(Rows are schematic, not to scale.)",
+         color=INK)
+    save(fig, "fig_continual_timelines")
 
 
 def fig_three_meanings():
@@ -547,36 +634,40 @@ def fig_three_meanings():
     program structure (composition). Only #2/#3 are new to the model input; #1 is new
     only to the evaluator.
     """
-    fig, ax = new_fig(w=9.4, h=5.4)
-    ax.text(50, 96, "ONE TASK, THREE MEANINGS OF 'NEW'", ha="center", va="center",
-            fontsize=10.5, fontweight="bold", color=INK)
-    ax.text(50, 90, "What is actually new to the MODEL INPUT?  (green = new to model; grey = not)",
-            ha="center", va="center", fontsize=10, color=INK)
+    fig, ax = new_fig(w=BOOK_W, h=5.4)
+    ax.text(50, 96.5, "ONE TASK, THREE MEANINGS OF 'NEW'", ha="center", va="center",
+            fontsize=FST, fontweight="bold", color=INK)
+    ax.text(50, 91.5, "What is actually new to the MODEL INPUT?\n"
+                      "(green = new to model; grey = not)",
+            ha="center", va="top", fontsize=FS, color=INK)
     rows = [
-        ("1. New task ID,\nsame prompt + program", "same", "same", "different", "grey",
+        ("1. New task ID,\nsame prompt +\nprogram", "same", "same", "different", "grey",
          "only the evaluator's hidden tests change\n-- NOT a new example for the model"),
-        ("2. New prompt,\nsame target program", "different", "same", "same", "green",
+        ("2. New prompt,\nsame target\nprogram", "different", "same", "same", "green",
          "a new surface, same computation\n-- genuinely a new model input"),
-        ("3. Unseen\nprogram structure", "different", "different", "different", "green",
+        ("3. Unseen\nprogram\nstructure", "different", "different", "different", "green",
          "composing pieces never combined\n-- new input AND new target structure"),
     ]
-    headers = ["case", "prompt", "target program", "hidden tests", "new to model?"]
     cols = ["case", "prompt", "target\nprogram", "hidden\ntests", "new to\nmodel input?"]
-    colx = [3, 25, 43, 61, 80]
+    colx = [14, 36, 54, 72, 87]
     for c, h in zip(colx, cols):
-        ax.text(c+7, 82, h, ha="center", fontsize=10, fontweight="bold", color=INK)
+        ax.text(c, 84, h, ha="center", va="top", fontsize=FS, fontweight="bold", color=INK)
     for r, (lab, pr, prog, test, kind, cap) in enumerate(rows):
-        y = 72 - r*22
-        box(ax, 3, y, 18, 12, lab, fc="#eef1f5", fs=10, tc=INK)
-        ax.text(31, y+6, pr, ha="center", fontsize=10, color=INK)
-        ax.text(49, y+6, prog, ha="center", fontsize=10, color=INK)
-        ax.text(67, y+6, test, ha="center", fontsize=10, color=INK)
-        fc = "#e0f0e4" if kind == "green" else "#dddddd"
-        ax.text(87, y+6, "YES" if kind=="green" else "NO", ha="center", fontsize=10,
-                fontweight="bold", color="#2b8a3e" if kind=="green" else "#888888")
-        ax.text(50, y-6, cap, ha="center", fontsize=10, color=INK, style="italic")
-    note(ax, 3, 4, "A 'new task ID' that only changes the hidden tests is NOT a new model input.\n"
-          "Report prompt/program novelty, not just task-ID counts.", fs=10, color=INK)
+        ytop = 77 - r*21.1
+        box(ax, 2, ytop - 12, 24, 12, lab, fc="#eef1f5", tc=INK)
+        ymid = ytop - 6
+        ax.text(36, ymid, pr, ha="center", va="center", fontsize=FS, color=INK)
+        ax.text(54, ymid, prog, ha="center", va="center", fontsize=FS, color=INK)
+        ax.text(72, ymid, test, ha="center", va="center", fontsize=FS, color=INK)
+        ax.text(87, ymid, "YES" if kind=="green" else "NO", ha="center", va="center",
+                fontsize=FS, fontweight="bold",
+                color="#2b8a3e" if kind=="green" else "#888888")
+        ax.text(50, ytop - 14, cap, ha="center", va="top", fontsize=FS, color=INK,
+                style="italic")
+    note(ax, 3, 13.5,
+         "A 'new task ID' that only changes the hidden tests is NOT a\n"
+         "new model input. Report prompt/program novelty, not just\n"
+         "task-ID counts.", color=INK)
     save(fig, "fig_three_meanings.png")
 
 
@@ -586,39 +677,54 @@ def fig_same_ops():
     Side-by-side expression trees for abs(a+b) vs abs(a)+abs(b), with the input
     a=-3, b=2, intermediate values, and outputs 1 and 5. Purely a mathematical
     illustration of the abs_add ambiguity, not a model outcome.
+
+    R4G-005: every arrowhead terminates ON the border of its target box (y=43
+    for the sum box), so the shaft never crosses the '3 + 2' label and the '+'
+    stays readable.
     """
-    fig, ax = new_fig(w=9.0, h=4.8)
-    ax.text(50, 95, "SAME OPERATORS, DIFFERENT PROGRAMS", ha="center", va="center",
-            fontsize=10.5, fontweight="bold", color=INK)
-    ax.text(50, 88, "Knowing the operators does not fix the order in which they are applied.",
-            ha="center", va="center", fontsize=10, color=INK)
+    fig, ax = new_fig(w=BOOK_W, h=4.4)
+    ax.text(50, 96, "SAME OPERATORS, DIFFERENT PROGRAMS", ha="center", va="center",
+            fontsize=FST, fontweight="bold", color=INK)
+    ax.text(50, 91,
+            "Knowing the operators does not fix the order in which they\n"
+            "are applied.",
+            ha="center", va="top", fontsize=FS, color=INK)
     # left: abs(a + b)
-    ax.text(25, 76, "abs(a + b)", ha="center", fontsize=10, fontweight="bold", color=BLUE)
-    ax.text(25, 66, "absolute value of the sum", ha="center", fontsize=10, color=INK)
-    # tree: sum node -> abs
-    box(ax, 19, 46, 12, 8, "a + b", fc=BLUE, fs=10)
-    ax.text(9, 38, "a = -3, b = 2\n→ a+b = -1", ha="center", fontsize=10,
-            color=INK, va="center")
-    box(ax, 19, 26, 12, 8, "abs(-1)", fc=BLUE, fs=10)
-    ax.text(25, 18, "= 1", ha="center", fontsize=10, fontweight="bold", color=BLUE)
-    arrow(ax, 25, 46, 25, 34)
-    arrow(ax, 25, 34, 25, 26)
+    ax.text(25, 81, "abs(a + b)", ha="center", va="center", fontsize=FS,
+            fontweight="bold", color=BLUE)
+    ax.text(25, 76, "absolute value of the sum", ha="center", va="center",
+            fontsize=FS, color=INK)
+    box(ax, 19, 58, 12, 9, "a + b", fc=BLUE)
+    ax.text(13, 51, "a = -3, b = 2\n→ a+b = -1", ha="center", va="center",
+            fontsize=FS, color=INK)
+    box(ax, 19, 38, 12, 9, "abs(-1)", fc=BLUE)
+    ax.text(25, 32, "= 1", ha="center", va="center", fontsize=FS,
+            fontweight="bold", color=BLUE)
+    arrow(ax, 25, 58, 25, 47)
+    arrow(ax, 25, 38, 25, 34.5)
 
     # right: abs(a) + abs(b)
-    ax.text(75, 76, "abs(a) + abs(b)", ha="center", fontsize=10, fontweight="bold", color=GREEN)
-    ax.text(75, 66, "sum of the absolute values  (this is abs_add)", ha="center", fontsize=10, color=INK)
-    box(ax, 62, 50, 11, 8, "abs(a)", fc=GREEN, fs=10)
-    box(ax, 78, 50, 11, 8, "abs(b)", fc=GREEN, fs=10)
-    ax.text(64, 42, "abs(-3) = 3", ha="center", fontsize=10, color=INK)
-    ax.text(87, 42, "abs(2) = 2", ha="center", fontsize=10, color=INK)
-    box(ax, 70, 30, 12, 8, "3 + 2", fc=GREEN, fs=10)
-    ax.text(76, 22, "= 5", ha="center", fontsize=10, fontweight="bold", color=GREEN)
-    arrow(ax, 68, 50, 73, 38); arrow(ax, 82, 50, 80, 38)
-    arrow(ax, 76, 38, 76, 30)
+    ax.text(75, 81, "abs(a) + abs(b)", ha="center", va="center", fontsize=FS,
+            fontweight="bold", color=GREEN)
+    ax.text(75, 76, "sum of the absolute values\n(this is abs_add)", ha="center",
+            va="top", fontsize=FS, color=INK)
+    box(ax, 62, 58, 11, 9, "abs(a)", fc=GREEN)
+    box(ax, 78, 58, 11, 9, "abs(b)", fc=GREEN)
+    ax.text(64, 52, "abs(-3) = 3", ha="center", va="center", fontsize=FS, color=INK)
+    ax.text(87, 52, "abs(2) = 2", ha="center", va="center", fontsize=FS, color=INK)
+    box(ax, 70, 34, 12, 9, "3 + 2", fc=GREEN)
+    ax.text(76, 28, "= 5", ha="center", va="center", fontsize=FS,
+            fontweight="bold", color=GREEN)
+    # all three arrowheads stop at the box border (y=43), never inside it
+    arrow(ax, 67.5, 58, 73, 43)
+    arrow(ax, 83.5, 58, 77, 43)
+    arrow(ax, 76, 49, 76, 43)
 
-    note(ax, 50, 8, "These are mathematically different functions (outputs 1 vs 5 for the same input). "
-          + "The composite in this book, abs_add, is the right-hand one: abs(a) + abs(b).",
-         fs=10, color=INK)
+    note(ax, 4, 20,
+         "These are mathematically different functions (outputs 1 vs 5 for the\n"
+         "same input). The composite in this book, abs_add, is the right-hand\n"
+         "one: abs(a) + abs(b).",
+         color=INK)
     save(fig, "fig_same_ops.png")
 
 
@@ -632,35 +738,39 @@ def fig_coverage():
                      corrected equal-count run DID measure a true holdout
                      (h01/h02 excluded from both arms, 100 tasks per arm):
                      0.000 (low) vs 0.550 (high) mean.
-    LAYOUT (release gate): the two sections are stacked VERTICALLY at full
-    width so every line is short relative to the canvas (the old side-by-side
-    layout needed an 8.8in canvas, which shrank to ~5.1pt effective type at
-    the book's 4.5in text width). At figsize 6.0in wide the 11pt labels
-    render at >= 8.25pt in the book (>= the required 8pt). Every block has a
-    reserved vertical band with >= 1.5 y-unit gaps (the old right-panel
-    heading printed on top of the title; v2 let the bold conclusion cross the
-    dashed border), and all text keeps >= 3 y-units of margin inside the
-    dashed border.
+
+    LAYOUT (round-1 R4G-002 + R1P-004):
+      * the axes fill a 6.0 x 6.2in canvas (subplots_adjust 0.01..0.99), so
+        11pt type prints at 11 * 324 / ~364 = 9.7pt at the book's 4.5in text
+        width, and the 51-character 'corrected: ...' line (298pt) fits INSIDE
+        the dashed panel (~310pt wide) instead of hanging out of both sides;
+      * every annotation in the dashed panel is its OWN row, stacked with
+        >= 1.4 y-units (>= 6pt) of clear space: family chips (y 31-38), the
+        three-line 'flawed original' block (top y=29 -> bottom 19.9),
+        'corrected: ...' (top 18.5 -> 15.5), '-> 0.000 ...' (top 14 -> 11),
+        'only the corrected ...' (top 9.5 -> 6.5).  No two multi-word lines
+        ever share a y-band, so 'corrected: ...' can never sit on
+        '-> 1.000 = coverage' again (it used to overlap it by ~10pt).
     """
-    import numpy as np
-    fig, ax = plt.subplots(figsize=(6.0, 5.0))
+    fig, ax = plt.subplots(figsize=(6.0, 6.2))
+    fig.subplots_adjust(left=0.01, right=0.99, bottom=0.01, top=0.99)
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
     ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    FS = 11          # >= 8.25pt effective at the book's 4.5in text width
-    FSB = 12         # bold headings, >= 9pt effective
+    FS = 11          # >= 9.7pt printed at the book's 4.5in text width
+    FSB = 12         # bold headings, >= 10.6pt printed
 
     # ======================= TOP: the flawed original =======================
-    ax.text(50, 96, "COVERAGE IS NOT A HELD-OUT FAMILY TEST", ha="center",
+    ax.text(50, 96.5, "COVERAGE IS NOT A HELD-OUT FAMILY TEST", ha="center",
             va="center", fontsize=FSB, fontweight="bold", color=INK)
-    ax.text(50, 90, "flawed original: what it measured", ha="center",
+    ax.text(50, 90.5, "flawed original: what it measured", ha="center",
             va="center", fontsize=FS, fontweight="bold", color=INK)
-    ax.text(50, 84, "the surface test is INSIDE the training family set\n"
-                    "→ 1.000 is coverage, not a new-family result "
+    ax.text(50, 86, "the surface test is INSIDE the training family set\n"
+                    "\u2192 1.000 is coverage, not a new-family result "
                     "(42-record pool)", ha="center", va="top",
             fontsize=FS, color=GREEN)
     # family row + the training-family-set box (y 66-73)
-    for i, fam in enumerate(["α", "β", "γ"]):
+    for i, fam in enumerate(["\u03b1", "\u03b2", "\u03b3"]):
         x = 10 + i * 12
         ax.add_patch(FancyBboxPatch((x, 66), 10, 7,
                                     boxstyle="round,pad=0.02,rounding_size=1",
@@ -683,10 +793,10 @@ def fig_coverage():
     ax.text(50, 43.5, "flawed original vs corrected measured (n=100)",
             ha="center", va="center", fontsize=FS, fontweight="bold",
             color=PURPLE)
-    ax.add_patch(FancyBboxPatch((6, 2), 88, 38,
+    ax.add_patch(FancyBboxPatch((6, 1), 88, 39,
                                 boxstyle="round,pad=0.02,rounding_size=2",
                                 fc="#fbfaf6", ec=PURPLE, lw=1.0, linestyle="--"))
-    for i, fam in enumerate(["α", "β", "γ", "δ"]):
+    for i, fam in enumerate(["\u03b1", "\u03b2", "\u03b3", "\u03b4"]):
         fc = "#cfe0f5" if i < 3 else "#f6dede"
         x = 8 + i * 11
         ax.add_patch(FancyBboxPatch((x, 31), 9, 7,
@@ -694,21 +804,22 @@ def fig_coverage():
                                     fc=fc, ec=INK, lw=0.7))
         ax.text(x + 4.5, 34.5, fam, ha="center", va="center", fontsize=FS,
                 color=INK)
-    ax.text(72, 34.5, "train on α/β/γ, hold out δ", ha="center", va="center",
-            fontsize=FS, color=INK)
+    ax.text(71, 34.5, "train on \u03b1/\u03b2/\u03b3, hold out \u03b4",
+            ha="center", va="center", fontsize=FS, color=INK)
     ax.add_patch(FancyBboxPatch((10, 20), 34, 9,
                                 boxstyle="round,pad=0.02,rounding_size=1",
                                 fc="#f6dede", ec=RED, lw=0.8))
-    ax.text(27, 24.5, "test on family δ\n(never seen)", ha="center",
+    ax.text(27, 24.5, "test on family \u03b4\n(never seen)", ha="center",
             va="center", fontsize=FS, color=RED)
+    # --- ONE ROW per annotation; >= 1.4 y-units (>= 6pt) between rows ---
     ax.text(71, 29, "flawed original: test drawn\nfrom training families\n"
-                    "→ 1.000 = coverage", ha="center", va="top",
+                    "\u2192 1.000 = coverage", ha="center", va="top",
             fontsize=FS, color=INK)
     ax.text(50, 18.5, "corrected: h01/h02 excluded from both arms, n = 100",
             ha="center", va="top", fontsize=FS, color=INK)
-    ax.text(50, 13.3, "→ 0.000 (low) vs 0.550 (high) mean", ha="center",
+    ax.text(50, 14, "\u2192 0.000 (low) vs 0.550 (high) mean", ha="center",
             va="top", fontsize=FS, color=INK, fontweight="bold")
-    ax.text(50, 8.1, "only the corrected run tests an EXCLUDED family",
+    ax.text(50, 9.5, "only the corrected run tests an EXCLUDED family",
             ha="center", va="top", fontsize=FS, color=INK, fontweight="bold")
     save(fig, "fig_coverage.png")
 

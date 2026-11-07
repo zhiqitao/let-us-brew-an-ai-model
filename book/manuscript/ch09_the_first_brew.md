@@ -168,8 +168,9 @@ every experiment in the book, and it is why we record the configuration so caref
 in a manifest alongside every result. A reader should be able to take our numbers and run
 the same configuration — and reproduce the *procedure*, not necessarily the identical
 sampled scores (a fresh stochastic rerun under temperature-0.8 sampling may differ
-slightly; the repository is public, and exact checkpoints are not shipped — they are
-regenerable from the recorded configs and seeds; see Appendix C.11). The recording is
+slightly; the repository is public, and exact checkpoints are not shipped — and the
+recorded runs are not regenerable from the recorded configs and seeds alone (see
+Appendix C.11). The recording is
 what makes the
 procedure reproducible, even before scores are confirmed on an independent run.
 

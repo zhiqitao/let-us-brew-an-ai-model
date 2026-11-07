@@ -1,0 +1,200 @@
+[
+  {
+    "id": "R3-EX-01",
+    "model": "MiMo",
+    "class": "execution/re-derivation",
+    "severity": "P1",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "book/let-us-brew-an-ai-model-v20261001.epub (built 2026-09-13, never rebuilt): carries superseded diversity 0.500/1.000, data_scaling 0.100/0.641, Stage-4 baseline 0.900; unpinned in docs/release_manifest.json",
+    "fix_location": "docs/release_manifest.json (new epub {path, sha256} entry) + scripts/verify_release.py (new phase E: EPUB stale sweep — corrected strings present, superseded absent, SKIP when absent)"
+  },
+  {
+    "id": "R3-EX-02",
+    "model": "MiMo",
+    "class": "execution/re-derivation",
+    "severity": "P1",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "artifacts/manifests/*.json committed 2026-11-03 vs the per-arm random.seed(...) added to scripts/train.py 2026-11-05; no manifest/ledger/gate records the producing commit",
+    "fix_location": "docs/reviews/loop/provenance_ledger.json (produced_by_commit + producing_script + producing_script_blob on all 41 rows) + scripts/verify_release.py phase D (resolve + blob checks; drift recorded, not failed)"
+  },
+  {
+    "id": "R3-EX-03",
+    "model": "MiMo",
+    "class": "execution/re-derivation",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "clean-clone re-run at HEAD does not reproduce seed-0 data scaling: size-300 collapses 0.900→0.180 (54/300); A/B isolates the cause to the added random.seed line; contradicts 'regenerable from the recorded config and seed' (ch09 too)",
+    "fix_location": "book/manuscript/appendix_c_experiment_registry.md (Reproducibility) + book/manuscript/ch09_the_first_brew.md — content-fix pass"
+  },
+  {
+    "id": "R3-EX-04",
+    "model": "MiMo",
+    "class": "execution/re-derivation",
+    "severity": "P2",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "Makefile:22 `reproduce` target runs scripts/reproduce.py, which exists in no commit, while README documents `make reproduce`",
+    "fix_location": "scripts/reproduce.py (created: thin wrapper over scripts/run_data_scaling_corrected.py, --list, dry-run default, --run to execute) + Makefile (passes --dry-run) + README.md"
+  },
+  {
+    "id": "R3-EX-05",
+    "model": "MiMo",
+    "class": "execution/re-derivation",
+    "severity": "P3",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "book/_assembled.md and book/_for_review.md: committed build intermediates carrying superseded values (0.383, 0.900) presented as current",
+    "fix_location": "git rm both from the repo + .gitignore entries (regenerate via `python book/assemble.py` / `cat book/manuscript/*.md`)"
+  },
+  {
+    "id": "R3-EX-06",
+    "model": "MiMo",
+    "class": "execution/re-derivation",
+    "severity": "P3",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "review/REVIEW_INSTRUCTIONS_V2.md §5 names docs/reviews/loop/issue_ledger.json as the canonical issue ledger; the file did not exist",
+    "fix_location": "docs/reviews/loop/issue_ledger.json (this file, seeded with the 22 round-1 findings)"
+  },
+  {
+    "id": "STAT-01",
+    "model": "DeepSeek",
+    "class": "quantitative/statistics/intervention",
+    "severity": "P1",
+    "status": "OPEN",
+    "anchor": "continual-learning cells carry no denominators (n_A=60, n_B=36); 'identical B accuracy' is within one item at n=36 (printed Ch. 18 / Appendix C.9)",
+    "fix_location": "book/manuscript/ch20_what_happens_when_we_teach_it_something_new.md + book/manuscript/appendix_c_experiment_registry.md — content-fix pass"
+  },
+  {
+    "id": "STAT-02",
+    "model": "DeepSeek",
+    "class": "quantitative/statistics/intervention",
+    "severity": "P1",
+    "status": "OPEN",
+    "anchor": "summary chapters (printed Ch. 19/20/21) drop the combined-intervention qualifier and assert phrasing diversity alone; Ch. 13 correctly says 3-factor bundle; Ch. 15 identifier-set change alone collapses to 0/600",
+    "fix_location": "book/manuscript/ch16_same_pieces_new_combination.md, ch20_..., ch21_the_cost_of_capability.md — content-fix pass"
+  },
+  {
+    "id": "STAT-03",
+    "model": "DeepSeek",
+    "class": "quantitative/statistics/intervention",
+    "severity": "P1",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "docs/reviews/loop/multiseed_replication.md ~L49 waves off RETRIEVAL 0.000 as 'a baseline-harness artifact of the re-runs'; shipped code re-runs give 1.000/0.125 at every seed; same silent 0.000 in stage1_seed1/2, composition_seed1/2",
+    "fix_location": "docs/reviews/loop/multiseed_replication.md (report side: BLOCKED-UNVERIFIED wording, no baseline comparison from seeds 1/2) + book/manuscript (manuscript side: content-fix pass)"
+  },
+  {
+    "id": "STAT-04",
+    "model": "DeepSeek",
+    "class": "quantitative/statistics/intervention",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "'small in-distribution cost' wording while the 3-seed CI [-0.58, +0.17] spans zero",
+    "fix_location": "book/manuscript (data-scaling cost wording) — content-fix pass"
+  },
+  {
+    "id": "STAT-05",
+    "model": "DeepSeek",
+    "class": "quantitative/statistics/intervention",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "Table C.7 'tightly stable across seeds' compares n_per 60 (seed 0) vs 130 (seeds 1/2) — undisclosed second variable",
+    "fix_location": "book/manuscript/appendix_c_experiment_registry.md (Table C.7 caption) — content-fix pass"
+  },
+  {
+    "id": "QWEN-R2-01",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P1",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "documented clean-clone gate run crashes at HEAD: FileNotFoundError on artifacts/tokenizer (7 tokenizers/38 checkpoints/5 datasets gitignored, absent from every commit); at af32fb8b the gate gave 109/114",
+    "fix_location": "scripts/verify_release.py (new preflight(): missing gate-opened input dir prints 'NOT A VERIFIABLE CLEAN CLONE — ...' and exits 1, no traceback)"
+  },
+  {
+    "id": "QWEN-R2-02",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P1",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "Appendix C colophon hardcodes 'built from repository commit af32fb8b...' while the shipped PDF contains text added in 49831ce4; the gate only string-checked the colophon against a hard-coded constant",
+    "fix_location": "book/manuscript/appendix_c_experiment_registry.md (colophon + two-commits section de-hardcoded, point at docs/release_manifest.json pdf_build_commit) + book/latex/md_to_latex.py (title-page colophon derives the hash from git at build time) + book/build_book.py (PDF metadata BUILD_COMMIT witness) + scripts/verify_release.py phase C (PDF-content-vs-build-commit: forward + reverse witness)"
+  },
+  {
+    "id": "QWEN-R2-03",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P2",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "docs/reviews/loop/provenance_ledger.json stale (30 rows vs Table C.12's 41, missing all 11 corrected runs) and schema-inconsistent (duplicate experiment_ids, mixed .json suffix, nulls)",
+    "fix_location": "docs/reviews/loop/provenance_ledger.json (regenerated: 41 rows, unique no-suffix ids, 'not-recorded' instead of nulls) + scripts/verify_release.py phase D (len==41, unique ids, no nulls, row set == Table C.12)"
+  },
+  {
+    "id": "QWEN-R4-01",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P1",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "docs/release_manifest.json reproduction_from_a_clean_clone.structure claims the tag snapshot's 'manifests, datasets and manuscript state' — 0 dataset files ship (gitignored); self-contradicts the quickstart",
+    "fix_location": "docs/release_manifest.json (structure text: datasets removed/marked regenerable-not-shipped; new datasets block pinning all 5 files by disk sha256)"
+  },
+  {
+    "id": "QWEN-R2-04",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P3",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "docs/release_manifest.json pdf object has no page-count field (page count only in commit messages)",
+    "fix_location": "docs/release_manifest.json (pdf.page_count: null, parent fills after rebuild) + scripts/verify_release.py phase C (asserts == actual pymupdf page count when non-null, SKIP with a note when null)"
+  },
+  {
+    "id": "QWEN-R4-02",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P3",
+    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "anchor": "README declares six evidence levels but the book applies [SUPERSEDED] (not in the taxonomy) and never applies [DERIVED]; glossary misdescribes the capability map's notation",
+    "fix_location": "README.md (taxonomy: +[SUPERSEDED], [DERIVED] dropped as never applied) + book/manuscript/appendix_d_glossary.md (notation line corrected to [MEASURED]/[SUPERSEDED])"
+  },
+  {
+    "id": "R4G-001",
+    "model": "Ornith",
+    "class": "visual/print/render-geometry",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "Fig 5.1 callout overlaps its glosses by up to 72pt ('effectively illegible' per vision)",
+    "fix_location": "scripts/make_figures.py / book/figures/fig_*.pdf — figure-fix pass"
+  },
+  {
+    "id": "R4G-002",
+    "model": "Ornith",
+    "class": "visual/print/render-geometry",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "Fig 13.2 dashed panel: corrected-run annotation collides with 'from training families' (~100pt), garbling the key claim",
+    "fix_location": "scripts/make_concept_figures.py / book/figures/fig_*.pdf — figure-fix pass"
+  },
+  {
+    "id": "R4G-003",
+    "model": "Ornith",
+    "class": "visual/print/render-geometry",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "Table 18.1: 'joint/interleaved' overflows column 1 into column 2 (~20pt)",
+    "fix_location": "book/manuscript (Table 18.1) / book/latex — figure-fix pass"
+  },
+  {
+    "id": "R1P-004",
+    "model": "Ornith",
+    "class": "visual/print/render-geometry",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "interior figure labels 4.3–7pt across 12+ figures (captions all 10.9pt, pass) — below the 8pt floor",
+    "fix_location": "scripts/make_figures.py + scripts/make_concept_figures.py — figure-fix pass"
+  },
+  {
+    "id": "R4G-005",
+    "model": "Ornith",
+    "class": "visual/print/render-geometry",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "vision-observed arrow overlaps: Fig 16.1 '3+2' operator obscured; Fig 8.1 arrow pierces the parameter block",
+    "fix_location": "scripts/make_concept_figures.py / book/figures/fig_*.pdf — figure-fix pass"
+  }
+]

@@ -127,7 +127,7 @@ unchanged from the run manifests.
 | `data_scaling` | Data scaling — **superseded flawed historical run** (P0-01); replaced by `data_scaling_corrected` | in-dist 0.100→0.641 (100→3000) — arms are prefixes of an operation-ordered pool covering 1/1/3/8 of 10 operations (P0-01), so this is operation coverage, not a record-count curve |
 | `data_scaling_corrected` | Corrected data scaling — **MEASURED** (fixes P0-01) | balanced 10/10 operations at every size, one fixed tokenizer, one shared 300-task test: pass@1 **flat** 0.893–0.997 across 100→3000 (10→300 per op), seeds 0/1/2 — **no data-size benefit**; template 0.800, retrieval 0.943–1.000 in all 12 arms |
 | `diversity` | Quantity vs diversity — **superseded flawed historical run** (P0-02); replaced by `diversity_corrected` | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 — **realized 42 records (high) vs 1,200 (minimal)**, not the requested 1,200/1,200 (P0-02); the 1.000 is coverage of 42 exact mappings |
-| `diversity_corrected` | Corrected equal-count diversity — **MEASURED** (fixes P0-02) | both arms exactly 1,200 records, 10/10 ops at 120/op, one fixed tokenizer, matched 1,000-step protocol; model pass@1 by seed: in-distribution LOW 0.950 / 0.950 / 0.950 vs HIGH 0.820 / 0.570 / 0.840 (means 0.950 vs 0.743); held-out family LOW 0.000 / 0.000 / 0.000 vs HIGH 0.640 / 0.300 / 0.710 (means **0.000 vs 0.550**) — diversity drives unseen-family transfer at a small in-distribution cost |
+| `diversity_corrected` | Corrected equal-count diversity — **MEASURED** (fixes P0-02) | both arms exactly 1,200 records, 10/10 ops at 120/op, one fixed tokenizer, matched 1,000-step protocol; model pass@1 by seed: in-distribution LOW 0.950 / 0.950 / 0.950 vs HIGH 0.820 / 0.570 / 0.840 (means 0.950 vs 0.743); held-out family LOW 0.000 / 0.000 / 0.000 vs HIGH 0.640 / 0.300 / 0.710 (means **0.000 vs 0.550**) — the combined phrasing/identifier/uniqueness intervention (which does not isolate which factor moves the number) drives unseen-family transfer, costing 0.11-0.38 in-distribution accuracy across the three seeds (mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the direction is consistent in all three runs but the magnitude is not separable from seed noise) |
 | `memorization` | Memorization | 59/60 held-out; held-out program probe → general program |
 | `continual` | Continual learning | sequential A-after-A 1.000 → A-after-B 0.000; joint A 1.000, B 0.889 |
 | `composition_exposure_pilot` | Composition exposure | exposed 0.667; held-out 0.000; in-dist 1.000 |
@@ -288,11 +288,12 @@ from the start rather than re-run afterward.
 **What the ledger does not ship.** The ledger carries model-visible counts and
 hashes from the manifests only. Per-run **raw per-candidate generations** were
 not archived, and the **exact checkpoints** are not shipped with the book
-(they are large; the repository carries the manifests and scored dataset files,
-not the weights). A reader can therefore verify every count in this ledger
+(they are large; the repository carries the manifests, not the weights — the dataset
+files are gitignored and regenerable via `python scripts/generate_data.py`). A reader can therefore verify every count in this ledger
 against the shipped manifests, but cannot re-score the original candidates or
 re-load the original weights without re-training from the recorded
-configuration and seed.
+configuration and seed — and a re-run from config and seed alone does **not** reproduce
+the recorded numbers (see the publication-status note below).
 
 ## The scaling run: an honesty note on "same protocol"
 
@@ -542,28 +543,34 @@ plus `train.py` and `eval_ckpt.py`).
 `https://github.com/zhiqitao/let-us-brew-an-ai-model` and carries a release tag
 **`v20261001`** pointing at release commit **`a45a881158ed076f615f6d3bc2e72640dc5cdced`**
 (full hash; verified with `git rev-parse v20261001^{commit}` — this full hash is the
-*single* release identifier cited throughout the book). The PDF you are reading was
-built from repository commit **`af32fb8b1798f83553c0f5078fd34b62063b864d`** (the PDF
-build commit, recorded separately from the release commit; `git rev-parse HEAD` at
-build time). We cite the **full commit hash**, not just the tag, because a Git tag is a
-movable reference and is not by itself immutable.
+*single* release identifier cited throughout the book). The PDF build commit — the
+commit the PDF you are reading was built from, recorded separately from the release
+commit — is deliberately **not restated in this text**: it lives in exactly one place,
+`docs/release_manifest.json` (field `pdf_build_commit`), and is mirrored in this PDF's
+document metadata as the build-time `git rev-parse HEAD` witness, so the book text and
+the release record cannot drift apart. We cite the **full commit hash**, not just the
+tag, because a Git tag is a movable reference and is not by itself immutable.
 
 **Two commits, two roles — check out the right one.** The release is deliberately split
 across two commits, and a clean clone must know which is which:
 
 - **Tag `v20261001` → release commit `a45a881158ed076f615f6d3bc2e72640dc5cdced`** is the
-  *experiment-data snapshot*: the manifests, datasets, and manuscript state whose numbers
-  this book cites. It is the provenance anchor, not the tooling snapshot.
-- **PDF build commit `af32fb8b1798f83553c0f5078fd34b62063b864d`** (and the commits after
-  it) carries the release gate and the corrected run scripts. The tag predates
+  *experiment-data snapshot*: the manifests and manuscript state whose numbers this book
+  cites (the scored dataset files are gitignored and regenerable with
+  `python scripts/generate_data.py` — they ship in no commit). It is the provenance
+  anchor, not the tooling snapshot.
+- **The PDF build commit** — the `pdf_build_commit` value in
+  `docs/release_manifest.json` (and the commits after it) — carries the release gate and
+  the corrected run scripts. The tag predates
   `scripts/verify_release.py`, so **a checkout of the tag alone cannot run the release
   gate** — the verifier and the corrected runners simply are not in that tree.
 
-So to *verify* a clean clone rather than merely read it, check out the build commit, then
-run the gate under the repository's Python 3.11 venv:
+So to *verify* a clean clone rather than merely read it, check out the build commit (read
+it from the manifest — the value lives in one place), then run the gate under the
+repository's Python 3.11 venv:
 
 ```bash
-git checkout af32fb8b1798f83553c0f5078fd34b62063b864d
+git checkout $(python3 -c "import json; print(json.load(open('docs/release_manifest.json'))['pdf_build_commit'])")
 source .venv-311/bin/activate
 TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 ```
@@ -585,12 +592,20 @@ built book with `pymupdf`, which the bare system `python3` does not provide —
 under a python without `pymupdf`, the gate does not crash: the PDF phase prints a
 warning and is skipped, so a green run that reports that skip has *not* checked
 the PDF. The repository ships the experiment
-code, the run manifests under `artifacts/manifests/`, and the scored dataset files under
-`artifacts/datasets/`. The trained checkpoints are large and are **not** included
-(regenerable via `train.py` from the recorded config and seed); raw per-candidate
-generations were not archived. So an external reader can reproduce the pipeline and
-check the reported numbers against the shipped manifests, but a checkpoint-level re-run
-of the exact training runs requires re-training from the recorded configuration.
+code and the run manifests under `artifacts/manifests/`. The scored dataset files under
+`artifacts/datasets/` are **gitignored** and ship in no commit (0 files); they are
+regenerable with `python scripts/generate_data.py`. The trained checkpoints are large
+and are **not** included, and raw per-candidate generations were not archived. The
+recorded runs are **not** regenerable from the recorded config and seed alone: the
+global random batch-stream state carried across arms, and `train.py` gained a per-arm
+`random.seed(...)` reseed only post-hoc (2026-11-05, after the manifests were
+committed). A clean-clone re-run reproduced size-100 and size-1,000 pass@1 exactly but
+not size-300 or size-3,000, and no `final_train_loss`; treat the recorded numbers as
+archived output, not regenerable results. So an external reader can reproduce the
+pipeline and check the reported numbers against the shipped manifests, but a
+checkpoint-level re-run of the exact training runs requires re-training from the
+recorded configuration — and even that re-training will not reproduce the recorded
+numbers exactly.
 
 This means an *external* reader can run the pipeline and check the reported numbers
 against the shipped manifests, but cannot do a checkpoint-level re-run of the exact
@@ -620,19 +635,28 @@ from the start — Table C.15.)
 
 **Table C.7 — Stage-3 surface across seeds (superseded flawed historical run, P0-03/P0-04)**
 
-| seed | in-dist | new identifiers | held-out wording |
-|------|------|------|------|
-| 0 | 0.900 | 0.350 | 0.000 |
-| 1 | 0.900 | 0.348 | 0.004 |
-| 2 | 0.898 | 0.348 | 0.000 |
+| seed | n per cell (`n_per`, train records/op) | in-dist | new identifiers | held-out wording |
+|------|------|------|------|------|
+| 0 | 60 | 0.900 | 0.350 | 0.000 |
+| 1 | 130 | 0.900 | 0.348 | 0.004 |
+| 2 | 130 | 0.898 | 0.348 | 0.000 |
 
-The headline numbers reproduce: held-out composition is 0.000 for all three seeds, and
-the surface numbers are tightly stable. One caveat: the RETRIEVAL baseline printed
-0.000 on seeds 1 and 2 (seed 0 gave 1.000 in-distribution) — a baseline-harness
-artifact of the re-runs (`run_surface.py` was patched to accept `--out`/`--tag` so
-re-runs would not overwrite the original manifest), not a model result. We do not
-report the re-run retrieval values as findings; the seed-0 retrieval figures in the
-body chapters stand as recorded. These rows are kept as the record of the *mixed-factor*
+The headline numbers reproduce: held-out composition is 0.000 for all three seeds. The
+surface numbers are **not** a like-for-like stability check: the re-runs varied the seed
+*and* the run size together — seed 0 trained at `n_per` 60 (600 records) while seeds 1
+and 2 trained at `n_per` 130 (1,300 records) — so the table moves two variables at once
+and is not a seed-only replication; the corrected factorial in Table C.14 holds `n_per`
+fixed across all three seeds and is the like-for-like comparison.
+
+One caveat is **BLOCKED-UNVERIFIED**: the RETRIEVAL baseline printed 0.000 on seeds 1
+and 2 (seed 0 gave 1.000 in-distribution), and re-running the shipped code gives 1.000
+in-distribution / 0.125 held-out at *every* seed — so the recorded zeros do **not**
+reproduce, and the stated mechanism (`run_surface.py` was patched to accept
+`--out`/`--tag` so re-runs would not overwrite the original manifest) cannot affect a
+pure TF-IDF retrieval baseline, which never writes to `--out`/`--tag`. Those seeds-1/2
+RETRIEVAL baseline cells are therefore marked **BLOCKED-UNVERIFIED**: we draw no
+baseline comparison from seeds 1 and 2, and the seed-0 retrieval figures in the body
+chapters stand as recorded. These rows are kept as the record of the *mixed-factor*
 construction (identifiers and wording-family coverage changed together, P0-03; 480-record
 denominator, P0-04); the corrected 2×2 factorial across seeds is Table C.14 below, and it
 supersedes this table.
@@ -686,7 +710,18 @@ pre-NUL-truncation evaluation preserved for the failure ledger — not a re-run 
 the seed-0 figure quoted throughout the book is the manifest-backed 0.897 in
 `stage1_results.json` (final loss 0.0208).
 
-**Table C.11 — Continual learning across seeds**
+**Disclosure for Table C.10 — the stage-1 re-run baselines are BLOCKED-UNVERIFIED.**
+The `stage1_seed1.json` and `stage1_seed2.json` manifests also carry a silent in-dist
+RETRIEVAL baseline of 0.000 (and syntax 0.000), against 1.000 at seed 0. Re-running the
+shipped code gives RETRIEVAL 1.000 in-distribution at *every* seed, so those recorded
+zeros do **not** reproduce, and the stated `--out`/`--tag` mechanism cannot affect a pure
+TF-IDF retrieval baseline. Those baseline cells are marked **BLOCKED-UNVERIFIED** and no
+baseline comparison is drawn from them; the MODEL and TEMPLATE columns above are the
+values this table reports.
+
+**Table C.11 — Continual learning across seeds** — A accuracy on 60 held-out A tasks
+(12 × 5); B on 36 (12 × 3). At n = 36 one item = 0.028, so equal B accuracy = within
+one test item.
 
 | seed | sequential A-retention | sequential B-acquisition | joint/interleaved A-retention | joint/interleaved B-acquisition |
 |------|------|------|------|------|

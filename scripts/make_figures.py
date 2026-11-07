@@ -55,12 +55,15 @@ def load(path):
 
 def save(fig, name):
     p = os.path.join(FIG, name)
-    fig.savefig(p, dpi=150, bbox_inches="tight")
+    # pad_inches=0.03 (vs tight's 0.1 default): the default 0.1in margin on
+    # each side added 10pt to the natural width, which is divided into every
+    # label's printed size at the book's 4.5in text width (R1P-004).
+    fig.savefig(p, dpi=150, bbox_inches="tight", pad_inches=0.03)
     # VECTOR copy (production: raster PNGs were only ~167-312 dpi at 6x9 trim).
     # The PDF backend draws text/paths as real vectors, so labels stay crisp at
     # any print size; the manuscript references figures/fig_X.pdf.
     v = os.path.join(FIG, os.path.splitext(name)[0] + ".pdf")
-    fig.savefig(v, bbox_inches="tight")
+    fig.savefig(v, bbox_inches="tight", pad_inches=0.03)
     plt.close(fig)
     print("wrote", p, "|", v)
     return p
@@ -83,8 +86,11 @@ ax.plot(params, in_dist, "o-", color=BLUE, lw=2.2, ms=9,
         label="in-distribution pass@1", zorder=3)
 ax.plot(params, comp, "s--", color=RED, lw=2.2, ms=9,
         label="held-out composite pass@1", zorder=3)
-for xi, v, t in zip(params, in_dist, in_dist_labels):
-    ax.annotate(t, (xi, v), textcoords="offset points", xytext=(0, 12),
+# the 10.2M label drops BELOW its point: at +12pt its box intersected the
+# neighbouring 6.5M label (round-1 spacing sweep, R1P-004 family)
+lab_off = [12, 12, -22, 12]
+for xi, v, t, off in zip(params, in_dist, in_dist_labels, lab_off):
+    ax.annotate(t, (xi, v), textcoords="offset points", xytext=(0, off),
                 ha="center", fontsize=FS_VALUE, color=BLUE, fontweight="bold")
 # label only the endpoints of the flat zero line (all four are 0.000; labeling
 # every point makes the two middle labels collide on the log axis)
@@ -95,8 +101,11 @@ for i in (0, 3):
 ax.set_xscale("log")
 ax.margins(x=0.12)  # room so the edge-point value labels are not clipped
 ax.set_xticks(params)
+# vertical tick labels: at 30 deg the boxes of '6.5M' and '10.2M' intersect
+# (their ticks are only ~29.5pt apart on the log axis); at 90 deg every
+# neighbour pair keeps >= 7pt of clear space.
 ax.set_xticklabels(["0.88M", "6.5M", "10.2M", "29.3M"], fontsize=FS_TICK,
-                   rotation=30, ha="right", rotation_mode="anchor")
+                   rotation=90, ha="center")
 # x-axis label + scope note merged into ONE text block: as a separate transAxes
 # text the rotated tick labels kept pushing the axis label down onto the note.
 ax.set_xlabel("tested configuration (params, log scale)\n"
@@ -106,12 +115,16 @@ ax.set_xlabel("tested configuration (params, log scale)\n"
               fontsize=FS_LABEL, color=INK)
 ax.set_ylim(-0.24, 1.12)
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.tick_params(axis="y", labelsize=FS_TICK)   # 10pt default -> 13pt printed
 ax.set_title("Model size vs composition\n(measured, 4 runs)",
-             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
+             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=30)
 # legend in the empty band between the blue line and the flat zero line so it
 # cannot collide with the data
-ax.legend(loc="center", bbox_to_anchor=(0.5, 0.38), frameon=False,
-          fontsize=FS_LEGEND, labelcolor=INK)
+# legend ABOVE the axes: in the middle band it collided with the 10.2M
+# value label once that label moved below its point
+ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=2, frameon=False,
+          fontsize=FS_LEGEND, labelcolor=INK, columnspacing=1.2,
+          handlelength=1.6)
 ax.grid(alpha=0.28, which="both")
 # scope note is merged into the x-axis label above (a separate transAxes text
 # overlapped the axis label once the tick labels were rotated).
@@ -139,8 +152,12 @@ save(fig, "fig_model_size.png")
 #   they stay inside their own bar column; every label >= 11pt in a
 #   ~6in figure (>= ~8.7pt at the book's 4.507in render width).
 # ==========================================================================
-fig = plt.figure(figsize=(6.0, 5.0))
-ax = fig.add_axes([0.085, 0.44, 0.90, 0.34])
+# 5.8in tall (note block re-wrapped to <= 50 chars/line) and 5.7in wide with a
+# deeper left margin: at 6.0in the rotated 'pass@1' ylabel hung ~10pt outside
+# the canvas, so the tight crop was 446pt and every 11pt note printed at 7.99pt
+# (eff = f * 324 / natural_width, R1P-004).
+fig = plt.figure(figsize=(5.7, 5.8))
+ax = fig.add_axes([0.10, 0.44, 0.885, 0.34])
 labels = ["familiar\n(letters, kept)", "new identifiers\n(words, kept)",
           "new wording\n(held-out)", "both changes\n(held-out)"]
 model = [0.898, 0.000, 0.000, 0.000]                  # seed 0 (bars)
@@ -174,26 +191,39 @@ ax.set_xticklabels(labels, fontsize=12)
 ax.set_ylim(-0.06, 1.34)
 ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0, 1.25])
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.tick_params(axis="y", labelsize=FS_TICK)   # 10pt default -> 13pt printed
 ax.grid(axis="y", alpha=0.28)
 # legend ABOVE the axes (4 entries, 2 rows), title above the legend
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=2,
           frameon=False, fontsize=FS_LEGEND, labelcolor=INK,
           columnspacing=1.2, handlelength=1.6)
+# title line 2 shortened (it was 404pt wide and pushed the page 25pt past the
+# 6in canvas, dragging every 11pt note below 8pt printed) and the pad raised
+# so the 2-row legend above the axes can no longer touch the title (R1P-004)
+# 13pt (not FS_TITLE=14.5): line 1 is 390pt wide at 14.5pt and was the
+# right-most artist on the page, so it alone set the natural width that every
+# 11pt note is divided by (R1P-004: notes printed at 7.8pt).
 ax.set_title("Surface generalization (corrected 2x2 factorial)\n"
-             "MODEL: seed-0 bars, seeds 1 / 2 as open markers",
-             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=42)
+             "MODEL: seed-0 bars, markers = seeds 1 / 2",
+             fontsize=13, fontweight="bold", color=INK, pad=60)
 # ---- separate 'n' row: one entry under every cell (the cell denominator) ----
 for xi, n in zip(x, cell_n):
     ax.text(xi, -0.36, f"n = {n}", transform=ax.get_xaxis_transform(),
             ha="center", va="top", fontsize=FS_NOTE, color=INK,
             fontweight="bold", clip_on=False)
 # ---- everything else BELOW the chart (figure coords; no overlap possible) ----
-fig.text(0.5, 0.245,
-         "n = records per cell: familiar 600, new IDs 600, wording 480, both 480\n"
-         "MODEL seed-0 counts 539/600, 0/600, 0/480, 0/480; seeds 1, 2 marked\n"
-         "TEMPLATE 480/600, 480/600, 420/480, 420/480 (over the cell n)\n"
-         "RETRIEVAL 600/600, 600/600, 60/480, 60/480; baselines seed-invariant\n"
-         "one fixed 600-record train set + train-only tokenizer; fixes P0-03/P0-04",
+# re-wrapped to <= 50 chars/line: the old 71-char lines were 395pt wide and
+# set the page width, printing every 11pt note at 7.8pt in the book (R1P-004).
+# Same words, same order -- line breaks are layout.
+fig.text(0.5, 0.2634,
+         "n = records per cell: familiar 600, new IDs 600,\n"
+         "  wording 480, both 480\n"
+         "MODEL seed-0 counts 539/600, 0/600, 0/480, 0/480;\n"
+         "  seeds 1, 2 marked; TEMPLATE 480/600, 480/600,\n"
+         "  420/480, 420/480 (over the cell n); RETRIEVAL\n"
+         "  600/600, 600/600, 60/480, 60/480; baselines\n"
+         "  seed-invariant; one fixed 600-record train set +\n"
+         "  train-only tokenizer; fixes P0-03/P0-04",
          ha="center", va="top", fontsize=FS_NOTE, color=INK)
 save(fig, "fig_surface.png")
 
@@ -215,8 +245,10 @@ save(fig, "fig_surface.png")
 #   the old transAxes note collided with the x-axis title. Totals / tokenizer
 #   / caveat all BELOW the chart; all three seeds shown; labels >= 11pt.
 # ==========================================================================
-fig = plt.figure(figsize=(5.6, 5.0))
-ax = fig.add_axes([0.095, 0.44, 0.89, 0.40])
+# taller canvas: the axis title is now two lines (see below) and the legend
+# moved above the axes, so the note block needs the extra 0.8in of height
+fig = plt.figure(figsize=(5.6, 5.8))
+ax = fig.add_axes([0.095, 0.46, 0.89, 0.38])
 sizes = [100, 300, 1000, 3000]
 perf_s1 = [0.8933, 0.900, 0.900, 0.900]
 perf_s2 = [0.900, 0.900, 0.9967, 0.900]
@@ -246,17 +278,25 @@ ax.set_xticks(sizes)
 ax.set_xticklabels([labelsize[s] for s in sizes], fontsize=FS_TICK)
 ax.set_ylim(-0.16, 1.55)
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.tick_params(axis="y", labelsize=FS_TICK)   # 10pt default -> 13pt printed
 ax.set_title("Data scaling (corrected): flat\n"
              "~0.90 from 10 to 300 examples per op",
-             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=8)
+             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=30)
 ax.grid(alpha=0.28)
-ax.legend(loc="lower left", frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
+# legend ABOVE the axes: at lower-left its top entry sat on the '269/300'
+# count label under the first point
+ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=3, frameon=False,
+          fontsize=FS_LEGEND, labelcolor=INK, columnspacing=1.4,
+          handlelength=1.6)
 # ---- axis title + totals/tokenizer/caveat, ALL below the chart ----
-fig.text(0.5, 0.335,
-         "training examples (log scale)  ·  10/30/100/300 per op  ·  "
-         "10/10 ops at every size",
+# wrapped to two lines: as one 81-char line it rendered 524pt wide, which set
+# the whole page width (538pt) and dragged every 11pt note to 6.6pt printed
+# at the book's 4.5in text width (R1P-004)
+fig.text(0.5, 0.350,
+         "training examples (log scale)  ·  10/30/100/300 per op\n"
+         "10/10 operations at every size",
          ha="center", va="top", fontsize=FS_LABEL, color=INK)
-fig.text(0.5, 0.285,
+fig.text(0.5, 0.265,
          "labels/counts = seed 0 (successes / 300 shared test, 30/op x 10 ops)\n"
          "one fixed tokenizer  ·  1,000 steps  ·  3 seeds  ·  all 12 arms cover 10/10 ops\n"
          "template 0.800; retrieval 0.943-1.000 in all 12 arms\n"
@@ -329,9 +369,10 @@ ax.set_xticklabels(labels, fontsize=FS_TICK)
 ax.set_ylim(-0.05, 1.30)
 ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0, 1.25])
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.tick_params(axis="y", labelsize=FS_TICK)   # 10pt default -> 13pt printed
 ax.set_title("Diversity at equal count (corrected):\n"
              "unseen-family transfer 0.000 -> 0.550",
-             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=40)
+             fontsize=FS_TITLE, fontweight="bold", color=INK, pad=64)
 # legend ABOVE the axes (outside the plot): it used to sit in the upper
 # left INSIDE the plot and printed on top of the 0.950 value label
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.00), ncol=2,
@@ -376,11 +417,14 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=FS_TICK)
 ax.set_ylim(0, 1.18)
 ax.set_ylabel("pass@1", fontsize=FS_LABEL)
+ax.tick_params(axis="y", labelsize=FS_TICK)   # 10pt default -> 13pt printed
 ax.set_title("Task accuracy: sequential\nvs joint training (measured)",
              fontsize=FS_TITLE, fontweight="bold", color=INK, pad=26)
 # Legend outside the axes (below) so it cannot overlap the data/labels; hatch
 # as well as color so the chart survives grayscale printing.
-ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=1,
+# pushed further below the axes: at -0.16 the first legend row sat on the
+# two-line x tick labels '(A then B)' / '(A+B)'
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=1,
           frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
 ax.grid(axis="y", alpha=0.28)
 # note above the axes (outside the plot) so it cannot collide with the joint
@@ -449,7 +493,7 @@ ax.legend(handles=[
                            label="\u2717 no valid program"),
             mpatches.Patch(facecolor="#d9d9d9", edgecolor=GREY, hatch="xx",
                            label="\u2013 out of scope (unscored, not a task)")],
-          loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=1,
+          loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=1,
           frameon=False, fontsize=FS_LEGEND, labelcolor=INK)
 fig.tight_layout()
 save(fig, "fig_live_sweep.png")

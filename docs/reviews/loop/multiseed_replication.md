@@ -44,18 +44,25 @@ artifact.
 | 1 | 0.900 | 0.348 | 0.004 |
 | 2 | 0.898 | 0.348 | 0.000 |
 
-The surface numbers are tightly stable across seeds.
+The surface re-runs are **not like-for-like**: they varied the seed **and** the run
+size — `n_per_op` 60 at seed 0 versus 130 at seeds 1 and 2 — so the near-identical
+in-distribution numbers are a robustness read across two changed variables, not a
+tight same-configuration stability claim.
 
-> Caveat: the RETRIEVAL baseline reported 0.000 on seeds 1 and 2 (seed 0 gave
-> 1.000 in-distribution). This is a baseline-harness artifact of the re-runs, not
-> a model result; the MODEL pass@1 values above are consistent and are the
-> scientific target.
+> Caveat — the recorded RETRIEVAL 0.000 does **not** reproduce. Re-running the
+> shipped code gives RETRIEVAL **1.000 / 0.125** at every seed (kept cells /
+> held-out cells), and the stated mechanism (`--out` / `--tag`) cannot affect a
+> pure TF-IDF baseline, so those cells are **BLOCKED-UNVERIFIED**: there is no
+> baseline comparison from seeds 1 and 2. The MODEL pass@1 values above —
+> consistent across seeds — are the scientific target these rows support.
 
 ## Conclusion
 
 The two central findings are now multi-seed-backed:
 - composition held-out 0.000 is robust across 3 seeds;
-- surface results are stable across seeds.
+- surface results repeat the same pattern across seeds — but those re-runs changed
+  seed **and** run size (`n_per_op` 60 vs 130), so this is a robustness check, not a
+  like-for-like replication.
 
 Together with the decode/termination ablation (which showed the composition 0.000
 is not a decode/extraction artifact), the book's core claims are reproducible.

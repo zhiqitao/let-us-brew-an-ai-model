@@ -33,8 +33,12 @@ conservative, audit-proof form — the wording we adopt after the third external
 > record count bought nothing in this regime; the corrected surface factorial collapses
 > to ~0 on new identifiers, on held-out wording, and on both together, so no tested
 > prompt-surface change is survived. The corrected equal-count diversity comparison
-> shows phrasing diversity moving a genuinely held-out family from 0.000 to 0.550
-> mean, at a small in-distribution cost (0.950 to 0.743 mean). The
+> shows the combined phrasing/identifier/uniqueness intervention (which does not
+> isolate which factor moves the number) moving a genuinely held-out family from 0.000
+> to 0.550 mean, costing 0.11-0.38 in-distribution accuracy across the three seeds
+> (mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the direction is consistent
+> in all three runs but the magnitude is not separable from seed noise) (0.950 to 0.743
+> mean). The
 > durable methodological lesson is that a high score must be interpreted through the
 > precise model-visible novelty, the evaluator, the baseline, and the controls used to
 > obtain it.
@@ -207,7 +211,9 @@ The honest map points at specific next experiments, not vague "more data / bigge
    (Both data levers now have their corrected reruns: the operation-stratified size sweep
    of P0-01 came back flat, so record count is settled as a null; the equal-count
    diversity comparison of P0-02 came back decisive for held-out-family transfer —
-   0.000 → 0.550 mean — so phrasing diversity is settled as a measured, partial lever.)
+   0.000 → 0.550 mean — so the combined phrasing/identifier/uniqueness intervention
+   (which does not isolate which factor moves the number) is settled as a measured,
+   partial lever.)
 2. **Does the 10.2M in-distribution plateau replicate across configs?** The clean retrain
    measured 0.773 (a stable plateau, not the earlier 0.383 reading). A proper
    training-duration and config sweep at 10M would confirm the plateau is robust.
@@ -267,8 +273,12 @@ worth having:
 > show to be a no-viable-code generation failure on unseen prompts (0 complete
 > programs, 0 wrong-semantics on held-out composites), not incorrect composition. The corrected data-scaling sweep
 > is flat at ~0.90 across a 30× range, so record count bought nothing; the corrected
-> equal-count diversity comparison shows phrasing diversity moving a held-out family
-> from 0.000 to 0.550 mean at a small in-distribution cost (0.950 → 0.743), while the
+> equal-count diversity comparison shows the combined phrasing/identifier/uniqueness
+> intervention (which does not isolate which factor moves the number) moving a held-out
+> family from 0.000 to 0.550 mean, costing 0.11-0.38 in-distribution accuracy across the
+> three seeds (mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the direction is
+> consistent in all three runs but the magnitude is not separable from seed noise)
+> (0.950 → 0.743), while the
 > original 42-vs-1,200 run is superseded history.
 
 And the habits we learned — test the tester, test the teacher, compare against baselines,

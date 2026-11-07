@@ -1,0 +1,38 @@
+{
+  "model": "MiMo-V2.6-Flash-RL",
+  "delegation_id": "deleg_c49c47d7 (task-2)",
+  "phase": "round1 Phase-3 discussion seat",
+  "prompt_edits": [
+    "Mandatory cross-class section: 'Even though your partition is P, you MUST still run the two cheapest checks from every other class (Q, V, R) and report them as secondary findings; a defect you can confirm in under 5 commands is never out of scope.'",
+    "Add explicit 'release/reproduction' bullet to execution partition: 'For every claim in colophon/README/back matter naming a build artifact, commit hash, or reproduction command, execute it verbatim from a clean clone and record pass/fail with exact command output.'",
+    "Add 'claims ledger' step to provenance partition: 'Enumerate every externally verifiable claim (build commit, tool version, dataset hash, benchmark number) into a table with status VERIFIED/UNVERIFIED/FALSIFIED before writing any prose.'",
+    "Required adversarial step for all partitions: 'Quote one finding from a different model's class that you independently attempted to reproduce, and state whether it held.'",
+    "Each model outputs a machine-checkable list of commands run (one per line, shell-quoted) so round 2's execution evidence can be diffed against round 1's."
+  ],
+  "gate_additions": [
+    "clean_clone_build.sh: git clone to temp dir, run documented build command from README/colophon, exit non-zero on failure — catches clean-clone gate crash + producing-script drift in one step.",
+    "colophon_commit_check.sh: extract every commit hash in colophon/README, assert each resolves via git cat-file -e and matches HEAD or an ancestor of the tagged release — catches false build-commit claim deterministically.",
+    "epub_freshness.sh: rebuild EPUB, diff against committed artifact; fail if internal timestamps or content hash differ from fresh build — catches stale-EPUB without a human reading it.",
+    "retrieval_smoke.sh: run the RETRIEVAL dismissal scenario end-to-end, assert documented behavior — turns the falsified dismissal into a red test instead of prose.",
+    "producing_script_drift.sh: hash every script referenced in build documentation, compare to hash recorded at last release tag."
+  ],
+  "self_doubts": [
+    "Weakest: producing-script drift causing user-visible failure — verified the drift exists but did not fully verify a user following docs would hit it vs silently get working-but-different output; may be P3 documentation inconsistency not P1 execution failure.",
+    "Retrieval-path execution finding may over-generalize from one environment; if test harness differs from documented environment, falsification could be environment-specific rather than a true defect.",
+    "One P3 finding based on reading a script rather than running it — most likely false positive; static reading can miss runtime guards."
+  ],
+  "cross_doubts": [
+    "Quantitative model's precise effect-size numbers derived from a single run: without variance estimates or repeated trials a specific percentage is likely over-precise — direction may be right but the number should be flagged UNVERIFIED.",
+    "Visual/geometry model's specific diagram dimension mismatch should be cross-checked against the actual source file rather than rendered PNG, since rendering DPI differences can produce apparent mismatches that are not real defects.",
+    "Any provenance finding resting on a commit message or tag annotation rather than the artifact itself is suspect: messages are cheap to write and may not reflect the build — re-verify against the built artifact."
+  ],
+  "round2_assignment": "ROTATE the partitions rather than keep fixed or fully re-partition. Keeping the same assignment risks the same blind spots and same over-confidence in an owned class; full re-partition throws away the class-specific checklists round 1 built. Rotation (each model takes the class it did NOT do in round 1, or a pairwise swap) preserves cheap cross-class checks while forcing fresh eyes, and directly tests whether round 1's findings were class-knowledge or model-knowledge. Keep the 4-way structure because defect classes are genuinely orthogonal and synthesis showed cross-class agreement, which rotation preserves.",
+  "anti_regression_checks": [
+    "grep -R 'build commit' colophon README | while read; do git cat-file -e <hash> || exit 1; done — every cited commit resolves.",
+    "test \"$(git describe --tags --exact-match)\" = \"$(grep -o 'v[0-9.]*' colophon | head -1)\" — colophon version matches release tag.",
+    "sha256sum committed.epub == sha256sum freshly_built.epub — committed EPUB matches fresh build.",
+    "! grep -rn 'RETRIEVAL.*not supported|retrieval.*dismissed' docs/ || run_retrieval_smoke.sh — prose dismissal of retrieval must be backed by passing smoke test.",
+    "for f in $(grep -o 'scripts/[a-z_-]*\\.sh' README.md); do test -f \"$f\" || exit 1; done — every documented script exists.",
+    "git diff --exit-code HEAD -- scripts/ build/ — producing scripts unchanged since last review round."
+  ]
+}

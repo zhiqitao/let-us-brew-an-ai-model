@@ -34,8 +34,12 @@ review, 2026-11-02, and now strengthened by the corrected reruns):
 > record count bought nothing in this regime; the corrected surface factorial collapses
 > to ~0 on new identifiers, on held-out wording, and on both together, so no tested
 > prompt-surface change is survived. The corrected equal-count diversity comparison
-> shows phrasing diversity moving a genuinely held-out family from 0.000 to 0.550
-> mean, at a small in-distribution cost (0.950 to 0.743 mean). The
+> shows the combined phrasing/identifier/uniqueness intervention (which does not
+> isolate which factor moves the number) moving a genuinely held-out family from 0.000
+> to 0.550 mean, costing 0.11-0.38 in-distribution accuracy across the three seeds
+> (mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the direction is consistent
+> in all three runs but the magnitude is not separable from seed noise) (0.950 to 0.743
+> mean). The
 > durable methodological lesson is that a high score must be interpreted through the
 > precise model-visible novelty, the evaluator, the baseline, and the controls used to
 > obtain it.
@@ -356,9 +360,13 @@ as valuable as any model number:
   were **not** the same count (42 realized records vs 1,200 — P0-02), so that 1.000 was
   coverage of a 42-record pool. The corrected rerun held both arms at exactly 1,200
   records with balanced operation coverage and one fixed tokenizer, and the finding
-  survived in honest form: diversity — not quantity — is the *measured* driver of
-  transfer to a never-seen wording family (**0.000 → 0.550 mean**), at a small
-  in-distribution cost (**0.950 → 0.743 mean**). Reading the arm-building code against
+  survived in honest form: the combined phrasing/identifier/uniqueness intervention
+  (which does not isolate which factor moves the number) — not quantity — is the
+  *measured* driver of transfer to a never-seen wording family
+  (**0.000 → 0.550 mean**), costing 0.11-0.38 in-distribution accuracy across the three
+  seeds (mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the direction is
+  consistent in all three runs but the magnitude is not separable from seed noise)
+  (**0.950 → 0.743 mean**). Reading the arm-building code against
   the claim is what caught the flaw; the corrected rerun is what turned the suspicion
   into a measurement.
 - **Baselines are first-class.** A trivial TF-IDF retriever dominated the pilot task
@@ -383,9 +391,10 @@ as valuable as any model number:
 > length-matched controls — so the boundary is failure to generate, not incorrect
 > composition. The corrected data-count sweep is flat (0.893–0.997
 > across a 30× range), so record count establishes no benefit; the corrected equal-count
-> diversity comparison shows phrasing diversity moving a held-out family from 0.000 to
-> 0.550 mean (in-distribution 0.950 → 0.743), so diversity — not quantity — buys
-> partial transfer to excluded wording families.**
+> diversity comparison shows the combined phrasing/identifier/uniqueness intervention
+> (which does not isolate which factor moves the number) moving a held-out family from
+> 0.000 to 0.550 mean (in-distribution 0.950 → 0.743), so that combined intervention —
+> not quantity — buys partial transfer to excluded wording families.**
 >
 > (Size and data scaling are two separate levers, and neither was shown to turn surface
 > coverage into compositional capability: the size sweep changed training budgets and
@@ -395,8 +404,9 @@ as valuable as any model number:
 > a scheduling change — sequential vs. joint training — but that measured retention of
 > *separately learned* task groups, not composition, so it likewise does not speak to the
 > composition boundary. The diversity study's corrected equal-count control now
-> supports exactly that claim, scoped to phrasing diversity on this task: 0.000 → 0.550
-> on a held-out family, 0.950 → 0.743 in-distribution.)
+> supports exactly that claim, scoped to the combined phrasing/identifier/uniqueness
+> intervention on this task (which does not isolate which factor moves the number):
+> 0.000 → 0.550 on a held-out family, 0.950 → 0.743 in-distribution.)
 
 ## Why the map is the deliverable
 

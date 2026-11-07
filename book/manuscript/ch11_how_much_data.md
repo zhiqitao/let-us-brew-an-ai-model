@@ -34,7 +34,7 @@ points back to this table instead of re-arguing it.
 | **Model-size budget differences.** | The size sweep varied training budget and tokenizer alongside size (1,500 / 1,000 / 800 / 800 steps; pilot vs. composition tokenizer), so it is not a size-only intervention. | Ch. 12, 19, 20 |
 | **Old vs. new novelty audits.** | The pilot was audited on the original scored files; the Stage-3 and Stage-4 holdouts were audited on *regenerated* reproductions with the current generator — corroborating, but not proof on the scored artifacts. | Ch. 13, 15, App. C |
 | **Superseded flawed historical runs.** | Ch. 11's original data-scaling sweep (P0-01: operation coverage) and Ch. 15's original surface rows (P0-03: mixed factors; P0-04: 480-record denominator) are preserved as labeled flawed records in the failure ledger (Appendix B) and as superseded rows in Appendix C; their corrected reruns are this chapter's and Chapter 15's actual results. Ch. 13's diversity comparison (P0-02: 42 vs. 1,200 records) now has a corrected
-equal-count rerun (Table C.15), which finds diversity drives held-out-family generalization. | Ch. 11, 13, 15, 19, 20 |
+equal-count rerun (Table C.15), which finds the combined phrasing/identifier/uniqueness intervention drives held-out-family generalization. | Ch. 11, 13, 15, 19, 20 |
 
 **What a later code audit showed — read this before the numbers.** The original sweep
 did not change only the data count. The script builds one pool with

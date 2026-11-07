@@ -11,7 +11,7 @@ narrowly defined, objectively testable task:
 The generated program is executed against hidden tests. This gives us deterministic
 inputs, executable outputs, objective evaluation, synthetic data generation,
 controlled difficulty, hidden tests, compositional splits, memorization tests,
-shortcut audits, and reproducible experiments.
+shortcut audits, and archived experiment manifests.
 
 **The model is the instrument. The experiment is the subject.**
 
@@ -38,7 +38,7 @@ make smoke        # run the end-to-end Stage 0 pipeline smoke test
 make test         # run the evaluator + sandbox conformance/mutation suites
 make audit        # run the dataset leakage audit
 make stage1       # train + evaluate the Stage 1 pilot
-make reproduce    # regenerate a recorded experiment manifest
+make reproduce    # print the plan to regenerate a recorded manifest (--run executes)
 ```
 
 ### Release gate
@@ -57,11 +57,12 @@ TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 
 **Which commit to check out:** the release tag `v20261001` (commit `a45a881`) is the
 experiment-data snapshot the book's numbers cite, but it predates this gate — a clean
-clone must check out the PDF build commit (`af32fb8b`) or later to find
+clone must check out the PDF build commit (recorded in `docs/release_manifest.json`
+as `pdf_build_commit`, the single place that value lives) or later to find
 `scripts/verify_release.py` and the corrected run scripts:
 
 ```bash
-git checkout af32fb8b
+git checkout $(python3 -c "import json; print(json.load(open('docs/release_manifest.json'))['pdf_build_commit'])")
 source .venv-311/bin/activate
 TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 ```
@@ -77,5 +78,8 @@ confirm the report lists the phase C checks before trusting it.
 
 The project follows a strict experimental protocol: **change one variable**, never
 fabricate results, preserve failures, test the tester, and compare against simple
-baselines. Evidence levels are `[MEASURED]` / `[DERIVED]` / `[DESIGN]` / `[HYPOTHESIS]` /
-`[INTERPRETATION]` / `[UNKNOWN]`.
+baselines. Evidence levels are `[MEASURED]` / `[DESIGN]` / `[HYPOTHESIS]` /
+`[INTERPRETATION]` / `[UNKNOWN]` / `[SUPERSEDED]`. `[SUPERSEDED]` is applied in the
+book (e.g. the capability map and the glossary) to mark a value a corrected rerun
+replaced. `[DERIVED]` was declared here but never applied anywhere in the book, so it
+is **dropped** from the taxonomy rather than left as an unused level.

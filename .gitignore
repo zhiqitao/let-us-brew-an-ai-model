@@ -11,11 +11,17 @@ artifacts/datasets/
 artifacts/checkpoints/
 artifacts/results/
 artifacts/tokenizer/
+artifacts/reproduced/
 experiments/*/output/
 !artifacts/manifests/
 
 # Book build outputs
 book/*.pdf
+# committed build intermediates — regenerable, never cite them:
+#   book/_assembled.md   <- python book/assemble.py
+#   book/_for_review.md  <- cat book/manuscript/*.md
+book/_assembled.md
+book/_for_review.md
 book/latex/*.aux
 book/latex/*.log
 book/latex/*.out

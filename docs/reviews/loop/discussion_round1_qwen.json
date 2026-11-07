@@ -1,0 +1,48 @@
+{
+  "model": "Qwen3.8-27B",
+  "delegation_id": "deleg_aa1695dc",
+  "phase": "round1 Phase-3 discussion seat",
+  "prompt_edits": [
+    "ADD shared section 0.5 'Gate preflight (deterministic; runs BEFORE the partitioned passes; all 4 models consume as shared baseline)': on a fresh clean clone run verify_release.py and record (a) crash vs clean FAIL, (b) colophon build commit vs actual BUILD_STAMP, (c) manifest page_count vs actual, (d) every 'ships <path>' claim vs git-tracked reality, (e) provenance-ledger schema. The release/reproduction cluster is NOT partitioned to one model - it is the shared preflight.",
+    "0 round header: page count == release_manifest['pdf']['page_count'] - the manifest MUST carry page_count; absence = unenforceable pin = P1 (R2-04).",
+    "2 Qwen partition: clean-clone gate run moves from Qwen's exclusive scope to SHARED preflight (0.5); Qwen keeps provenance/ledger/label/claim-tier + re-checks class against preflight output.",
+    "4 rules: ADD 'Gate must be runnable on a clean clone: a Python traceback (not clean FAIL) on clean clone = P0 - release gate invalid, central reproducibility claim false (R2-01).'",
+    "4 rules: ADD 'Claim-vs-artifact sweep: every ships/carries <path> claim -> git ls-files non-empty OR scoped to regenerable; ships-over-gitignored = auto P1 (R4-01).'",
+    "6 new-class mandate: ADD '9. Build-stamp integrity: build records BUILD_STAMP=git rev-parse HEAD; gate asserts colophon==manifest pdf_build_commit==BUILD_STAMP; colophon naming wrong commit = P1 false-provenance (R2-02).'",
+    "3 required fields: ADD '8. release/reproduction findings must name ROOT CAUSE (script drift vs dataset non-reproducibility vs gitignored artifact), not just symptom; state what the A/B held constant (R3-EX-03, STAT-03).'"
+  ],
+  "gate_additions": [
+    "BUILD_STAMP + colophon/manifest consistency (build writes book/BUILD_STAMP + PDF metadata; gate asserts all three equal + resolves in history).",
+    "pdf.page_count in manifest + gate check (edition-change detector).",
+    "Clean-clone no-crash: handle absent gitignored dirs with clear FAIL not traceback; add --clean-clone mode running documented reproduction end-to-end asserting no exception.",
+    "Ships-claim-vs-git: manuscript 'ships <path>' -> git ls-files non-empty OR scoped regenerable.",
+    "Provenance-ledger schema+completeness: no dup experiment_ids, no nulls in required fields, row count == scored runs (today 30 rows vs 44 manifests, dupes, 91 nulls).",
+    "Dataset+tokenizer pinning: manifest must sha256-pin every dataset+tokenizer the book cites or label 'regenerable, not pinned' - shared root cause of R3-EX-03, STAT-03, R4-01."
+  ],
+  "self_doubts": [
+    "QWEN-R2-04 weakest: an ABSENCE (manifest lacks page_count field), not a false claim; reclassify as gate-addition not book finding.",
+    "QWEN-R4-02 second-weakest: P3 taxonomy drift, lowest impact, READ-ONLY not executed; easiest to downgrade on cross-adjudication."
+  ],
+  "cross_doubts": [
+    {
+      "model": "DeepSeek",
+      "finding": "STAT-03 RETRIEVAL 0.000 dismissal",
+      "doubt": "valid but root-cause incomplete",
+      "why": "Rules out --out/--tag correctly and flags laundering, but never names the ACTUAL cause of the 0.000->1.000 flip: the regenerated dataset. RETRIEVAL is TF-IDF over the dataset; dataset is gitignored and regenerated on clean clone -> index over different content -> different retrieval. Real variable = dataset, not script. Same root cause as release cluster. If fix only relabels without pinning/regenerating dataset deterministically, STAT-03 'closes' but non-reproducible TF-IDF remains."
+    },
+    {
+      "model": "MiMo",
+      "finding": "R3-EX-03 not regenerable",
+      "doubt": "true but root-cause incomplete",
+      "why": "A/B isolates SCRIPT drift (random.seed) but holds the (regenerated) dataset constant, so it does NOT isolate dataset non-reproducibility. Claim false for TWO independent reasons: (a) script drift (confirmed), (b) dataset gitignored+regenerated (not bit-identical). Fixing (a) does not fix (b). Same root cause as STAT-03 and R4-01."
+    }
+  ],
+  "round2_assignment": "KEEP 4-way partition (round 1 validated it: each model found its assigned class and missed the others). BUT pull release/reproduction cluster OUT of Qwen's exclusive scope into SHARED 'gate preflight' (section 0.5) that runs before partitioned passes - one deterministic script all 4 consume as shared baseline. Rationale: round 1's biggest inefficiency was 3 models each expensively discovering a slice of the same cross-cutting cluster. Do NOT re-partition into 5 classes.",
+  "anti_regression_checks": [
+    "assert colophon_build_commit == manifest['pdf_build_commit'] == BUILD_STAMP (+ resolves in history).",
+    "every 'ships <path>' claim: git ls-files non-empty OR scoped regenerable.",
+    "verify_release.py on fresh clean clone exits without Python traceback.",
+    "len(provenance_ledger) == scored runs AND no dup experiment_ids AND no nulls in required fields.",
+    "manifest['pdf']['page_count'] exists AND == actual PDF page count."
+  ]
+}

@@ -230,8 +230,11 @@ but they answer different questions. As two labeled notes:
   pairs).
 - **Evaluation:** an in-distribution test familiar to both arms, and a held-out-family
   test (`h01`/`h02`, 100 tasks each) audited disjoint from *both* arms.
-- **Finding:** LOW 0.950 / 0.000, HIGH 0.743 / 0.550 (three-seed means) — diversity
-  drives transfer to a never-seen family, at a small in-distribution cost.
+- **Finding:** LOW 0.950 / 0.000, HIGH 0.743 / 0.550 (three-seed means) — the combined
+  phrasing/identifier/uniqueness intervention drives transfer to a never-seen family,
+  costing 0.11-0.38 in-distribution accuracy across the three seeds (mean 0.21; at n=3
+  the 95% interval is -0.58 to +0.17, so the direction is consistent in all three runs
+  but the magnitude is not separable from seed noise).
 - **Scope:** one task family, one model size, three seeds; phrasing/identifier
   diversity only — not structural (composition) diversity.
 

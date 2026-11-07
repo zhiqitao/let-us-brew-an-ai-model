@@ -33,9 +33,12 @@ requests; severe failures appeared under altered wording and on untrained struct
 corrected data-scaling sweep is flat (~0.90 from 10 to 300 examples per operation), so
 record count buys nothing in this regime; and the corrected surface factorial collapses
 to ~0 on any prompt-surface change. The corrected equal-count diversity rerun now
-prices surface diversity: at 1,200 records per arm it moves a genuinely held-out
-phrasing family from **0.000 to 0.550 mean**, at a small in-distribution cost
-(**0.950 → 0.743 mean**). One row of the
+prices the combined phrasing/identifier/uniqueness intervention (which does not
+isolate which factor moves the number): at 1,200 records per arm it moves a genuinely held-out
+phrasing family from **0.000 to 0.550 mean**, costing 0.11-0.38 in-distribution accuracy
+across the three seeds (mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the
+direction is consistent in all three runs but the magnitude is not separable from seed
+noise) (**0.950 → 0.743 mean**). One row of the
 matrix below is the superseded flawed study, and we price nothing from it; the
 data-scaling, surface, and diversity rows now carry their corrected replacements.
 
@@ -197,8 +200,12 @@ generalization and composition columns reveal that the cheap number hides a much
 expensive requirement — robust, compositional capability. On that requirement, capacity
 scaling was tested on composition and remained 0.000 at every size we ran; the
 superseded diversity row supports no pricing at all, while the corrected diversity row
-prices phrasing diversity as the lever that buys held-out-family transfer
-(0.000 → 0.550 mean) at a small in-distribution cost (0.950 → 0.743 mean), and the
+prices the combined phrasing/identifier/uniqueness intervention (which does not
+isolate which factor moves the number) as the lever that buys held-out-family transfer
+(0.000 → 0.550 mean), costing 0.11-0.38 in-distribution accuracy across the three seeds
+(mean 0.21; at n=3 the 95% interval is -0.58 to +0.17, so the direction is consistent
+in all three runs but the magnitude is not separable from seed noise) (0.950 → 0.743
+mean), and the
 corrected data-count sweep prices
 record count at **zero marginal return** (flat ~0.90 across a 30× range). The rows we
 *can* price are the

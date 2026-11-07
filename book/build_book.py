@@ -11,13 +11,36 @@ Pipeline:
 
 Run from book/ (or anywhere; paths are resolved relative to this file).
 """
-import os, subprocess, sys
+import os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LATEX = os.path.join(HERE, "latex")
 ROOT = os.path.dirname(HERE)
 FINAL = os.path.join(HERE, "let-us-brew-an-ai-model-v20261001.pdf")
 COVER = os.path.join(HERE, "figures", "fig_cover.pdf")
+
+
+def _build_commit():
+    """Build witness for the PDF metadata: git HEAD at build time (the commit
+    this PDF was actually built from), falling back to the recorded
+    docs/release_manifest.json -> pdf_build_commit. Round-1 QWEN-R2-02 /
+    V3 build-stamp integrity: the witness must live in the PDF itself so the
+    colophon, the manifest and the artifact can be cross-checked."""
+    try:
+        h = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                           capture_output=True, text=True,
+                           timeout=30).stdout.strip()
+        if re.fullmatch(r"[0-9a-f]{40}", h):
+            return h
+    except Exception:
+        pass
+    try:
+        import json
+        with open(os.path.join(ROOT, "docs", "release_manifest.json"),
+                  encoding="utf-8") as f:
+            return json.load(f)["pdf_build_commit"]
+    except Exception:
+        return "unknown-build-commit"
 
 
 def _merge(cover, interior, final):
@@ -34,7 +57,9 @@ def _merge(cover, interior, final):
         "title": "Let Us Brew an AI Model",
         "author": "Zhiqi Tao",
         "subject": "What tiny language models can actually learn when given one job",
-        "keywords": "language model, generalization, empirical investigation",
+        "keywords": ("language model, generalization, empirical investigation; "
+                     f"BUILD_COMMIT={_build_commit()} "
+                     "(pdf_build_commit in docs/release_manifest.json)"),
         "creator": "Hermes / xelatex + pymupdf",
         "producer": "pymupdf",
     })

@@ -6,7 +6,7 @@ A fourth review found stale/contradictory integration defects (wrong diversity
 numbers in a figure caption, a stale Ch11 claim, an unprintable Figure 15.1, a
 stale LOF entry, shifted Appendix C section refs, release-commit provenance).
 Free-form re-reading is not a release gate, so this script asserts MACHINE-
-CHECKED invariants in four phases:
+CHECKED invariants in a PREFLIGHT plus five phases (A-E):
 
   A. manifest invariants  — parse artifacts/manifests/*.json and assert the
      canonical corrected values (data scaling, diversity, surface 2x2,
@@ -37,6 +37,29 @@ CHECKED invariants in four phases:
      cites (an unpinned cited tokenizer = the drift gap this check closes);
      and assert the manifest documents the two-commit reproduction structure
      (tag = experiment snapshot, build commit = gate/runners).
+  E. EPUB stale sweep   — unzip the shipped EPUB, extract its text, and assert the
+     corrected headline strings (0.743 / 0.950 / 0.9167 / 0.893) are present and
+     the superseded ones (high diversity 1.000 1.000, minimal diversity 0.500
+     0.000, the 0.100/0.098/0.300/0.641 data_scaling row, Stage-4 baseline
+     884,224 (0.88M) 0.900) absent; SKIP cleanly when the EPUB file is absent.
+     The PDF being clean is NOT evidence the EPUB is (round-1 R3-EX-01).
+
+PREFLIGHT (before every phase): a clean clone has no artifacts/tokenizer/
+(gitignored, absent from every commit) and phase D used to crash on it with a
+FileNotFoundError traceback. A missing gate-opened input dir now prints one
+line -- "NOT A VERIFIABLE CLEAN CLONE ..." -- and exits 1 with NO traceback
+(round-1 QWEN-R2-01).
+
+Round-1 additions beyond the original four phases: phase C asserts the PDF's
+CONTENT matches the recorded build commit (a stable string ADDED by
+docs/release_manifest.json's pdf_build_commit and absent in its parent must
+appear in the PDF; conversely text added AFTER the recorded commit must not --
+a stale pdf_build_commit fails either way) and that manifest pdf.page_count
+equals the actual page count (SKIP with a note when null); phase D asserts the
+41-row provenance-ledger schema (len 41, unique experiment_ids, no nulls, row
+set == Appendix C Table C.12) and that every produced_by_commit resolves in
+git, with the producing script's blob at that commit recorded where
+recoverable (script-DRIFT is recorded, not yet failed -- V3 material).
 
 Historical values (the flawed 42-record run's 0.500/1.000, the Stage-3
 mixed-factor 0.350, "42 versus 1,200") are legitimate WHENEVER they sit inside
@@ -76,7 +99,12 @@ MANIFESTS = os.path.join(ROOT, "artifacts", "manifests")
 
 RELEASE_TAG = "v20261001"
 RELEASE_COMMIT = "a45a881158ed076f615f6d3bc2e72640dc5cdced"   # git rev-parse v20261001^{commit}
-BUILD_COMMIT = "af32fb8b1798f83553c0f5078fd34b62063b864d"     # git rev-parse HEAD at build
+# The PDF build commit is NOT a constant here: its single source of truth is
+# docs/release_manifest.json -> pdf_build_commit (round-1 QWEN-R2-02: a
+# hardcoded colophon hash went false the moment the PDF was rebuilt). This is
+# the PRE-FIX hardcoded value, kept only so the gate can assert it appears
+# NOWHERE in the source surfaces any more.
+LEGACY_BUILD_COMMIT = "af32fb8b1798f83553c0f5078fd34b62063b864d"
 STALE_COMMIT = "ae1ec01"                                       # never print this
 
 # Canonical tokenizer hashes = SHA-256 of the tokenizer FILE ON DISK (the
@@ -108,6 +136,17 @@ TOK_DIV_VOCAB = "d43d4a09d7b1f57e0bb4d8898560ce830176d4546f4fe654b5e676edf2396c1
 TOK_SURF_VOCAB = "3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd71e"
 RELEASE_MANIFEST = os.path.join(ROOT, "docs", "release_manifest.json")
 LOCKFILE = os.path.join(ROOT, "requirements-lock.txt")
+LEDGER = os.path.join(ROOT, "docs", "reviews", "loop", "provenance_ledger.json")
+LEDGER_EXPECTED_ROWS = 41                  # == Appendix C Table C.12 rows
+# EPUB headline strings (round-1 R3-EX-01): corrected values that must be in a
+# current EPUB, superseded values that must not be.
+EPUB_MUST_HAVE = ["0.743", "0.950", "0.9167", "0.893"]
+EPUB_MUST_NOT_HAVE = [
+    "high diversity 1.000 1.000",
+    "minimal diversity 0.500 0.000",
+    "data_scaling 0.100 / 0.098 / 0.300 / 0.641",
+    "Stage-4 baseline 884,224 (0.88M) 0.900",
+]
 
 # canonical corrected values -------------------------------------------------
 DS_AGG = {  # aggregate pass@1 by size per seed (data_scaling_corrected)
@@ -162,6 +201,103 @@ def window_ok(text, span, pattern):
             line = text[:m.start()].count("\n") + 1
             return False, f"line {line}: {text[max(0,m.start()-60):m.end()+60]!r}"
     return True, ""
+
+
+def _manifest():
+    """docs/release_manifest.json as a dict ({} when absent/unreadable)."""
+    try:
+        with open(RELEASE_MANIFEST, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def _git(*args, timeout=60):
+    """Run git in ROOT; return (returncode, stdout). Never raises."""
+    try:
+        r = subprocess.run(["git", *args], cwd=ROOT, capture_output=True,
+                           text=True, timeout=timeout)
+        return r.returncode, r.stdout.strip()
+    except Exception as e:                                  # pragma: no cover
+        return 127, str(e)
+
+
+def preflight():
+    """QWEN-R2-01: a clean clone has no gitignored gate inputs; phase D used to
+    die on os.listdir(artifacts/tokenizer) with a FileNotFoundError traceback.
+    Fail fast with ONE clear line and exit 1 -- never a traceback."""
+    missing = []
+    tok_dir = os.path.join(ROOT, "artifacts", "tokenizer")
+    if not os.path.isdir(tok_dir):
+        missing.append(("artifacts/tokenizer/",
+                        "NOT A VERIFIABLE CLEAN CLONE — the 7 pinned tokenizer "
+                        "files are gitignored; run the quickstart generation "
+                        "step (scripts/generate_data.py + the run scripts) "
+                        "before the gate"))
+    if not os.path.isdir(MANIFESTS):
+        missing.append(("artifacts/manifests/",
+                        "REQUIRED INPUT DIR MISSING — artifacts/manifests/ is "
+                        "tracked in git; this working tree is incomplete"))
+    if missing:
+        for path, msg in missing:
+            print(f"[PREFLIGHT] FAIL  {msg}  (missing: {path})")
+        sys.exit(1)
+
+
+# --- build-commit witness helpers (QWEN-R2-02) -----------------------------
+_MD_CODEISH = re.compile(r"[$\\<>{}^~]")
+_STABLE_MIN_LEN = 24
+_STABLE_MIN_WORDS = 5
+_STABLE_MAX = 6          # forward candidates per commit
+_STABLE_MAX_REV = 40     # reverse candidates scanned
+
+
+def _stable_strings(diff_text, cap):
+    """Prose strings ADDED by a diff (lines starting with '+') that survive a
+    markdown->LaTeX->PDF round trip: no table pipes, headings, bullets,
+    quotes/apostrophes (pandoc smart-quotes them), ellipsis/double hyphens
+    (pandoc rewrites those), or LaTeX specials. Markdown inline markers that do
+    not render (`code`, **bold**) are stripped, not rejected."""
+    out = []
+    for line in diff_text.splitlines():
+        if not line.startswith("+") or line.startswith("+++"):
+            continue
+        t = line[1:].strip()
+        if len(t) < _STABLE_MIN_LEN or len(t.split()) < _STABLE_MIN_WORDS:
+            continue
+        if t.startswith(("#", "|", ">", "-", "*", "+", "~", "`")):
+            continue
+        if "'" in t or '"' in t or ".." in t or "--" in t:
+            continue
+        if _MD_CODEISH.search(t) or "](" in t:
+            continue
+        t = t.replace("`", "").replace("*", "")
+        if len(t) < _STABLE_MIN_LEN:
+            continue
+        out.append(t)
+        if len(out) >= cap:
+            break
+    return out
+
+
+def _added_at(commit):
+    """Stable strings ADDED to book/manuscript by `commit` vs its first parent."""
+    rc, parent = _git("rev-parse", commit + "^")
+    if rc == 0:
+        rc, diff = _git("diff", parent, commit, "--", "book/manuscript")
+    else:                                   # root commit (or unresolvable parent)
+        rc, diff = _git("diff", commit, "--", "book/manuscript")
+    if rc != 0:
+        return None, f"git diff failed for {commit[:12]}: {diff[:120]}"
+    return _stable_strings(diff, _STABLE_MAX), ""
+
+
+def _added_since(commit):
+    """Stable strings added to book/manuscript AFTER `commit` (commit..HEAD)."""
+    rc, diff = _git("diff", commit, "HEAD", "--", "book/manuscript")
+    if rc != 0:
+        return None, f"git diff {commit[:12]}..HEAD failed: {diff[:120]}"
+    return _stable_strings(diff, _STABLE_MAX_REV), ""
 
 
 # ===========================================================================
@@ -424,26 +560,44 @@ def phase_b():
         ("n = {n}", "make_figures: Fig 15.1 separate n row"),
     ]:
         ok_all &= check("B", name, sub in mk_fig)
+    # 0.350 / 0.143 are stale DATA values. A matplotlib (x, y) coordinate is not
+    # data, so strip coordinate positions before matching: the R1P-004 figure
+    # pass legitimately added fig.text(0.5, 0.350, ...) as a y-coordinate.
+    def _strip_coords(src: str) -> str:
+        return re.sub(r"(\(\s*-?[\d.]+\s*,\s*)(?:0\.350|0\.143)(?=\s*,)",
+                      r"\1<coord>", src)
+    mk_fig_nc, mk_con_nc = _strip_coords(mk_fig), _strip_coords(mk_con)
     for pat, name in [(r"0\.350", "make_figures: no stale 0.350"),
                       (r"0\.143", "make_figures: no stale 0.143")]:
-        ok_all &= check("B", name, not re.search(pat, mk_fig))
+        ok_all &= check("B", name, not re.search(pat, mk_fig_nc))
     ok_all &= check("B", "make_concept_figures: Fig 13.2 right panel labeled "
                          "'flawed original vs corrected measured (n=100)'",
                     "flawed original vs corrected measured (n=100)" in mk_con)
     ok_all &= check("B", "make_concept_figures: no stale 0.350 chart label",
-                    not re.search(r"0\.350", mk_con))
+                    not re.search(r"0\.350", mk_con_nc))
     ok_all &= check("B", "make_concept_figures: corrected 0.743/0.550 in "
                          "capability-map rows", "0.743" in mk_con and "0.550" in mk_con)
 
     # --- B9 provenance ---
-    ok_all &= check("B", f"appendix C names the release commit {RELEASE_COMMIT}",
+    # The build commit lives in ONE place (docs/release_manifest.json ->
+    # pdf_build_commit); appendix C and the md_to_latex colophon must point at
+    # it, never restate a hash (QWEN-R2-02: the hardcoded colophon went false).
+    ok_all &= check("B", "appendix C no longer hardcodes the PDF build commit — "
+                         "it points at docs/release_manifest.json (pdf_build_commit)",
+                    LEGACY_BUILD_COMMIT not in appc and "pdf_build_commit" in appc)
+    ok_all &= check("B", f"appendix C still names the release commit {RELEASE_COMMIT}",
                     RELEASE_COMMIT in appc)
-    ok_all &= check("B", f"appendix C names the PDF build commit {BUILD_COMMIT}",
-                    BUILD_COMMIT in appc)
     ok_all &= check("B", "md_to_latex colophon names the release commit",
                     RELEASE_COMMIT in md_tex)
-    ok_all &= check("B", "md_to_latex colophon names the PDF build commit",
-                    BUILD_COMMIT in md_tex)
+    ok_all &= check("B", "md_to_latex colophon derives the PDF build commit from "
+                         "git at build time (no hardcoded build hash)",
+                    "rev-parse" in md_tex and LEGACY_BUILD_COMMIT not in md_tex)
+    ok_all &= check("B", "no surface still carries the pre-fix hardcoded build "
+                         "commit af32fb8b (appendix C, md_to_latex, README)",
+                    LEGACY_BUILD_COMMIT not in appc and
+                    LEGACY_BUILD_COMMIT not in md_tex and
+                    LEGACY_BUILD_COMMIT not in
+                    open(os.path.join(ROOT, "README.md"), encoding="utf-8").read())
     ok_all &= check("B", "manuscript: no stale commit ae1ec01",
                     STALE_COMMIT not in all_ms)
     # exactly one release identifier: no other 7-40 hex commit strings
@@ -451,7 +605,7 @@ def phase_b():
     for f, t in list(ms_text.items()) + [("md_to_latex.py", md_tex)]:
         for m2 in re.finditer(r"(?<![0-9a-zA-Z/])([0-9a-f]{7,39})(?![0-9a-zA-Z])", t):
             h = m2.group(1)
-            if h in (RELEASE_COMMIT[:len(h)], BUILD_COMMIT[:len(h)]):
+            if h == RELEASE_COMMIT[:len(h)]:
                 continue
             ctx = t[max(0, m2.start() - 40):m2.end() + 40]
             if re.search(r"[0-9a-f]{32}", ctx):   # part of a longer sha
@@ -471,11 +625,15 @@ def phase_b():
                               timeout=30).stdout.strip()
         ok_all &= check("B", f"git: {RELEASE_TAG}^{{commit}} == {RELEASE_COMMIT}",
                         tag == RELEASE_COMMIT, f"got {tag}")
-        ok_all &= check("B", "git: recorded PDF build commit resolves in history",
+        pb = (_manifest().get("pdf_build_commit") or "")
+        ok_all &= check("B", "git: the manifest's recorded PDF build commit "
+                             "(docs/release_manifest.json -> pdf_build_commit) "
+                             "resolves in history",
+                        bool(re.fullmatch(r"[0-9a-f]{40}", pb)) and
                         subprocess.run(["git", "cat-file", "-e",
-                                        BUILD_COMMIT + "^{commit}"], cwd=ROOT,
+                                        pb + "^{commit}"], cwd=ROOT,
                                        capture_output=True).returncode == 0,
-                        f"BUILD_COMMIT {BUILD_COMMIT[:8]} not a commit")
+                        f"pdf_build_commit {pb[:8] or '(missing)'} not a commit")
     except Exception as e:  # pragma: no cover
         ok_all &= check("B", "git provenance query", False, str(e))
 
@@ -531,18 +689,28 @@ def phase_b():
 # ===========================================================================
 def _loose(pages):
     """Page text normalized for phrase matching: running headers and lone
-    page numbers stripped (they interrupt sentences at page breaks),
-    end-of-line hyphenation rejoined, whitespace collapsed."""
+    page numbers stripped (they interrupt sentences at page breaks — including
+    appendix running heads, which used to leak into page-crossing spans and
+    break the build-commit witness), end-of-line hyphenation rejoined,
+    whitespace collapsed."""
     out = []
     for t in pages:
         lines = t.splitlines()
-        while lines and not lines[0].strip():
-            lines.pop(0)
-        if lines and (re.match(r"^Chapter \d+\.", lines[0]) or
-                      lines[0].strip() in ("Let Us Brew an AI Model",)):
-            lines.pop(0)
-        if lines and re.fullmatch(r"\d{1,3}", lines[0].strip()):
-            lines.pop(0)
+        # strip any leading run of empties / running heads / page numbers, in
+        # whatever order the extractor emitted them at the page top
+        while True:
+            while lines and not lines[0].strip():
+                lines.pop(0)
+            if not lines:
+                break
+            first = lines[0].strip()
+            if (re.match(r"^Chapter \d+\.", first) or
+                    re.match(r"^Appendix [A-Z]\.", first) or
+                    first in ("Let Us Brew an AI Model",) or
+                    re.fullmatch(r"\d{1,3}", first)):
+                lines.pop(0)
+                continue
+            break
         if lines and re.fullmatch(r"\d{1,3}", lines[-1].strip()):
             lines.pop()
         out.append("\n".join(lines))
@@ -702,7 +870,6 @@ def phase_c(pdf_path):
         ("600/600", "surface RETRIEVAL kept-cell numerator"),
         ("605", "diversity high-arm unique pairs"),
         (RELEASE_COMMIT, "release commit (full hash)"),
-        (BUILD_COMMIT, "PDF build commit (full hash)"),
         ("no consistent monotonic effect on familiar-prompt accuracy",
          "ch11 softened claim in the built book"),
         ("combined phrasing/identifier", "ch13 combined-intervention label"),
@@ -710,6 +877,63 @@ def phase_c(pdf_path):
          "ch11 equal-count diversity pointer"),
     ]:
         ok_all &= check("C", f"PDF contains: {name}", _st(sub) in st)
+
+    # --- C8 build-stamp integrity (QWEN-R2-02): the PDF must match the
+    # --- RECORDED build commit (docs/release_manifest.json -> pdf_build_commit),
+    # --- read from the manifest, never from a hardcoded constant ---
+    rm_c = _manifest()
+    recorded = rm_c.get("pdf_build_commit") or ""
+    ok_all &= check("C", "release manifest records pdf_build_commit (full 40-hex)",
+                    bool(re.fullmatch(r"[0-9a-f]{40}", recorded)), repr(recorded))
+    ok_all &= check("C", "PDF title-page colophon carries the recorded "
+                         "pdf_build_commit (full hash from docs/release_manifest.json)",
+                    bool(recorded) and _st(recorded) in st,
+                    f"recorded {recorded[:12] or '(missing)'} not found in PDF text")
+    # forward witness: a stable string ADDED by the recorded build commit
+    # (absent in its parent) must be in the PDF text.
+    if recorded and re.fullmatch(r"[0-9a-f]{40}", recorded):
+        added, err = _added_at(recorded)
+        if added is None:
+            check("C", "PDF content matches the recorded build commit "
+                       "(string added by pdf_build_commit, absent in its parent, "
+                       "present in the PDF)", False, err)
+            ok_all = False
+        elif not added:
+            check("C", "PDF content matches the recorded build commit "
+                       "(forward witness)", True,
+                  f"recorded commit {recorded[:12]} added no stable manuscript "
+                  f"string; verified via the no-postdating-text check instead")
+        else:
+            missing = [s for s in added if _st(s) not in st]
+            ok_all &= check("C", f"PDF content matches the recorded build commit: "
+                                 f"all {len(added)} string(s) added by "
+                                 f"{recorded[:12]} (absent in its parent) appear "
+                                 f"in the PDF", not missing,
+                            f"not in PDF: {missing[:2]!r}")
+        # reverse witness: the PDF must NOT contain manuscript text added AFTER
+        # the recorded commit -- that is exactly the stale-colophon defect.
+        since, err = _added_since(recorded)
+        if since is None:
+            check("C", "PDF contains no manuscript text added after the recorded "
+                       "build commit (recorded commit is not stale)", False, err)
+            ok_all = False
+        else:
+            leaked = [s for s in since if _st(s) in st]
+            ok_all &= check("C", f"PDF contains no manuscript text added after "
+                                 f"the recorded build commit {recorded[:12]} "
+                                 f"(stale pdf_build_commit would fail here)",
+                            not leaked, f"post-dates the record: {leaked[:2]!r}")
+
+    # --- C9 page-count pin (QWEN-R2-04): manifest pdf.page_count vs reality ---
+    pc = (rm_c.get("pdf") or {}).get("page_count")
+    if pc is None:
+        check("C", "manifest pdf.page_count == actual page count — SKIP "
+                   "(page_count is null; the parent records it after rebuild)",
+              True, f"actual {doc.page_count} pages, manifest null (NOT checked)")
+    else:
+        ok_all &= check("C", f"manifest pdf.page_count ({pc}) == actual PDF "
+                             f"page count ({doc.page_count})",
+                        pc == doc.page_count, f"actual {doc.page_count}")
 
     # --- C2 stale values absent (outside labeled historical windows) ---
     for pat, name in [
@@ -812,10 +1036,15 @@ def phase_d(pdf_required=True):
                          f"{RELEASE_COMMIT[:12]}…",
                     rm.get("tag_target_commit") == RELEASE_COMMIT,
                     str(rm.get("tag_target_commit")))
-    ok_all &= check("D", "release manifest PDF build commit == "
-                         f"{BUILD_COMMIT[:12]}…",
-                    rm.get("pdf_build_commit") == BUILD_COMMIT,
-                    str(rm.get("pdf_build_commit")))
+    pb = rm.get("pdf_build_commit") or ""
+    ok_all &= check("D", "release manifest pdf_build_commit is a full 40-hex "
+                         "commit that resolves in git (its truth vs the PDF "
+                         "content is asserted in phase C)",
+                    bool(re.fullmatch(r"[0-9a-f]{40}", pb)) and
+                    subprocess.run(["git", "cat-file", "-e", pb + "^{commit}"],
+                                   cwd=ROOT,
+                                   capture_output=True).returncode == 0,
+                    str(pb))
     want_tok = {k: TOK_EXPECTED[k] for k in TOK_FILES}
     ok_all &= check("D", "release manifest tokenizer_sha256 == the disk hashes "
                          "(all 7 tokenizer files)",
@@ -853,17 +1082,19 @@ def phase_d(pdf_required=True):
     ok_all &= check("D", "release manifest documents the two-commit structure "
                          "(tag = experiment-data snapshot; build commit = gate + "
                          "corrected runners) with the exact checkout/verify commands",
-                    RELEASE_COMMIT in repro_txt and BUILD_COMMIT in repro_txt and
+                    RELEASE_COMMIT in repro_txt and "pdf_build_commit" in repro_txt and
                     "verify_release.py" in repro_txt and
                     bool(repro.get("run_the_release_gate")) and
                     bool(repro.get("read_the_experiment_snapshot")),
                     repro_txt[:200])
     appc_txt = read_ms("appendix_c_experiment_registry.md")
     ok_all &= check("D", "appendix C publication status gives the exact "
-                         "'git checkout <build commit>' + verify_release.py commands",
-                    f"git checkout {BUILD_COMMIT}" in appc_txt and
+                         "'git checkout <pdf_build_commit>' + verify_release.py "
+                         "commands (build hash read from the manifest, not hardcoded)",
+                    "git checkout" in appc_txt and "pdf_build_commit" in appc_txt and
                     "scripts/verify_release.py" in appc_txt and
-                    "experiment-data snapshot" in appc_txt,
+                    "experiment-data snapshot" in appc_txt and
+                    LEGACY_BUILD_COMMIT not in appc_txt,
                     "two-commit instructions missing from Appendix C")
     pdf_rel = (rm.get("pdf") or {}).get("path")
     pdf_abs = os.path.join(ROOT, pdf_rel) if pdf_rel else None
@@ -875,6 +1106,140 @@ def phase_d(pdf_required=True):
     else:
         ok_all &= check("D", "release manifest PDF exists to hash",
                         not pdf_required, pdf_rel or "(no path recorded)")
+    # --- D5 provenance-ledger schema (QWEN-R2-03) + producing-commit resolve
+    # --- (R3-EX-02): 41 rows == Appendix C Table C.12, unique ids, uniform
+    # --- no-.json suffix, no nulls, every produced_by_commit resolves, and the
+    # --- producing script's blob at that commit is recorded where recoverable.
+    # --- Script DRIFT (recorded blob != the blob shipped today) is recorded,
+    # --- not failed -- failing on it is a V3 addition, by design.
+    if not os.path.exists(LEDGER):
+        ok_all &= check("D", "docs/reviews/loop/provenance_ledger.json exists",
+                        False, LEDGER)
+    else:
+        try:
+            with open(LEDGER, encoding="utf-8") as f:
+                ledger = json.load(f)
+        except ValueError as e:
+            ledger = None
+            ok_all &= check("D", "provenance ledger parses as JSON", False, str(e))
+        if isinstance(ledger, list):
+            ok_all &= check("D", f"provenance ledger has exactly "
+                                 f"{LEDGER_EXPECTED_ROWS} rows (== Appendix C "
+                                 f"Table C.12)", len(ledger) == LEDGER_EXPECTED_ROWS,
+                            f"got {len(ledger)}")
+            ids = [r.get("experiment_id") for r in ledger]
+            dups = sorted({i for i in ids if ids.count(i) > 1})
+            ok_all &= check("D", "provenance ledger experiment_ids are unique",
+                            len(ids) == len(set(ids)) and
+                            all(isinstance(i, str) and i for i in ids),
+                            f"duplicates {dups[:4]}")
+            suffixed = [i for i in ids
+                        if isinstance(i, str) and i.endswith(".json")]
+            ok_all &= check("D", "provenance ledger experiment_ids use the uniform "
+                                 "no-.json suffix convention",
+                            not suffixed, f"{suffixed[:4]}")
+            nulls = [(r.get("manifest"), k) for r in ledger
+                     for k, v in r.items() if v is None]
+            ok_all &= check("D", "provenance ledger carries no nulls (absent "
+                                 "values are marked 'not-recorded')",
+                            not nulls, f"{nulls[:5]}")
+            req = ["manifest", "experiment_id", "seed", "steps", "n_per_op",
+                   "model_params", "final_loss", "tokenizer_vocab",
+                   "produced_by_commit", "producing_script",
+                   "producing_script_blob"]
+            miss = [(r.get("manifest"), k) for r in ledger
+                    for k in req if k not in r]
+            ok_all &= check("D", "every ledger row carries the full schema "
+                                 "(config fields + produced_by_commit + "
+                                 "producing-script blob)", not miss, f"{miss[:5]}")
+            appc12 = read_ms("appendix_c_experiment_registry.md")
+            m12 = re.search(r"\*\*Table C\.12[^\n]*\n(.*?)(?=\n\*\*|\n## )",
+                            appc12, re.S)
+            c12 = re.findall(r"^\|\s*`([^`\n]+\.json)`\s*\|",
+                             m12.group(1) if m12 else "", re.M)
+            led = [r.get("manifest") for r in ledger]
+            ok_all &= check("D", "provenance ledger row set == Appendix C Table "
+                                 "C.12 manifest rows",
+                            sorted(led) == sorted(c12) and
+                            len(c12) == LEDGER_EXPECTED_ROWS,
+                            f"ledger {len(led)}, Table C.12 {len(c12)}, "
+                            f"symmetric diff {sorted(set(led) ^ set(c12))[:4]}")
+            bad_commit, bad_blob = [], []
+            for r in ledger:
+                c = r.get("produced_by_commit")
+                resolves = isinstance(c, str) and bool(
+                    re.fullmatch(r"[0-9a-f]{40}", c))
+                if resolves:
+                    resolves = subprocess.run(
+                        ["git", "cat-file", "-e", c + "^{commit}"], cwd=ROOT,
+                        capture_output=True).returncode == 0
+                if not resolves:
+                    bad_commit.append((r.get("manifest"), c))
+                    continue
+                script = r.get("producing_script")
+                blob = r.get("producing_script_blob")
+                if script and script != "not-recorded":
+                    rc, want = _git("rev-parse", f"{c}:{script}")
+                    if rc == 0:
+                        if blob != want:
+                            bad_blob.append((r.get("manifest"), blob, want))
+                    elif blob != "not-recorded":
+                        bad_blob.append((r.get("manifest"), blob,
+                                         "script absent at that commit"))
+            ok_all &= check("D", "every ledger produced_by_commit is a full "
+                                 "40-hex commit that resolves (git cat-file -e)",
+                            not bad_commit, f"{bad_commit[:3]}")
+            ok_all &= check("D", "every ledger producing_script_blob == the "
+                                 "producing script's blob at produced_by_commit "
+                                 "(recorded; script drift is NOT failed yet)",
+                            not bad_blob, f"{bad_blob[:3]}")
+    return ok_all
+
+
+# ===========================================================================
+# PHASE E — shipped-EPUB stale sweep (round-1 R3-EX-01)
+# ===========================================================================
+def phase_epub():
+    print("\n== PHASE E: EPUB stale sweep ==")
+    rm = _manifest()
+    ok_all = check("E", "release manifest records an epub entry (path + sha256)",
+                   "epub" in rm and bool((rm.get("epub") or {}).get("path")),
+                   str(rm.get("epub")))
+    ep = rm.get("epub") or {}
+    rel = ep.get("path") or "book/let-us-brew-an-ai-model-v20261001.epub"
+    abs_p = os.path.join(ROOT, rel)
+    if not os.path.exists(abs_p):
+        check("E", f"EPUB present to sweep ({rel}) — SKIP (absent; rebuild with "
+                   f"book/build_epub.py)", True,
+              "EPUB not on disk; the stale sweep was NOT run by this phase")
+        return ok_all
+    try:
+        import zipfile
+        import html as _html
+        with zipfile.ZipFile(abs_p) as z:
+            parts = [re.sub(r"<[^>]+>", " ", z.read(n).decode("utf-8", "replace"))
+                     for n in z.namelist()
+                     if n.endswith((".xhtml", ".html", ".htm"))]
+        text = re.sub(r"\s+", " ", _html.unescape(" ".join(parts)))
+    except Exception as e:
+        check("E", "EPUB unzips and its text extracts", False, str(e))
+        return False
+    for s in EPUB_MUST_HAVE:
+        ok_all &= check("E", f"EPUB carries the corrected headline string {s!r}",
+                        s in text, "stale EPUB — rebuild with book/build_epub.py")
+    for s in EPUB_MUST_NOT_HAVE:
+        ok_all &= check("E", f"EPUB no longer carries the superseded string {s!r}",
+                        s not in text,
+                        "stale EPUB — rebuild with book/build_epub.py")
+    sha = ep.get("sha256")
+    if sha is None:
+        check("E", "manifest epub.sha256 == sha256(EPUB) — SKIP (sha256 is null; "
+                   "the parent records it after rebuild)", True,
+              "epub.sha256 null (NOT checked)")
+    else:
+        got = _sha256(abs_p)
+        ok_all &= check("E", f"manifest epub.sha256 == sha256({rel})",
+                        sha == got, f"manifest {sha}, file {got}")
     return ok_all
 
 
@@ -887,9 +1252,11 @@ def main():
     ap.add_argument("--json", action="store_true", help="print a JSON summary")
     args = ap.parse_args()
 
+    preflight()          # QWEN-R2-01: clean-clone missing inputs => 1 line, exit 1
     phase_a()
     phase_b()
     phase_d(pdf_required=not args.no_pdf)
+    phase_epub()         # R3-EX-01: stale-EPUB sweep (SKIP when the EPUB is absent)
     pdfs = args.pdf
     if pdfs is None and not args.no_pdf:
         pdfs = [p for p in (

@@ -1,0 +1,60 @@
+{
+  "model": "Ornith-1.5-122B",
+  "delegation_id": "deleg_4b92a0c4",
+  "phase": "round1 Phase-3 discussion seat",
+  "root_cause_diagnosis": "The cheap cross-cutting deterministic sweeps (stale-fragment grep, artifact-existence) were SILOED by class partitioning, so the round-1 headline (release/reproduction) fell at the MiMo/Qwen seam. V3 should run those sweeps in EVERY pass and re-partition so one owner holds release-artifact integrity end-to-end.",
+  "cheapest_checks_that_would_have_caught_cluster": [
+    "git log -1 --format=%H -- book/manuscript book/latex == manifest pdf_build_commit (false-colophon) — one-liner, no execution.",
+    "git ls-files trackedness for cited artifacts (not os.path.exists) — one-liner."
+  ],
+  "prompt_edits": [
+    "§2: partition ONLY the expensive work (re-derivation, vision). EVERY pass MUST run the full deterministic stale-fragment sweep + cited-artifact existence/gitignore assert — cheap and cross-cutting. A model hitting companion-surface staleness outside its class still files it. (This is the cheap non-visual check I could have run but partitioning told me not to.)",
+    "§2 Ornith class: require a DETERMINISTIC bbox-overlap extractor as primary duty (span intersections callout/annotation vs gloss/axis/caption, flag overlap >6pt) so overlap defects don't depend on vision. Soften 8pt floor: READABILITY FLAG not integrity gate — sub-8pt interior label is P3 unless it renders a required value illegible (captions 10.9pt pass).",
+    "§4 stale-fragment sweep FIRST: expand scope to EVERY release surface: book/manuscript/*.md, book/latex/*, built EPUB (unzip+extract HTML), book/_assembled.md, book/_for_review.md, provenance_ledger.json, README, release_manifest.json. PDF being clean is NOT evidence companion surfaces are; round-1 stale defects lived entirely outside the PDF.",
+    "§6 mandate 7 + §0: provenance ground-truth — assert LAST commit touching book/manuscript or book/latex == manifest pdf_build_commit. A PDF whose content postdates its claimed build commit = P1 false-colophon even when manifest+colophon+gate all agree on the wrong commit. (Round 1: claimed af32fb8b, real 49831ce4.)",
+    "§6 mandate 4: reproduction-from-the-artifact MANDATORY every round, front-load cheap check — BEFORE any build, assert every cited artifact is git-TRACKED (git ls-files), not merely on disk; gitignored cited tokenizer/dataset/checkpoint = deterministic P1 (QWEN-R2-01 crash + R4-01 false claim).",
+    "§3 evidence tiers: a finding whose only evidence is model vision is at most HIGH-CONFIDENCE INFERENCE; to reach CONFIRMED it must carry deterministic bbox/pt measurement. 'I saw it' is never CONFIRMED. (Caps vision-only R4G-005.)",
+    "§7 release gate: add to READY conditions that verify_release.py runs the companion-surface sweeps (EPUB + build intermediates + provenance ledger) and they are green — in-gate, not out-of-band manual grep."
+  ],
+  "gate_additions": [
+    "EPUB stale-fragment sweep: unzip shipped EPUB, extract text, run window_ok() stale-value + status-phrase patterns (0.500->1.000, 0.100, 0.641, 0.88M=0.900, 'not yet', 'still needs'); hit outside labeled window = P1. (Catches R3-EX-01; gate currently opens only PDFs.)",
+    "Companion-surface sweep: same sweep over book/_assembled.md, book/_for_review.md, provenance_ledger.json, README, release_manifest.json — files phase B never reads (outside book/manuscript/). (Catches R3-EX-05, QWEN-R2-03.)",
+    "Cited-artifact git-trackedness assert: for every path claimed shipped under artifacts/, assert git ls-files non-empty (TRACKED, not os.path.exists — on disk datasets exist but are gitignored, so exists() passes the defect silently). (Catches QWEN-R2-01 + R4-01.)",
+    "Provenance-ledger schema/row-count: row count == corrected run manifests on disk (30 vs 41 = FAIL); no dup experiment_id; uniform .json suffix; no null required fields. (Catches QWEN-R2-03.)",
+    "Colophon-vs-build ground truth: git log -1 --format=%H -- book/manuscript book/latex == jq .pdf_build_commit; mismatch = P1 false-colophon. (Catches QWEN-R2-02; confirmed 49831ce4 != af32fb8b.)",
+    "Reproduce-target existence: parse Makefile, assert every .PHONY reproduce target + every script path in reproduction instructions exists (test -f scripts/reproduce.py). (Catches R3-EX-04.)",
+    "LOF-register parity: figure ID set from built PDF LOF == on-disk figure sources == review register; zero drift. (Locks 18-vs-19 class.)",
+    "Render-geometry span-overlap extension: phase C7 beyond digests — no callout/annotation span bbox overlaps adjacent gloss/axis/caption span by >6pt (deterministic, not vision)."
+  ],
+  "self_doubts": [
+    "R1P-004 WEAKEST on defect criterion: pt values deterministic but the 8pt threshold is an INVENTED constant, not grounded in a readability standard; sub-8pt axis/legend labels common in published figures; all captions pass 10.9pt so no required value illegible. Likely style preference elevated to finding — downgrade to observation/not-a-defect.",
+    "R4G-005 WEAKEST on evidence: model-vision-only, no bbox backing; decorative-arrow overlap is aesthetic not text-integrity. My own pass refuted similar clipping on 12.1/15.1, showing vision-overlap claims are my most error-prone output — drop or convert to bbox measurement before it counts."
+  ],
+  "cross_doubts": [
+    {
+      "finding": "QWEN-R2-04 (no page-count field, P3)",
+      "doubt": "not a defect at all",
+      "reason": "Manifest pinning tag+tag-target+build-commit+PDF sha is sufficient provenance; page count recoverable from sha and commit message. Spec nicety, not integrity gap — inflates P3 tail with non-defects."
+    },
+    {
+      "finding": "QWEN-R4-02 (epistemic-label drift, P3)",
+      "doubt": "not a real reader-facing defect",
+      "reason": "[SUPERSEDED] is a legitimate operational status marker even if not in README's 6-level taxonomy; README taxonomy may be aspirational; glossary mismatch minor. Harm near-zero; risks training the loop to file vocabulary-consistency complaints as defects."
+    },
+    {
+      "finding": "MiMo R3-EX-02 P1 (producing script != shipped script)",
+      "doubt": "P1 severity / foul framing",
+      "reason": "Direction of change (adding per-arm seeds) moves TOWARD reproducibility; actual harm (clean-clone re-run not reproducing) already caught by R3-EX-03 + QWEN-R2-01. R3-EX-02 mostly double-counts that non-reproduction — should be P2 provenance-hygiene note, not standalone P1."
+    }
+  ],
+  "round2_assignment": "RE-PARTITION (not keep, not rotate). Round 1 proved defect classes are real and partitioning reduces shared-interpretation correlation, BUT highest-severity defects are CROSS-CUTTING — release/reproduction headline + stale-companion-surfaces theme lived at the SEAM between MiMo (execution) and Qwen (provenance); disjoint-class partitioning strands exactly those. Re-partition so each owner holds ALL surfaces for their dimension end-to-end: (1) RELEASE-ARTIFACT INTEGRITY = one owner MERGES execution + manifest/ledger + EPUB + build intermediates + Makefile reproduce + clean-clone + colophon-vs-build ground truth (closes the seam that produced the round-1 headline); (2) QUANT/STATISTICS/INTERVENTION = DeepSeek unchanged (self-contained, high-yield); (3) VISUAL/RENDER-GEOMETRY = Ornith unchanged + deterministic span-overlap extraction duty; (4) MANUSCRIPT CLAIM-TIER & SELF-CONSISTENCY = prose claim-vs-own-data + citation-into-superseded + epistemic-label reconciliation. Do NOT rotate: rotation wouldn't fix the seam; round-1 cross-model correlation came from shared input, which blind Phase A already addresses.",
+  "anti_regression_checks": [
+    "EPUB stale sweep: unzip EPUB, extract text, assert {0.500->1.000, 0.100, 0.641, 0.88M} absent outside labeled window. Locks R3-EX-01.",
+    "Cited-artifact git-trackedness: git ls-files artifacts/tokenizer/*.json artifacts/datasets/*.jsonl non-empty for every claimed-shipped path (disk existence NOT enough — gitignored). Locks QWEN-R2-01 + R4-01.",
+    "Colophon ground truth: git log -1 -- book/manuscript book/latex == manifest pdf_build_commit. Locks QWEN-R2-02 (49831ce4 != af32fb8b).",
+    "Reproduce target exists: test -f scripts/reproduce.py AND every Makefile .PHONY reproduce dependency resolves. Locks R3-EX-04.",
+    "Companion-surface stale sweep: grep -lE '0.500|0.100|0.641|0.383' over _assembled.md, _for_review.md, provenance_ledger.json must be empty/windowed. Locks R3-EX-05 + QWEN-R2-03.",
+    "Provenance-ledger row count == corrected-run count on disk (expect 41 not 30), no dup experiment_id. Locks QWEN-R2-03.",
+    "LOF register parity: LOF figure-ID count == on-disk figure source count == review register (all three equal). Locks 18-vs-19 class."
+  ]
+}
