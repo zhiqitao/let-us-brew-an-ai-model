@@ -925,11 +925,22 @@ def phase_c(pdf_path):
                             not leaked, f"post-dates the record: {leaked[:2]!r}")
 
     # --- C9 page-count pin (QWEN-R2-04): manifest pdf.page_count vs reality ---
+    # Only the RELEASE PDF carries the manifest's page count: phase_c also runs on
+    # the interior build artifact (book/latex/book.pdf, pre-cover-merge), which is
+    # legitimately one page shorter, so pinning it here would always fail.
+    _rel = ((rm_c.get("pdf") or {}).get("path") or "")
+    _is_release = _rel and os.path.abspath(pdf_path) == os.path.abspath(
+        os.path.join(ROOT, _rel))
     pc = (rm_c.get("pdf") or {}).get("page_count")
     if pc is None:
         check("C", "manifest pdf.page_count == actual page count — SKIP "
                    "(page_count is null; the parent records it after rebuild)",
               True, f"actual {doc.page_count} pages, manifest null (NOT checked)")
+    elif not _is_release:
+        check("C", f"manifest pdf.page_count ({pc}) — SKIP for non-release PDF "
+                   f"{os.path.relpath(pdf_path, ROOT)} (pin applies to the "
+                   f"release PDF only)", True,
+              f"actual {doc.page_count} pages")
     else:
         ok_all &= check("C", f"manifest pdf.page_count ({pc}) == actual PDF "
                              f"page count ({doc.page_count})",
