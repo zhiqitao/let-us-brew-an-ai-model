@@ -1,5 +1,26 @@
 # Multi-seed replication (2026-11-01)
 
+> **READ THIS FIRST — two tables in this report are SUPERSEDED.**
+> This report is cited by Chapters 10 and 16 and by Appendix C. Its
+> **Diversity** table (minimal 0.500/0.000, high 1.000/1.000) and its
+> **Data-scaling** table (0.100 / 0.100 / 0.300 / 0.641) were produced by the
+> constructions the P0-01/P0-02 audit later corrected. They are kept below as
+> the historical record of what those flawed constructions measured — do NOT
+> cite them as results. The corrected reruns supersede them:
+>
+> - **Data scaling (P0-01):** the balanced, operation-stratified rerun is
+>   **flat at ~0.90** at every size (0.897–0.900 over 100 / 300 / 1,000 /
+>   3,000 records, all three seeds) — no monotone data-size trend once
+>   operation coverage, tokenizer, and step budget are held fixed. The
+>   0.100 → 0.641 "monotone trend" in the superseded table is an artifact of
+>   the confounded construction (book, Chapter 11 and Table C.13).
+> - **Diversity (P0-02):** the equal-count rerun gives **LOW 0.000 vs HIGH
+>   0.550** on the held-out family (means over seeds 0–2; in-distribution
+>   0.950 vs 0.743) — not 1.000 vs 1.000 (book, Chapter 13 and Table C.15).
+>
+> The composition-exposure, Stage-3 surface, Stage-1 pilot, and
+> continual-learning sections below are **not** superseded and stand as written.
+
 Re-ran the seed-0 headline experiments under seeds 1 and 2 on the Hermes host
 (Python 3.11 venv `.venv-311`, torch 2.14.0+cpu, `TORCH_DISABLE_AVX2=1`,
 `OMP_NUM_THREADS=2`). Each run is a fresh training from a different seed.
@@ -41,6 +62,10 @@ is not a decode/extraction artifact), the book's core claims are reproducible.
 
 ## Diversity (Stage-3, quantity vs diversity)
 
+> **SUPERSEDED (P0-02).** The rows below are the pre-correction, unequal-count
+> construction. Corrected equal-count rerun: **LOW 0.000 vs HIGH 0.550** on the
+> held-out family (in-distribution 0.950 vs 0.743), Table C.15 / Chapter 13.
+
 | seed | minimal in-dist | minimal surface | high in-dist | high surface |
 |------|------|------|------|------|
 | 0 | 0.500 | 0.000 | 1.000 | 1.000 |
@@ -48,9 +73,14 @@ is not a decode/extraction artifact), the book's core claims are reproducible.
 | 2 | 0.500 | 0.000 | 0.983 | 0.983 |
 
 Stable across seeds: minimal-diversity reaches ~0.5 in-dist / ~0 surface; high-diversity
-reaches ~1.0 / ~1.0.
+reaches ~1.0 / ~1.0. **Superseded by the P0-02 equal-count rerun (LOW 0.000 vs HIGH
+0.550 held-out) — see the banner at the top of this report.**
 
 ## Data-scaling (how much data)
+
+> **SUPERSEDED (P0-01).** The rows below are the pre-correction, confounded
+> sweep. Corrected balanced, operation-stratified rerun: **flat ~0.90 at every
+> size** (0.897–0.900), Chapter 11 / Table C.13.
 
 | size | seed0 (800 steps) | seed1 (1000) | seed2 (1000) |
 |------|------|------|------|
@@ -61,7 +91,9 @@ reaches ~1.0 / ~1.0.
 
 The monotone data-size trend holds across all seeds. The size-3000 absolute differs with the
 step budget (0.641 at 800 steps vs 0.748 at 1000; seed1=seed2=0.748 at 1000), so the robust
-finding is the monotone trend, not a single point.
+finding is the monotone trend, not a single point. **Superseded: the P0-01 corrected
+balanced rerun is flat at ~0.90 at every size and shows no monotone trend — see the
+banner at the top of this report.**
 
 ## Pilot (Stage-1)
 

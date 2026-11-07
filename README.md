@@ -41,6 +41,24 @@ make stage1       # train + evaluate the Stage 1 pilot
 make reproduce    # regenerate a recorded experiment manifest
 ```
 
+### Release gate
+
+`scripts/verify_release.py` is the closed-loop release gate (manifest, source,
+built-PDF, and release-record invariants). **Run it under the repository's
+Python 3.11 venv** — its PDF phase extracts the built book with `pymupdf`, which
+the bare system `python3` does not provide (`pymupdf==2.1` is pinned in
+`requirements-lock.txt` and installed in `.venv-311`):
+
+```bash
+source .venv-311/bin/activate
+TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
+# rebuild the PDF first if needed:  python book/build_book.py
+```
+
+Without `pymupdf` the gate does not crash: the PDF phase prints a warning and is
+skipped, so a green run over a python that lacks it has **not** checked the PDF —
+confirm the report lists the phase C checks before trusting it.
+
 ## Status
 
 The project follows a strict experimental protocol: **change one variable**, never

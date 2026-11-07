@@ -525,7 +525,14 @@ movable reference and is not by itself immutable. The single canonical release r
 is `docs/release_manifest.json`, which pins in one place the tag name, the tag-target
 commit, the PDF build commit, the SHA-256 of this PDF, and the four corrected-run
 tokenizer file hashes; `scripts/verify_release.py` asserts every one of those values
-against git, the built PDF, and the files on disk. The repository ships the experiment
+against git, the built PDF, and the files on disk. **Run that gate under the
+repository's Python 3.11 environment (`.venv-311`)**: its PDF phase extracts the
+built book with `pymupdf`, which the bare system `python3` does not provide —
+`pymupdf==2.1` is pinned in `requirements-lock.txt` and installed in `.venv-311`
+(`source .venv-311/bin/activate && python scripts/verify_release.py`). Invoked
+under a python without `pymupdf`, the gate does not crash: the PDF phase prints a
+warning and is skipped, so a green run that reports that skip has *not* checked
+the PDF. The repository ships the experiment
 code, the run manifests under `artifacts/manifests/`, and the scored dataset files under
 `artifacts/datasets/`. The trained checkpoints are large and are **not** included
 (regenerable via `train.py` from the recorded config and seed); raw per-candidate

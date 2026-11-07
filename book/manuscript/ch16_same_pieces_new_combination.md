@@ -293,11 +293,15 @@ composition-exposure experiment from scratch under two more training seeds
 reproduce the seed-0 profile exactly: in-distribution 1.000, exposed composites
 0.667, held-out composites **0.000** — so across seeds 0, 1, and 2 the
 held-out composite pass@1 is 0.000 every time (report
-`docs/reviews/loop/multiseed_replication.md`). The composition result is
-therefore not a single-seed artifact. The same honest framing applies to all
-three runs: the held-out failures occur at the first generated tokens, upstream
-of decoding, so the replication strengthens the measured zero without isolating
-the mechanism behind it.
+`docs/reviews/loop/multiseed_replication.md`). That exactness is scoped to the
+three MODEL metrics just listed: the seeds-1/2 manifests also carry a broken
+in-distribution baseline — RETRIEVAL 0.000 and syntax 0.000 on both re-runs,
+against 1.000 at seed 0 — a baseline-harness anomaly of the re-runs, not a
+model result (the caveat is recorded in that same report). With that scope, the
+composition result is therefore not a single-seed artifact. The same honest
+framing applies to all three runs: the held-out failures occur at the first
+generated tokens, upstream of decoding, so the replication strengthens the
+measured zero without isolating the mechanism behind it.
 
 This closes off the naive fix ("just add composites to the data") *for the partitions and
 budgets we tested*. Composition here is not a matter of having seen a combination —

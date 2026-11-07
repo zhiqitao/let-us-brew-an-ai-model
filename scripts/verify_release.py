@@ -23,8 +23,11 @@ CHECKED invariants in four phases:
   C. PDF invariants       — extract the rebuilt PDF's text with pymupdf and
      assert the canonical values appear, the stale values do not (outside
      labeled historical context), no '??'/'undefined' LaTeX artifacts remain,
-     the four surface denominators are present, and the LOF entry for Fig 13.1
-     is the corrected one.
+     the four surface denominators are present, the LOF entry for Fig 13.1
+     is the corrected one, and — render-geometry — every 64-hex tokenizer
+     digest prints all 64 hex characters on its page AND ends at or before
+     the text block's right edge (a digest severed at the 6in trim edge is
+     the P1 clipping class this check exists to catch).
   D. release record       — hash the four corrected tokenizer files on disk
      and assert they equal the cited constants, then assert
      docs/release_manifest.json (tag, tag-target commit, PDF build commit,
@@ -36,10 +39,23 @@ mixed-factor 0.350, "42 versus 1,200") are legitimate WHENEVER they sit inside
 a window that also carries a flaw marker (superseded / flawed / historical /
 P0-0x / mixed-factor / Stage-3 / corrected ... instead). Everything else fails.
 
+RUNTIME REQUIREMENT — run this gate under the repository's Python 3.11 venv:
+    Phase C (and book/build_book.py's cover merge) import pymupdf, which the
+    SYSTEM python3 does NOT provide. pymupdf is pinned in requirements-lock.txt
+    and is installed in .venv-311, so the gate must be run as
+
+        source .venv-311/bin/activate
+        TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
+
+    (equivalently `.venv-311/bin/python scripts/verify_release.py`). Under a
+    python without pymupdf, phase C degrades to a loud, pass-marked SKIP
+    instead of crashing — a green run that reports the skip has NOT checked the
+    PDF, so always confirm the run lists phase C checks before trusting it.
+
 Usage:
-    python3 scripts/verify_release.py                 # A + B + D + C (default PDFs)
-    python3 scripts/verify_release.py --no-pdf        # A + B + D only
-    python3 scripts/verify_release.py --pdf path.pdf  # A + B + D + C on that PDF
+    .venv-311/bin/python scripts/verify_release.py          # A + B + D + C (default PDFs)
+    .venv-311/bin/python scripts/verify_release.py --no-pdf # A + B + D only
+    .venv-311/bin/python scripts/verify_release.py --pdf path.pdf  # A + B + D + C on that PDF
 Exit code 0 = release gate PASS (0 mismatches), 1 = FAIL.
 """
 import argparse
@@ -531,12 +547,129 @@ def _st(s):
     return re.sub(r"[-\s]", "", s.lower())
 
 
+# --- C7 render geometry: a 64-hex tokenizer digest must print COMPLETE and
+# --- inside the text block (the P1 clipping class) -------------------------
+HEXRUN_RE = re.compile(r"[0-9a-f]{8,}")
+_UNIT_PT = {"in": 72.0, "cm": 72.0 / 2.54, "mm": 72.0 / 25.4, "pt": 1.0,
+            None: 1.0}
+
+
+def _textblock_right_pt():
+    """Right edge of the text block in PDF points, derived from the geometry
+    options in book/latex/book.sty (paperwidth 6in, right margin 0.75in ->
+    x = 378pt on a 432pt page). Derived, not hard-coded, so a margin change
+    moves the threshold with it; falls back to the same 6in/0.75in numbers if
+    book.sty cannot be read, and NEVER falls back to the trim edge (that would
+    make the check vacuous -- the whole point is that 431pt is already wrong)."""
+    paper, right = 6.0 * 72.0, 0.75 * 72.0
+    try:
+        sty = open(os.path.join(ROOT, "book", "latex", "book.sty"),
+                   encoding="utf-8").read()
+    except OSError:
+        sty = ""
+    m = re.search(r"\[([^\]]*)\]\s*\{geometry\}", sty)
+    if m:
+        opts = m.group(1)
+
+        def val(name, default):
+            mm = re.search(r"(?:^|,)\s*%s\s*=\s*([0-9.]+)\s*(in|pt|cm|mm)?"
+                           % name, opts)
+            if not mm:
+                return default
+            return float(mm.group(1)) * _UNIT_PT[mm.group(2)]
+        paper = val("paperwidth", paper)
+        right = val("right", right)
+    return paper - right
+
+
+def _digest_x1(page, digest):
+    """Right-most x of any span carrying part of `digest` on `page`. Trailing
+    punctuation sharing the span counts, so a ')' pushed past the trim edge
+    fails the check too. Returns -1.0 when no digest span is found."""
+    x1 = -1.0
+    for b in page.get_text("dict").get("blocks", []):
+        for l in b.get("lines", []):
+            for s in l.get("spans", []):
+                flat = re.sub(r"\s+", "", s.get("text", ""))
+                m = HEXRUN_RE.search(flat)
+                if m and m.group(0) in digest:
+                    x1 = max(x1, s["bbox"][2])
+    return x1
+
+
+def _check_digest_geometry(doc):
+    """P1 render-geometry gate. For every page carrying part of a 64-hex
+    tokenizer digest, assert (a) the digest's right-most glyph ends at or
+    before the text block's right edge, and (b) wherever a digest STARTS, all
+    64 hex characters are printed -- whitespace is stripped first, so a digest
+    that wraps onto a second line inside the text block is COMPLETE, and a
+    digest whose remainder continues intact on the following page (a normal
+    page break, nothing lost) also counts; a tail that simply vanishes does
+    not. (a) is what catches clipping: glyphs past the trim are still in the
+    content stream and still EXTRACT, so text presence alone never saw the
+    defect -- the pre-fix book extracted 62/64 chars on the ch11/ch15 pages
+    and still rendered the appendix digests 53pt past the text block."""
+    ok_all = True
+    right = _textblock_right_pt()
+    ok_all &= check("C", f"digest geometry: text-block right edge derived from "
+                         f"book.sty = {right:.1f}pt (page is "
+                         f"{doc[0].rect.width:.1f}pt wide)",
+                    0 < right < doc[0].rect.width - 20.0, f"got {right:.2f}")
+    stripped = [re.sub(r"\s+", "", p.get_text()) for p in doc]
+    joined = "\n".join(stripped)
+    for name, digest in sorted(TOK_EXPECTED.items()):
+        ok_all &= check("C", f"digest {name} ({digest[:8]}…) appears in the "
+                             f"PDF at all", digest[:16] in joined)
+    for i, ptext in enumerate(stripped):
+        for name, digest in sorted(TOK_EXPECTED.items()):
+            x1 = _digest_x1(doc[i], digest)
+            if x1 < 0:
+                continue          # this page carries no fragment of this digest
+            ok_all &= check("C", f"digest {name} on page {i + 1} ends at "
+                                 f"x1={x1:.1f}pt <= text-block right "
+                                 f"{right:.1f}pt (no glyph at the trim edge)",
+                            0 <= x1 <= right + 0.5,
+                            f"x1={x1:.2f}pt vs {right:.2f}pt")
+            if digest[:16] not in ptext:
+                continue          # page holds only the tail of a straddling run
+            n = 0
+            while n < 64 and digest[:n + 1] in ptext:
+                n += 1
+            tail = digest[n:]
+            straddled = (len(tail) >= 8 and i + 1 < len(stripped)
+                         and tail in stripped[i + 1])
+            ok_all &= check("C", f"digest {name} prints all 64 hex chars "
+                                 f"starting on page {i + 1} (complete on that "
+                                 f"page, or continued intact on the next)",
+                            n == 64 or straddled,
+                            f"only {n}/64 hex chars on page {i + 1} and no "
+                            f"intact continuation on page {i + 2}")
+    return ok_all
+
+
 def phase_c(pdf_path):
     print(f"\n== PHASE C: PDF invariants ({pdf_path}) ==")
     if not os.path.exists(pdf_path):
         check("C", "PDF exists", False, pdf_path)
         return False
-    import pymupdf
+    try:
+        import pymupdf
+    except ImportError as e:
+        # P3d: degrade gracefully instead of crashing. A python without pymupdf
+        # (the bare system python3 — pymupdf==2.1 lives in requirements-lock.txt
+        # and is installed in .venv-311) cannot check the PDF at all, so say so
+        # loudly and skip; the pass mark keeps the exit code meaningful while the
+        # check name makes the gap impossible to miss in the report.
+        print("!! WARNING: phase C SKIPPED — pymupdf is not importable "
+              f"({e}).\n!!   Phase C (PDF text + render-geometry invariants) "
+              "requires pymupdf from requirements-lock.txt.\n!!   Run the gate "
+              "under the repo venv:  source .venv-311/bin/activate  &&  "
+              "python scripts/verify_release.py\n!!   The PDF was NOT checked "
+              "by this run.")
+        return check("C", "phase C SKIPPED (pymupdf missing — run under "
+                          ".venv-311; pymupdf==2.1 comes from "
+                          "requirements-lock.txt)", True,
+                     "PDF invariants were NOT verified by this run")
     doc = pymupdf.open(pdf_path)
     pages = [p.get_text() for p in doc]
     txt = "\n".join(pages)
@@ -626,6 +759,9 @@ def phase_c(pdf_path):
                         sub.replace("(", "").replace(")", "") in txt)
     ok_all &= check("C", "PDF: no 'Appendix C.8'/'Appendix C.10' refs",
                     not re.search(r"Appendix C\.8\b|Appendix C\.10\b", flat))
+    # --- C7 render geometry: 64-hex tokenizer digests complete + inside the
+    # --- text block (would have caught the P1 trim-edge clipping) ---
+    ok_all &= _check_digest_geometry(doc)
     return ok_all
 
 

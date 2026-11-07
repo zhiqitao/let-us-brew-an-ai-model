@@ -593,6 +593,22 @@ def breakable_texttt_paths(tex_path):
                 out.append(p)
         return "".join(out)
 
+    # P1 (tokenizer digests): a 64-char SHA-256 hex digest contains none of the
+    # BREAK_CHARS, so it used to be returned as ONE unbreakable \texttt{} run.
+    # Inside an itemize bullet that pushed the line 58pt past the right margin and
+    # TeX severed the tail glyphs at the 6in trim edge (ch11 and ch15 each printed
+    # only 62 of the 64 hex chars -- the last two were off the page); in Appendix C
+    # the digest ran flush to the trim (x1=431pt vs a 378pt text-block right edge)
+    # with its trailing punctuation past 432pt. Insert a zero-width \allowbreak
+    # between EVERY character of any >=32-hex run so the digest wraps inside the
+    # text block instead of overflowing it. Idempotent: once the markers are in
+    # place the run no longer matches [0-9a-f]{32,} (the markers contain non-hex
+    # letters), so a second pass leaves it alone.
+    HEX_RUN = re.compile(r"[0-9a-f]{32,}")
+
+    def break_hex_runs(inner):
+        return HEX_RUN.sub(lambda m: "\\allowbreak ".join(m.group(0)), inner)
+
     def repl(inner, in_tbl=False):
         # Table cells (longtable p-columns) are only ~60-90pt wide: an \mbox'd
         # token would overflow the column instead of wrapping (a 27-char run ID
@@ -600,9 +616,13 @@ def breakable_texttt_paths(tex_path):
         # wrap-at-\allowbreak behaviour and mbox only in prose.
         if not in_tbl:
             inner = mbox_short_tokens(inner)
-        if not any(c in inner for c in BREAK_CHARS):
-            return "\\texttt{%s}" % inner
-        return "\\texttt{%s}" % add_breaks(inner)
+        if any(c in inner for c in BREAK_CHARS):
+            inner = add_breaks(inner)
+        # hex runs last: add_breaks() strips every existing \allowbreak before
+        # regenerating its own markers, which would otherwise undo the digest
+        # break points on a re-run.
+        inner = break_hex_runs(inner)
+        return "\\texttt{%s}" % inner
 
     # Balanced-brace scan so spans containing {\...} (e.g. \textgreater{}) are
     # covered too; the old [^{}]* pattern silently skipped them.

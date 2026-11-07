@@ -6,7 +6,7 @@
   "pdf_build_commit": "af32fb8b1798f83553c0f5078fd34b62063b864d",
   "pdf": {
     "path": "book/let-us-brew-an-ai-model-v20261001.pdf",
-    "sha256": "bf4c673aea9c040856114556f6b2fc11681770cf2b6363835425b7758e49d88b"
+    "sha256": "75f95f77d035f6006227466574588213a903aef7508e74d572a27b299103b817"
   },
   "tokenizer_sha256": {
     "data_scaling": "361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5",
