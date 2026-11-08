@@ -121,9 +121,9 @@ unchanged from the run manifests.
 | `stage3_surface` | Stage 3 surface — **superseded flawed historical run** (P0-03 mixed factors, P0-04 denominator); replaced by `surface_corrected` | in-dist 0.900; new-IDs 0.350 (mixed factors — identifiers *and* wording-family coverage, P0-03); held-out wording 0.000 over 480 records (8 ops × 60, P0-04) |
 | `surface_corrected` | Corrected surface 2×2 factorial — **MEASURED** (fixes P0-03, P0-04) | model pass@1 by seed: familiar 0.898 / 0.900 / 0.940 (of 600); identifiers-only 0.000 / 0.003 / 0.005 (of 600); wording-only 0.000 / 0.000 / 0.000 (of 480); combined 0.000 / 0.025 / 0.000 (of 480) — collapse on any surface change |
 | `stage4_pilot` | Stage 4 composition baseline | in-dist 0.9167 (n=60); composition 0.000 |
-| `stage4_6p5m` | Stage 4 — 6.5M | in-dist 0.897; composition 0.000 |
-| `stage4_10m` | Stage 4 — 10.2M | in-dist 0.773; composition 0.000 |
-| `stage4_29m` | Stage 4 — 29.3M | in-dist 0.897; composition 0.000 |
+| `stage4_6p5m` | Stage 4 — 6.5M | in-dist 0.897 (n=300); composition 0.000 |
+| `stage4_10m` | Stage 4 — 10.2M | in-dist 0.773 (n=300); composition 0.000 |
+| `stage4_29m` | Stage 4 — 29.3M | in-dist 0.897 (n=300); composition 0.000 |
 | `data_scaling` | Data scaling — **superseded flawed historical run** (P0-01); replaced by `data_scaling_corrected` | in-dist 0.100→0.641 (100→3000) — arms are prefixes of an operation-ordered pool covering 1/1/3/8 of 10 operations (P0-01), so this is operation coverage, not a record-count curve |
 | `data_scaling_corrected` | Corrected data scaling — **MEASURED** (fixes P0-01) | balanced 10/10 operations at every size, one fixed tokenizer, one shared 300-task test: pass@1 **flat** 0.893–0.997 across 100→3000 (10→300 per op), seeds 0/1/2 — **no data-size benefit**; template 0.800, retrieval 0.943–1.000 in all 12 arms |
 | `diversity` | Quantity vs diversity — **superseded flawed historical run** (P0-02); replaced by `diversity_corrected` | minimal in-dist 0.500 / surface 0.000; high in-dist 1.000 / surface 1.000 — **realized 42 records (high) vs 1,200 (minimal)**, not the requested 1,200/1,200 (P0-02); the 1.000 is coverage of 42 exact mappings |
@@ -212,7 +212,9 @@ unpinned or drifted tokenizer — a re-clobber of `comp_tok.json`, a silently re
 ## Run provenance ledger
 
 Tables C.4 and C.5 cover the headline runs. The ledger below is the compact,
-per-run provenance record for **every** manifest we hold — 41 in total — so a
+per-run provenance record for **every** manifest we hold — 42 in total, the two
+archived `*_bothseeded.*` manifests being the only exclusions (they are noted with
+the matched-controls discussion below) — so a
 reader can see, run by run, the model-visible counts the manifest actually
 carries: manifest file, experiment ID, seed, training steps, `n_per_op`
 (records per operation), model parameters, final *training* loss, tokenizer
@@ -267,6 +269,7 @@ uses, so the two tables can be read against each other.
 | `surface_corrected_seed0.json` | `surface_corrected` | 0 · 1500 · 60 · 884,224 · 0.0288 · 291 | **Corrected surface 2×2 factorial — MEASURED (fixes P0-03 + P0-04)**; familiar 0.898 (539/600), identifiers-only 0.000 (0/600), wording-only 0.000 (0/480), combined 0.000 (0/480) |
 | `surface_corrected_seed1.json` | `surface_corrected` | 1 · 1500 · 60 · 884,224 · 0.0212 · 291 | **Corrected surface 2×2 factorial — MEASURED (fixes P0-03 + P0-04)**; familiar 0.900 (540/600), identifiers-only 0.003 (2/600), wording-only 0.000 (0/480), combined 0.025 (12/480) |
 | `surface_corrected_seed2.json` | `surface_corrected` | 2 · 1500 · 60 · 884,224 · 0.0201 · 291 | **Corrected surface 2×2 factorial — MEASURED (fixes P0-03 + P0-04)**; familiar 0.940 (564/600), identifiers-only 0.005 (3/600), wording-only 0.000 (0/480), combined 0.000 (0/480) |
+| `truncation_audit.json` | `truncation_audit` | — · — · — · — · — · — | P1-08 context-truncation / padding-in-loss audit (Ch. 8) — measurement only: no training, no evaluation, no model reruns, so the manifest records no run configuration |
 
 **What the ledger's mismatches mean.** The multi-seed re-runs are robustness
 checks, not all perfect matched replications, and the ledger records which is
@@ -311,7 +314,8 @@ comparison is *not* a single-variable, size-only experiment — training-budget 
 width/layer counts vary alongside size. We state the caveat here rather than imply a
 strictly-controlled sweep: what we can claim is that *composition stayed at 0.000 at
 every size under the schedules we ran and evaluated*. We cannot claim a clean
-size-isolate from the in-distribution differences (0.897 / 0.773 / 0.897), which may
+size-isolate from the in-distribution differences (0.897 / 0.773 / 0.897 — each over
+the same n=300 held-out primitives), which may
 reflect the differing training budgets as much as the differing sizes. Note also that
 equal vocabulary sizes (291) do **not** imply equal token-ID mappings — the two
 tokenizers assign IDs differently, so a checkpoint must be evaluated with the
@@ -355,7 +359,10 @@ The large-model runs are separate training runs.
 - **pass@1 denominators.** The pilot used 300 held-out test **records** (1,400 train /
   300 val / 300 test), drawn from only **21 distinct prompt strings** (see the novelty
   audit; the test prompts are not new). Stage 4's large-model runs (6.5M, 10.2M,
-  29.3M) used 300 held-out primitives for in-distribution and 240 composite tasks
+  29.3M) used 300 held-out primitives for in-distribution (n=300 — the denominator
+  now printed at point of use in the Chapter 12, 21 and 22 size tables, and recorded
+  as `test_set.n` with per-label `successes`/`denominator` in the three
+  `stage4_composition*` manifests) and 240 composite tasks
   (6 ops × 40) for composition; the 0.88M Stage-4 baseline (`stage4_scaling.json`)
   instead used `sample=60` for both its in-distribution and composition evaluations
   (its reported rates are 1/60 multiples); the judge then scores each. The data-scaling rows share a single common held-out test set (one
@@ -476,7 +483,8 @@ run that.
 ## What is NOT tested (explicitly)
 
 - **Multiple seeds per size.** Each size was trained once, with one seed. We cannot
-  attach error bars to the in-distribution spread (0.897 / 0.773 / 0.897) in Chapter
+  attach error bars to the in-distribution spread (0.897 / 0.773 / 0.897, each over
+  n=300) in Chapter
   12. Treat it as approximate, not an exact plateau.
 - **Genuinely-held-out wording families for the *diversity* run — now measured.** The
   corrected `diversity_corrected` run (Table C.15) trains both arms with two
@@ -933,11 +941,13 @@ in the current environment; they alter no reported number.
    `source .venv-311/bin/activate` fails until this one command has run:
 
    ```bash
-   python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .
+   python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e . && .venv-311/bin/pip install pytest
    ```
 
    (`make setup` runs exactly that: it creates `.venv-311` when it is absent, then
-   installs `requirements-lock.txt` and the package into it.) Python 3.11.16, PyTorch
+   installs `requirements-lock.txt`, the package, and `pytest` into it — `pytest` is
+   not in the lockfile, so the trailing `pip install pytest` is what makes
+   `make test` runnable straight after this bootstrap.) Python 3.11.16, PyTorch
    2.14.0+cpu (CPU build, no GPU). The
    training and evaluation core depends on `torch` and the standard library; the
    *printed audits and diagnostics* additionally use `scikit-learn` (and the figure

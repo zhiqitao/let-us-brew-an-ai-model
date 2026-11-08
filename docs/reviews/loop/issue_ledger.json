@@ -202,7 +202,7 @@
     "model": "MiMo",
     "class": "execution/reproduction",
     "severity": "P1",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "dataset pins unsatisfiable from the shipped generator: a clean-clone run of scripts/generate_data.py reproduces NONE of the 3 pilot splits (train c310b70a vs pin 06093bfb, val 96a47bac vs 9ab0c840, test a5e74790 vs 1f8c060c; 280/1400 lines differ, all output_type 'list' (pinned) vs 'int' (regenerated) on list_len/list_sum after src/data_generator/generator.py changed in 15406031), and human_test.jsonl is produced by scripts/make_human_test.py, not generate_data.py",
     "fix_location": "docs/release_manifest.json (all 5 scored-on pins KEPT; per-file produced_by_commit + producing_script + drift-disclosing note on every entry + datasets.produced_by_commit_derivation; structure text no longer claims HEAD-regenerability) + book/manuscript/appendix_c_experiment_registry.md (Publication status, reproducibility paragraph, quick-start steps 1/3 name the producing commits, the drift and make_human_test.py) + scripts/verify_release.py phase D (40-hex produced_by_commit resolves, producing_script exists at HEAD, and a temp-dir regeneration probe RECORDS — WARN, never FAIL — 'dataset pin regenerable-at-HEAD: NO (drift disclosed)' for the 3 splits, YES for pilot_manifest + human_test)"
   },
@@ -211,7 +211,7 @@
     "model": "MiMo",
     "class": "execution/reproduction",
     "severity": "P1",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "documented `git checkout $(python3 -c ...['pdf_build_commit'])` is not idempotent: at HEAD it lands 2415ab1c (correct), re-run AT 2415ab1c it lands af32fb8b (that commit's own manifest value) — a backward chain with no fixed point, and at af32fb8b the manifest pins are round-1-era",
     "fix_location": "README.md (Release gate), book/manuscript/appendix_c_experiment_registry.md (Publication status) and docs/release_manifest.json (reproduction_from_a_clean_clone.run_the_release_gate[0] + new build_commit_provenance sentence) all document `git checkout HEAD` with the 'build commit is provenance, checked out only to inspect that exact source state' sentence; scripts/verify_release.py phase D asserts none of the three surfaces contains the non-idempotent `git checkout $(` form"
   },
@@ -220,7 +220,7 @@
     "model": "MiMo",
     "class": "execution/reproduction",
     "severity": "P2",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "no documented command creates .venv-311: `source .venv-311/bin/activate` rc=1 in a clean clone, zero 'python -m venv' occurrences anywhere, and `make setup` only pip-installed into whatever env was active",
     "fix_location": "README.md (Getting started), book/manuscript/appendix_c_experiment_registry.md (quick start step 2) and docs/release_manifest.json (run_the_release_gate) now carry the verbatim bootstrap `python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .` (flags verified against requirements-lock.txt's own header + a real venv/pip --dry-run/editable-install test); Makefile `setup` creates .venv-311 when absent and every target prefers that interpreter"
   },
@@ -229,7 +229,7 @@
     "model": "MiMo",
     "class": "execution/build-stamp",
     "severity": "P2",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "V3 §0.5 step-2 sub-check 1 FAILS: `git log -1 -- book/manuscript book/latex` returns HEAD 3960c9f6, not the build commit 2415ab1c, because book/latex holds TRACKED build outputs (book.pdf, book.tex) touched by the rebuild commit; scoped to sources the witness is exactly 2415ab1c — a check-construction defect, not provenance drift",
     "fix_location": "scripts/verify_release.py phase D: source-scoped witness `git log -1 --format=%H -- book/manuscript book/latex/md_to_latex.py book/latex/book.sty` == manifest pdf_build_commit (verified 2415ab1c at HEAD before adding; comment names R2-EX-N04 + QWEN-R2-NF-01); V3 §0.5 path filter patched by the parent"
   },
@@ -238,7 +238,7 @@
     "model": "MiMo",
     "class": "execution/release-gate",
     "severity": "P1",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "grep -c overlap scripts/verify_release.py = 0 — the gate has NO span-overlap check although V3 §7 claims phase C performs one, and docs/reviews/loop/round2/geometry_measurements.json (18 rows, all overlap 0.0) was untracked, so a clean clone could see neither",
     "fix_location": "scripts/verify_release.py phase C: _check_geometry_register (exists + GIT-TRACKED + >=18 rows + every row {figure_id,page,bbox,overlap_pt,font_pt} + max overlap <= 6.0; missing/untracked = FAIL, not skip) and _check_span_overlaps (one row per registered figure page: spans centred in the row bbox, flag pairs with 0.3<dy<7pt AND dx>3pt, fail any collision >6pt with no upper bound); docs/reviews/loop/round2/geometry_measurements.json staged so the tracked assertion passes"
   },
@@ -247,7 +247,7 @@
     "model": "MiMo",
     "class": "execution/reproduction",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "release PDF gitignored (.gitignore:19 book/*.pdf) and untracked while its sha256 (c3700dfd…) and page_count (306) are pinned in docs/release_manifest.json; the EPUB counterpart IS tracked, and a clean clone fails phase D 'release manifest PDF exists to hash'",
     "fix_location": "CHOSEN FIX = track the artifact: .gitignore negation `!book/let-us-brew-an-ai-model-v20261001.pdf` + `git add` of the 1.5MB release PDF (so the pin is clone-verifiable, matching EPUB policy) + docs/release_manifest.json pdf.note stating the policy + scripts/verify_release.py phase D asserting the release PDF is git-tracked"
   },
@@ -256,7 +256,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "independent discovery of the same witness-filter defect: the literal V3 §0.5 `git log -1 -- book/manuscript book/latex` returns HEAD 3960c9f6 rather than build commit 2415ab1c because book/latex contains tracked build outputs; the substantive check (empty manuscript diff) passes, so this is review-instruction imprecision, not a release defect",
     "fix_location": "scripts/verify_release.py phase D source-scoped witness (same check as R2-EX-N04, comment names both IDs) + V3 §0.5 patched by the parent"
   },
@@ -265,8 +265,89 @@
     "model": "Ornith",
     "class": "visual/print/render-geometry",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R3",
     "anchor": "Fig 8.1 physical page 68 — the two bottom callout boxes render faint grey-on-cream: box()'s default white text on a #fbfaf6 fill (measured contrast 1.04:1 vs 14.16:1 for body prose); vision-observed, no overlap (register max_overlap 0.0)",
     "fix_location": "scripts/make_concept_figures.py fig_brain: callout fc #f4efe3 / tc #111111 / ec INK, then regenerated book/figures/fig_brain.pdf + .png — figure-PDF verified: callout contrast 16.46:1 >= body-prose 14.16:1, min interior font 8.50pt (>=7pt), 0 span collisions >6pt"
+  },
+  {
+    "id": "DEEP-R3-STAT-01",
+    "model": "DeepSeek",
+    "class": "quantitative — instrument validity",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "book/manuscript/ch12_how_much_brain.md capacity table rows Scaling 6.5M / 10M point / 30M point print in-distribution pass@1 (0.897/0.773/0.897) with no test-set denominator at point of use (only the baseline row carries n=60), and artifacts/manifests/stage4_composition{,_6p5m,_10m}.json carry no n/successes/denominator — only pass_at_1 and config.comp_per_op=40, so 0.896666 is underdetermined across 269/300, 538/600, 1076/1200",
+    "fix_location": "DERIVED, not guessed: scripts/run_composition.py:50,58-59 splits generate_dataset(n_per_op=200) per op 15%/15% -> 30 held-out x 10 OPERATIONS = 300 (269/300, 232/300 are exact integers; Appendix C's pass@1-denominators note independently says 300). Fixed: (n=300) added to the 3 rows of the ch12 capacity table, the ch21 cost table, the ch22 capability-map table and Appendix C Table C.4 + both size-sweep sentences; test_set.n/n_per_op/ops_covered/derivation + per-label successes/denominator (in_distribution n=300, compositional n=240) recorded in the three stage4_composition* manifests; new gate check scripts/verify_release.py phase A6 asserts successes/denominator == pass_at_1 exactly"
+  },
+  {
+    "id": "QWEN-R3-NF-01",
+    "model": "Qwen",
+    "class": "provenance/reproduction robustness",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "scripts/make_human_test.py writes artifacts/datasets/human_test.jsonl with no os.makedirs (generate_data.py:16 has one); artifacts/datasets/ is gitignored, so in a virgin clone `python scripts/make_human_test.py` raises FileNotFoundError",
+    "fix_location": "scripts/make_human_test.py main(): os.makedirs(os.path.join(dirname(__file__),'..','artifacts','datasets'), exist_ok=True) before the write. Verified in a fresh `git clone` of HEAD with no prior mkdir: exit 0 and sha256 5bd643a70d650edf0a61a1fb7c96ef7c2075b36b039cfc3ee112d4edd8447fd5"
+  },
+  {
+    "id": "DEEP-R3-GEOM-02",
+    "model": "DeepSeek",
+    "class": "visual/print — figure register coverage",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "scripts/make_concept_figures.py main() still called fig_three_meanings(), so book/figures/fig_three_meanings.pdf/.png shipped while no manuscript file, register row or LOF entry referenced them (20 PDFs on disk = 18 body + cover + 1 stray)",
+    "fix_location": "scripts/make_concept_figures.py main(): fig_three_meanings() call replaced by a comment (fig_capability_map precedent); book/figures/fig_three_meanings.{pdf,png} deleted (19 PDFs = 18 body + cover); new gate assertion scripts/verify_release.py _check_figure_inventory() in phase C (runs before the pymupdf import, like the geometry register): set(fig_*.pdf on disk) - {fig_cover.pdf} == set of figure PDFs referenced by book/manuscript, residual printed. Verified PASS after the deletion and FAIL when fig_three_meanings.pdf is reintroduced"
+  },
+  {
+    "id": "MIMO-R3-EX-01",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "README.md bootstrap line (the R2-EX-N03 fix) installs requirements-lock.txt + editable package only; pytest comes solely from Makefile:15, so `make test` exits 2 'No module named pytest' after only the bootstrap",
+    "fix_location": "BRANCH TAKEN: appended `&& .venv-311/bin/pip install pytest` to the bootstrap line on all three surfaces — README.md, book/manuscript/appendix_c_experiment_registry.md (plus the `make setup` parenthetical, which now names pytest) and docs/release_manifest.json reproduction_from_a_clean_clone.run_the_release_gate[1] — so the documented bootstrap alone makes `make test` runnable"
+  },
+  {
+    "id": "MIMO-R3-EX-02",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "README.md '### Release gate' section never says the 7 pinned tokenizer files + run artifacts must be generated first, so a virgin clone hits scripts/verify_release.py PREFLIGHT FAIL ('NOT A VERIFIABLE CLEAN CLONE') with no pointer",
+    "fix_location": "README.md '### Release gate': new lead sentence naming the quickstart generation step (`python scripts/generate_data.py --n-per-op 200 --seed 0` plus the run scripts) and stating that artifacts/tokenizer/ and artifacts/datasets/ are gitignored by design, quoting the PREFLIGHT message the reader will actually see"
+  },
+  {
+    "id": "MIMO-R3-EX-03",
+    "model": "MiMo",
+    "class": "execution/build-stamp",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "EPUB/content.opf carries a pandoc-minted urn:uuid:f5ff5397-617f-4c81-8a75-463fa7cb8a9a (mirrored in toc.ncx), every zip entry carries the build time as mtime, dcterms:modified is the build's current UTC time, and book/build_epub.py set no SOURCE_DATE_EPOCH — yet docs/release_manifest.json pinned the EPUB sha256 with no note",
+    "fix_location": "BOTH branches applied: docs/release_manifest.json epub.note states the pin verifies the SHIPPED artifact and a rebuild will differ; book/build_epub.py now sets SOURCE_DATE_EPOCH=1789084800 (2026-09-11T00:00:00Z, setdefault) and passes --metadata identifier=urn:uuid:f5ff5397-... . Verified by building twice into a scratch copy of book/ (shipped EPUB untouched, pin still matches): the two builds are byte-identical (sha256 b89c525e...), dcterms:modified and all zip mtimes pinned, uuid stable and mirrored in toc.ncx. SOURCE_DATE_EPOCH alone was NOT enough (pandoc still minted a fresh uuid), hence the identifier pin too; a rebuild still differs from the shipped pin until the EPUB is rebuilt and re-pinned"
+  },
+  {
+    "id": "MIMO-R3-EX-04",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "scripts/audit.py:37 formats `acc` unconditionally with f'{acc:.3f}' while src/audit/leakage.py classifier_leakage() returns None when SKLEARN is False, so under bare system python3 `python scripts/audit.py` (the command Appendix A documents) raises TypeError: unsupported format string passed to NoneType.__format__",
+    "fix_location": "scripts/audit.py: guard added — acc is None prints 'sklearn not installed — classifier audit skipped' instead of formatting. Verified under the bare system python3 (no sklearn importable): exit 0, skip message printed, audit completes and writes artifacts/results/leakage_audit.json"
+  },
+  {
+    "id": "MIMO-R3-EX-05",
+    "model": "MiMo",
+    "class": "provenance/artifact-integrity",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "artifacts/manifests/truncation_audit.json is cited as a data source at book/manuscript/ch08:65-66 but had no row in docs/reviews/loop/provenance_ledger.json (grep count 0), while the two *_bothseeded.json omissions carry an explicit scope note (appendix_c:910 'archived ... and is not reported')",
+    "fix_location": "BRANCH TAKEN: added the row (not a scope note — dedup_audit and decode_ablation_disk_tok ARE in the ledger, so a note calling audit-type manifests out of scope would have contradicted it). provenance_ledger.json gains a truncation_audit row (produced_by_commit 9199887c, producing_script scripts/measure_truncation.py blob 1b6e8c6e, config fields 'not-recorded'), Appendix C Table C.12 gains the matching row, LEDGER_EXPECTED_ROWS 41->42 and the section's '41 in total' -> '42 in total' with the bothseeded pair named as the only exclusion. Verified: ledger == Table C.12 == 42 rows, symmetric diff empty, every produced_by_commit resolves and every producing_script_blob matches"
+  },
+  {
+    "id": "MIMO-R3-EX-06",
+    "model": "MiMo",
+    "class": "execution/build-stamp",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "book/_epub.md is tracked (git ls-files lists it; git check-ignore rc=1) while its siblings book/_assembled.md and book/_for_review.md are deleted + gitignored (.gitignore:27,:28), so a clean clone ships one generated intermediate but not the other two",
+    "fix_location": "BRANCH TAKEN: gitignore + delete, like the siblings — .gitignore gains book/_epub.md under the same 'committed build intermediates' comment block (with its producing command), and book/_epub.md is deleted from the worktree (git status ' D'). Verified: git check-ignore -v --no-index book/_epub.md -> .gitignore:30 rc=0 (rc=1 only while the path is still in the index, i.e. until the deletion is committed), and a scratch copy of book/ run through book/build_epub.py regenerated book/_epub.md and produced a working EPUB"
   }
 ]

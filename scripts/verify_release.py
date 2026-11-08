@@ -154,7 +154,7 @@ TOK_SURF_VOCAB = "3bc4916b9318de39d9e8a7a09717ceec13cf43166eddc9fa867ad26ca05dd7
 RELEASE_MANIFEST = os.path.join(ROOT, "docs", "release_manifest.json")
 LOCKFILE = os.path.join(ROOT, "requirements-lock.txt")
 LEDGER = os.path.join(ROOT, "docs", "reviews", "loop", "provenance_ledger.json")
-LEDGER_EXPECTED_ROWS = 41                  # == Appendix C Table C.12 rows
+LEDGER_EXPECTED_ROWS = 42                  # == Appendix C Table C.12 rows
 # EPUB headline strings (round-1 R3-EX-01): corrected values that must be in a
 # current EPUB, superseded values that must not be.
 EPUB_MUST_HAVE = ["0.743", "0.950", "0.9167", "0.893"]
@@ -449,6 +449,29 @@ def phase_a():
     ok_all &= check("A", "stage1 pilot: in-dist 0.897",
                     round(model["pass_at_1"], 3) == 0.897,
                     f"{model['pass_at_1']}")
+
+    # --- A6 stage-4 size-sweep denominators (DEEP-R3-STAT-01): the three
+    # --- size points must carry an explicit test-set denominator and integer
+    # --- successes that re-derive pass_at_1 EXACTLY, so the Chapter 12/21/22
+    # --- "(n=300)" cells are re-derivable from the artifact, not from prose.
+    for fn, want_model in [("stage4_composition.json", 269),
+                           ("stage4_composition_6p5m.json", 269),
+                           ("stage4_composition_10m.json", 232)]:
+        d = rd(fn)
+        ok = d.get("test_set", {}).get("n") == 300
+        bad = []
+        for key, den in (("in_distribution", 300), ("compositional", 240)):
+            for e in d.get(key, []):
+                sc, dn = e.get("successes"), e.get("denominator")
+                if dn != den or not isinstance(sc, int) or sc / dn != e["pass_at_1"]:
+                    bad.append((key, e.get("label"), sc, dn, e.get("pass_at_1")))
+        mdl = [e for e in d.get("in_distribution", [])
+               if e.get("label") == "MODEL"]
+        ok = ok and not bad and len(mdl) == 1 and mdl[0]["successes"] == want_model
+        ok_all &= check("A", f"{fn}: test_set.n=300 + per-label "
+                             f"successes/denominator re-derive pass_at_1 exactly "
+                             f"(MODEL {want_model}/300)", ok,
+                        f"test_set={d.get('test_set', {}).get('n')}, bad={bad[:3]}")
     return ok_all
 
 
@@ -983,6 +1006,40 @@ def _check_span_overlaps(doc, rows):
     return ok_all
 
 
+def _check_figure_inventory():
+    """DEEP-R3-GEOM-02 — the figure inventory on disk vs the manuscript.
+
+    book/figures/ is a shipped directory, so a figure the factory still builds
+    but no manuscript file references ships to every reader as stray build
+    output. Assert: set(fig_*.pdf on disk) - {fig_cover.pdf} ==
+    set(figure PDFs referenced by book/manuscript/*.md), with the residual
+    printed either way. Source-side, so it runs even without pymupdf (same
+    rationale as the geometry register, R2-EX-N05).
+
+    Returns the check's pass mark."""
+    fig_dir = os.path.join(ROOT, "book", "figures")
+    allowed_non_body = {"fig_cover.pdf"}
+    try:
+        on_disk = {f for f in os.listdir(fig_dir)
+                   if f.startswith("fig_") and f.endswith(".pdf")}
+    except OSError as e:
+        return check("C", "figure inventory: book/figures/ is listable", False, str(e))
+    refs = set()
+    try:
+        names = [f for f in os.listdir(MS) if f.endswith(".md")]
+    except OSError as e:
+        return check("C", "figure inventory: book/manuscript/ is listable", False, str(e))
+    for fn in names:
+        refs |= set(re.findall(r"figures/(fig_[A-Za-z0-9_]+\.pdf)", read_ms(fn)))
+    residual = sorted((on_disk - allowed_non_body) - refs)
+    missing = sorted(refs - on_disk)
+    return check("C", "figure inventory: book/figures/fig_*.pdf minus fig_cover.pdf "
+                      "== the figure PDFs referenced by book/manuscript "
+                      "(no unreferenced stray figure, no dangling reference)",
+                 not residual and not missing,
+                 f"unreferenced on disk: {residual}; referenced but absent: {missing}")
+
+
 def phase_c(pdf_path):
     print(f"\n== PHASE C: PDF invariants ({pdf_path}) ==")
     if not os.path.exists(pdf_path):
@@ -992,6 +1049,8 @@ def phase_c(pdf_path):
     # when pymupdf is missing — a missing/untracked register is a source-side
     # defect, not a PDF-extraction problem, and must not hide behind the skip.
     reg_ok, geo_rows = _check_geometry_register()
+    fig_ok = _check_figure_inventory()   # DEEP-R3-GEOM-02 (source-side: runs even
+    #                                     without pymupdf, like the register above)
     try:
         import pymupdf
     except ImportError as e:
@@ -1009,13 +1068,15 @@ def phase_c(pdf_path):
         return check("C", "phase C SKIPPED (pymupdf missing — run under "
                           ".venv-311; pymupdf==2.1 comes from "
                           "requirements-lock.txt)", True,
-                     "PDF invariants were NOT verified by this run") and reg_ok
+                     "PDF invariants were NOT verified by this run") and reg_ok \
+            and fig_ok
     doc = pymupdf.open(pdf_path)
     pages = [p.get_text() for p in doc]
     txt = "\n".join(pages)
     flat = _loose(pages)          # header/hyphenation-normalized
     st = _st(flat)                # supertight for phrase presence
-    ok_all = reg_ok               # register failures ride along (R2-EX-N05)
+    ok_all = reg_ok and fig_ok    # register + figure inventory ride along (R2-EX-N05,
+                                  # DEEP-R3-GEOM-02)
 
     # --- C1 canonical values present ---
     for sub, name in [
@@ -1451,7 +1512,7 @@ def phase_d(pdf_required=True):
                  f"{e.get('producing_script')} — check out the producing "
                  f"commit to regenerate")
     # --- D5 provenance-ledger schema (QWEN-R2-03) + producing-commit resolve
-    # --- (R3-EX-02): 41 rows == Appendix C Table C.12, unique ids, uniform
+    # --- (R3-EX-02): 42 rows == Appendix C Table C.12, unique ids, uniform
     # --- no-.json suffix, no nulls, every produced_by_commit resolves, and the
     # --- producing script's blob at that commit is recorded where recoverable.
     # --- Script DRIFT (recorded blob != the blob shipped today) is recorded,

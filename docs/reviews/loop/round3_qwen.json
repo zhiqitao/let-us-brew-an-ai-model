@@ -1,0 +1,109 @@
+{
+  "model": "Qwen3.8-27B",
+  "delegation_id": "deleg_ee500ac0",
+  "round": 3,
+  "class": "provenance/artifact-integrity",
+  "signoff_surface": "EPUB (rotated from round-2 lineage+manifests)",
+  "round_header": {
+    "head": "19a6ce83",
+    "git_describe": "v20261001-22-g19a6ce83",
+    "tag_target": "a45a881",
+    "pdf_build_commit": "1cd73813",
+    "pdf_sha": "130ee9e5..",
+    "page_count": 307,
+    "epub_sha": "79cfc523..",
+    "witness": "1cd73813 == manifest",
+    "gate": "365/365",
+    "non_decreasing": true,
+    "verdict": "VALID"
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (tag clone: no verify_release.py at tag — documented in manifest; HEAD clone: controlled exit 1, single PREFLIGHT line, 0 tracebacks; census: every gate-opened path git-tracked at HEAD)",
+    "2_build_witness": "PASS (manuscript diff EMPTY; source-scoped witness 1cd73813 == manifest; unscoped defective form returns HEAD 19a6ce83 — confirms V3 patch still required; metadata witness == manifest)",
+    "3_surface_parity": "PASS (0 truly-unlabeled superseded under FLAW_MARK + 420-char window; all 50 PDF / 49 EPUB 0.900 occurrences legitimate canonical or labeled-historical)",
+    "4_tracked_inputs": "PASS (all gate-opened paths resolve via git ls-files --error-unmatch; only datasets/tokenizer gitignored + disclosed)",
+    "5_ships_claim": "PASS (4 claims checked: appendix_c:291/605/956 + ch09:171 — all scoped, no ships-over-gitignored)",
+    "6_ledger_schema": "PASS (41 rows == Table C.12; 44 manifests - 3 non-scored audit/ablation = 41; 0 dups, 0 nulls, all produced_by_commit resolve, all producing_script present)",
+    "7_makefile_linter": "PASS (7 .PHONY all have recipes; 4 referenced scripts all exist; make -n exit 0)"
+  },
+  "signoff": {
+    "verdict": "CLEAN",
+    "sha_equals_pin": true,
+    "opens_cleanly": "zipfile.testzip None; 54 entries, 29 xhtml",
+    "git_tracked": "at HEAD + build commit + tag",
+    "corrected_headlines": "0.743/0.950/0.9167/0.893 all present",
+    "zero_unlabeled_superseded": true,
+    "phase_E": "10/10",
+    "new_checkout_HEAD_text_in_epub": "PRESENT",
+    "new_venv_bootstrap_text_in_epub": "PRESENT"
+  },
+  "regression": {
+    "R2-EX-N01": "FIXED-VERIFIED (clean clones: @e753eff7 generate_data.py reproduces all 4 pins byte-for-byte 06093bfb/9ab0c840/1f8c060c/a7dfbcc1; @eaf6e14 make_human_test.py reproduces 5bd643a7; @HEAD 3 splits mismatch but pilot_manifest MATCHES; all 5 entries carry pbc+script+15406031 note)",
+    "R2-EX-N02": "FIXED-VERIFIED (0 `git checkout $(` in all 3 surfaces; `git checkout HEAD` present; ran twice in clean clone — HEAD stayed 19a6ce83; gate idempotence check PASS)",
+    "R2-EX-N03": "FIXED-VERIFIED (bootstrap verbatim in all 3; fresh `python3.11 -m venv` in temp dir succeeds, pip 24.0, Python 3.11.16; full torch install not re-run — standing .venv-311 is evidence)",
+    "R2-EX-N04": "FIXED-VERIFIED (source-scoped witness 1cd73813 == manifest; unscoped returns HEAD — filter must exclude build outputs; gate check PASS)",
+    "R2-EX-N05": "FIXED-VERIFIED (gate has _check_geometry_register + _check_span_overlaps; JSON git-tracked 18 rows; NEGATIVE TEST passed)",
+    "QWEN-R2-NF-01": "FIXED-VERIFIED (same defect as N04; gate comment names both IDs; both V3 patch + gate check in place and green)",
+    "R2-EX-N06": "FIXED-VERIFIED (release PDF git-tracked; .gitignore:19 negated at :23; manifest pdf.note states policy; gate check PASS; sha 130ee9e5 + 307 match)",
+    "ORN-R2-GEOM-01": "FIXED-VERIFIED (fig_brain callouts #f4efe3 fill + #111111 text = 16.46:1 >= body 14.16:1; gate span-overlap fig 8.1 p68: 0 collisions >6pt)"
+  },
+  "negative_tests": {
+    "geometry_register_check": {
+      "procedure": "mv JSON -> scratch; run gate; mv back; run gate",
+      "fail_message_when_absent": "[C] FAIL geometry register exists (...) -- missing — the span-overlap scan has no page/bbox register (gate exit=1)",
+      "restored_gate_status": "365/365, exit 0; git status empty; restored file sha 6f04f386 == tracked blob",
+      "file_left_moved": false
+    }
+  },
+  "new_findings": [
+    {
+      "id": "QWEN-R3-NF-01",
+      "severity": "P3",
+      "confidence": "HIGH",
+      "class": "provenance/reproduction robustness",
+      "anchor": "appendix_c quickstart step 3 + scripts/make_human_test.py (no os.makedirs) vs generate_data.py:16 (has os.makedirs)",
+      "observed": "In a clean clone the documented `python scripts/make_human_test.py` fails FileNotFoundError: writes to artifacts/datasets/ without creating it; that dir is gitignored so absent from every commit. generate_data.py (other 4 pins) does os.makedirs(OUT, exist_ok=True) and works verbatim. The gate's own probe (verify_release.py:1211) pre-creates the dir so the gate passes, but a reader following the quickstart verbatim hits the error on 1 of 5 documented dataset-regeneration commands.",
+      "root_cause": "script drift: make_human_test.py assumed artifacts/datasets/ existed (true on author's machine); the R2-EX-N01 fix added the producing-commit disclosure but did not make the human_test path self-contained in a clean clone. Pin itself IS reproducible (5bd643a7) once the dir exists — documentation/robustness friction, not a provenance break.",
+      "blast_radius": "1 of 5 documented dataset-regeneration commands not directly executable in a clean clone; no number or pin affected",
+      "correction": "Add os.makedirs(os.path.join(ROOT,'artifacts','datasets'), exist_ok=True) to make_human_test.py (mirror generate_data.py:16), or add `mkdir -p artifacts/datasets` to quickstart step 3",
+      "acceptance": "fresh clone @eaf6e14: `python3 scripts/make_human_test.py` exits 0, writes human_test.jsonl sha256 5bd643a70d650edf0a61a1fb7c96ef7c2075b36b039cfc3ee112d4edd8447fd5, no manual mkdir",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    }
+  ],
+  "cross_reproduction": {
+    "quoted_finding": "R2-EX-N01 (MiMo round-2)",
+    "independent_reproduction": "clean clones without MiMo's transcript: @e753eff7 all 4 pins byte-for-byte; @HEAD 3 splits mismatch + manifest matches; @eaf6e14 human_test 5bd643a7",
+    "verdict": "HELD — observation independently confirmed; round-2 fix accurate; only residual = P3 makedirs friction"
+  },
+  "surfaces_not_opened": [
+    "Full 307-page visual/geometry audit (Ornith's class) — opened only fig_brain.pdf; gate's span scan covers all 18 deterministically",
+    "Full training reproduction from clean clone (MiMo's class) — ran dataset generators + make reproduce --dry-run (exit 0), no full train.py run",
+    "Full statistical/CI audit across 44 manifests (DeepSeek's class) — verified canonical numbers + 0.900 denominator at point of use, did not re-derive every n/CI",
+    "The 4 round-1 discussion JSONs + 4 round-2 per-pass JSONs — ledger + round2_synthesis were authoritative"
+  ],
+  "examined_counts": {
+    "release_surfaces_opened": 5,
+    "citation_targets_40hex": 48,
+    "citation_targets_resolved": 48,
+    "citation_targets_unresolved": 0,
+    "manifest_hashes_censused": 15,
+    "manifest_hashes_matching": 15,
+    "ledger_rows": 41,
+    "dataset_entries": 5,
+    "dataset_entries_with_pbc_and_script_and_drift": 5,
+    "geometry_register_rows": 18,
+    "regression_ids_reverified": 8,
+    "regression_fixed_verified": 8,
+    "shared_sweep_steps": 7,
+    "makefile_phony_targets": 7,
+    "epistemic_labels_used": [
+      "MEASURED(7)",
+      "SUPERSEDED(2)"
+    ],
+    "undeclared_labels": 0,
+    "epub_xhtml": 29,
+    "pdf_pages": 307,
+    "new_findings": 1
+  },
+  "tree_clean_at_end": true
+}

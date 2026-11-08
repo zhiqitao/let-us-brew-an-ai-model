@@ -34,8 +34,16 @@ def main():
     print(f"=== leakage audit: {len(tasks)} tasks ===")
     print("\n-- classifier: can a trivial model predict the operation from NL? --")
     acc = classifier_leakage(tasks, "operation")
-    print(f"  cross-val accuracy (prediction operation): {acc:.3f}  "
-          f"{'[LEAK WARNING >0.9]' if acc and acc > 0.9 else '[ok]'}")
+    if acc is None:
+        # classifier_leakage() returns None when sklearn is absent (SKLEARN False
+        # in src/audit/leakage.py) — formatting None would raise TypeError under a
+        # bare system python3, and Appendix A documents this exact command
+        # (round-3 MIMO-R3-EX-04).
+        print("  cross-val accuracy (prediction operation): sklearn not installed "
+              "— classifier audit skipped")
+    else:
+        print(f"  cross-val accuracy (prediction operation): {acc:.3f}  "
+              f"{'[LEAK WARNING >0.9]' if acc and acc > 0.9 else '[ok]'}")
 
     print("\n-- duplicate prompt check --")
     nd, sample = duplicate_checks(tasks)

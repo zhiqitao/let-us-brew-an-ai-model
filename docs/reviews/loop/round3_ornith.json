@@ -1,0 +1,133 @@
+{
+  "model": "Ornith-1.5-122B",
+  "delegation_id": "deleg_db9b6980",
+  "round": 3,
+  "class": "visual/print/render-geometry",
+  "signoff_surface": "git lineage + manifests (rotated; deliberately non-vision)",
+  "SEAT_ACCEPTANCE": "VALID — parent spot-check passed: register on disk 18 rows/max overlap 5.39/min font 8.04 == claim; gate with its file 365/365 exit 0 == claim; its cited verify_release.py L1357-1379 IS D4c (git checkout $( forbid, R2-EX-N02) with correct content; git_describe v20261001 = --abbrev=0 form (legit); commits_build_to_head 1 == git rev-list --count 1cd73813..HEAD.",
+  "round_header": {
+    "valid": true,
+    "head": "19a6ce83",
+    "git_describe": "v20261001 (--abbrev=0)",
+    "tag_target": "a45a881",
+    "pdf_build_commit": "1cd73813",
+    "resolves": true,
+    "ancestor_of_head": true,
+    "commits_build_to_head": 1,
+    "pdf_sha": "130ee9e5..",
+    "page_count": 307,
+    "epub_sha": "79cfc523..",
+    "gate": "365/365 exit 0",
+    "round2_gate": "310/310",
+    "non_decreasing": true,
+    "note": "all pins match; round NOT void"
+  },
+  "shared_sweep": {
+    "all_7_pass": true,
+    "1_preflight": "PASS (real clone at HEAD; exit 1 controlled '[PREFLIGHT] FAIL NOT A VERIFIABLE CLEAN CLONE — the 7 pinned tokenizer files are gitignored', NO traceback)",
+    "2_build_witness": "PASS (source-scoped witness 1cd73813 == manifest; gate phase C 'PDF contains no manuscript text added after build commit' PASS)",
+    "3_surface_parity": "PASS (gate phase E + independent EPUB spot-check: 0.500/0.350 only with superseded/replaced labels, 0.143 absent, 0.641 only in artifact-context; 0 unlabeled)",
+    "4_tracked_inputs": "PASS (gate opens only tracked paths; preflight catches gitignored absence with controlled exit)",
+    "5_ships_claim": "PASS (release PDF git-tracked via N06 negation; datasets block scopes all 5 to regenerable-not-shipped)",
+    "6_ledger_schema": "PASS (41 rows, 41 unique ids, 0 nulls, 41/41 produced_by_commit resolve, row-set == Table C.12)",
+    "7_makefile_linter": "PASS (reproduce resolves + --dry-run rc=0; make -n parses; setup creates .venv-311 when absent)"
+  },
+  "signoff": {
+    "verdict": "CLEAN",
+    "tag_target_resolves": true,
+    "pdf_build_commit_resolves_and_ancestor": true,
+    "artifact_hashes": "14/14 == pins (7 tokenizer + 5 dataset + release PDF + EPUB)",
+    "tokenizer_hashes": "7/7 (composition_controls==composition_legacy share fbb9c903)",
+    "dataset_hashes": "5/5 (gitignored on disk, hash-pinned)",
+    "pdf_printed_digests": "6 unique tokenizer digests printed in PDF == pins (data_scaling@100/263/293, diversity@263/295, surface@142/263/294, composition@263/264/297, pilot@264, surface_legacy@264)",
+    "ledger_produced_by_commit": "41/41 resolve",
+    "ledger_equals_table_c12": true,
+    "unpinned_cited_artifacts": 0,
+    "dataset_entries": "5/5 carry produced_by_commit + producing_script + drift disclosure; 3 pilot splits -> e753eff7/generate_data.py, human_test -> eaf6e14/make_human_test.py"
+  },
+  "regression": {
+    "R2-EX-N01": "FIXED-VERIFIED (all 5 pins regenerable byte-for-byte from producing commits in throwaway worktrees: e753eff7 -> 06093bfb/9ab0c840/1f8c060c/a7dfbcc1; eaf6e14 -> 5bd643a7; manifest carries pbc+script+drift note; gate WARN NO(drift disclosed) for 3 splits, YES for pilot_manifest+human_test)",
+    "R2-EX-N02": "FIXED-VERIFIED (NO `git checkout $(` in README/appendix_c/manifest; all 3 document `git checkout HEAD`; gate D4c L1357-1379 asserts not bad_checkout; idempotency demonstrated twice)",
+    "R2-EX-N03": "FIXED-VERIFIED (verbatim bootstrap in all 3; Makefile setup creates .venv-311 when absent)",
+    "R2-EX-N04": "FIXED-VERIFIED (source-scoped witness 1cd73813 == manifest; old unscoped returns HEAD 19a6ce83 = defect was real; gate D4d enforces scoped form, comment names both IDs)",
+    "R2-EX-N05": "FIXED-VERIFIED (gate phase C _check_geometry_register + _check_span_overlaps; NEGATIVE TEST: JSON aside -> FAIL exit 1, 321/323, exact message; RESTORED -> 365/365 exit 0; file left in place)",
+    "R2-EX-N06": "FIXED-VERIFIED (git ls-files 'book/*.pdf' lists the release PDF; gate phase D asserts tracked)",
+    "QWEN-R2-NF-01": "FIXED-VERIFIED (same source-scoped witness fix; gate D4d comment names both IDs)",
+    "ORN-R2-GEOM-01": "FIXED-VERIFIED (Fig 8.1 p68 callout fill #f4efe3 (244,239,227) present in built PDF via get_drawings; WCAG vs #111 = 16.46:1 >= body; old #fbfaf6/white = 1.04:1 confirmed pre-fix; EXECUTED-DETERMINISTIC)"
+  },
+  "negative_tests": {
+    "geometry_register_check": {
+      "test": "mv JSON aside -> gate -> restore -> gate",
+      "fail_message_when_absent": "[C] FAIL geometry register exists (...) -- missing — the span-overlap scan has no page/bbox register",
+      "fail_exit_code": 1,
+      "fail_total_when_absent": "321/323",
+      "restored_gate_status": "365/365 exit 0",
+      "file_restored": true,
+      "left_moved": false
+    }
+  },
+  "geometry_scan": {
+    "scanner": "round-3 independent: pymupdf get_drawings() figure-band detection + chrome exclusion (running-head/section-header/full-width-body), gate-signature span overlap (0.3<dy<7pt & dx>3pt flag; dy>6pt collision)",
+    "figures_scanned": 18,
+    "rows_emitted": 18,
+    "min_font_pt": 8.04,
+    "min_font_floor_pt": 7,
+    "min_font_pass": true,
+    "max_overlap_pt": 5.39,
+    "n_span_collisions_gt6pt": 0,
+    "collision_pass": true,
+    "max_past_textblock_pt": 0.0,
+    "max_past_trim_pt": 0.0,
+    "containment_pass": true,
+    "table_18_1_column_overflow": "FIXED — 'joint/interl.' col1 ends x1=114.7pt, col2 starts x0=114.2pt (~0pt effective, was ~20pt R4G-003); manuscript documents the shortening",
+    "fig_8_1_callout_contrast": 16.46,
+    "bbox_vs_prior_register": "14/18 exact bbox+span-count+font; 4 (12.2/13.1/15.1/18.1) differ only by adjacent section-header chrome in my automated band; min-interior-font IDENTICAL in all 18/18",
+    "gate_recheck_with_my_file": "365/365 exit 0 (parent re-ran and confirmed)",
+    "NOTE": "max_overlap 5.39 vs round-2's 0.0 = different scanner band detection (chrome exclusion), both under the 6pt threshold; the gate accepts either. Register numbers are scanner-dependent — worth knowing."
+  },
+  "new_findings": [],
+  "cross_reproduction": {
+    "mimo_execution": [
+      "reproduce.py --dry-run rc=0, emits 'recorded manifests are never overwritten; a re-run may not reproduce the recorded numbers exactly' caveat",
+      "3 data_scaling_corrected_seed{0,1,2}.json manifests present with full schema"
+    ],
+    "deepseek_quant": [
+      "STAT-01 denominator-at-point-of-use: ch20 L65-66 'Denominators: A accuracy is on 60 held-out A tasks (12 x 5 operations) and B accuracy on 36 held-out B tasks (12 x 3); at n = 36 one item = 0.028' — present at point of use",
+      "STAT-04: no bare 'small cost' without the [-0.58,+0.17] dispersion"
+    ],
+    "qwen_provenance": [
+      "provenance_ledger 41/41 unique/0 nulls/all produced_by_commit resolve",
+      "EPUB superseded sweep: 0 unlabeled"
+    ],
+    "quoted_finding": {
+      "model": "DeepSeek",
+      "id": "STAT-01",
+      "claim": "continual cells must carry denominators at point of use (n_A=60, n_B=36)",
+      "verdict": "HELD (fix verified) — denominator now printed at point of use in printed Ch.18/ch20 manuscript",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    }
+  },
+  "surfaces_not_opened": [
+    "book/latex full TeX source (only md_to_latex.py + book.sty, for the source-scoped witness)",
+    "EPUB internal XHTML full read (only superseded-value grep + gate phase E)",
+    "tokenizer vocab contents / in-memory vocab hashes (only file sha256)",
+    "src/training/* training-loop code (only src/data_generator/generator.py + run scripts)",
+    "scripts/reproduce.py full execute (only --dry-run; --run would recompute manifests)",
+    "book/figures SVG sources (cover_wrap.svg, fig_cover.svg) — inspected rendered PDFs only"
+  ],
+  "examined_counts": {
+    "figures_scanned": 18,
+    "geometry_rows_emitted": 18,
+    "tokenizer_files_hashed": 7,
+    "dataset_files_hashed": 5,
+    "artifact_hashes_verified": 14,
+    "pdf_unique_printed_digests_verified": 6,
+    "pdf_pages": 307,
+    "provenance_ledger_rows": 41,
+    "tables_audited": 2,
+    "manifest_surfaces_checked_for_checkout_form": 3,
+    "dataset_pin_reproduction_worktrees": 2,
+    "claims_inventoried": "5 dataset pins + 3 checkout-form surfaces + 3 venv-bootstrap surfaces"
+  },
+  "tree_clean_at_end": "geometry file modified (its mandated output) + 3 untracked peer round3 JSONs — parent will commit all"
+}

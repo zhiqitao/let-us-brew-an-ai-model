@@ -10,7 +10,7 @@
     "build_commit_provenance": "the recorded pdf_build_commit is the commit the PDF was built from; check it out only to inspect that exact source state — the verification commands below run at HEAD.",
     "run_the_release_gate": [
       "git checkout HEAD   # the gate and pins live at HEAD; the build commit is recorded for provenance, and the gate asserts the PDF content matches it",
-      "python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .",
+      "python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e . && .venv-311/bin/pip install pytest",
       "source .venv-311/bin/activate",
       "TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py"
     ],
@@ -45,7 +45,8 @@
   "verifier": "scripts/verify_release.py",
   "epub": {
     "path": "book/let-us-brew-an-ai-model-v20261001.epub",
-    "sha256": "79cfc523fdd87b7fe356b032bd0cb7882116306df87010bd8b82803ece8adf04"
+    "sha256": "79cfc523fdd87b7fe356b032bd0cb7882116306df87010bd8b82803ece8adf04",
+    "note": "This pin verifies the SHIPPED artifact, not a rebuild: the EPUB was built 2026-11-08 with no SOURCE_DATE_EPOCH, so pandoc stamped dcterms:modified (2026-11-08T01:01:13Z) and every zip entry mtime with the wall-clock build time and minted a fresh urn:uuid (f5ff5397-617f-4c81-8a75-463fa7cb8a9a, mirrored in toc.ncx) — a rebuild of the same sources therefore produced different bytes and could never match this sha256. book/build_epub.py now pins both (SOURCE_DATE_EPOCH=1789084800 -> 2026-09-11T00:00:00Z, and --metadata identifier=urn:uuid:f5ff5397-617f-4c81-8a75-463fa7cb8a9a), verified by building twice into a scratch location and comparing sha256 (byte-identical). Rebuilds are now reproducible relative to each other, but they still differ from THIS pin until the EPUB is rebuilt and re-pinned. Round-3 MIMO-R3-EX-03."
   },
   "datasets": {
     "produced_by_commit_derivation": "git log --diff-filter=A --format=%H -- <path> returns nothing for every file here (artifacts/datasets/ is gitignored and ships in no commit), so the fallback git log -1 was taken on the PRODUCING SCRIPT: git log -1 --format=%H -- scripts/generate_data.py = e753eff7 (the commit that added the generator entry point; unchanged since) and git log -1 --format=%H -- scripts/make_human_test.py = eaf6e14. Both predate the generator drift in 15406031, and regenerating from an archive of e753eff7 reproduces all four generate_data.py pins byte-for-byte — that is what makes 'check out the producing commit to regenerate' true rather than aspirational.",

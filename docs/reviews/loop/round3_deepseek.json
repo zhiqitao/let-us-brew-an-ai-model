@@ -1,0 +1,130 @@
+{
+  "model": "DeepSeek-V4.1-Flash",
+  "delegation_id": "deleg_462b29e2",
+  "round": 3,
+  "class": "quantitative/statistics",
+  "signoff_surface": "PDF colophon/build-witness + figure register (rotated from round-2 README+intermediates)",
+  "round_header": {
+    "head": "19a6ce83",
+    "describe": "v20261001-22-g19a6ce83",
+    "tag_target": "a45a881",
+    "pdf_build_commit": "1cd73813",
+    "pdf_sha": "130ee9e5..",
+    "page_count": 307,
+    "epub_sha": "79cfc523..",
+    "witness": "1cd73813 == manifest",
+    "gate": "365/365, 5 WARN, exit 0",
+    "non_decreasing_vs_310": true,
+    "verdict": "VALID — every pin matches, round not void",
+    "note": "Untracked round3_qwen.json is a peer pass's output, not this pass's write"
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (fresh clone: exit 1 CONTROLLED message '[PREFLIGHT] FAIL NOT A VERIFIABLE CLEAN CLONE — the 7 pinned tokenizer files are gitignored...' no traceback; worktree 365/365; census 6 path literals 0 untracked, 44/44 manifests tracked)",
+    "2_build_witness": "PASS (scoped 1cd73813 == manifest; unscoped book/latex -> 19a6ce83 = round-2 defect reproduces, proving scoping is the fix and unscoped form is check-construction artefact not provenance drift; manuscript diff EMPTY; metadata BUILD_COMMIT == manifest)",
+    "3_surface_parity": "PASS (0.743/0.950 in PDF+EPUB+appendix C; 0.641 appears 11x in EPUB always with historical/confound label; README/manifest/ledger carry none of 0.743/0.950/0.641 so no stale/unlabeled value there)",
+    "4_tracked_inputs": "PASS (6 literals git-ls-files clean; gitignored tokenizer dir declared + preflight names it)",
+    "5_ships_claim": "PASS (manifests-not-weights: 44 tracked, weights absent by design; lockfile tracked)",
+    "6_ledger_schema": "PASS (41 rows, 41 unique ids, 41/41 produced_by_commit resolve, no dup suffix)",
+    "7_makefile_linter": "PASS (make -n parse-clean; make reproduce exit 0 — NOTE it is a dry run by default, 'pass --run to execute')"
+  },
+  "signoff": {
+    "verdict": "CLEAN",
+    "colophon_git_derived": true,
+    "colophon_evidence": "md_to_latex.py:_build_commit() line 913 runs subprocess git rev-parse HEAD at build time, falls back to manifest; grep for 1cd73813 in md_to_latex.py returns NOTHING = not hardcoded",
+    "colophon_pdf_text": "physical page 5 (printed 2): 'was built from repository commit 1cd73813... (the PDF build commit, stated separately from the release commit above...)'",
+    "metadata_witness_equals_manifest": true,
+    "manuscript_diff": "EMPTY",
+    "source_scoped_witness_equals_build_commit": true,
+    "figure_register_drift": {
+      "lof_ids": 18,
+      "register_rows": 18,
+      "manuscript_referenced": 18,
+      "ids_identical": true,
+      "lof_printed_to_physical_offset": "uniform +11 for all 18",
+      "caption_presence": "18/18 on registered physical page +-1",
+      "max_overlap_pt": 0.0,
+      "font_pt_range": "8.04..10.03",
+      "drift": "ZERO"
+    }
+  },
+  "regression": {
+    "R2-EX-N01": "FIXED-VERIFIED-R3 (clean clone @e753eff7 reproduces all four pins byte-for-byte 06093bfb/9ab0c840/1f8c060c/a7dfbcc1; @eaf6e14 reproduces human_test 5bd643a7; second run identical = idempotent; disclosure present in manifest datasets.files[*].note + produced_by_commit + _derivation) CAVEAT: human_test leg needs artifacts/datasets/ to exist in a truly fresh clone — see QWEN-R3-NF-01 (independently reproduced, holds)",
+    "R2-EX-N02": "FIXED-VERIFIED-R3 (fresh clone: git checkout HEAD x3 -> 19a6ce83/19a6ce83/19a6ce83 = fixed point; old non-idempotent form gone from all 3 docs)",
+    "R2-EX-N03": "FIXED-VERIFIED-R3 (bootstrap line verbatim in README:40 + appendix_c:936 + manifest:13; python3.11 -V = 3.11.16; venv smoke test succeeded; torch wheel install NOT executed — that leg is READ-ONLY+EXECUTED-ESTIMATE)",
+    "R2-EX-N04": "FIXED-VERIFIED-R3 (scoped 1cd73813; unscoped 19a6ce83; check source-scoped in phase D, 365/365)",
+    "R2-EX-N05": "FIXED-VERIFIED-R3 (phase C has _check_geometry_register + _check_span_overlaps; run prints 18 'span overlap: fig X.Y pN — n spans, 0 flagged, 0 collisions >6pt' PASS lines; register tracked sha 6f04f386 at HEAD and in clean clone)",
+    "R2-EX-N06": "FIXED-VERIFIED-R3 (release PDF git-tracked; clean clone hashes 130ee9e5 == manifest; EPUB 79cfc523 likewise)",
+    "QWEN-R2-NF-01": "FIXED-VERIFIED-R3 (same defect as N04; both IDs named in gate comment verify_release.py:51-53)",
+    "ORN-R2-GEOM-01": "FIXED-VERIFIED-R3 (fig_brain callouts #f4efe3 + #111111; WCAG 16.46:1 vs 13.56:1 body-on-#fbfaf6 / 14.16:1 on white; min interior font 8.50pt; 0 collisions >6pt p68)"
+  },
+  "negative_tests": {
+    "geometry_register_check": {
+      "procedure": "mv JSON -> scratch; run gate; mv back; re-run",
+      "fail_message_when_absent": "[C] FAIL geometry register exists (...) -- missing — the span-overlap scan has no page/bbox register (printed twice; gate exit 1; 321/323 checks passed, 2 mismatches)",
+      "restored_gate_status": "365/365 exit 0; restored byte-identically sha 6f04f386 == tracked blob",
+      "file_left_moved": false,
+      "OBSERVATION": "the gate total collapses 365 -> 323 when the register is absent: the 18 per-figure span-overlap assertions stop being enumerated while only 2 checks FAIL. Verdict still correctly non-green, but a run-to-run check-count comparison is NOT invariant under a missing input — do not read 'N/N' as a stable denominator across rounds."
+    },
+    "human_test_fresh_clone": "FileNotFoundError reproduced — see cross_reproduction"
+  },
+  "new_findings": [
+    {
+      "id": "DEEP-R3-STAT-01",
+      "severity": "P2",
+      "confidence": "HIGH",
+      "class": "quantitative — instrument validity",
+      "anchor": "Chapter 12 (ch12_how_much_brain.md) capacity table rows Scaling 6.5M / 10M point / 30M point: '| Scaling | **6,500,352** (6.5M) | 0.897 | **0.000** |'",
+      "observed": "Three of four rows print in-distribution pass@1 (0.897/0.773/0.897) with NO test-set denominator at point of use — only the baseline row carries one (0.9167, n=60). Source manifests carry none either: stage4_composition{,_6p5m,_10m}.json in_distribution entries hold only {label,syntax_rate,executable_rate,pass_at_1} — no n, no successes, no denominator; config carries only comp_per_op=40. So 0.896666... is consistent with 269/300, 538/600 or 1076/1200 alike: the denominator is UNDERDETERMINED, not merely unstated. Appendix C discusses denominators for other evaluations but never gives one for the three size points.",
+      "root_cause": "instrument/manifest schema drift: the Stage-4 size-sweep runner wrote bare rates, while the corrected-experiment runner (data_scaling_corrected_seed*.json) writes test_set.n, per-op counts and assertions.test_denominator_exact. Any A/B across sizes holds the denominator constant only by assumption; differing training budgets (1000 vs 800 steps) ARE disclosed, differing evaluation denominators are NOT.",
+      "blast_radius": "3 table cells in the body + the same three numbers restated in the Appendix C size-sweep discussion and the capability-map summary table; the load-bearing composition 0.000 is unaffected. No number changes, only its auditability.",
+      "correction": "Add (n=<test size>) to the three rows of Table 12.1 and the matching Appendix C sentences, and record test_set.n/successes/denominator in the three stage4_composition* manifests (mirror data_scaling_corrected schema) so the cells are re-derivable from the artifact.",
+      "acceptance": "for each stage4_composition{,_6p5m,_10m}.json the manifest carries in_distribution.MODEL.denominator and successes with successes/denominator == pass_at_1, and the Chapter 12 table row prints that denominator at point of use",
+      "evidence_tier": "EXECUTED-DETERMINISTIC",
+      "repro": "python3 -c \"import json;d=json.load(open('artifacts/manifests/stage4_composition_10m.json'));print(d['in_distribution']);print(sorted(d));print(sorted(d['config']))\"  # -> no denominator anywhere"
+    },
+    {
+      "id": "DEEP-R3-GEOM-02",
+      "severity": "P3",
+      "confidence": "HIGH",
+      "class": "visual/print — figure register coverage (cross-class, found while signing off the register)",
+      "anchor": "scripts/make_concept_figures.py:845 / book/figures/ — fig_three_meanings() built at line 845, saved as fig_three_meanings.png",
+      "observed": "book/figures/ holds 20 PDFs; manuscript references exactly 18 (the registered body figures) + cover = 19, leaving fig_three_meanings.pdf/.png generated but referenced by no manuscript file, no register row, no LOF entry. The '18 body figures' denominator is correct; the stray asset is unreferenced build output in a shipped directory.",
+      "root_cause": "script drift in the figure factory: fig_three_meanings() still called in main() (line 845) and saves its PNG, but the section that used it was removed from the manuscript; nothing prunes or asserts the figure inventory against the register.",
+      "blast_radius": "cosmetic/repo hygiene only — one unreferenced figure pair; no PDF content, no register row, no reader-facing number affected.",
+      "correction": "Either delete the fig_three_meanings() call and its outputs, or add a gate assertion that every book/figures/fig_*.pdf is either referenced by book/manuscript or listed as an allowed non-body asset (fig_cover).",
+      "acceptance": "set(fig_*.pdf on disk) - {cover} == set(figure ids referenced in book/manuscript) == set(register figure_id), with no residual",
+      "evidence_tier": "EXECUTED-DETERMINISTIC",
+      "repro": "comm -13 <(grep -rho 'figures/[a-z_]*\\.pdf' book/manuscript | sed 's#figures/##' | sort -u) <(ls book/figures/fig_*.pdf | sed 's#.*/##' | sort)  # -> fig_three_meanings.pdf"
+    }
+  ],
+  "cross_reproduction": {
+    "quoted_finding": "QWEN-R3-NF-01 (Qwen round 3): documented `python scripts/make_human_test.py` fails in a clean clone — no os.makedirs",
+    "verdict": "HELD",
+    "independent_test": "truly fresh clone -> checkout eaf6e14 -> make_human_test.py => FileNotFoundError .../artifacts/datasets/human_test.jsonl; dir absent from clone and every commit. After mkdir -p the same command reproduces pin 5bd643a70d65 exactly — pin sound, only directory creation missing",
+    "why_saw_it_differently_at_first": "first run succeeded because the pilot regeneration had already created artifacts/datasets in that clone — failure only appears in a VIRGIN tree, exactly the reader path Qwen described",
+    "impact": "recorded as a caveat on R2-EX-N01, not a reopening: the pin reproduces, the documented command does not run unaided"
+  },
+  "surfaces_not_opened": [
+    "EPUB deep text sweep (only token counts + the 0.641 context quoted; no per-section diff vs PDF)",
+    "LaTeX/typography internals (book.sty, md_to_latex layout) beyond the build-witness path",
+    "model checkpoint re-inference (no forward passes; decoding temperature not re-executed)",
+    "KDP/print production checks (bleed, trim, embedded fonts, grayscale proof)",
+    "cover art and fig_live_sweep/fig_three_meanings visual design review",
+    "CI/cron wiring and Makefile recipes in execution beyond make -n and make reproduce"
+  ],
+  "examined_counts": {
+    "gate_checks_run": 365,
+    "gate_runs": 6,
+    "clean_clones_created": 5,
+    "manifests_recomputed": 10,
+    "table_cells_verified": 23,
+    "headline_numbers_rederived": 8,
+    "figures_measured_for_registration": 18,
+    "figure_pages_caption_checked": 18,
+    "ledger_rows_validated": 41,
+    "dataset_pins_reproduced": 5,
+    "regression_ids_reverified": 8,
+    "concurrent_peer_writes_detected": 2
+  },
+  "tree_clean_at_end": true
+}

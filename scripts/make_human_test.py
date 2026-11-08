@@ -73,6 +73,11 @@ def make_case(prompt, sig, sample_args):
 
 def main():
     cases = []
+    # artifacts/datasets/ is gitignored, so a clean clone has no such directory;
+    # create it here or the very first write raises FileNotFoundError
+    # (mirrors scripts/generate_data.py — round-3 QWEN-R3-NF-01).
+    os.makedirs(os.path.join(os.path.dirname(__file__), "..", "artifacts", "datasets"),
+                exist_ok=True)
     for i, prompt in enumerate(HUMAN_TASKS):
         sig = SIGNATURES[i]
         op, vars_ = sig

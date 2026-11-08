@@ -531,5 +531,18 @@
     "produced_by_commit": "86e73578a07a436543a24d3aebfed4ab4594193d",
     "producing_script": "scripts/run_surface_corrected.py",
     "producing_script_blob": "21ae91f09dcb510aa9caf65eb95bef1b078a6252"
+  },
+  {
+    "manifest": "truncation_audit.json",
+    "experiment_id": "truncation_audit",
+    "seed": "not-recorded",
+    "steps": "not-recorded",
+    "n_per_op": "not-recorded",
+    "model_params": "not-recorded",
+    "final_loss": "not-recorded",
+    "tokenizer_vocab": "not-recorded",
+    "produced_by_commit": "9199887c99983d5b80dc411915cc8e70fd65a512",
+    "producing_script": "scripts/measure_truncation.py",
+    "producing_script_blob": "1b6e8c6ea0d04e1dcb472c0fd87cd39d50755ed7"
   }
 ]

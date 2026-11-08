@@ -16,6 +16,19 @@ MANU = os.path.join(ROOT, "book", "manuscript")
 BOOK = os.path.join(ROOT, "book")
 FIG = os.path.join(BOOK, "figures")
 
+# Build determinism (round-3 MIMO-R3-EX-03): pandoc stamps dcterms:modified and
+# every zip entry's mtime with the wall-clock build time, and mints a FRESH
+# urn:uuid per build, so two builds of identical sources produced different bytes
+# and the sha256 pin in docs/release_manifest.json could never be reproduced by a
+# rebuild. Both are pinned here: SOURCE_DATE_EPOCH fixes the timestamps (pandoc
+# honours it) and the explicit `identifier` metadata fixes the uuid (mirrored into
+# toc.ncx). setdefault, so an operator can still override the epoch.
+# 1789084800 == 2026-09-11T00:00:00Z, the release date already passed to pandoc
+# as --metadata date=2026-09-11.
+os.environ.setdefault("SOURCE_DATE_EPOCH", "1789084800")
+# The shipped release EPUB's own identifier, so a rebuild keeps it.
+EPUB_UUID = "urn:uuid:f5ff5397-617f-4c81-8a75-463fa7cb8a9a"
+
 ORDER = [
     "ch01_let_us_brew.md",
     "ch02_what_does_it_mean_to_learn.md",
@@ -130,6 +143,7 @@ def main():
         "--metadata", "author=Zhiqi Tao",
         "--metadata", "lang=en",
         "--metadata", "date=2026-09-11",
+        "--metadata", f"identifier={EPUB_UUID}",
         "--resource-path", BOOK,
         "--toc", "--toc-depth=2",
     ]

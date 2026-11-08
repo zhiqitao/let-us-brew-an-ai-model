@@ -24,8 +24,10 @@ book/*.pdf
 # committed build intermediates — regenerable, never cite them:
 #   book/_assembled.md   <- python book/assemble.py
 #   book/_for_review.md  <- cat book/manuscript/*.md
+#   book/_epub.md        <- python book/build_epub.py
 book/_assembled.md
 book/_for_review.md
+book/_epub.md
 book/latex/*.aux
 book/latex/*.log
 book/latex/*.out

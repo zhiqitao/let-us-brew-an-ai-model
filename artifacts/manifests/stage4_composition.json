@@ -23,19 +23,25 @@
       "label": "MODEL",
       "syntax_rate": 0.8966666666666666,
       "executable_rate": 0.8966666666666666,
-      "pass_at_1": 0.8966666666666666
+      "pass_at_1": 0.8966666666666666,
+      "denominator": 300,
+      "successes": 269
     },
     {
       "label": "TEMPLATE",
       "syntax_rate": 1.0,
       "executable_rate": 0.9,
-      "pass_at_1": 0.8
+      "pass_at_1": 0.8,
+      "denominator": 300,
+      "successes": 240
     },
     {
       "label": "RETRIEVAL",
       "syntax_rate": 1.0,
       "executable_rate": 1.0,
-      "pass_at_1": 1.0
+      "pass_at_1": 1.0,
+      "denominator": 300,
+      "successes": 300
     }
   ],
   "compositional": [
@@ -43,21 +49,35 @@
       "label": "MODEL",
       "syntax_rate": 0.0,
       "executable_rate": 0.0,
-      "pass_at_1": 0.0
+      "pass_at_1": 0.0,
+      "denominator": 240,
+      "successes": 0
     },
     {
       "label": "TEMPLATE",
       "syntax_rate": 1.0,
       "executable_rate": 0.5,
-      "pass_at_1": 0.0
+      "pass_at_1": 0.0,
+      "denominator": 240,
+      "successes": 0
     },
     {
       "label": "RETRIEVAL",
       "syntax_rate": 1.0,
       "executable_rate": 0.5,
-      "pass_at_1": 0.0
+      "pass_at_1": 0.0,
+      "denominator": 240,
+      "successes": 0
     }
   ],
   "dataset_version": "v0_1",
-  "spec_version": "python_capability_v0_1"
+  "spec_version": "python_capability_v0_1",
+  "test_set": {
+    "n": 300,
+    "n_per_op": 30,
+    "ops_covered": 10,
+    "derivation": "scripts/run_composition.py builds the in-distribution test split from generate_dataset(n_per_op=200, id_set='letters', seed=config.seed): per operation, the first 15% (30 records) go to val and the next 15% (30) to test, over the 10 entries of src/data_generator/generator.py OPERATIONS -> 10 x 30 = 300 held-out primitive tasks. The compositional holdout is 6 COMPOSITE_OPERATIONS x config.comp_per_op (40) = 240.",
+    "successes_meaning": "in_distribution[].successes and compositional[].successes count pass_at_1 passes over that entry's denominator; successes/denominator reproduces pass_at_1 exactly.",
+    "recorded_by": "round-3 fix DEEP-R3-STAT-01 (denominator derived from the runner's code, not guessed; the same n=300 is stated independently in Appendix C's pass@1-denominators note)"
+  }
 }

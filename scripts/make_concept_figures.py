@@ -842,5 +842,7 @@ if __name__ == "__main__":
 # fig_capability_map() replaced by native checkpoint-keyed tables (R3-02)
     fig_same_ops()
     fig_coverage()
-    fig_three_meanings()
+# fig_three_meanings() dropped: the manuscript section that used it was removed, so
+# the pair was unreferenced build output in a shipped directory (round-3 DEEP-R3-GEOM-02);
+# scripts/verify_release.py phase C now asserts disk fig_*.pdf - cover == manuscript refs.
     fig_continual_timelines()

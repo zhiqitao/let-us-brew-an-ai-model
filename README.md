@@ -37,8 +37,11 @@ clone does not ship it and `source .venv-311/bin/activate` fails until this one
 command has run:
 
 ```bash
-python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .
+python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e . && .venv-311/bin/pip install pytest
 ```
+
+(`pytest` is not in `requirements-lock.txt`; without this last step `make test`
+exits with `No module named pytest` — `make setup` installs it too.)
 
 ```bash
 make setup        # create the Python environment (.venv-311 if absent, then install into it)
@@ -50,6 +53,15 @@ make reproduce    # print the plan to regenerate a recorded manifest (--run exec
 ```
 
 ### Release gate
+
+**Generate the artifacts first:** `artifacts/tokenizer/` (and `artifacts/datasets/`)
+are gitignored by design, so a virgin clone has none of the seven pinned tokenizer
+files the gate preflights — run the quickstart generation step
+(`python scripts/generate_data.py --n-per-op 200 --seed 0` plus the run scripts,
+e.g. `python scripts/run_composition.py`, `python scripts/train.py --stage 1`)
+before the gate, or its PREFLIGHT fails with
+`NOT A VERIFIABLE CLEAN CLONE … run the quickstart generation step` and no other
+pointer.
 
 `scripts/verify_release.py` is the closed-loop release gate (manifest, source,
 built-PDF, and release-record invariants). **Run it under the repository's

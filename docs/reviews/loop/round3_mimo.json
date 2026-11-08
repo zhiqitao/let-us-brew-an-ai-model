@@ -1,0 +1,188 @@
+{
+  "model": "MiMo-V2.6-Flash-RL",
+  "delegation_id": "deleg_18bfc98a",
+  "round": 3,
+  "class": "execution/reproduction",
+  "signoff_surface": "README + build-intermediate regeneration",
+  "SEAT_ACCEPTANCE": "VALID (re-dispatch after deleg_8d7b61e7 was rejected as FABRICATED). Parent verified all 6 findings against the repo: grep -c overlap verify_release.py == 23 (round-2's 0 was pre-fix); audit.py:37 does format acc unconditionally + leakage.py:43 returns None when SKLEARN False; book/_epub.md tracked (check-ignore rc=1) while _assembled/_for_review ignored at .gitignore:27/28; README bootstrap has NO pytest while Makefile:15 installs it; truncation_audit grep in ledger == 0 but cited at ch08:65-66; EPUB content.opf carries urn:uuid f5ff5397-... + zip mtimes = build time + SOURCE_DATE_EPOCH count 0 + manifest has no epub.note. verification_trail had 23 entries with real stdout; PARTIAL/NOT EXECUTED labels used honestly.",
+  "round_header": {
+    "head": "19a6ce83",
+    "tag": "v20261001 (only tag)",
+    "tag_target": "a45a881",
+    "pdf_build_commit": "1cd73813",
+    "pdf_sha": "130ee9e5..",
+    "page_count": 307,
+    "epub_sha": "79cfc523..",
+    "gate": "365/365, 5 WARN, exit 0",
+    "non_decreasing": true,
+    "all_pins_match": true,
+    "header_valid": true
+  },
+  "shared_sweep": {
+    "1_preflight": "EXECUTED (fresh clone: clean FAIL '[PREFLIGHT] FAIL NOT A VERIFIABLE CLEAN CLONE — the 7 pinned tokenizer files are gitignored...' exit 1, NOT a traceback; worktree 365/365 exit 0; census 9 literal paths, 8 tracked, 1 = artifacts/tokenizer/ gitignored by design — census limited to literal quoted strings, runtime os.path.join paths not enumerated)",
+    "2_build_witness": "EXECUTED (diff EMPTY; scoped witness 1cd73813 == manifest; unscoped returns HEAD 19a6ce83 = known trap; PDF metadata BUILD_COMMIT == manifest; no false-colophon)",
+    "3_surface_parity": "PARTIAL — non-PDF surfaces grepped for 0.641/0.500/0.143/0.350 -> 0 value occurrences (only 0.143 as substring of commit 15406031...); README+manifest+appendix C read in full. NOT RUN: full canonical-number registry extraction + per-surface PDF/EPUB comparison (time budget; rotated sign-off is README). build_intermediates_note: _assembled/_for_review deleted+gitignored CONFIRMED; book/_epub.md is a THIRD regenerable intermediate still TRACKED -> MIMO-R3-EX-06",
+    "4_tracked_inputs": "PARTIAL (9 literal gate paths: 8 tracked, artifacts/tokenizer/ untracked+gitignored; 44 manifests; requirements-lock tracked; datasets 0 tracked; release PDF + geometry register tracked. NOT run: exhaustive path-literal extraction from scripts/run_*.py)",
+    "5_ships_claim": "EXECUTED (3 claims: appendix_c:291/605/956; 44 manifests tracked, lockfile tracked, datasets 0 tracked + same paragraph scopes them 'gitignored and ship in no commit (0 files)'; no ships-over-gitignored P1)",
+    "6_ledger_schema": "EXECUTED (41 rows, 44 manifests, 0 dups, 0 nulls (missing = string 'not-recorded'), 41/41 produced_by_commit resolve. GAP: 3 manifests have no ledger row — bothseeded pair documented at appendix_c:910, truncation_audit.json cited at ch08:65-66 with NO note -> MIMO-R3-EX-05)",
+    "7_makefile_linter": "EXECUTED (4 unique scripts/*.py tokens all exist; every .PHONY has a recipe; make -n exit 0, 9 recipe lines)"
+  },
+  "signoff": {
+    "verdict": "PASS with 3 P3 documentation/robustness gaps (MIMO-R3-EX-01/02/04) — no P0/P1 on this surface",
+    "readme_verbatim_bootstrap": "EXECUTED in fresh clone: BOOTSTRAP_EXIT=0, 'Successfully installed ... torch-2.14.0+cpu ... let-us-brew-an-ai-model-0.1.0'",
+    "readme_checkout_idempotent": "git checkout HEAD twice in clean clone -> 19a6ce83 both times; twice in main worktree -> same, git status unchanged",
+    "forbidden_form_absent": "grep 'git checkout $(' in README/appendix_c/manifest -> no output, exit 1. Literal DOES occur in verify_release.py:51,1358,1374,1376 = the gate's own detector, not a documented command",
+    "make_setup_creates_venv": "fresh clone: 'ls: cannot access .venv-311' then 'creating .venv-311 with /home/ubuntu/.local/bin/python3.11', MAKE_SETUP_REAL_EXIT=0, Python 3.11.16",
+    "readme_make_targets": {
+      "make setup": "exit 0",
+      "make smoke": "exit 0, PASS ('sandbox+judge: reference passes 8/8 hidden tests, pass@1=True; PIPELINE COMPLETE')",
+      "make test": "exit 2 in bootstrap-only clone (No module named pytest); exit 0, 48 passed after make setup",
+      "make audit": "exit 0, cross-val accuracy 1.000 [LEAK WARNING >0.9] -> artifacts/results/leakage_audit.json",
+      "make reproduce": "exit 0, dry run (no --run)",
+      "make stage1": "NOT EXECUTED — 1500-step CPU training, recorded train_time_s=514.3s, skipped for round time budget"
+    },
+    "readme_gate_recipe": "365/365 exit 0 in worktree; verbatim in virgin clone -> clean PREFLIGHT FAIL naming artifacts/tokenizer/; README Release gate section does not state artifacts must be generated first -> MIMO-R3-EX-02",
+    "build_intermediates": "git check-ignore -v -> .gitignore:27/.gitignore:28 for _assembled/_for_review, both absent from clean clone; regeneration = python book/assemble.py (assemble.py:60). book/_epub.md (build_epub.py:111) tracked + present + NOT stale (regenerated in clean clone, git status stayed clean for that path)",
+    "appendix_commands_verbatim": "python scripts/generate_data.py --n-per-op 200 -> exit 0, 1400/300/300 tasks; python scripts/audit.py -> exit 1 under bare system python3 (no sklearn) TypeError at scripts/audit.py:37, same command via make audit (venv) exit 0 -> MIMO-R3-EX-04"
+  },
+  "regression": {
+    "R2-EX-N01": "FIXED-VERIFIED (clean clone @e753eff7 + generate_data.py -> all four pins byte-identical 06093bfb/9ab0c840/1f8c060c/a7dfbcc1; @eaf6e14 + mkdir + make_human_test.py -> 5bd643a7)",
+    "R2-EX-N02": "FIXED-VERIFIED (checkout HEAD twice -> 19a6ce83 both; forbidden form absent from 3 surfaces)",
+    "R2-EX-N03": "FIXED-VERIFIED (bootstrap verbatim exit 0 in fresh clone)",
+    "R2-EX-N04": "FIXED-VERIFIED (scoped witness 1cd73813 == manifest; unscoped returns HEAD)",
+    "R2-EX-N05": "FIXED-VERIFIED (grep -c overlap now 23, was 0; _check_geometry_register at L873, called at L994; NEGATIVE TEST: JSON aside -> FAIL 321/321 exit 1 -> restore -> 365/365 exit 0)",
+    "R2-EX-N06": "FIXED-VERIFIED (git ls-files book/ lists the release PDF; .gitignore:19 book/*.pdf negated at :23)",
+    "QWEN-R2-NF-01": "FIXED-VERIFIED (scoped witness fix; gate comment names both IDs)",
+    "ORN-R2-GEOM-01": "FIXED-VERIFIED (make_concept_figures.py:472 CALLOUT_FC/CALLOUT_TC = '#f4efe3','#111111'; shipped PDF p68 spans #111111 @8.39pt DejaVuSans; contrast 16.46 re-derived from hex, old white-on-#fbfaf6 = 1.04)"
+  },
+  "negative_tests": {
+    "geometry_register_check": {
+      "fail_message_when_absent": "[C] FAIL geometry register exists ... missing — the span-overlap scan has no page/bbox register",
+      "fail_exit_code": 1,
+      "fail_total_when_absent": "321/321 (MiMo) / 321/323 (DeepSeek, Ornith)",
+      "restored_gate_status": "365/365 exit 0",
+      "file_restored": true
+    }
+  },
+  "new_findings": [
+    {
+      "id": "MIMO-R3-EX-01",
+      "severity": "P3",
+      "class": "execution/reproduction",
+      "root_cause": "README's one-line bootstrap (the R2-EX-N03 fix) installs requirements-lock.txt + editable package only; pytest is installed solely by the Makefile setup recipe (Makefile:15). A reader who runs the bootstrap then `make test` gets exit 2 'No module named pytest'.",
+      "fix": "add pytest to the README bootstrap line, or state that make setup is required before make test",
+      "evidence_tier": "MEASURED",
+      "parent_verification": "README bootstrap grep has NO pytest; Makefile:15 'pip install pytest' — CONFIRMED"
+    },
+    {
+      "id": "MIMO-R3-EX-02",
+      "severity": "P3",
+      "class": "execution/reproduction",
+      "root_cause": "the 7 pinned tokenizer files + run artifacts are gitignored and ship in no commit, so verify_release.py preflight refuses to run until a quickstart generation step has been done; README's Release gate section (README.md:52+) does not say so, so a virgin clone hits PREFLIGHT FAIL with no pointer.",
+      "fix": "one sentence in README's Release gate section: the gate needs the generated artifacts first (name the quickstart step)",
+      "evidence_tier": "MEASURED",
+      "parent_verification": "README:52-55 Release gate section describes the gate, no artifacts-first sentence — CONFIRMED"
+    },
+    {
+      "id": "MIMO-R3-EX-03",
+      "severity": "P3",
+      "class": "execution/build-stamp",
+      "root_cause": "book/build_epub.py/pandoc emit a fresh urn:uuid in EPUB/content.opf (mirrored in toc.ncx) plus dcterms:modified = current UTC, and every zip entry carries the build time as mtime; build_epub.py sets no SOURCE_DATE_EPOCH (grep count 0) — yet the manifest pins the EPUB sha256 with no note, so a rebuild can never reproduce the pin.",
+      "fix": "document in manifest epub.note that the pin verifies the shipped artifact and a rebuild will differ (or pin a deterministic uuid/timestamp via SOURCE_DATE_EPOCH)",
+      "evidence_tier": "MEASURED",
+      "parent_verification": "content.opf urn:uuid f5ff5397-617f-4c81-8a75-463fa7cb8a9a; toc.ncx mirrors it; zip mtimes (2026,11,8,1,1,12); SOURCE_DATE_EPOCH count 0; manifest epub has NO note — CONFIRMED"
+    },
+    {
+      "id": "MIMO-R3-EX-04",
+      "severity": "P3",
+      "class": "execution/reproduction",
+      "root_cause": "src/audit/leakage.py classifier_leakage() returns None when SKLEARN is False (leakage.py:43), but scripts/audit.py:37 formats the result unconditionally with f'{acc:.3f}', raising TypeError; Appendix A documents `python scripts/audit.py`.",
+      "fix": "guard the format: if acc is None print 'sklearn not installed — classifier audit skipped'",
+      "evidence_tier": "MEASURED",
+      "parent_verification": "audit.py:37 does f'{acc:.3f}' unconditionally; leakage.py:43 'if not SKLEARN:' — CONFIRMED"
+    },
+    {
+      "id": "MIMO-R3-EX-05",
+      "severity": "P3",
+      "class": "provenance/artifact-integrity",
+      "root_cause": "the ledger enumerates run manifests but omits audit-type manifests; the two *_bothseeded.json omissions are explicitly documented (appendix_c:910 'archived ... and is not reported') whereas truncation_audit.json — cited as a data source at ch08:65-66 — has no ledger row and no equivalent note.",
+      "fix": "add a truncation_audit row (or a one-line note that audit manifests are out of the ledger's scope, matching the bothseeded note)",
+      "evidence_tier": "MEASURED",
+      "parent_verification": "grep -c truncation_audit provenance_ledger.json == 0; cited at ch08:65-66 — CONFIRMED"
+    },
+    {
+      "id": "MIMO-R3-EX-06",
+      "severity": "P3",
+      "class": "execution/build-stamp",
+      "root_cause": "the round-1 fix pass deleted/gitignored only _assembled.md and _for_review.md (V3 §0.5 step 3 names exactly those two); book/build_epub.py:111's output book/_epub.md was left tracked, so a clean clone ships a generated file the other two intermediates are deliberately excluded from. Mitigating: regenerating it in the clean clone left git status clean for that path, i.e. the tracked copy is NOT stale.",
+      "fix": "either gitignore+delete book/_epub.md like its siblings, or state in the docs why it is tracked",
+      "evidence_tier": "MEASURED",
+      "parent_verification": "git ls-files book/_epub.md = tracked; check-ignore rc=1; _assembled/_for_review ignored at .gitignore:27/28 — CONFIRMED"
+    }
+  ],
+  "cross_reproduction": {
+    "primary": {
+      "peer": "Qwen",
+      "finding": "QWEN-R3-NF-01 — make_human_test.py has no os.makedirs -> FileNotFoundError in a virgin clone",
+      "verdict": "HELD (independently reproduced)",
+      "real_output": "ls: cannot access 'artifacts/datasets': No such file or directory / Traceback ... make_human_test.py line 89, in main, with open(out,'w') / FileNotFoundError: .../artifacts/datasets/human_test.jsonl / EXIT=1",
+      "extra": "also fires at the producing commit eaf6e14 in a virgin clone (VIRGIN_EXIT=1); after mkdir -p it writes 16 cases and reproduces pin 5bd643a70d65 exactly. generate_data.py DOES call os.makedirs(OUT, exist_ok=True), so the documented appendix-C step-3 order (generate_data first) masks the bug."
+    },
+    "secondary": {
+      "peer": "DeepSeek",
+      "finding": "DEEP-R3-STAT-01 — Ch.12 capacity table prints pass@1 with no denominator on 3 rows; stage4_composition* carry no n/successes",
+      "verdict": "HELD (independently confirmed)",
+      "real_output": "| Stage-4 baseline | **884,224** (0.88M) | 0.9167 (n=60; see Appendix C.5) | **0.000** | / | Scaling | **6,500,352** (6.5M) | 0.897 | **0.000** | / | 10M point | **10,195,776** (10.2M) | 0.773 | **0.000** | / | 30M point | **29,290,240** (29.3M) | 0.897 | **0.000** | ; grep stage4_composition.json successes|denominator -> no matches (only pass_at_1 lines 26,32,38,46,52,58)"
+    },
+    "cheapest_two_per_other_class": {
+      "provenance": [
+        "checkout HEAD twice -> identical 19a6ce83 + forbidden-form grep exit 1",
+        "release PDF tracked + .gitignore:23 negation + sha == pin 130ee9e5..."
+      ],
+      "content_stat": [
+        "ch12: 3 of 4 rows lack n (reproduced)",
+        "stage4_composition.json has pass_at_1 but no successes/denominator keys (reproduced)"
+      ],
+      "visual": [
+        "fig_brain callout colors in source (#f4efe3/#111111) + shipped-PDF span colors #111111 @8.39pt + contrast 16.46 re-derived",
+        "geometry register: n_rows 18, max_overlap_pt 5.39 <= 6.0, min_interior_font_pt 8.04 >= 7.0; gate 0 collisions >6pt on fig 8.1 p68"
+      ]
+    }
+  },
+  "surfaces_not_opened": [
+    "full canonical-number parity sweep of PDF-extracted text vs EPUB vs README vs manifest vs ledger (V3 §0.5 step 3) — only the non-PDF superseded-value grep",
+    "book/latex/ build outputs (book.tex/book.pdf/book.txt) — deliberately excluded from the witness per V3 step 2",
+    "tests/ source and individual pytest test bodies (only aggregate make test result consumed)",
+    "src/ model/training code beyond src/audit/leakage.py and src/data_generator/generator.py behaviour observed through scripts",
+    "artifacts/checkpoints beyond one shape probe (data_scaling_corrected_seed0_size100.pt)",
+    "artifacts/raw_outputs/, artifacts/results/ contents (except leakage_audit.json written in the scratch clone)",
+    "scripts/run_*.py bodies and runtime path literals (step-4 census covered verify_release.py only)",
+    "design/BOOK_DESIGN.md, specs/python_capability_v0_1.md, notes/, experiments/, .pytest_cache",
+    "manuscript chapters other than targeted greps in ch08, ch12, ch25 and full reads of appendix A/C sections",
+    "peer round-3 reports round3_qwen/deepseek/ornith.json — used only the two findings quoted in my brief, reproduced independently",
+    "make stage1 / scripts/reproduce.py --run real training execution (dry run only; recorded train_time_s=514.3s made a full run poor value)",
+    "EPUB visual rendering (only shipped sha + rebuild comparison checked; no EPUB page render)"
+  ],
+  "examined_counts": {
+    "gate_runs": 4,
+    "gate_runs_detail": "main worktree 365/365 exit 0; negative-test FAIL 321/321 exit 1; post-restore 365/365 exit 0; clean-clone PREFLIGHT FAIL exit 1",
+    "clean_clones_created": 3,
+    "git_checkouts_executed": 6,
+    "readme_make_targets_executed": 5,
+    "appendix_verbatim_commands_executed": 2,
+    "issue_ledger_entries_read": 30,
+    "regression_ids_re_verified": 8,
+    "new_findings_reported": 6,
+    "manifest_files_enumerated": 44,
+    "provenance_ledger_rows_checked": 41,
+    "gate_literal_paths_censused": 9,
+    "makefile_script_tokens_checked": 4,
+    "epub_zip_entries_compared": 54,
+    "pdf_pages_rendered_for_vision": 1,
+    "pdf_span_color_probes": 1,
+    "dataset_pins_re_derived": 5,
+    "checkpoint_tensor_shapes_checked": 24,
+    "verification_trail_entries": 23
+  },
+  "tree_clean_at_end": "false as reported — but git status shows only pre-existing peer artifacts (geometry file modified by Ornith's mandated scan + 4 untracked round3_*.json). MiMo left no dirt of its own."
+}
