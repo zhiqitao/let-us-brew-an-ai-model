@@ -6587,24 +6587,35 @@ across two commits, and a clean clone must know which is which:
 
 - **Tag `v20261001` → release commit `a45a881158ed076f615f6d3bc2e72640dc5cdced`** is the
   *experiment-data snapshot*: the manifests and manuscript state whose numbers this book
-  cites (the scored dataset files are gitignored and regenerable with
-  `python scripts/generate_data.py` — they ship in no commit). It is the provenance
-  anchor, not the tooling snapshot.
+  cites (the scored dataset files are gitignored and ship in no commit; they were produced
+  at commit e753eff7873202ada1707935eaadd436437f15d9 by `scripts/generate_data.py` — except
+  `human_test.jsonl`, produced at commit eaf6e1434297021741d1aee80d1bbd6fa459756a by
+  `scripts/make_human_test.py` — and the shipped generator has since drifted
+  (`src/data_generator/generator.py` changed `output_type` from `list` to `int` on
+  `list_len`/`list_sum`), so a fresh run at HEAD will NOT reproduce them;
+  `docs/release_manifest.json` records each file's producing commit, producing script and
+  sha256 pin). It is the provenance anchor, not the tooling snapshot.
 - **The PDF build commit** — the `pdf_build_commit` value in
   `docs/release_manifest.json` (and the commits after it) — carries the release gate and
   the corrected run scripts. The tag predates
   `scripts/verify_release.py`, so **a checkout of the tag alone cannot run the release
   gate** — the verifier and the corrected runners simply are not in that tree.
 
-So to *verify* a clean clone rather than merely read it, check out the build commit (read
-it from the manifest — the value lives in one place), then run the gate under the
-repository's Python 3.11 venv:
+So to *verify* a clean clone rather than merely read it, stay at HEAD: the gate and the
+pins live at HEAD.
+
+The recorded pdf_build_commit is the commit the PDF was built from; check it out only to inspect that exact source state — the verification commands below run at HEAD:
 
 ```bash
-git checkout $(python3 -c "import json; print(json.load(open('docs/release_manifest.json'))['pdf_build_commit'])")
+git checkout HEAD   # the gate and pins live at HEAD; the build commit is recorded for provenance, and the gate asserts the PDF content matches it
 source .venv-311/bin/activate
 TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 ```
+
+(Reading `pdf_build_commit` out of the manifest *at* the build commit is deliberately not
+part of the recipe: that commit's own manifest records an older value, so such a command
+walks backward through history with no fixed point. Verification never checks the build
+commit out; it asserts that the PDF's *content* matches the recorded value.)
 
 (`git checkout v20261001` remains the correct command for reading the experiment-data
 snapshot the numbers cite; the two roles are recorded side by side in
@@ -6625,7 +6636,11 @@ warning and is skipped, so a green run that reports that skip has *not* checked
 the PDF. The repository ships the experiment
 code and the run manifests under `artifacts/manifests/`. The scored dataset files under
 `artifacts/datasets/` are **gitignored** and ship in no commit (0 files); they are
-regenerable with `python scripts/generate_data.py`. The trained checkpoints are large
+regenerable only from their producing commit — e753eff7873202ada1707935eaadd436437f15d9
+for the four `scripts/generate_data.py` outputs, eaf6e1434297021741d1aee80d1bbd6fa459756a
+for `human_test.jsonl` — not from HEAD, because the generator drifted after they were
+produced (see **Publication status** above; `docs/release_manifest.json` carries the
+per-file producing commit, producing script and sha256 pin). The trained checkpoints are large
 and are **not** included, and raw per-candidate generations were not archived. The
 recorded runs are **not** regenerable from the recorded config and seed alone: the
 global random batch-stream state carried across arms, and `train.py` gained a per-arm
@@ -6940,10 +6955,21 @@ in the current environment; they alter no reported number.
 
 1. **Clone the companion repository** and check out the `v20261001` tag — that tag is the
    experiment-data snapshot whose numbers this book cites. To *run the release gate*
-   (`scripts/verify_release.py`) or the corrected run scripts, check out the PDF build
-   commit instead: the tag predates the verifier, so `git checkout v20261001` alone has no
-   gate to run (see **Publication status** above for the exact commands).
-2. **Install dependencies.** Python 3.11.16, PyTorch 2.14.0+cpu (CPU build, no GPU). The
+   (`scripts/verify_release.py`) or the corrected run scripts, be at the PDF build commit
+   **or later** — HEAD already is: the tag predates the verifier, so
+   `git checkout v20261001` alone has no gate to run (see **Publication status** above
+   for the exact commands).
+2. **Install dependencies.** First create the repository's Python 3.11 venv —
+   `.venv-311` is gitignored, so a clean clone does not ship it and
+   `source .venv-311/bin/activate` fails until this one command has run:
+
+   ```bash
+   python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .
+   ```
+
+   (`make setup` runs exactly that: it creates `.venv-311` when it is absent, then
+   installs `requirements-lock.txt` and the package into it.) Python 3.11.16, PyTorch
+   2.14.0+cpu (CPU build, no GPU). The
    training and evaluation core depends on `torch` and the standard library; the
    *printed audits and diagnostics* additionally use `scikit-learn` (and the figure
    scripts use `matplotlib`), so treat those as separate groups. Install the CPU-only
@@ -6971,7 +6997,11 @@ in the current environment; they alter no reported number.
    command above as *that* platform's recipe and add OS-specific recipes as they are
    verified — one transcript does not cover every platform.
 3. **Prepare the data & tokenizer.** Generate the dataset files under
-   `artifacts/datasets/` (e.g. `python scripts/generate_data.py`), then train the
+   `artifacts/datasets/` (e.g. `python scripts/generate_data.py`) — note that a fresh run
+   at HEAD does **not** reproduce the pinned scored-on splits, because the generator
+   drifted after they were produced; check out the producing commit recorded in
+   `docs/release_manifest.json` for that (`human_test.jsonl` comes from
+   `scripts/make_human_test.py`, which does still reproduce at HEAD) — then train the
    tokenizer. The pilot tokenizer is built inside `scripts/train.py` (via
    `train_tokenizer(..., save_path=...)`), so an explicit tokenizer step is only needed
    for runs that reuse a saved tokenizer; when in doubt, `train.py` writes e.g.
