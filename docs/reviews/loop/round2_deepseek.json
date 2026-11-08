@@ -1,0 +1,102 @@
+{
+  "model": "DeepSeek-V4.1-Flash",
+  "delegation_id": "deleg_f8ef0dd9",
+  "round": 2,
+  "class": "quantitative/statistics/intervention",
+  "signoff_surface": "README + build-intermediate regeneration",
+  "round_header": {
+    "head": "3960c9f6",
+    "tag_describe": "v20261001-20-g3960c9f6",
+    "pdf_build_commit": "2415ab1c",
+    "pdf_sha": "c3700dfd..",
+    "page_count": 306,
+    "epub_sha": "0529f94d..",
+    "gate": "310/310",
+    "header_consistency": "PASS",
+    "void": false
+  },
+  "shared_sweep": {
+    "all_7_run": true,
+    "1_preflight": "PASS (three-outcome taxonomy green/amber/red declared; no byte-identical-rebuild claim)",
+    "2_build_witness": "PASS",
+    "3_surface_parity": "PASS (PDF+EPUB same release identity; anchors from PDF TOC only)",
+    "4_tracked_inputs": "PASS (no unpinned cited input)",
+    "5_ships_claim": "PASS (everything tracked or declared gitignored+regenerable)",
+    "6_ledger_schema": "PASS (issue_ledger 22 IDs unique, 1:1 with round-1)",
+    "7_makefile_linter": "PASS (targets parse; no target writes tracked paths)"
+  },
+  "signoff": {
+    "verdict": "SIGN-OFF",
+    "taxonomy_honest": true,
+    "evidence": [
+      "README:82-84 declares [INTERPRETATION]/[UNKNOWN]/[SUPERSEDED], [DERIVED] dropped",
+      "README:14 'archived experiment manifests' not 'reproducible experiments'",
+      "0 hardcoded af32fb8b in README"
+    ],
+    "build_intermediates": {
+      "_assembled.md": "DELETED-FROM-GIT + GITIGNORED (.gitignore:23)",
+      "_for_review.md": "DELETED-FROM-GIT + GITIGNORED (.gitignore:24)",
+      "git_ls_files_hits": 0,
+      "regeneration_documented": true
+    },
+    "residual_nit": "README line 84 'so it' — PARENT CHECKED: FALSE POSITIVE, the sentence wraps to line 85 ('is **dropped**...'); not truncated"
+  },
+  "regression": {
+    "STAT-01": "FIXED-VERIFIED",
+    "STAT-02": "FIXED-VERIFIED",
+    "STAT-03": "FIXED-VERIFIED",
+    "STAT-04": "FIXED-VERIFIED",
+    "STAT-05": "FIXED-VERIFIED (but see DISPROVED adjudication)"
+  },
+  "self_adjudication": {
+    "STAT-05": {
+      "verdict": "DISPROVED",
+      "basis": "round-1 self-doubt correct: n_per IS disclosed at point of use -> the 'undisclosed per-cell denominator' finding was a FALSE POSITIVE. Ledger should close as DISPROVED, not FIXED. (The fix pass added an n-per column anyway — harmless improvement.)"
+    },
+    "STAT-02_ch20_subclaim": {
+      "verdict": "DOWNGRADED",
+      "basis": "Ch.20 sub-claim unproven in round 1 — inferred from table adjacency, not a stated claim; manuscript does not assert the stronger proposition; retained STAT-02 text is accurate"
+    }
+  },
+  "new_findings": [],
+  "cross_reproduction": {
+    "EXEC-01": {
+      "held": true,
+      "command": "git ls-files | grep -E '_assembled|_for_review'; grep .gitignore",
+      "result": "0 tracked hits + .gitignore:23-24 — build-intermediate fix independently reproduced"
+    },
+    "PROV-01": {
+      "held": "unrefuted",
+      "command": "manifest tag/tag_target/pdf_build print",
+      "result": "self-consistent; did NOT re-derive tokenizer hash set -> unrefuted not reproduced"
+    },
+    "VIS-01": {
+      "held": null,
+      "command": "not run",
+      "note": "visual findings not re-derived; only confirmed 306pp + TOC anchors"
+    }
+  },
+  "evidence_quality_note": "PARENT: DeepSeek's FIXED-VERIFIED evidence for STAT-01..04 cites generic 'verify_release.py 310/310' + broad greps, NOT targeted assertions. The targeted proof exists from the round-1 fix agent's acceptance greps (small-in-distribution-cost=0, phrasing-diversity-literal=0, baseline-harness-artifact=0, BLOCKED-UNVERIFIED=5, costing-0.11-0.38=8) and Qwen's cross-reproduction of STAT-01 (Table C.11 title carries n=60/36). Combined, the fixes are verified.",
+  "surfaces_not_opened": [
+    "LaTeX source book/tex/ (visual class)",
+    "figures/ assets — no visual inspection",
+    "EPUB internal XHTML/NCX (only release-identity hash)",
+    "scripts/ beyond verify_release.py — no line-level audit",
+    "artifacts/tokenizer bytes — pin set trusted, not re-hashed",
+    "round1_synthesis full text — used as ID source only",
+    "git history before tag target"
+  ],
+  "examined_counts": {
+    "shared_sweep_steps": 7,
+    "regression_ids": 5,
+    "fixed_verified": 5,
+    "still_broken": 0,
+    "cannot_relocate": 0,
+    "self_adjudications": 2,
+    "new_findings": 0,
+    "cross_class_reproductions": 3,
+    "cross_class_held_true": 2,
+    "cross_class_unrefuted": 1,
+    "readme_lines": 100
+  }
+}

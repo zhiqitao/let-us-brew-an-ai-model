@@ -1,0 +1,102 @@
+{
+  "model": "Ornith-1.5-122B",
+  "delegation_id": "deleg_5376e1fe",
+  "round": 2,
+  "class": "visual/print/render-geometry",
+  "signoff_surface": "PDF colophon/build-witness + figure register",
+  "round_header": {
+    "head": "3960c9f6",
+    "pdf_build_commit": "2415ab1c",
+    "pdf_sha": "c3700dfd..",
+    "page_count": 306,
+    "epub_sha": "0529f94d..",
+    "pins_match": true,
+    "gate": "310/310",
+    "verdict": "ROUND VALID"
+  },
+  "shared_sweep": {
+    "all_7": "PASS",
+    "1_preflight": "PASS (clean FAIL exit 1 both commits, NO traceback; 347 tracked files)",
+    "2_build_witness": "PASS (metadata witness==manifest; colophon names 2415ab1c from git not hardcoded; manuscript diff EMPTY; confirms scoping rule QWEN-R2-NF-01)",
+    "3_surface_parity": "PASS (all remaining superseded values LABELED in PDF+EPUB; plain 0.900 hits are legitimate current corrected values; R3-EX-01 EPUB staleness FIXED — EPUB now labels diversity/data_scaling/stage3 as (superseded); no fresh unlabeled number in EPUB)",
+    "4_tracked_inputs": "PASS (only gitignored-by-design tokenizer/datasets/checkpoints untracked, preflight names them)",
+    "5_ships_claim": "PASS (no ships-datasets claim; datasets block marks all 5 gitignored+regenerable+pinned)",
+    "6_ledger_schema": "PASS (41 rows, 41 unique ids, 0 dups, 0 null produced_by_commit, all resolve, == Table C.12)",
+    "7_makefile_linter": "PASS (7 .PHONY all have recipes, make -n clean, reproduce tracked + exit 0)"
+  },
+  "signoff": {
+    "verdict": "SIGN-OFF CLEAN",
+    "colophon_hardcoded_hash": false,
+    "colophon_value": "2415ab1c",
+    "metadata_witness_equals_manifest": true,
+    "manuscript_unchanged_since_build": "git diff EMPTY",
+    "figure_register": "LOF page 10, 18 entries",
+    "register_equals_disk_equals_LOF": true,
+    "drift": "zero — 18 LOF == 18 includegraphics body sources (fig_cover excluded as cover)"
+  },
+  "geometry_measurements_path": "docs/reviews/loop/round2/geometry_measurements.json",
+  "regression": {
+    "R4G-001": "FIXED-VERIFIED (p42 max_overlap_pt=0, collisions>6pt=0; was 72pt)",
+    "R4G-002": "FIXED-VERIFIED (p120 overlap 0; was ~100pt)",
+    "R4G-003": "FIXED-VERIFIED (p177 'joint/interl.' x=[71,115] vs col2 x=[114,183]; residual abutment 1.0pt < 6pt; was ~20pt)",
+    "R4G-005": "FIXED-VERIFIED (p153+p68 overlap 0; renders confirm Fig 8.1 loop clear of parameter block, Fig 16.1 '3+2' legible; UPGRADED from vision-only to EXECUTED-DETERMINISTIC + VISION-CORROBORATED)",
+    "R1P-004": "FIXED-VERIFIED (min interior font 8.04pt across all 18; 0 figures below 7.0pt floor; was 4.32pt)"
+  },
+  "self_adjudication": {
+    "R1P-004": "FIXED — measured 8.04pt clears even the old 8pt floor; concern resolved in the artifact regardless of the severity downgrade",
+    "R4G-005": "FIXED-VERIFIED — bbox extractor reports 0 collisions >6pt on both figures + 150dpi renders corroborate; evidence tier now satisfied deterministically"
+  },
+  "new_findings": [
+    {
+      "id": "ORN-R2-GEOM-01",
+      "severity": "P3",
+      "confidence": "MEDIUM",
+      "class": "visual/print (contrast, not overlap)",
+      "anchor": "Fig 8.1 physical page 68 — two bottom callout boxes faint grey-on-cream",
+      "observed": "low-contrast fill reduces label legibility vs crisp box labels above; vision confirms text readable and NOT intersected/overlapped",
+      "root_cause": "figure style choice in make_concept_figures.py (callout facecolor/edgecolor contrast), not layout/overlap",
+      "correction": "darken callout text/edge contrast if design pass deems it low-legibility",
+      "acceptance": "callout text contrast >= body-prose contrast (rendered pixel luminance)",
+      "evidence_tier": "VISION-OBSERVED (V3 caps vision-only at HIGH-CONFIDENCE INFERENCE; no geometry row because contrast is not overlap/overflow)"
+    }
+  ],
+  "figure_register_count": 18,
+  "cross_reproduction": {
+    "R3-EX-04_MiMo": {
+      "held": true,
+      "cmd": "make reproduce at HEAD",
+      "result": "exit 0, reproduce.py tracked"
+    },
+    "QWEN_R4-01": {
+      "held": true,
+      "cmd": "sha256sum 3 tokenizers vs manifest",
+      "result": "361f6d89/2282c2fe/29f07823 all match"
+    },
+    "DeepSeek_quant": {
+      "held": true,
+      "cmd": "data_scaling_corrected_seed0 rows",
+      "result": "0.8967/0.90/0.8933/0.8967 == book 0.897/0.900/0.893/0.897; n_per_op + ops_covered=10 at point of use"
+    }
+  },
+  "surfaces_not_opened": [
+    "EPUB deep spine/NAV audit (MiMo's surface)",
+    "_assembled+README claim-tier audit (DeepSeek's surface)",
+    "git lineage deep-dive + full manifest hash census + citation-target sweep (Qwen's surface)",
+    "book/latex independent recompile",
+    "appendix-C figure reproductions (pp 249-252, 277) — scan covered 18 BODY figure pages only",
+    "rendered 6x9 design/pedagogy pass beyond the two R4G-005 figures"
+  ],
+  "examined_counts": {
+    "figures_measured": 18,
+    "figure_pages_scanned": 18,
+    "tables_audited_geometry": 1,
+    "register_entries": 18,
+    "surfaces_stale_swept": 5,
+    "tokenizer_hashes_verified": 3,
+    "manifests_rederived": 1,
+    "ledger_rows": 41,
+    "gate": "310/310",
+    "clean_clones": 2,
+    "figures_rendered_vision": 2
+  }
+}

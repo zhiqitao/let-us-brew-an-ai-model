@@ -1,0 +1,183 @@
+{
+  "model": "MiMo-V2.6-Flash-RL",
+  "delegation_id": "deleg_5d00f877",
+  "round": 2,
+  "class": "execution/reproduction",
+  "signoff_surface": "EPUB",
+  "round_header": {
+    "head": "3960c9f6",
+    "tag_describe": "v20261001-20-g3960c9f6",
+    "pdf_build_commit": "2415ab1c",
+    "pdf_sha": "c3700dfd..",
+    "page_count": 306,
+    "epub_sha": "0529f94d..",
+    "witness_match": true,
+    "gate": "310/310",
+    "gate_non_decreasing": true,
+    "pins_all_matched": true,
+    "void": false
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (3 outcomes: fresh clone@2415ab1c rc=1 clean PREFLIGHT line no traceback; same@HEAD; census 71 paths -> 57 tracked/14 required-but-untracked all gitignored+pinned)",
+    "2_build_witness": "FAIL on sub-check 1 only (unscoped git log = HEAD); metadata witness PASS; manuscript diff PASS; root = committed build outputs book/latex/book.pdf+book.tex -> N04",
+    "3_surface_parity": "PASS (6 surfaces incl regenerated _assembled; canonical SET identical PDF/EPUB/_assembled; 0 superseded strings anywhere; 127 raw hits all current-value or historical-framed; 0 presented as current)",
+    "4_tracked_inputs": "PASS (71 -> 57/14; 14 all gitignored; release PDF untracked -> N06)",
+    "5_ships_claim": "PASS (3 claims all verified; but 'regenerable via generate_data.py' false for 4/5 -> N01)",
+    "6_ledger_schema": "PASS (41 rows = 44 manifests - 2 bothseeded - 1 truncation_audit; 0 dups; 0 nulls; 41/41 produced_by_commit resolve; blobs match)",
+    "7_makefile_linter": "PASS (7 .PHONY == 7 recipes; all scripts tracked; make -n clean; make reproduce rc=0 in main repo AND clean clone)"
+  },
+  "signoff_epub": {
+    "verdict": "SIGNED-OFF",
+    "sha_match": true,
+    "git_tracked_at_head_and_documented_commit": true,
+    "opens_clean": "zipfile.testzip None; 54 entries, 29 xhtml",
+    "corrected_present": {
+      "0.743": 25,
+      "0.950": 43,
+      "0.9167": 22,
+      "0.893": 17
+    },
+    "superseded_absent_all": true,
+    "gate_phase_E": "10/10 PASS",
+    "rebuilt": "1844133 B (round-1 stale was 1337805 B)",
+    "note": "round-1 R3-EX-01 stays FIXED"
+  },
+  "regression": {
+    "R3-EX-01": "FIXED-VERIFIED (sha==manifest, phase E 10/10, corrected present, superseded 0, tracked)",
+    "R3-EX-02": "FIXED-VERIFIED (41/41 produced_by_commit+script+blob, all resolve, gate phase D PASS)",
+    "R3-EX-03": "FIXED-VERIFIED (negated at BOTH anchors appendix_c:599 + ch09:172; clean-clone outcome recorded)",
+    "R3-EX-04": "FIXED-VERIFIED (reproduce.py tracked; make reproduce rc=0 in main repo AND clean clone@2415ab1c)",
+    "R3-EX-05": "FIXED-VERIFIED (0 tracked, .gitignore:23-24, regeneration leaves git clean, regenerated carries corrected set)",
+    "R3-EX-06": "FIXED-VERIFIED (issue_ledger exists, 22 entries 6+5+6+5, all ids present)"
+  },
+  "new_findings": [
+    {
+      "id": "R2-EX-N01",
+      "severity": "P1",
+      "class": "execution/reproduction",
+      "observed": "clean-clone generate_data.py (rc=0, deterministic) produces pilot_train/val/test sha c310b70a/96a47bac/a5e74790 vs pinned 06093bfb/9ab0c840/1f8c060c -> 3/5 MISMATCH; human_test.jsonl NOT produced by generate_data.py (it's make_human_test.py, which DOES reproduce 5bd643a7); pilot_manifest matches pin + same params; line diff 280/1400 all output_type 'list'(pinned) vs 'int'(regenerated) on list_len/list_sum",
+      "root_cause": "generator.py changed in 15406031 (2026-09-11) AFTER the on-disk splits were generated; round-1 fix (0fb6e220) pinned stale on-disk bytes",
+      "correction_per_finding": "regenerate 3 pilot splits + re-pin; human_test note -> make_human_test.py; gate check fresh output == pins",
+      "PARENT_ADJUDICATION": "OBSERVATION CORRECT, CORRECTION REJECTED — the pins' PURPOSE is to freeze the content the book's numbers were scored on; the recorded pilot results were computed on the on-disk (old-generator) splits, so re-pinning to fresh output would make the pin match shipped code but NO LONGER match the scored-on data, which is worse. RIGHT FIX: keep the scored-on pins; add per-dataset produced_by_commit + producing_script; change the note to disclose generator drift (list->int) and name the producing commit; add a gate check that regeneration AT the producing commit matches the pin (proves the drift story). human_test attribution -> make_human_test.py is correct as stated.",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    },
+    {
+      "id": "R2-EX-N02",
+      "severity": "P1",
+      "class": "execution/reproduction",
+      "observed": "documented `git checkout $(...pdf_build_commit)` NOT idempotent: at HEAD -> 2415ab1c (correct); re-run AT 2415ab1c -> af32fb8b (that commit's own manifest value); at af32fb8b manifest pins are round-1-era (pdf_build_commit=eaa8cc02, sha=2045c54f); at 2415ab1c manifest reads af32fb8b/41e71d07/None/None",
+      "root_cause": "chicken-and-egg: pdf_build_commit is recorded in a commit that POSTDATES the build commit -> backward chain with no fixed point",
+      "correction": "document 'git checkout <build commit> or later' (or checkout HEAD) and run the gate; write manifest pins in the same commit that names pdf_build_commit; assert idempotence",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    },
+    {
+      "id": "R2-EX-N03",
+      "severity": "P2",
+      "class": "execution/reproduction",
+      "observed": "`source .venv-311/bin/activate` rc=1 in clean clone; ZERO occurrences of 'python -m venv'/'virtualenv' in README/manuscript/Makefile/manifest -> NO documented command creates .venv-311; `make setup` only pip installs into active env",
+      "root_cause": "undocumented environment bootstrap: .venv-311 gitignored, exists only on author's machine; docs reference it as if shipped",
+      "correction": "document bootstrap verbatim (python3.11 -m venv .venv-311 && pip install --extra-index-url .../whl/cpu -r requirements-lock.txt) in README + Appendix C + manifest run_the_release_gate; make setup create the venv",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    },
+    {
+      "id": "R2-EX-N04",
+      "severity": "P2",
+      "class": "execution/build-stamp",
+      "observed": "§0.5 step-2 sub-check 1 FAILS (git log = 3960c9f6 != 2415ab1c); sub-checks 2+3 PASS; only book/latex deltas are committed build OUTPUTS book.pdf+book.tex; excluding them source-only witness == 2415ab1c; md_to_latex.py unchanged since",
+      "root_cause": "check-construction defect (path filter includes generated artifacts), NOT provenance drift",
+      "correction": "scope witness filter to sources (exclude book/latex/book.pdf,book.tex,book.txt) or define as `git log -1 -- book/manuscript book/latex/md_to_latex.py book/latex/book.sty`; add exact command to gate",
+      "CROSS_MODEL": "= Qwen QWEN-R2-NF-01 (independent agreement)",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    },
+    {
+      "id": "R2-EX-N05",
+      "severity": "P1",
+      "class": "execution/release-gate",
+      "observed": "grep -c overlap scripts/verify_release.py = 0 — NO overlap/collision check exists; phase C 166 checks = 80 digest geometry + 68 trim/text-block + 0 overlap; gate green while V3 §7 claims phase C does span-overlap; geometry_measurements.json untracked (concurrent pass)",
+      "root_cause": "gate-implementation gap: phase C 'render geometry' implemented as digest containment only; span-overlap half of §7 never written",
+      "correction": "add phase-C span-overlap extractor (callout/annotation vs gloss/axis/caption spans, flag >6pt) emitting per-figure rows; require geometry_measurements.json git-tracked with >=18 rows {figure_id,page,bbox,overlap_pt,font_pt}",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    },
+    {
+      "id": "R2-EX-N06",
+      "severity": "P3",
+      "class": "execution/reproduction",
+      "observed": "release PDF gitignored (.gitignore:19 book/*.pdf) + untracked at HEAD/2415ab1c/v20261001 while sha256+page_count pinned in manifest; EPUB counterpart IS tracked; clean-clone phase D FAIL 'release manifest PDF exists to hash'",
+      "root_cause": "gitignored build output pinned by sha: .gitignore predates the manifest pdf pin; round-1 pinned EPUB (tracked) but not PDF policy",
+      "correction": "track the release PDF (as EPUB is) OR state in manifest that the PDF pin is verified against the published artifact, not a clone",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    }
+  ],
+  "cross_reproduction": {
+    "R4G-001": {
+      "source_model": "Ornith",
+      "held": false,
+      "verdict": "NOT HELD per machine evidence — geometry_measurements.json overlap_pt 0.0 across all 18 figures (threshold 6pt); CAVEAT: file untracked + from concurrent pass, and gate has no overlap check (N05), so refutation not yet shippable",
+      "command": "python3 -c \"import json;d=json.load(open('docs/reviews/loop/round2/geometry_measurements.json'));print(len(d['figures']),max(f['overlap_pt'] for f in d['figures']))\"",
+      "output": "18 0.0"
+    }
+  },
+  "adjudication_ready": [
+    {
+      "id": "R2-EX-N01",
+      "challenger": "Qwen",
+      "cmd": "clean clone@2415ab1c + generate_data.py + sha256sum pilot_train.jsonl vs manifest pin",
+      "expected_if_upheld": "hashes differ (c310b70a vs 06093bfb)"
+    },
+    {
+      "id": "R2-EX-N02",
+      "challenger": "Qwen",
+      "cmd": "clean clone, checkout $(...pdf_build_commit) twice, print manifest values",
+      "expected_if_upheld": "second checkout lands af32fb8b; manifest there reads af32fb8b 41e71d07 None"
+    },
+    {
+      "id": "R2-EX-N05",
+      "challenger": "Ornith",
+      "cmd": "grep -c overlap scripts/verify_release.py && gate | grep -c '^\\[C\\]'",
+      "expected_if_upheld": "0 and 166"
+    }
+  ],
+  "surfaces_not_opened": [
+    "book/latex/book.pdf interior (gate only)",
+    "built-PDF figures/LOF (no vision, no self-run bbox)",
+    "book/_for_review.md not regenerated",
+    "EPUB CSS/nav/19 images",
+    "design/BOOK_DESIGN.md, specs/, notes/, tests/, src/ (except via make), REVIEW_INSTRUCTIONS_V2, discussion_round1_*, multiseed_replication.md, external_review_20261031.md",
+    "artifacts/checkpoints/,raw_outputs/,results/,reproduced/ (no training re-run)",
+    "other passes' round2 outputs (Phase-A independence)",
+    "published GitHub remote (no network verification)",
+    "make setup (mutates interpreter, may pull CUDA torch) — the ONE README command not run",
+    "make stage1 full training re-run (rc=2 no torch in clone; 8-15min not run)"
+  ],
+  "examined_counts": {
+    "release_surfaces_opened": 6,
+    "gate_executions": 9,
+    "gate_checks": 310,
+    "gate_phase_c": 166,
+    "gate_phase_e": 10,
+    "clean_clones": 1,
+    "checkouts_exercised": [
+      "2415ab1c",
+      "3960c9f6",
+      "af32fb8b"
+    ],
+    "manifests_audited": 44,
+    "ledger_rows": 41,
+    "issue_ledger_ids": 22,
+    "round1_ids_reverified": 6,
+    "headline_rederived": 5,
+    "shape_asserts": "12/12",
+    "readme_commands_executed": 9,
+    "readme_commands_not_executed": 1,
+    "figures_audited": 18,
+    "superseded_occurrences_swept": 127,
+    "cross_class_checks": 6,
+    "cross_reproductions": 3,
+    "new_findings": 6,
+    "new_by_severity": {
+      "P1": 3,
+      "P2": 2,
+      "P3": 1
+    }
+  }
+}

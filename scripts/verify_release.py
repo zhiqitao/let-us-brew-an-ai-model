@@ -27,7 +27,14 @@ CHECKED invariants in a PREFLIGHT plus five phases (A-E):
      is the corrected one, and — render-geometry — every 64-hex tokenizer
      digest prints all 64 hex characters on its page AND ends at or before
      the text block's right edge (a digest severed at the 6in trim edge is
-     the P1 clipping class this check exists to catch).
+     the P1 clipping class this check exists to catch). Round-2 R2-EX-N05
+     added the OTHER half of the render-geometry promise: a span-overlap
+     extractor over the 18 body figure pages (0.3<dy<7pt AND dx>3pt is the
+     round-1 collision signature; any pair overlapping >6pt FAILS), plus the
+     assertion that docs/reviews/loop/round2/geometry_measurements.json
+     exists, is GIT-TRACKED, carries >=18 schema-complete rows and no
+     overlap above 6pt — a missing or untracked register FAILS, it does not
+     skip (V3 §7 claimed this check; it did not exist).
   D. release record       — hash ALL SEVEN tokenizer files on disk
      and assert they equal the cited constants, then assert
      docs/release_manifest.json (tag, tag-target commit, PDF build commit,
@@ -36,7 +43,17 @@ CHECKED invariants in a PREFLIGHT plus five phases (A-E):
      set of tokenizer files on disk AND the set of tokenizer files the book
      cites (an unpinned cited tokenizer = the drift gap this check closes);
      and assert the manifest documents the two-commit reproduction structure
-     (tag = experiment snapshot, build commit = gate/runners).
+     (tag = experiment snapshot, build commit = gate/runners). Round-2
+     additions: every dataset pin carries a resolving produced_by_commit +
+     producing_script and a drift-disclosing note, and a fresh regeneration
+     is RECORDED (WARN, never FAIL — the disclosed drift is documented
+     state, R2-EX-N01); the documented reproduction commands contain no
+     non-idempotent `git checkout $(` form (R2-EX-N02); the source-scoped
+     build witness `git log -1 -- book/manuscript book/latex/md_to_latex.py
+     book/latex/book.sty` equals pdf_build_commit (R2-EX-N04 +
+     QWEN-R2-NF-01 — the V3 §0.5 filter must not include tracked build
+     outputs); and the sha-pinned release PDF is git-tracked so its pin is
+     clone-verifiable (R2-EX-N06).
   E. EPUB stale sweep   — unzip the shipped EPUB, extract its text, and assert the
      corrected headline strings (0.743 / 0.950 / 0.9167 / 0.893) are present and
      the superseded ones (high diversity 1.000 1.000, minimal diversity 0.500
@@ -148,6 +165,24 @@ EPUB_MUST_NOT_HAVE = [
     "Stage-4 baseline 884,224 (0.88M) 0.900",
 ]
 
+# --- round-2 geometry register + span-overlap thresholds (R2-EX-N05) --------
+# The round-2 scanner wrote docs/reviews/loop/round2/geometry_measurements.json
+# (18 body figure rows). V3 §7 claimed phase C did span-overlap; it did not.
+GEOMETRY_REGISTER = os.path.join(ROOT, "docs", "reviews", "loop", "round2",
+                                 "geometry_measurements.json")
+GEOMETRY_REGISTER_REL = "docs/reviews/loop/round2/geometry_measurements.json"
+GEOMETRY_MIN_ROWS = 18
+GEOMETRY_MAX_OVERLAP_PT = 6.0
+GEOMETRY_ROW_KEYS = ("figure_id", "page", "bbox", "font_pt")
+# round-1 collision signature: two spans whose boxes interleave vertically by
+# 0.3-7pt while intersecting horizontally by >3pt (line-box padding overlap is
+# ~4.2pt and benign; a callout landing on a gloss is 20-72pt and is caught by
+# the >6pt collision rule below, which has NO upper bound).
+OVERLAP_FLAG_LO_PT = 0.3
+OVERLAP_FLAG_HI_PT = 7.0
+OVERLAP_DX_PT = 3.0
+OVERLAP_COLLISION_PT = 6.0
+
 # canonical corrected values -------------------------------------------------
 DS_AGG = {  # aggregate pass@1 by size per seed (data_scaling_corrected)
     0: [0.897, 0.900, 0.893, 0.897],
@@ -181,6 +216,16 @@ def check(phase, name, ok, detail=""):
     mark = "PASS" if ok else "FAIL"
     print(f"[{phase}] {mark}  {name}" + (f"  -- {detail}" if detail and not ok else ""))
     return ok
+
+
+def warn(phase, name, detail=""):
+    """Record a PASS-marked WARN line: a disclosed/documented state that the
+    report must carry but that must never flip the exit code (round-2
+    R2-EX-N01 — a disclosed generator drift is documented state, not a
+    mismatch, so the gate records it instead of failing on it)."""
+    results.append((phase, name, True, detail))
+    print(f"[{phase}] WARN  {name}" + (f"  -- {detail}" if detail else ""))
+    return True
 
 
 def rd(fname):
@@ -825,11 +870,128 @@ def _check_digest_geometry(doc):
     return ok_all
 
 
+def _check_geometry_register():
+    """R2-EX-N05 — the round-2 figure-geometry register.
+
+    docs/reviews/loop/round2/geometry_measurements.json holds one row per body
+    figure (figure_id, page, bbox, overlap, font sizes). V3 §7 claimed phase C
+    performed a span-overlap check; the gate had none, and the register itself
+    was untracked — so a clean clone could not see either. Both are now
+    asserted: a MISSING or UNTRACKED register FAILS (it is not skipped), the
+    row count/schema/6pt ceiling are checked, and the rows double as the page
+    + bbox register the span-overlap extractor scans.
+
+    Returns (ok, rows) — rows is None when the register is unusable."""
+    if not os.path.exists(GEOMETRY_REGISTER):
+        check("C", "geometry register exists "
+                   "(docs/reviews/loop/round2/geometry_measurements.json)",
+              False, "missing — the span-overlap scan has no page/bbox register")
+        return False, None
+    rc, tracked = _git("ls-files", "--", GEOMETRY_REGISTER_REL)
+    ok = check("C", "geometry register is git-tracked (a clean clone must be "
+                    "able to read the 18 figure rows — R2-EX-N05)",
+               rc == 0 and bool(tracked),
+               f"untracked: git add {GEOMETRY_REGISTER_REL}")
+    try:
+        with open(GEOMETRY_REGISTER, encoding="utf-8") as f:
+            reg = json.load(f)
+    except (OSError, ValueError) as e:
+        check("C", "geometry register parses as JSON", False, str(e))
+        return False, None
+    rows = reg.get("rows") if isinstance(reg, dict) else reg
+    if not isinstance(rows, list):
+        check("C", "geometry register carries a rows array", False,
+              type(rows).__name__)
+        return False, None
+    ok &= check("C", f"geometry register has >= {GEOMETRY_MIN_ROWS} rows",
+                len(rows) >= GEOMETRY_MIN_ROWS, f"got {len(rows)}")
+    bad = [r.get("figure_id") if isinstance(r, dict) else r for r in rows
+           if not isinstance(r, dict)
+           or any(k not in r for k in GEOMETRY_ROW_KEYS)
+           or not ("overlap_pt" in r or "max_overlap_pt" in r)]
+    ok &= check("C", "every geometry row carries {figure_id, page, bbox, "
+                     "overlap_pt, font_pt}", not bad, f"incomplete rows {bad[:5]}")
+    ovs = [r.get("overlap_pt", r.get("max_overlap_pt")) for r in rows
+           if isinstance(r, dict)]
+    ovs = [o for o in ovs if isinstance(o, (int, float))]
+    ok &= check("C", f"max overlap_pt <= {GEOMETRY_MAX_OVERLAP_PT} across "
+                     f"{len(ovs)} geometry rows",
+                bool(ovs) and max(ovs) <= GEOMETRY_MAX_OVERLAP_PT,
+                f"max {max(ovs) if ovs else 'n/a'}pt")
+    return ok, rows
+
+
+def _check_span_overlaps(doc, rows):
+    """R2-EX-N05 — the span-overlap extractor V3 §7 promised.
+
+    For every registered body figure, take the spans whose centre falls inside
+    the row's bbox (that reproduces the register's own n_figure_spans exactly)
+    and compare every pair: a pair is FLAGGED when the boxes interleave
+    vertically by 0.3-7pt while intersecting horizontally by >3pt (the round-1
+    collision signature — benign line-box padding sits at ~4.2pt and is only
+    reported), and is a COLLISION when the vertical overlap exceeds 6pt, with
+    no upper bound, so a callout landing on a gloss (20-72pt in round 1) can
+    never hide above the flag band. One row is emitted per figure; any
+    collision, or a figure with no extractable spans, FAILS."""
+    ok_all = True
+    for row in rows:
+        fid, pno, bbox = row.get("figure_id"), row.get("page"), row.get("bbox")
+        if not (isinstance(pno, int) and isinstance(bbox, list)
+                and len(bbox) == 4):
+            ok_all &= check("C", f"span overlap: fig {fid} has a usable "
+                                 f"page + bbox register entry", False,
+                            f"page={pno!r} bbox={bbox!r}")
+            continue
+        if not (1 <= pno <= doc.page_count):
+            ok_all &= check("C", f"span overlap: fig {fid} page {pno} exists "
+                                 f"in the PDF", False,
+                            f"PDF has {doc.page_count} pages")
+            continue
+        page = doc[pno - 1]
+        x0, y0, x1, y1 = bbox
+        spans = []
+        for b in page.get_text("dict").get("blocks", []):
+            for l in b.get("lines", []):
+                for s in l.get("spans", []):
+                    if not s.get("text", "").strip():
+                        continue
+                    cx = (s["bbox"][0] + s["bbox"][2]) / 2
+                    cy = (s["bbox"][1] + s["bbox"][3]) / 2
+                    if x0 <= cx <= x1 and y0 <= cy <= y1:
+                        spans.append(s)
+        flagged, collisions, max_ov = 0, [], 0.0
+        for i, a in enumerate(spans):
+            for b in spans[i + 1:]:
+                dy = (min(a["bbox"][3], b["bbox"][3]) -
+                      max(a["bbox"][1], b["bbox"][1]))
+                dx = (min(a["bbox"][2], b["bbox"][2]) -
+                      max(a["bbox"][0], b["bbox"][0]))
+                if dx <= OVERLAP_DX_PT:
+                    continue
+                max_ov = max(max_ov, dy)
+                if OVERLAP_FLAG_LO_PT < dy < OVERLAP_FLAG_HI_PT:
+                    flagged += 1
+                if dy > OVERLAP_COLLISION_PT:
+                    collisions.append((round(dy, 1), a["text"][:16],
+                                       b["text"][:16]))
+        ok_all &= check("C", f"span overlap: fig {fid} p{pno} — {len(spans)} "
+                             f"figure spans, {flagged} flagged "
+                             f"(0.3<dy<7pt & dx>3pt), {len(collisions)} "
+                             f"collisions >6pt",
+                        bool(spans) and not collisions,
+                        f"max dy {max_ov:.1f}pt; worst {collisions[:2]}")
+    return ok_all
+
+
 def phase_c(pdf_path):
     print(f"\n== PHASE C: PDF invariants ({pdf_path}) ==")
     if not os.path.exists(pdf_path):
         check("C", "PDF exists", False, pdf_path)
         return False
+    # R2-EX-N05: the geometry register + span-overlap scan are asserted even
+    # when pymupdf is missing — a missing/untracked register is a source-side
+    # defect, not a PDF-extraction problem, and must not hide behind the skip.
+    reg_ok, geo_rows = _check_geometry_register()
     try:
         import pymupdf
     except ImportError as e:
@@ -847,13 +1009,13 @@ def phase_c(pdf_path):
         return check("C", "phase C SKIPPED (pymupdf missing — run under "
                           ".venv-311; pymupdf==2.1 comes from "
                           "requirements-lock.txt)", True,
-                     "PDF invariants were NOT verified by this run")
+                     "PDF invariants were NOT verified by this run") and reg_ok
     doc = pymupdf.open(pdf_path)
     pages = [p.get_text() for p in doc]
     txt = "\n".join(pages)
     flat = _loose(pages)          # header/hyphenation-normalized
     st = _st(flat)                # supertight for phrase presence
-    ok_all = True
+    ok_all = reg_ok               # register failures ride along (R2-EX-N05)
 
     # --- C1 canonical values present ---
     for sub, name in [
@@ -1007,6 +1169,11 @@ def phase_c(pdf_path):
     # --- C7 render geometry: 64-hex tokenizer digests complete + inside the
     # --- text block (would have caught the P1 trim-edge clipping) ---
     ok_all &= _check_digest_geometry(doc)
+    # --- C10 render geometry: span-overlap over the 18 registered body figure
+    # --- pages (R2-EX-N05 — the half of V3 §7's render-geometry promise the
+    # --- gate never implemented; one row per figure, collisions >6pt fail) ---
+    if geo_rows:
+        ok_all &= _check_span_overlaps(doc, geo_rows)
     return ok_all
 
 
@@ -1020,6 +1187,63 @@ def _sha256(path):
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+# --- dataset regeneration probe (R2-EX-N01) ---------------------------------
+# Both snippets write into a THROWAWAY directory: artifacts/datasets/ holds the
+# scored-on pins, and clobbering them to answer "is this regenerable?" would
+# destroy the very thing the pin protects. generate_data.py's OUT is a module
+# global read by main(), so redirecting it is enough; make_human_test.py builds
+# its path from __file__ at call time, so relocating __file__ redirects it.
+_GD_SNIPPET = (
+    "import importlib.util,sys,os;"
+    "root,tmp=sys.argv[1],sys.argv[2];"
+    "spec=importlib.util.spec_from_file_location('gd',"
+    "os.path.join(root,'scripts','generate_data.py'));"
+    "m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);"
+    "m.OUT=tmp;sys.argv=['generate_data.py'];m.main()")
+_HT_SNIPPET = (
+    "import importlib.util,sys,os;"
+    "root,tmp=sys.argv[1],sys.argv[2];"
+    # both dirs must exist: the script joins dirname(__file__)/../artifacts/...
+    # and POSIX resolution needs the intermediate components to exist too
+    "os.makedirs(os.path.join(tmp,'scripts'),exist_ok=True);"
+    "os.makedirs(os.path.join(tmp,'artifacts','datasets'),exist_ok=True);"
+    "spec=importlib.util.spec_from_file_location('mh',"
+    "os.path.join(root,'scripts','make_human_test.py'));"
+    "m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);"
+    "m.__file__=os.path.join(tmp,'scripts','make_human_test.py');m.main()")
+_DATASET_BASENAMES = ("pilot_train.jsonl", "pilot_val.jsonl", "pilot_test.jsonl",
+                      "pilot_manifest.json", "human_test.jsonl")
+
+
+def _fresh_dataset_hashes(timeout=300):
+    """Regenerate the five dataset files into a temp dir and return
+    {basename: sha256} for whatever was produced. Never raises: a probe that
+    cannot run yields {} and the caller records UNKNOWN instead of guessing."""
+    import hashlib
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="verify_release_regen_")
+    for snippet in (_GD_SNIPPET, _HT_SNIPPET):
+        try:
+            r = subprocess.run([sys.executable, "-c", snippet, ROOT, tmp],
+                               capture_output=True, text=True, timeout=timeout)
+        except Exception as e:                                  # pragma: no cover
+            print(f"!! dataset regeneration probe failed: {e}")
+            continue
+        if r.returncode != 0:
+            print(f"!! dataset regeneration probe rc={r.returncode}: "
+                  f"{(r.stderr or '')[-300:]}")
+    out = {}
+    for name in _DATASET_BASENAMES:
+        # generate_data.py writes straight into its OUT dir (tmp/), while
+        # make_human_test.py writes under <tmp>/artifacts/datasets/ — check both.
+        for p in (os.path.join(tmp, name),
+                  os.path.join(tmp, "artifacts", "datasets", name)):
+            if os.path.exists(p):
+                out[name] = _sha256(p)
+                break
+    return out
 
 
 def phase_d(pdf_required=True):
@@ -1117,6 +1341,115 @@ def phase_d(pdf_required=True):
     else:
         ok_all &= check("D", "release manifest PDF exists to hash",
                         not pdf_required, pdf_rel or "(no path recorded)")
+    # --- D4b the sha-pinned release PDF is GIT-TRACKED (R2-EX-N06): the
+    # --- artifact used to be gitignored (.gitignore book/*.pdf) while its
+    # --- sha256+page_count were pinned, so a clean clone could not verify the
+    # --- pin at all (the EPUB counterpart was already tracked). The ignore rule
+    # --- is now negated for this one path and the file ships in the release.
+    if pdf_rel:
+        rc_pdf, tracked_pdf = _git("ls-files", "--", pdf_rel)
+        ok_all &= check("D", "release PDF is git-tracked (book/*.pdf is "
+                             "negated for this one path) so its sha256/"
+                             "page_count pin is verifiable from a clean clone "
+                             "(R2-EX-N06)",
+                        rc_pdf == 0 and bool(tracked_pdf),
+                        f"untracked: git add -f {pdf_rel}")
+    # --- D4c the documented reproduction commands are IDEMPOTENT (R2-EX-N02):
+    # --- `git checkout $(...pdf_build_commit)` read AT the build commit lands
+    # --- on that commit's own, older manifest value — a backward chain with no
+    # --- fixed point — so the documented form is forbidden, not merely stale.
+    surfaces = {}
+    for label, path in (("README.md", os.path.join(ROOT, "README.md")),
+                        ("Appendix C", os.path.join(
+                            MS, "appendix_c_experiment_registry.md")),
+                        ("docs/release_manifest.json", RELEASE_MANIFEST)):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                surfaces[label] = fh.read()
+        except OSError as e:
+            surfaces[label] = ""
+            ok_all &= check("D", f"documented reproduction surface readable: "
+                                 f"{label}", False, str(e))
+    bad_checkout = sorted(k for k, t in surfaces.items()
+                          if "git checkout $(" in t)
+    ok_all &= check("D", "documented reproduction commands are idempotent: no "
+                         "'git checkout $(' form in README / Appendix C / the "
+                         "release manifest (verification runs at HEAD; the "
+                         "build commit is provenance — R2-EX-N02)",
+                    not bad_checkout, f"offenders: {bad_checkout}")
+    # --- D4d SOURCE-SCOPED build witness (R2-EX-N04 + QWEN-R2-NF-01): the
+    # --- V3 §0.5 step-2 filter `git log -1 -- book/manuscript book/latex`
+    # --- returns HEAD because book/latex holds TRACKED build outputs
+    # --- (book.pdf, book.tex) touched by the rebuild commit. Scoped to the
+    # --- three build SOURCES it must equal the manifest's pdf_build_commit.
+    rc_wit, witness = _git("log", "-1", "--format=%H", "--",
+                           "book/manuscript", "book/latex/md_to_latex.py",
+                           "book/latex/book.sty")
+    ok_all &= check("D", "source-scoped build witness: git log -1 --format=%H "
+                         "-- book/manuscript book/latex/md_to_latex.py "
+                         "book/latex/book.sty == manifest pdf_build_commit "
+                         "(R2-EX-N04 / QWEN-R2-NF-01: the unscoped "
+                         "`-- book/latex` form matches tracked build outputs "
+                         "and returns HEAD instead)",
+                    rc_wit == 0 and bool(pb) and witness == pb,
+                    f"witness {witness}, manifest {pb}")
+    # --- D4e dataset pin provenance + RECORDED regenerability (R2-EX-N01):
+    # --- the pins stay frozen on the scored-on content (re-pinning to fresh
+    # --- output would stop matching what the book's numbers were scored on),
+    # --- so each entry carries its producing commit/script, the drift is
+    # --- disclosed, and a fresh regeneration is recorded as a WARN — never a
+    # --- FAIL — because the disclosed drift is the documented state.
+    ds_files = ((rm.get("datasets") or {}).get("files")) or []
+    ok_all &= check("D", "release manifest pins 5 dataset files, each with "
+                         "produced_by_commit (40-hex) + producing_script + a "
+                         "note disclosing the 15406031 generator drift "
+                         "(R2-EX-N01)",
+                    len(ds_files) == 5 and all(
+                        re.fullmatch(r"[0-9a-f]{40}",
+                                     e.get("produced_by_commit") or "")
+                        and e.get("producing_script")
+                        and "15406031" in (e.get("note") or "")
+                        for e in ds_files),
+                    f"{len(ds_files)} entries: "
+                    f"{[(e.get('path'), e.get('produced_by_commit')) for e in ds_files][:2]}")
+    bad_ds_commit, bad_ds_script = [], []
+    for e in ds_files:
+        c = e.get("produced_by_commit") or ""
+        resolves = bool(re.fullmatch(r"[0-9a-f]{40}", c)) and subprocess.run(
+            ["git", "cat-file", "-e", c + "^{commit}"], cwd=ROOT,
+            capture_output=True).returncode == 0
+        if not resolves:
+            bad_ds_commit.append((e.get("path"), c))
+            continue
+        s = e.get("producing_script") or ""
+        if not s or subprocess.run(["git", "cat-file", "-e", f"HEAD:{s}"],
+                                   cwd=ROOT,
+                                   capture_output=True).returncode != 0:
+            bad_ds_script.append((e.get("path"), s))
+    ok_all &= check("D", "every dataset produced_by_commit is a full 40-hex "
+                         "commit that resolves (git cat-file -e)",
+                    not bad_ds_commit, f"{bad_ds_commit[:3]}")
+    ok_all &= check("D", "every dataset producing_script exists at HEAD",
+                    not bad_ds_script, f"{bad_ds_script[:3]}")
+    fresh = _fresh_dataset_hashes()
+    for e in ds_files:
+        base = os.path.basename(e.get("path") or "")
+        got = fresh.get(base)
+        if got is None:
+            warn("D", "dataset pin regenerable-at-HEAD: UNKNOWN (drift "
+                      "disclosed)",
+                 f"{base}: regeneration probe produced nothing in this run; "
+                 f"the disclosed drift stands")
+        elif got == e.get("sha256"):
+            warn("D", "dataset pin regenerable-at-HEAD: YES",
+                 f"{base}: fresh output == the pinned sha256")
+        else:
+            warn("D", "dataset pin regenerable-at-HEAD: NO (drift disclosed)",
+                 f"{base}: fresh {str(got)[:12]} != pin "
+                 f"{str(e.get('sha256'))[:12]}; produced at "
+                 f"{(e.get('produced_by_commit') or '')[:8]} by "
+                 f"{e.get('producing_script')} — check out the producing "
+                 f"commit to regenerate")
     # --- D5 provenance-ledger schema (QWEN-R2-03) + producing-commit resolve
     # --- (R3-EX-02): 41 rows == Appendix C Table C.12, unique ids, uniform
     # --- no-.json suffix, no nulls, every produced_by_commit resolves, and the

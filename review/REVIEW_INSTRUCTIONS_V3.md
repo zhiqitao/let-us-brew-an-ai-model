@@ -34,10 +34,17 @@ this same ~10-minute deterministic sweep first and consumes its output as a shar
    them, round-1 R2-01 did): (a) fresh clone at the documented commit, (b) at HEAD,
    (c) `git ls-files` census of every path the gate opens. A Python traceback (not a clean
    FAIL) = **P0**.
-2. **Build-witness / colophon ground truth** — `git log -1 --format=%H -- book/manuscript
-   book/latex` == manifest `pdf_build_commit`; the PDF's metadata witness == manifest;
-   `git diff --name-only <witness> HEAD -- book/manuscript` empty. Mismatch = **P1
-   false-colophon** even when manifest + colophon + gate all agree on the wrong commit.
+2. **Build-witness / colophon ground truth** — the substantive assertions are
+   `git diff --name-only <witness> HEAD -- book/manuscript` empty (source unchanged
+   since the build) and the PDF's metadata witness == manifest `pdf_build_commit`.
+   If you also run `git log -1`, scope it to **sources only**:
+   `git log -1 --format=%H -- book/manuscript book/latex/md_to_latex.py book/latex/book.sty`
+   (equivalently, exclude `book/latex/book.pdf`, `book/latex/book.tex`,
+   `book/latex/book.txt`). Do NOT include `book/latex` wholesale: it holds *tracked
+   build outputs* that the rebuild commit changes, so the unscoped form returns HEAD and
+   produces a spurious mismatch (round-2 QWEN-R2-NF-01 + MiMo R2-EX-N04, independent
+   agreement). Mismatch on the substantive checks = **P1 false-colophon** even when
+   manifest + colophon + gate all agree on the wrong commit.
 3. **Surface parity** — extract text from PDF, EPUB, `README.md`,
    `docs/release_manifest.json`, `docs/reviews/loop/provenance_ledger.json`
    (`book/_assembled.md` and `book/_for_review.md` were deleted in the round-1 fix pass —

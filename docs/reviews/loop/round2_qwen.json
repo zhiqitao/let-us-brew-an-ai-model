@@ -1,0 +1,88 @@
+{
+  "model": "Qwen3.8-27B",
+  "delegation_id": "deleg_734febd8",
+  "round": 2,
+  "class": "provenance/artifact-integrity/self-consistency",
+  "signoff_surface": "git lineage + manifests",
+  "round_header": {
+    "head": "3960c9f6",
+    "pdf_build_commit": "2415ab1c",
+    "pdf_sha": "c3700dfd..",
+    "page_count": 306,
+    "epub_sha": "0529f94d..",
+    "witness_matches_manifest": true,
+    "gate": "310/310",
+    "gate_non_decreasing": true,
+    "git_clean": true,
+    "void": false
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (real fresh clones at 2415ab1c + HEAD: exit 1, one-line message, NO traceback; gitignore census confirmed)",
+    "2_build_witness": "PASS (metadata witness==manifest; manuscript diff empty; NOTE unscoped git log returns HEAD -> NF-01)",
+    "3_surface_parity": "PASS (5 surfaces; 0 unlabeled stale hits; 0.641=23, 0.500=20, 0.350=28, 0.143=0 all in FLAW_MARK windows; 12 canonical values present PDF+EPUB)",
+    "4_tracked_inputs": "PASS (only gitignored tokenizer/datasets/checkpoints absent, preflight-gated or sha-pinned)",
+    "5_ships_claim": "PASS (0 ships-over-gitignored; datasets scoped gitignored/regenerable)",
+    "6_ledger_schema": "PASS (41 rows, unique ids, no nulls, ==Table C.12, 41/41 produced_by_commit resolve, blob match)",
+    "7_makefile_linter": "PASS (4 scripts exist+tracked, 7 .PHONY have recipes, make reproduce dry-run exit 0)"
+  },
+  "signoff": {
+    "verdict": "SIGN-OFF: git lineage + manifests internally consistent and honest",
+    "artifacts_hashed_vs_pins": "14/14 (7 tokenizers + 5 datasets + PDF + EPUB)",
+    "pdf_printed_digests_vs_pins": "6/6 both directions",
+    "unpinned_cited_artifacts": "NONE"
+  },
+  "regression": {
+    "QWEN-R2-01": "FIXED-VERIFIED",
+    "QWEN-R2-02": "FIXED-VERIFIED",
+    "QWEN-R2-03": "FIXED-VERIFIED",
+    "QWEN-R2-04": "FIXED-VERIFIED",
+    "QWEN-R4-01": "FIXED-VERIFIED",
+    "QWEN-R4-02": "FIXED-VERIFIED"
+  },
+  "self_adjudication": {
+    "QWEN-R2-04": "RECLASSIFIED-AGREED (P3 gate-addition, fixed)",
+    "QWEN-R4-02": "UPHELD-P3-AGREED (fixed)",
+    "R2-01-reanchor": "RESOLVED (verified on real fresh clones at both commits)"
+  },
+  "new_findings": [
+    {
+      "id": "QWEN-R2-NF-01",
+      "severity": "P3",
+      "class": "review-instruction imprecision (check drift, NOT a release defect)",
+      "observed": "V3 §0.5 step-2 literal `git log -1 -- book/manuscript book/latex` returns HEAD 3960c9f6 not build commit 2415ab1c, because book/latex holds TRACKED build outputs (book.pdf, book.tex) changed by the rebuild commit. Substantive check (manuscript diff empty) passes; build witness honest.",
+      "correction": "Scope git log to book/manuscript only, or rely on diff+witness checks.",
+      "evidence_tier": "EXECUTED-DETERMINISTIC",
+      "ACTION": "V3 patched by parent"
+    }
+  ],
+  "cross_reproduction": {
+    "STAT-01": {
+      "quoted_from": "DeepSeek",
+      "held": false,
+      "meaning": "finding does NOT hold = FIXED",
+      "command": "sed -n '722,724p' book/manuscript/appendix_c_experiment_registry.md",
+      "result": "Table C.11 title now carries n=60/n=36 + 'within one test item' caveat"
+    }
+  },
+  "surfaces_not_opened": [
+    "EPUB internals (MiMo's sign-off)",
+    "book/_assembled.md regeneration (DeepSeek's sign-off)",
+    "PDF figure geometry/4-axis rating (Ornith's sign-off)",
+    "full statistics re-derivation (DeepSeek class)",
+    "full execution re-derivation/training re-runs (MiMo class)"
+  ],
+  "examined_counts": {
+    "surfaces_parity": 5,
+    "artifacts_hashed": 14,
+    "ledger_rows": 41,
+    "stale_hits_unlabeled": 0,
+    "canonical_values": 12,
+    "epistemic_applied_subset_of_declared": true,
+    "uncaveated_strong_claims_contradicted": 0,
+    "makefile_phony": 7,
+    "clean_clone_preflight_runs": 2,
+    "new_findings": 1,
+    "regression_ids_reverified": 6
+  },
+  "ledger_note": "issue_ledger.json still marks STAT-01/02/04/05, R3-EX-03, Ornith figure findings OPEN — expected pre-reverification state; synthesizer flips to FIXED after round 2."
+}

@@ -32,8 +32,16 @@ experiments determine what the book claims.
 See `design/BOOK_DESIGN.md` (the authoritative, frozen design) and
 `specs/python_capability_v0_1.md` (the controlled Python environment).
 
+Bootstrap the Python 3.11 environment first. `.venv-311` is gitignored, so a clean
+clone does not ship it and `source .venv-311/bin/activate` fails until this one
+command has run:
+
 ```bash
-make setup        # create the Python environment
+python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .
+```
+
+```bash
+make setup        # create the Python environment (.venv-311 if absent, then install into it)
 make smoke        # run the end-to-end Stage 0 pipeline smoke test
 make test         # run the evaluator + sandbox conformance/mutation suites
 make audit        # run the dataset leakage audit
@@ -57,15 +65,22 @@ TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 
 **Which commit to check out:** the release tag `v20261001` (commit `a45a881`) is the
 experiment-data snapshot the book's numbers cite, but it predates this gate — a clean
-clone must check out the PDF build commit (recorded in `docs/release_manifest.json`
-as `pdf_build_commit`, the single place that value lives) or later to find
-`scripts/verify_release.py` and the corrected run scripts:
+clone must be at the PDF build commit (recorded in `docs/release_manifest.json`
+as `pdf_build_commit`, the single place that value lives) **or later** to find
+`scripts/verify_release.py` and the corrected run scripts. HEAD already is, so
+verification runs at HEAD.
+
+The recorded pdf_build_commit is the commit the PDF was built from; check it out only to inspect that exact source state — the verification commands below run at HEAD:
 
 ```bash
-git checkout $(python3 -c "import json; print(json.load(open('docs/release_manifest.json'))['pdf_build_commit'])")
+git checkout HEAD   # the gate and pins live at HEAD; the build commit is recorded for provenance, and the gate asserts the PDF content matches it
 source .venv-311/bin/activate
 TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py
 ```
+
+(Reading `pdf_build_commit` out of the manifest *at* the build commit is deliberately
+not part of the recipe: that commit's own manifest records an older value, so such a
+command walks backward through history with no fixed point.)
 
 Both roles are recorded in `docs/release_manifest.json` (`tag_target_commit`,
 `pdf_build_commit`, `reproduction_from_a_clean_clone`).

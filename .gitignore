@@ -17,6 +17,10 @@ experiments/*/output/
 
 # Book build outputs
 book/*.pdf
+# ...except the pinned release artifact: its sha256+page_count are pinned in
+# docs/release_manifest.json, so it must ship in the release to be verifiable
+# from a clean clone (round-2 R2-EX-N06; the EPUB counterpart is tracked too).
+!book/let-us-brew-an-ai-model-v20261001.pdf
 # committed build intermediates — regenerable, never cite them:
 #   book/_assembled.md   <- python book/assemble.py
 #   book/_for_review.md  <- cat book/manuscript/*.md

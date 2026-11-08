@@ -465,15 +465,20 @@ def fig_brain():
          "+ 830,592 non-embedding). 4 layers × 4 heads,\n"
          "n_embd=128, block_size=128, temperature-0.8\n"
          "sampled decoding.", color=INK)
+    # ORN-R2-GEOM-01: both bottom callouts used box()'s default WHITE text on a
+    # near-white fill (#fbfaf6) — faint grey-on-cream at print size. Text is now
+    # near-black on a slightly deeper cream, so callout text contrast (>= ~16:1)
+    # exceeds body-prose contrast (INK on white, ~14:1); the edge stays INK.
+    CALLOUT_FC, CALLOUT_TC = "#f4efe3", "#111111"
     box(ax, 52, 22, 46, 14,
         "same architecture, just wider /\n"
         "deeper for the size sweep\n"
         "(6.5M, 10.2M, 29.3M).",
-        fc="#fbfaf6", ec=INK)
+        fc=CALLOUT_FC, ec=INK, tc=CALLOUT_TC)
     box(ax, 2, 3, 96, 11,
         "This is the instrument. The experiment is the subject — the\n"
         "book is about what the model learns, not about how big it is.",
-        fc="#fbfaf6", ec=INK)
+        fc=CALLOUT_FC, ec=INK, tc=CALLOUT_TC)
     save(fig, "fig_brain.png")
 
 def fig_brew():

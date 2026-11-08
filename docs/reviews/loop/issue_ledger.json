@@ -4,7 +4,7 @@
     "model": "MiMo",
     "class": "execution/re-derivation",
     "severity": "P1",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "book/let-us-brew-an-ai-model-v20261001.epub (built 2026-09-13, never rebuilt): carries superseded diversity 0.500/1.000, data_scaling 0.100/0.641, Stage-4 baseline 0.900; unpinned in docs/release_manifest.json",
     "fix_location": "docs/release_manifest.json (new epub {path, sha256} entry) + scripts/verify_release.py (new phase E: EPUB stale sweep — corrected strings present, superseded absent, SKIP when absent)"
   },
@@ -13,7 +13,7 @@
     "model": "MiMo",
     "class": "execution/re-derivation",
     "severity": "P1",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "artifacts/manifests/*.json committed 2026-11-03 vs the per-arm random.seed(...) added to scripts/train.py 2026-11-05; no manifest/ledger/gate records the producing commit",
     "fix_location": "docs/reviews/loop/provenance_ledger.json (produced_by_commit + producing_script + producing_script_blob on all 41 rows) + scripts/verify_release.py phase D (resolve + blob checks; drift recorded, not failed)"
   },
@@ -22,7 +22,7 @@
     "model": "MiMo",
     "class": "execution/re-derivation",
     "severity": "P2",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "clean-clone re-run at HEAD does not reproduce seed-0 data scaling: size-300 collapses 0.900→0.180 (54/300); A/B isolates the cause to the added random.seed line; contradicts 'regenerable from the recorded config and seed' (ch09 too)",
     "fix_location": "book/manuscript/appendix_c_experiment_registry.md (Reproducibility) + book/manuscript/ch09_the_first_brew.md — content-fix pass"
   },
@@ -31,7 +31,7 @@
     "model": "MiMo",
     "class": "execution/re-derivation",
     "severity": "P2",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "Makefile:22 `reproduce` target runs scripts/reproduce.py, which exists in no commit, while README documents `make reproduce`",
     "fix_location": "scripts/reproduce.py (created: thin wrapper over scripts/run_data_scaling_corrected.py, --list, dry-run default, --run to execute) + Makefile (passes --dry-run) + README.md"
   },
@@ -40,7 +40,7 @@
     "model": "MiMo",
     "class": "execution/re-derivation",
     "severity": "P3",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "book/_assembled.md and book/_for_review.md: committed build intermediates carrying superseded values (0.383, 0.900) presented as current",
     "fix_location": "git rm both from the repo + .gitignore entries (regenerate via `python book/assemble.py` / `cat book/manuscript/*.md`)"
   },
@@ -49,7 +49,7 @@
     "model": "MiMo",
     "class": "execution/re-derivation",
     "severity": "P3",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "review/REVIEW_INSTRUCTIONS_V2.md §5 names docs/reviews/loop/issue_ledger.json as the canonical issue ledger; the file did not exist",
     "fix_location": "docs/reviews/loop/issue_ledger.json (this file, seeded with the 22 round-1 findings)"
   },
@@ -58,7 +58,7 @@
     "model": "DeepSeek",
     "class": "quantitative/statistics/intervention",
     "severity": "P1",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "continual-learning cells carry no denominators (n_A=60, n_B=36); 'identical B accuracy' is within one item at n=36 (printed Ch. 18 / Appendix C.9)",
     "fix_location": "book/manuscript/ch20_what_happens_when_we_teach_it_something_new.md + book/manuscript/appendix_c_experiment_registry.md — content-fix pass"
   },
@@ -67,7 +67,7 @@
     "model": "DeepSeek",
     "class": "quantitative/statistics/intervention",
     "severity": "P1",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "summary chapters (printed Ch. 19/20/21) drop the combined-intervention qualifier and assert phrasing diversity alone; Ch. 13 correctly says 3-factor bundle; Ch. 15 identifier-set change alone collapses to 0/600",
     "fix_location": "book/manuscript/ch16_same_pieces_new_combination.md, ch20_..., ch21_the_cost_of_capability.md — content-fix pass"
   },
@@ -76,7 +76,7 @@
     "model": "DeepSeek",
     "class": "quantitative/statistics/intervention",
     "severity": "P1",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "docs/reviews/loop/multiseed_replication.md ~L49 waves off RETRIEVAL 0.000 as 'a baseline-harness artifact of the re-runs'; shipped code re-runs give 1.000/0.125 at every seed; same silent 0.000 in stage1_seed1/2, composition_seed1/2",
     "fix_location": "docs/reviews/loop/multiseed_replication.md (report side: BLOCKED-UNVERIFIED wording, no baseline comparison from seeds 1/2) + book/manuscript (manuscript side: content-fix pass)"
   },
@@ -85,7 +85,7 @@
     "model": "DeepSeek",
     "class": "quantitative/statistics/intervention",
     "severity": "P2",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "'small in-distribution cost' wording while the 3-seed CI [-0.58, +0.17] spans zero",
     "fix_location": "book/manuscript (data-scaling cost wording) — content-fix pass"
   },
@@ -94,7 +94,7 @@
     "model": "DeepSeek",
     "class": "quantitative/statistics/intervention",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "DISPROVED-R2",
     "anchor": "Table C.7 'tightly stable across seeds' compares n_per 60 (seed 0) vs 130 (seeds 1/2) — undisclosed second variable",
     "fix_location": "book/manuscript/appendix_c_experiment_registry.md (Table C.7 caption) — content-fix pass"
   },
@@ -103,7 +103,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P1",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "documented clean-clone gate run crashes at HEAD: FileNotFoundError on artifacts/tokenizer (7 tokenizers/38 checkpoints/5 datasets gitignored, absent from every commit); at af32fb8b the gate gave 109/114",
     "fix_location": "scripts/verify_release.py (new preflight(): missing gate-opened input dir prints 'NOT A VERIFIABLE CLEAN CLONE — ...' and exits 1, no traceback)"
   },
@@ -112,7 +112,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P1",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "Appendix C colophon hardcodes 'built from repository commit af32fb8b...' while the shipped PDF contains text added in 49831ce4; the gate only string-checked the colophon against a hard-coded constant",
     "fix_location": "book/manuscript/appendix_c_experiment_registry.md (colophon + two-commits section de-hardcoded, point at docs/release_manifest.json pdf_build_commit) + book/latex/md_to_latex.py (title-page colophon derives the hash from git at build time) + book/build_book.py (PDF metadata BUILD_COMMIT witness) + scripts/verify_release.py phase C (PDF-content-vs-build-commit: forward + reverse witness)"
   },
@@ -121,7 +121,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P2",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "docs/reviews/loop/provenance_ledger.json stale (30 rows vs Table C.12's 41, missing all 11 corrected runs) and schema-inconsistent (duplicate experiment_ids, mixed .json suffix, nulls)",
     "fix_location": "docs/reviews/loop/provenance_ledger.json (regenerated: 41 rows, unique no-suffix ids, 'not-recorded' instead of nulls) + scripts/verify_release.py phase D (len==41, unique ids, no nulls, row set == Table C.12)"
   },
@@ -130,7 +130,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P1",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "docs/release_manifest.json reproduction_from_a_clean_clone.structure claims the tag snapshot's 'manifests, datasets and manuscript state' — 0 dataset files ship (gitignored); self-contradicts the quickstart",
     "fix_location": "docs/release_manifest.json (structure text: datasets removed/marked regenerable-not-shipped; new datasets block pinning all 5 files by disk sha256)"
   },
@@ -139,7 +139,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P3",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "docs/release_manifest.json pdf object has no page-count field (page count only in commit messages)",
     "fix_location": "docs/release_manifest.json (pdf.page_count: null, parent fills after rebuild) + scripts/verify_release.py phase C (asserts == actual pymupdf page count when non-null, SKIP with a note when null)"
   },
@@ -148,7 +148,7 @@
     "model": "Qwen",
     "class": "provenance/artifact-integrity/self-consistency",
     "severity": "P3",
-    "status": "FIXED-IN-ROUND1-FIXPASS",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "README declares six evidence levels but the book applies [SUPERSEDED] (not in the taxonomy) and never applies [DERIVED]; glossary misdescribes the capability map's notation",
     "fix_location": "README.md (taxonomy: +[SUPERSEDED], [DERIVED] dropped as never applied) + book/manuscript/appendix_d_glossary.md (notation line corrected to [MEASURED]/[SUPERSEDED])"
   },
@@ -157,7 +157,7 @@
     "model": "Ornith",
     "class": "visual/print/render-geometry",
     "severity": "P2",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "Fig 5.1 callout overlaps its glosses by up to 72pt ('effectively illegible' per vision)",
     "fix_location": "scripts/make_figures.py / book/figures/fig_*.pdf — figure-fix pass"
   },
@@ -166,7 +166,7 @@
     "model": "Ornith",
     "class": "visual/print/render-geometry",
     "severity": "P2",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "Fig 13.2 dashed panel: corrected-run annotation collides with 'from training families' (~100pt), garbling the key claim",
     "fix_location": "scripts/make_concept_figures.py / book/figures/fig_*.pdf — figure-fix pass"
   },
@@ -175,7 +175,7 @@
     "model": "Ornith",
     "class": "visual/print/render-geometry",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "Table 18.1: 'joint/interleaved' overflows column 1 into column 2 (~20pt)",
     "fix_location": "book/manuscript (Table 18.1) / book/latex — figure-fix pass"
   },
@@ -184,7 +184,7 @@
     "model": "Ornith",
     "class": "visual/print/render-geometry",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "interior figure labels 4.3–7pt across 12+ figures (captions all 10.9pt, pass) — below the 8pt floor",
     "fix_location": "scripts/make_figures.py + scripts/make_concept_figures.py — figure-fix pass"
   },
@@ -193,8 +193,80 @@
     "model": "Ornith",
     "class": "visual/print/render-geometry",
     "severity": "P3",
-    "status": "OPEN",
+    "status": "FIXED-VERIFIED-R2",
     "anchor": "vision-observed arrow overlaps: Fig 16.1 '3+2' operator obscured; Fig 8.1 arrow pierces the parameter block",
     "fix_location": "scripts/make_concept_figures.py / book/figures/fig_*.pdf — figure-fix pass"
+  },
+  {
+    "id": "R2-EX-N01",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P1",
+    "status": "OPEN",
+    "anchor": "dataset pins unsatisfiable from the shipped generator: a clean-clone run of scripts/generate_data.py reproduces NONE of the 3 pilot splits (train c310b70a vs pin 06093bfb, val 96a47bac vs 9ab0c840, test a5e74790 vs 1f8c060c; 280/1400 lines differ, all output_type 'list' (pinned) vs 'int' (regenerated) on list_len/list_sum after src/data_generator/generator.py changed in 15406031), and human_test.jsonl is produced by scripts/make_human_test.py, not generate_data.py",
+    "fix_location": "docs/release_manifest.json (all 5 scored-on pins KEPT; per-file produced_by_commit + producing_script + drift-disclosing note on every entry + datasets.produced_by_commit_derivation; structure text no longer claims HEAD-regenerability) + book/manuscript/appendix_c_experiment_registry.md (Publication status, reproducibility paragraph, quick-start steps 1/3 name the producing commits, the drift and make_human_test.py) + scripts/verify_release.py phase D (40-hex produced_by_commit resolves, producing_script exists at HEAD, and a temp-dir regeneration probe RECORDS — WARN, never FAIL — 'dataset pin regenerable-at-HEAD: NO (drift disclosed)' for the 3 splits, YES for pilot_manifest + human_test)"
+  },
+  {
+    "id": "R2-EX-N02",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P1",
+    "status": "OPEN",
+    "anchor": "documented `git checkout $(python3 -c ...['pdf_build_commit'])` is not idempotent: at HEAD it lands 2415ab1c (correct), re-run AT 2415ab1c it lands af32fb8b (that commit's own manifest value) — a backward chain with no fixed point, and at af32fb8b the manifest pins are round-1-era",
+    "fix_location": "README.md (Release gate), book/manuscript/appendix_c_experiment_registry.md (Publication status) and docs/release_manifest.json (reproduction_from_a_clean_clone.run_the_release_gate[0] + new build_commit_provenance sentence) all document `git checkout HEAD` with the 'build commit is provenance, checked out only to inspect that exact source state' sentence; scripts/verify_release.py phase D asserts none of the three surfaces contains the non-idempotent `git checkout $(` form"
+  },
+  {
+    "id": "R2-EX-N03",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "no documented command creates .venv-311: `source .venv-311/bin/activate` rc=1 in a clean clone, zero 'python -m venv' occurrences anywhere, and `make setup` only pip-installed into whatever env was active",
+    "fix_location": "README.md (Getting started), book/manuscript/appendix_c_experiment_registry.md (quick start step 2) and docs/release_manifest.json (run_the_release_gate) now carry the verbatim bootstrap `python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .` (flags verified against requirements-lock.txt's own header + a real venv/pip --dry-run/editable-install test); Makefile `setup` creates .venv-311 when absent and every target prefers that interpreter"
+  },
+  {
+    "id": "R2-EX-N04",
+    "model": "MiMo",
+    "class": "execution/build-stamp",
+    "severity": "P2",
+    "status": "OPEN",
+    "anchor": "V3 §0.5 step-2 sub-check 1 FAILS: `git log -1 -- book/manuscript book/latex` returns HEAD 3960c9f6, not the build commit 2415ab1c, because book/latex holds TRACKED build outputs (book.pdf, book.tex) touched by the rebuild commit; scoped to sources the witness is exactly 2415ab1c — a check-construction defect, not provenance drift",
+    "fix_location": "scripts/verify_release.py phase D: source-scoped witness `git log -1 --format=%H -- book/manuscript book/latex/md_to_latex.py book/latex/book.sty` == manifest pdf_build_commit (verified 2415ab1c at HEAD before adding; comment names R2-EX-N04 + QWEN-R2-NF-01); V3 §0.5 path filter patched by the parent"
+  },
+  {
+    "id": "R2-EX-N05",
+    "model": "MiMo",
+    "class": "execution/release-gate",
+    "severity": "P1",
+    "status": "OPEN",
+    "anchor": "grep -c overlap scripts/verify_release.py = 0 — the gate has NO span-overlap check although V3 §7 claims phase C performs one, and docs/reviews/loop/round2/geometry_measurements.json (18 rows, all overlap 0.0) was untracked, so a clean clone could see neither",
+    "fix_location": "scripts/verify_release.py phase C: _check_geometry_register (exists + GIT-TRACKED + >=18 rows + every row {figure_id,page,bbox,overlap_pt,font_pt} + max overlap <= 6.0; missing/untracked = FAIL, not skip) and _check_span_overlaps (one row per registered figure page: spans centred in the row bbox, flag pairs with 0.3<dy<7pt AND dx>3pt, fail any collision >6pt with no upper bound); docs/reviews/loop/round2/geometry_measurements.json staged so the tracked assertion passes"
+  },
+  {
+    "id": "R2-EX-N06",
+    "model": "MiMo",
+    "class": "execution/reproduction",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "release PDF gitignored (.gitignore:19 book/*.pdf) and untracked while its sha256 (c3700dfd…) and page_count (306) are pinned in docs/release_manifest.json; the EPUB counterpart IS tracked, and a clean clone fails phase D 'release manifest PDF exists to hash'",
+    "fix_location": "CHOSEN FIX = track the artifact: .gitignore negation `!book/let-us-brew-an-ai-model-v20261001.pdf` + `git add` of the 1.5MB release PDF (so the pin is clone-verifiable, matching EPUB policy) + docs/release_manifest.json pdf.note stating the policy + scripts/verify_release.py phase D asserting the release PDF is git-tracked"
+  },
+  {
+    "id": "QWEN-R2-NF-01",
+    "model": "Qwen",
+    "class": "provenance/artifact-integrity/self-consistency",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "independent discovery of the same witness-filter defect: the literal V3 §0.5 `git log -1 -- book/manuscript book/latex` returns HEAD 3960c9f6 rather than build commit 2415ab1c because book/latex contains tracked build outputs; the substantive check (empty manuscript diff) passes, so this is review-instruction imprecision, not a release defect",
+    "fix_location": "scripts/verify_release.py phase D source-scoped witness (same check as R2-EX-N04, comment names both IDs) + V3 §0.5 patched by the parent"
+  },
+  {
+    "id": "ORN-R2-GEOM-01",
+    "model": "Ornith",
+    "class": "visual/print/render-geometry",
+    "severity": "P3",
+    "status": "OPEN",
+    "anchor": "Fig 8.1 physical page 68 — the two bottom callout boxes render faint grey-on-cream: box()'s default white text on a #fbfaf6 fill (measured contrast 1.04:1 vs 14.16:1 for body prose); vision-observed, no overlap (register max_overlap 0.0)",
+    "fix_location": "scripts/make_concept_figures.py fig_brain: callout fc #f4efe3 / tc #111111 / ec INK, then regenerated book/figures/fig_brain.pdf + .png — figure-PDF verified: callout contrast 16.46:1 >= body-prose 14.16:1, min interior font 8.50pt (>=7pt), 0 span collisions >6pt"
   }
 ]

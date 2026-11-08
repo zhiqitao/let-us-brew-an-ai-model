@@ -5,10 +5,12 @@
   "tag_target_commit": "a45a881158ed076f615f6d3bc2e72640dc5cdced",
   "pdf_build_commit": "2415ab1c15c4a1fce98b7deb8ca84bc5d38431c7",
   "reproduction_from_a_clean_clone": {
-    "structure": "Two commits, two roles. The tag v20261001 (tag_target_commit a45a881158ed076f615f6d3bc2e72640dc5cdced) is the experiment-data snapshot whose manifests and manuscript state the book's numbers cite; the scored dataset files are gitignored and regenerable with python scripts/generate_data.py — they ship in no commit (see the datasets block below). The release gate (scripts/verify_release.py) and the corrected run scripts live at the PDF build commit (this file's pdf_build_commit field) and later — the tag predates the verifier, so a checkout of the tag alone CANNOT run the release gate.",
+    "structure": "Two commits, two roles. The tag v20261001 (tag_target_commit a45a881158ed076f615f6d3bc2e72640dc5cdced) is the experiment-data snapshot whose manifests and manuscript state the book's numbers cite; the scored dataset files are gitignored and ship in no commit — they are NOT regenerable from the shipped generator at HEAD, because src/data_generator/generator.py drifted after they were generated (see the datasets block below, which records each file's producing commit and producing script). The release gate (scripts/verify_release.py) and the corrected run scripts live at the PDF build commit (this file's pdf_build_commit field) and later — the tag predates the verifier, so a checkout of the tag alone CANNOT run the release gate.",
     "read_the_experiment_snapshot": "git checkout v20261001",
+    "build_commit_provenance": "the recorded pdf_build_commit is the commit the PDF was built from; check it out only to inspect that exact source state — the verification commands below run at HEAD.",
     "run_the_release_gate": [
-      "git checkout $(python3 -c \"import json; print(json.load(open('docs/release_manifest.json'))['pdf_build_commit'])\")",
+      "git checkout HEAD   # the gate and pins live at HEAD; the build commit is recorded for provenance, and the gate asserts the PDF content matches it",
+      "python3.11 -m venv .venv-311 && .venv-311/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-lock.txt && .venv-311/bin/pip install -e .",
       "source .venv-311/bin/activate",
       "TORCH_DISABLE_AVX2=1 OMP_NUM_THREADS=2 python scripts/verify_release.py"
     ],
@@ -17,7 +19,8 @@
   "pdf": {
     "path": "book/let-us-brew-an-ai-model-v20261001.pdf",
     "sha256": "c3700dfd3dfa010a759db3e3dccdb8cdae0fbad0440c5e61102ccf53c6dd670b",
-    "page_count": 306
+    "page_count": 306,
+    "note": "tracked in git (the book/*.pdf ignore rule is negated for this one path), so the sha256/page_count pins are verifiable from a clean clone — same policy as the EPUB (R2-EX-N06)."
   },
   "tokenizer_sha256": {
     "data_scaling": "361f6d89e4f18642fac9d1d9077d6a5cab0e5d97701bafc1641ab09ec2b10eb5",
@@ -45,41 +48,52 @@
     "sha256": "0529f94d9b93c7c5c54868f1a76d4bf5b837530bdfc6ac37050bf8f73783a9b8"
   },
   "datasets": {
+    "produced_by_commit_derivation": "git log --diff-filter=A --format=%H -- <path> returns nothing for every file here (artifacts/datasets/ is gitignored and ships in no commit), so the fallback git log -1 was taken on the PRODUCING SCRIPT: git log -1 --format=%H -- scripts/generate_data.py = e753eff7 (the commit that added the generator entry point; unchanged since) and git log -1 --format=%H -- scripts/make_human_test.py = eaf6e14. Both predate the generator drift in 15406031, and regenerating from an archive of e753eff7 reproduces all four generate_data.py pins byte-for-byte — that is what makes 'check out the producing commit to regenerate' true rather than aspirational.",
     "files": [
       {
         "path": "artifacts/datasets/human_test.jsonl",
         "sha256": "5bd643a70d650edf0a61a1fb7c96ef7c2075b36b039cfc3ee112d4edd8447fd5",
         "pinned": true,
         "present": true,
-        "note": "gitignored, regenerable via scripts/generate_data.py; hash pins the content the book's numbers were scored on"
+        "note": "gitignored; hash pins the content the book's numbers were scored on. Produced at eaf6e14 by scripts/make_human_test.py — NOT by scripts/generate_data.py. The shipped generator has since drifted (src/data_generator/generator.py 15406031 changed output_type list->int on list_len/list_sum), but that drift does not touch this file: make_human_test.py still reproduces this pin at HEAD. Check out the producing commit to regenerate.",
+        "produced_by_commit": "eaf6e1434297021741d1aee80d1bbd6fa459756a",
+        "producing_script": "scripts/make_human_test.py"
       },
       {
         "path": "artifacts/datasets/pilot_manifest.json",
         "sha256": "a7dfbcc178ccafb0a231be8fbdc797ff1a9f6c242b475bcaa44b785823e62d80",
         "pinned": true,
         "present": true,
-        "note": "gitignored, regenerable via scripts/generate_data.py; hash pins the content the book's numbers were scored on"
+        "note": "gitignored; hash pins the content the book's numbers were scored on. Produced at e753eff7 by scripts/generate_data.py. The shipped generator has since drifted (src/data_generator/generator.py 15406031 changed output_type list->int on list_len/list_sum) — that drift changes the three pilot_*.jsonl splits but NOT this manifest, which still matches a fresh run at HEAD. Check out the producing commit to regenerate.",
+        "produced_by_commit": "e753eff7873202ada1707935eaadd436437f15d9",
+        "producing_script": "scripts/generate_data.py"
       },
       {
         "path": "artifacts/datasets/pilot_test.jsonl",
         "sha256": "1f8c060c856151fda2877c77e67cc606aa157e72a621228e4ea8a339b26004c6",
         "pinned": true,
         "present": true,
-        "note": "gitignored, regenerable via scripts/generate_data.py; hash pins the content the book's numbers were scored on"
+        "note": "gitignored; hash pins the content the book's numbers were scored on. Produced at e753eff7 by scripts/generate_data.py. The shipped generator has since drifted (src/data_generator/generator.py 15406031 changed output_type list->int on list_len/list_sum), so a fresh run at HEAD will NOT match this pin — check out the producing commit to regenerate.",
+        "produced_by_commit": "e753eff7873202ada1707935eaadd436437f15d9",
+        "producing_script": "scripts/generate_data.py"
       },
       {
         "path": "artifacts/datasets/pilot_train.jsonl",
         "sha256": "06093bfb32decd9d8244ed7bd8269d5a7be486ad747d499bb411d16f4ff532c7",
         "pinned": true,
         "present": true,
-        "note": "gitignored, regenerable via scripts/generate_data.py; hash pins the content the book's numbers were scored on"
+        "note": "gitignored; hash pins the content the book's numbers were scored on. Produced at e753eff7 by scripts/generate_data.py. The shipped generator has since drifted (src/data_generator/generator.py 15406031 changed output_type list->int on list_len/list_sum), so a fresh run at HEAD will NOT match this pin — check out the producing commit to regenerate.",
+        "produced_by_commit": "e753eff7873202ada1707935eaadd436437f15d9",
+        "producing_script": "scripts/generate_data.py"
       },
       {
         "path": "artifacts/datasets/pilot_val.jsonl",
         "sha256": "9ab0c840decf08cd6e6e6c3b8be060ce28ffa5a5c32a0a13ae97c1cdcdbbb589",
         "pinned": true,
         "present": true,
-        "note": "gitignored, regenerable via scripts/generate_data.py; hash pins the content the book's numbers were scored on"
+        "note": "gitignored; hash pins the content the book's numbers were scored on. Produced at e753eff7 by scripts/generate_data.py. The shipped generator has since drifted (src/data_generator/generator.py 15406031 changed output_type list->int on list_len/list_sum), so a fresh run at HEAD will NOT match this pin — check out the producing commit to regenerate.",
+        "produced_by_commit": "e753eff7873202ada1707935eaadd436437f15d9",
+        "producing_script": "scripts/generate_data.py"
       }
     ]
   }
