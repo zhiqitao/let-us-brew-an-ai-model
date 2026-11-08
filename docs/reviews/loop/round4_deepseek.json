@@ -1,0 +1,147 @@
+{
+  "model": "DeepSeek-V4.1-Flash",
+  "delegation_id": "deleg_a2859aca",
+  "round": 4,
+  "class": "quantitative/statistics",
+  "signoff_surface": "git lineage + manifests (rotated)",
+  "SEAT_ACCEPTANCE": "VALID — parent verified its single new finding directly: manifest epub.note claims the shipped EPUB 'was built 2026-11-08 with no SOURCE_DATE_EPOCH ... dcterms:modified 2026-11-08T01:01:13Z ... a rebuild could never match this sha256 ... still differ from THIS pin until rebuilt and re-pinned', but the SHIPPED EPUB has dcterms:modified 2026-09-11T00:00:00Z + zip mtimes (2026,9,11,0,0,0) + uuid f5ff5397, pin == disk == c7adb83a, and the note's described state matches the PREVIOUS artifact (git show 19a6ce83 epub -> mtimes (2026,11,8,1,1,12)). Both of the note's claims are FALSE for the artifact it sits beside. Its verification_trail (35 entries) is consistent with facts I hold (370/370, 308pp, shas, ledger 42, 19 figures).",
+  "round_header": {
+    "head": "d92fb417",
+    "describe": "v20261001-24-gd92fb417",
+    "tag_target": "a45a881 == manifest",
+    "pdf_build_commit": "f988efe6",
+    "resolves": true,
+    "is_ancestor": true,
+    "subject": "'Round-3 fix pass: 9 findings + ledger to 39 entries.'",
+    "pdf_sha": "1a084576..",
+    "page_count": 308,
+    "epub_sha": "c7adb83a..",
+    "gate": "370/370 exit 0, 5 WARN",
+    "prev_round": 365,
+    "non_decreasing": true,
+    "verdict": "PINNED — round valid"
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (fresh clone exit 1 controlled, 0 tracebacks, '[PREFLIGHT] FAIL NOT A VERIFIABLE CLEAN CLONE (missing: artifacts/tokenizer/)'; worktree 370/370 TWICE — before and after a peer seat rewrote the geometry register; census 9 path literals: 8 tracked, 1 REQUIRED-BUT-UNTRACKED = artifacts/tokenizer/ disclosed)",
+    "2_build_witness": "PASS (source diff since build commit 0 files; PDF metadata BUILD_COMMIT=f988efe6; 1 occurrence of f988efe6 in the printed colophon)",
+    "3_surface_parity": "PASS (5 surfaces; superseded values 0.641/0.350/0.500/0.383/0.143; crude ±200 scan flagged 5/4/2/3/0 hits, EVERY flagged window manually adjudicated and labeled just outside the window ('was an artifact ... (P0-01)', 'recorded curve ... track operation coverage, not record count', 'The first version of this experiment had offered a partial 0.350', 'originally measured 0.383 ... when we retrained ... 0.773'); 0.143 absent everywhere)",
+    "4_tracked_inputs": "PASS (8 tracked / 1 REQUIRED-BUT-UNTRACKED-by-design; no silently-gitignored-but-required path)",
+    "5_ships_claim": "PASS (3 ships/carries claims; 44 manifests tracked, lockfile tracked, datasets explicitly 'gitignored and ship in no commit (0 files)' + producing-commit pointer)",
+    "6_ledger_schema": "PASS (42 rows == 42 scored manifests (44 on disk - 2 *_bothseeded documented exclusions), 42 unique ids, 0 nulls, uniform no-.json, 42/42 produced_by_commit resolve, 41/42 producing_script_blob match + 1 schema-sanctioned 'not-recorded' (stage1_results))",
+    "7_makefile_linter": "PASS (7 .PHONY each have a recipe, every script token exists, make -n exit 0)"
+  },
+  "signoff": {
+    "verdict": "CLEAN",
+    "tag": "v20261001 -> a45a881 == manifest: True; is_ancestor True",
+    "pdf_build_commit": "f988efe6 resolves (cat-file -t = commit) AND merge-base --is-ancestor rc=0",
+    "source_unchanged": "git diff --name-only f988efe6 HEAD -- book/manuscript = 0 files",
+    "tokenizer": "7/7 == pins (composition_controls == composition_legacy == fbb9c903 as declared)",
+    "datasets": "5/5 == pins",
+    "pdf": "1a084576 == pin, 308pp == pin",
+    "epub": "c7adb83a == pin",
+    "pdf_printed_digests": "7/7 printed; 6 distinct 64-hex (2 files share) — all equal pins AFTER whitespace-flattening (hashes are line-wrapped mid-token in the PDF, so a naive regex finds 0)",
+    "ledger": "42 rows, 42/42 produced_by_commit resolve, 41/42 producing_script_blob + 1 'not-recorded', equals Table C.12 (42 parsed, symmetric diff [])"
+  },
+  "regression": {
+    "all_9": "FIXED-VERIFIED (examined_counts.regression_ids = 9; specific pasted evidence for each — see the trail entries for stage4 exactness, virgin-clone make_human_test, figure-inventory negative test, byte-identical bootstrap, artifacts-first README, SOURCE_DATE_EPOCH+identifier with two sha-identical scratch builds, bare-python3 audit.py, ledger 42 == Table C.12, _epub.md gitignored)"
+  },
+  "new_findings": [
+    {
+      "id": "DEEP-R4-XC-01",
+      "severity": "P3",
+      "class": "documentation/build-stamp (stale + self-contradicting note)",
+      "confidence": "HIGH",
+      "anchor": "docs/release_manifest.json -> epub.note (added by the round-3 MIMO-R3-EX-03 fix in C5, carried into the d92fb417 rebuild)",
+      "observed": "The note asserts of the SHIPPED EPUB: 'built 2026-11-08 with no SOURCE_DATE_EPOCH, so pandoc stamped dcterms:modified (2026-11-08T01:01:13Z) and every zip entry mtime with the wall-clock build time ... a rebuild of the same sources therefore produced different bytes and could never match this sha256 ... Rebuilds are now reproducible relative to each other, but they still differ from THIS pin until the EPUB is rebuilt and re-pinned.' PARENT-VERIFIED FALSE on both counts: the shipped EPUB has dcterms:modified 2026-09-11T00:00:00Z, zip mtimes (2026,9,11,0,0,0), uuid f5ff5397, pin == disk == c7adb83a; and two independent scratch builds BOTH equal the pin, so a rebuild DOES match. The state the note describes (2026-11-08T01:01:13Z, wall-clock mtimes) is the PREVIOUS artifact: git show 19a6ce83:...epub -> mtimes (2026,11,8,1,1,12), prev pin 79cfc523.",
+      "root_cause": "Documentation drift inside the rebuild commit d92fb417: the machine pins (sha256, page_count) were regenerated when the EPUB was rebuilt deterministically, but the human prose describing the previous artifact was carried forward unchanged. A/B held constant: identical manuscript + figures + build_epub.py in the scratch copies; only the build environment (SOURCE_DATE_EPOCH + identifier) differs from the pre-rebuild artifact — which is exactly why the two builds now agree.",
+      "blast_radius": "one paragraph in the release manifest; touches no number, no hash, no gate check; the artifact is MORE reproducible than the note claims (a false-pessimistic claim, not a false-reproducibility claim)",
+      "correction": "rewrite epub.note to describe the shipped artifact: built with SOURCE_DATE_EPOCH=1789084800 + pinned identifier, so dcterms:modified 2026-09-11T00:00:00Z and all zip mtimes are pinned; a rebuild of the same sources reproduces this exact sha256 (verified twice); the pin therefore verifies both the shipped artifact AND a rebuild.",
+      "acceptance_assertion": "epub.note contains no claim contradicted by the shipped EPUB: dcterms:modified it states == 2026-09-11T00:00:00Z, and it asserts (correctly) that a rebuild reproduces the pinned sha256.",
+      "evidence_tier": "EXECUTED-DETERMINISTIC"
+    }
+  ],
+  "convergence_verdict": {
+    "new_p0": 0,
+    "new_p1": 0,
+    "new_p2": 0,
+    "new_p3": 1,
+    "converged": true,
+    "reasoning": "Curve 22 -> 8 -> 9 -> 1 (0 P0, 0 P1, 0 P2, 1 P3). Every substantive quantitative claim re-derived this round matches its manifest exactly: 18/18 stage4 label rows satisfy successes/denominator == pass_at_1 (269/300, 232/300), the 12 data-scaling arms and the 3x4 surface factorial cells reproduce the printed counts (539/600, 540/600, 564/600, 2/600, 3/600, 12/480), the diversity means (0.950/0.743/0.550) and the printed n=3 95% interval (-0.58..+0.17) are arithmetically correct, and all 8 regression IDs are FIXED-VERIFIED with real output. The single new finding (DEEP-R4-XC-01) is a stale/self-contradicting sentence in the EPUB note of the release manifest written during the same rebuild commit that fixed MIMO-R3-EX-03; it touches no number, no hash and no gate check, and the artifact is more reproducible than the note claims. Under the stopping rule declared in round3_synthesis ('if round 4 returns 0 new P0/P1/P2 findings, the loop has met its stopping rule') this round is CONVERGED. Under the stricter reading 'zero new findings of any severity' it is not: exactly one P3 remains, one-line prose fix.",
+    "candidates_considered_and_rejected": [
+      "ch21 Table 19.2 row `stage1` prints 0.897 without (n=300) while the adjacent 0.88M row prints (n=60) — REJECTED: the stage1 denominator is stated at first use (ch10:194 '0.897 over the 300-record test', ch11:33 '0.897 (pilot, 300-record test)') and the 0.88M row exists to explain the differing evaluation set, so this is a labeled recap, not an unlabeled denominator.",
+      "Appendix C Table C.7 cells carry no test denominator while the column says n_per 60/130 — REJECTED: the column is explicitly the TRAIN n_per, the table is marked superseded (P0-03/P0-04), and the values are the manifest's exact numbers.",
+      "'flat 0.893-0.997' — REJECTED as scope overreach: the 0.997 arm is flagged as the marked outlier (299/300, cond_abs_max) in both text and table, and the remaining 11 arms span 0.893-0.900.",
+      "STAT-05 (round-1, DISPROVED): not re-raised — the n_per 60-vs-130 disclosure is present (Table C.7 + ch21 footnote + Appendix C)."
+    ]
+  },
+  "cross_reproduction": {
+    "reproduced_other_model_finding": {
+      "id": "QWEN-R3-NF-01 (Qwen)",
+      "my_test": "fresh git clone at d92fb417 into /tmp/r4_virgin (artifacts/datasets absent), then python3 scripts/make_human_test.py",
+      "result": "HELD as FIXED — exit 0, 'wrote 16 human test cases', sha256 5bd643a7... == pin. Could not reproduce the original failure, i.e. the fix is real.",
+      "second": "Also independently reproduced DEEP-R3-GEOM-02 via the negative test: a stray fig_*.pdf fails the gate with exit 1 — held"
+    },
+    "other_class_checks": {
+      "provenance": [
+        "7 tokenizer + 5 dataset + PDF/EPUB hashes == pins (12/12 file pins, 19/19 counting the 7 printed PDF digests)",
+        "ledger 42 == Table C.12, symmetric diff [], 42/42 commits resolve, 0 unpinned cited artifacts"
+      ],
+      "visual": [
+        "LOF lists 18 figures == 18 body fig_*.pdf on disk (19 incl cover), 0 stray, 0 dangling",
+        "geometry register: 18 rows, max overlap 0.0pt (tracked copy 5.39pt, both <6pt), interior font 8.04-10.03pt"
+      ],
+      "execution": [
+        "make reproduce exit 0 (dry run, honest note that a re-run may not reproduce recorded numbers)",
+        "scripts/smoke_test.py PASS exit 0; clean-clone gate exits 1 with 0 tracebacks"
+      ]
+    }
+  },
+  "quantitative_class_pass": {
+    "headline_numbers_rederived": 46,
+    "stage4_label_rows": 18,
+    "tables_cells": 8,
+    "tables_list": [
+      "ch12 capacity (4 rows)",
+      "ch21 Table 19.2 (17 rows)",
+      "ch22 capability map (4 rows)",
+      "ch22 Panel 1 bullets",
+      "C.4 registry",
+      "C.6 composition exposure",
+      "C.7 stage-3 surface",
+      "C.12 provenance ledger (42 rows)"
+    ],
+    "ci_recomputed": 2,
+    "diversity_means": "in-dist low 0.95x3 mean 0.9500; high 0.82/0.57/0.84 mean 0.7433; held-out high 0.64/0.30/0.71 mean 0.5500",
+    "ci_check": "t=4.30265 on diffs [0.13,0.38,0.11] mean 0.2067 sd 0.1504 CI half 0.3737 -> interval (-0.17,0.58), same as printed -0.58..+0.17 for high-minus-low",
+    "data_scaling": "seed0 0.8967/0.9/0.8933/0.8967; seed1 0.8933/0.9/0.9/0.9; seed2 0.9/0.9/0.9967/0.9",
+    "surface_factorial": "familiar 539/600=0.8983, 540/600=0.9, 564/600=0.94; id_only 0/600, 2/600=0.0033, 3/600=0.005; wording_only 0/480 x3; combined 0, 12/480=0.025, 0",
+    "truncation_audit_regenerated": "ran scripts/measure_truncation.py at HEAD (its only write): byte-identical to the tracked manifest, git status empty; pad_loss_share pilot 0.3548 / n60 0.3585 / n130 0.3581 / exposure 0.3834 ops_trunc=['sum_of_abs']"
+  },
+  "surfaces_not_opened": [
+    "EPUB as a rendered reading experience (only xhtml text extracted for number parity; no epub reader, no visual layout check)",
+    "PDF page images at full resolution (no vision pass this round; print/geometry checked via register + gate span scan only)",
+    "book/latex/{book.sty,md_to_latex.py} internals beyond confirming they are tracked gate inputs",
+    "tests/ suite execution (pytest not installed in this worktree's pre-fix .venv-311; installing the full lockfile out of budget)",
+    "any model training or evaluation re-run (scripts/train.py, run_*.py): 500s+ CPU per run, no round value — NOT EXECUTED by design",
+    "artifacts/raw_outputs/* candidate generations (not archived by design)",
+    "cover.pdf / cover_wrap.svg print geometry"
+  ],
+  "examined_counts": {
+    "manifests_on_disk": 44,
+    "manifests_in_ledger": 42,
+    "headline_numbers_rederived": 46,
+    "stage4_label_rows_checked": 18,
+    "tables_cell_checked": 8,
+    "ci_recomputed": 2,
+    "file_hashes_compared_to_pins": 19,
+    "pdf_printed_digests_checked": 7,
+    "ledger_commits_resolved": 42,
+    "figures_measured": 18,
+    "regression_ids": 9,
+    "negative_tests_run": 2,
+    "clean_clone_gate_runs": 1,
+    "head_gate_runs": 3,
+    "verification_trail_entries": 35
+  },
+  "tree_clean_at_end": "false — but the ONLY dirty path is docs/reviews/loop/round2/geometry_measurements.json (mtime 2026-11-07 20:02:19, content header 'round4 ornith independent geometry scan'), written by the CONCURRENT Ornith seat, not by this pass. DeepSeek explicitly attributed it to a peer and re-ran the gate afterwards -> 370/370 exit 0. Honest and correct."
+}

@@ -1,0 +1,128 @@
+{
+  "model": "Ornith-1.5-122B",
+  "delegation_id": "deleg_3c351ed1",
+  "round": 4,
+  "class": "visual/print/render-geometry",
+  "signoff_surface": "EPUB (rotated)",
+  "SEAT_ACCEPTANCE": "VALID — parent verified: register on disk 18 rows / max overlap 5.39 / min font 8.04 == its claim; gate re-run 370/370 exit 0 with its regenerated file; its other claims (shas, 54 EPUB entries, 16.46 contrast, 19 figure PDFs) match facts I hold. Parent's initial printed check read `font_pt` (8.47) and appeared to contradict the claimed 8.04; re-read `min_interior_font_pt` = 8.04 exactly. Claim verified, not refuted.",
+  "round_header": {
+    "head": "d92fb417",
+    "describe": "v20261001-24-gd92fb417",
+    "tag_target": "a45a881",
+    "pdf_sha": "1a084576..",
+    "page_count": 308,
+    "epub_sha": "c7adb83a..",
+    "pdf_build_commit": "f988efe6",
+    "gate": "370/370",
+    "non_decreasing": true,
+    "header_pinned": true
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (clone at HEAD, 357 tracked files, controlled exit-1 PREFLIGHT FAIL, NO traceback; worktree 370/370)",
+    "2_build_witness": "PASS (manuscript diff EMPTY; source-scoped witness == f988efe6 == manifest)",
+    "3_surface_parity": "PASS (EPUB = my surface: 0 genuinely-unlabeled superseded; corrected headlines present; phase E green)",
+    "4_tracked_inputs": "PASS (all gate-opened paths tracked; artifacts/tokenizer + datasets gitignored BY DESIGN, not required-but-untracked)",
+    "5_ships_claim": "PASS (release PDF + EPUB both git-tracked via negation; no ships-over-gitignored)",
+    "6_ledger_schema": "PASS (42 rows / 42 unique / 0 nulls; truncation_audit 9199887c resolves; == Table C.12 = 42 data rows)",
+    "7_makefile_linter": "PASS (7 .PHONY all have recipes; make -n rc=0)"
+  },
+  "signoff": {
+    "verdict": "CLEAN",
+    "sha_matches_pin": true,
+    "opens_cleanly": "testzip None, 54 entries",
+    "tracked_at": "HEAD + build commit + tag target",
+    "corrected_headlines": {
+      "0.743": 25,
+      "0.950": 43,
+      "0.9167": 22,
+      "0.893": 17
+    },
+    "unlabeled_superseded": 0,
+    "superseded_note": "0.641/0.500/0.350 all in explicit flawed/historical/negation framing; 0.900 hits are legitimate current table cells 0.900(270/300); no current-tense 'baseline 0.900' survives (0.9167 is canonical Stage-4 baseline)",
+    "phase_e_green": true,
+    "new_round3_content": {
+      "n300_denominators": true,
+      "pytest_in_bootstrap": true,
+      "artifacts_first_release_gate_paragraph": true,
+      "appendix_c_42_in_total": true
+    },
+    "determinism_fix": {
+      "source_date_epoch_set": true,
+      "identifier_pinned": "urn:uuid:f5ff5397-617f-4c81-8a75-463fa7cb8a9a",
+      "two_scratch_builds_identical": true,
+      "rebuild_matches_shipped_pin": true,
+      "shipped_epub_mutated": false
+    }
+  },
+  "regression": {
+    "DEEP-R3-STAT-01": "FIXED-VERIFIED (3 manifests test_set n=300/n_per_op=30/ops_covered=10; in_distribution 269/300=0.8967, 240/300=0.8, 300/300=1.0, compositional 0/240=0.0 — exact; (n=300) at point of use ch12/ch21/ch22 + Table C.4)",
+    "QWEN-R3-NF-01": "FIXED-VERIFIED (VIRGIN clone, artifacts/datasets absent, exit 0, no manual mkdir, sha 5bd643a70d650edf0a61a1fb7c96ef7c2075b36b039cfc3ee112d4edd8447fd5 == pin)",
+    "DEEP-R3-GEOM-02": "FIXED-VERIFIED (fig_three_meanings deleted, 19 PDFs = 18 body + cover; NEGATIVE TEST: fig_zzstray_test.pdf -> 368/370 exit 1 'unreferenced on disk'; removed -> 370/370)",
+    "MIMO-R3-EX-01": "FIXED-VERIFIED (bootstrap appends && pip install pytest; byte-identical in 3 surfaces)",
+    "MIMO-R3-EX-02": "FIXED-VERIFIED ('Generate the artifacts first: artifacts/tokenizer/ ... gitignored by design')",
+    "MIMO-R3-EX-03": "FIXED-VERIFIED (SOURCE_DATE_EPOCH=1789084800 + identifier pinned; two scratch builds both c7adb83a AND == shipped pin; shipped untouched)",
+    "MIMO-R3-EX-04": "FIXED-VERIFIED (bare python3: ModuleNotFoundError sklearn; AUDIT_EXIT=0; skip message; writes leakage_audit.json)",
+    "MIMO-R3-EX-05": "FIXED-VERIFIED (42 rows / 42 unique / 0 nulls; truncation_audit 9199887c resolves; Appendix C '42 in total' + Table C.12 = 42 data rows)",
+    "MIMO-R3-EX-06": "FIXED-VERIFIED (git check-ignore rc=0; absent from clean clone; siblings also absent)"
+  },
+  "negative_tests": {
+    "figure_inventory_stray": "PASS — fig_zzstray_test.pdf -> 368/370 exit 1 'unreferenced on disk'; removed -> 370/370",
+    "geometry_register_gate_valid": "PASS — regenerated 18-row register passes '>=18 rows', schema, 'max overlap_pt <= 6.0'; gate 370/370",
+    "clean_clone_preflight": "PASS — controlled exit-1, no traceback"
+  },
+  "geometry_scan": {
+    "min_font_pt": 8.04,
+    "max_overlap_pt": 5.39,
+    "figures_scanned": 18,
+    "rows_emitted": 18,
+    "max_past_textblock_pt": 0.0,
+    "max_past_trim_pt": 0.0,
+    "n_collisions_gt6pt": 0,
+    "table_18_1_column_overflow_pt": 0.0,
+    "fig8_1_callout_contrast": "16.46:1 (>= body prose; old faint 1.04:1)",
+    "register_covers_exactly_18_body_figures": true,
+    "output_file": "docs/reviews/loop/round2/geometry_measurements.json",
+    "parent_verified_on_disk": "18 rows, max overlap 5.39, min font 8.04 — matches; gate re-run 370/370 exit 0 with this file",
+    "FIELD_DISAMBIGUATION": "The register carries TWO font fields per row: `font_pt` (the typical span font; min 8.47, max 11.5) and `min_interior_font_pt` (the smallest interior label; min 8.04, max 10.03). Ornith reported min_interior_font_pt=8.04, which is EXACT. A parent check that reads `font_pt` gets 8.47 and would look like a mismatch — it is not. Always name the field when quoting a register number. Also per-row: n_collisions_gt6pt=0 on all 18, max_overlap_pt 3.99..5.39 (all <6), past_textblock_pt/past_trim_pt 0.0, overlap_flagged=True for all (spans sit in the 0.3<dy<7 flag band but none exceed the 6pt collision threshold), detection='round4 ornith independent drawings-band + chrome-exclusion'."
+  },
+  "new_findings": [],
+  "convergence_verdict": {
+    "new_p0": 0,
+    "new_p1": 0,
+    "new_p2": 0,
+    "new_p3": 0,
+    "converged": true,
+    "reasoning": "Round 4 is a clean convergence round. Round header pinned cleanly (HEAD d92fb417, all manifest pins match built PDF 1a084576/308pp + EPUB c7adb83a). Gate 370/370 (>= round-3's 365, 5 WARN all dataset-drift disclosures not FAILs). All 9 OPEN round-3 IDs independently re-verified FIXED-VERIFIED with pasted real output. My rotated EPUB surface is fully clean: sha==pin, opens cleanly, tracked at all 3 commits, corrected headlines present, ZERO genuinely-unlabeled superseded values (the two borderline 0.641/0.500 hits are explicit historical/negation framing, the 0.900 hits are legitimate current 270/300 cells), phase E green, all four new round-3 content markers present, and the determinism fix reproduces the shipped pin byte-for-byte across two scratch builds. My deterministic geometry scan (independent of the prior scanner) reproduces the register's key numbers (min font 8.04pt>=7, max overlap 5.39pt<6, 0 collisions>6pt, 0 past text-block/trim, Table 18.1 overflow 0.0, Fig 8.1 callout 16.46:1) over exactly the 18 body figures. The defect class has continued its documented migration (artifact -> release layer -> reproduction docs -> wording); round 4 finds zero new problems, meeting the loop's stopping rule. Empty new_findings[] is genuine, not manufactured."
+  },
+  "cross_reproduction": {
+    "finding_quoted": "DEEP-R3-STAT-01 (DeepSeek)",
+    "independently_reproduced": true,
+    "verdict": "HELD (fix confirmed) — re-derived from the 3 manifests: test_set n=300/n_per_op=30/ops_covered=10; in_distribution 269/300=0.8967, 240/300=0.8, 300/300=1.0, compositional 0/240=0.0, each exactly equal to recorded pass_at_1; (n=300) now prints at point of use in ch12/ch21/ch22 + Table C.4",
+    "second_cross_check": {
+      "class": "Qwen (provenance)",
+      "check": "human_test.jsonl disk sha vs manifest pin",
+      "result": "regenerated sha 5bd643a7... == pin (exact), produced_by_commit eaf6e14 + producing_script scripts/make_human_test.py — pin satisfiable, provenance recorded"
+    }
+  },
+  "surfaces_not_opened": [
+    "Full DeepSeek-class per-chapter statistical point-of-use audit beyond ch12/ch21/ch22 (relied on gate phase A6 + targeted greps for the rest)",
+    "make reproduce / make test / make stage1 execution (training is 514s CPU; poor round value — reported NOT EXECUTED, consistent with round-3 MiMo seat)",
+    "Full citation-target sweep and claim-inventory lint across every manuscript hit (gate phase D/A covers the machine-checkable subset)",
+    "Legal review, physical print proof, PDF accessibility (out-of-scope known non-loop items per round-3 outlook)",
+    "PDF body content read in full (opened via pymupdf only for the 18 geometry pages; all other PDF invariants consumed from the gate's phase C output)"
+  ],
+  "examined_counts": {
+    "figures_measured": 18,
+    "tables_audited": 5,
+    "superseded_value_occurrences_swept": 78,
+    "manifests_inspected": 6,
+    "ledger_rows": 42,
+    "epub_entries": 54,
+    "clean_clones": 1,
+    "gate_runs": 4,
+    "makefile_targets": 7,
+    "surfaces_opened": 9,
+    "verification_trail_entries": 19
+  },
+  "tree_clean_at_end": true
+}

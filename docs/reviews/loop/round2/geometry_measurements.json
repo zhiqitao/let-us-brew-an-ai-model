@@ -1,5 +1,5 @@
 {
- "generated_by": "round3 ornith independent geometry scan (drawings-band figure detection + chrome exclusion; gate-signature span overlap 0.3<dy<7 & dx>3, collision>6pt)",
+ "generated_by": "round4 ornith independent geometry scan (drawings-band figure detection + chrome exclusion; gate-signature span overlap 0.3<dy<7 & dx>3, collision>6pt)",
  "n_rows": 18,
  "thresholds": {
   "overlap_flag_pt": 6.0,
@@ -11,9 +11,10 @@
   "min_interior_font_pt": 8.04,
   "max_overlap_pt": 5.39,
   "max_past_textblock_pt": 0.0,
-  "max_past_trim_pt": 0,
-  "n_bbox_match_prior": 14,
-  "n_rows": 18
+  "max_past_trim_pt": 0.0,
+  "n_rows": 18,
+  "n_collisions_gt6pt": 0,
+  "table_18_1_column_overflow_pt": 0.0
  },
  "rows": [
   {
@@ -21,14 +22,14 @@
    "page": 18,
    "lof_title": "The four evaluation questions",
    "bbox": [
-    75.3,
-    95.9,
-    350.0,
-    353.0
+    54.0,
+    41.6,
+    378.0,
+    380.4
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 13,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 15,
+   "font_pt": 9.0,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
@@ -36,59 +37,43 @@
    "collision_pairs": [],
    "max_x1_pt": 350.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    75.3,
-    95.9,
-    350.0,
-    353.0
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "3.1",
    "page": 22,
    "lof_title": "The one job",
    "bbox": [
-    56.0,
-    150.4,
-    376.0,
-    466.2
+    54.0,
+    41.6,
+    378.0,
+    489.8
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 36,
-   "font_pt": 8.04,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 51,
+   "font_pt": 8.95,
    "min_interior_font_pt": 8.04,
    "max_overlap_pt": 3.99,
    "overlap_flagged": true,
    "n_collisions_gt6pt": 0,
    "collision_pairs": [],
-   "max_x1_pt": 376.0,
+   "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    56.0,
-    150.4,
-    376.0,
-    466.2
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "4.1",
    "page": 33,
    "lof_title": "The whole apparatus",
    "bbox": [
-    72.1,
-    121.5,
-    363.9,
-    420.2
+    54.0,
+    41.6,
+    378.0,
+    448.6
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 26,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 30,
+   "font_pt": 8.86,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
@@ -96,29 +81,21 @@
    "collision_pairs": [],
    "max_x1_pt": 363.9,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    72.1,
-    121.5,
-    363.9,
-    420.2
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "4.2",
    "page": 35,
    "lof_title": "The two gates",
    "bbox": [
-    68.5,
-    95.9,
-    367.5,
-    330.3
+    54.0,
+    41.6,
+    378.0,
+    380.4
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 28,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 30,
+   "font_pt": 8.69,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
@@ -126,29 +103,21 @@
    "collision_pairs": [],
    "max_x1_pt": 367.5,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    68.5,
-    95.9,
-    367.5,
-    330.3
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "5.1",
    "page": 42,
    "lof_title": "The teacher",
    "bbox": [
-    61.5,
-    95.6,
-    370.6,
-    389.5
+    54.0,
+    41.6,
+    378.0,
+    421.0
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 27,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 29,
+   "font_pt": 8.7,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
@@ -156,29 +125,21 @@
    "collision_pairs": [],
    "max_x1_pt": 370.6,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    61.5,
-    95.6,
-    370.6,
-    389.5
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "6.1",
    "page": 53,
    "lof_title": "The judge",
    "bbox": [
-    62.3,
-    92.7,
-    361.7,
-    473.7
+    54.0,
+    41.6,
+    378.0,
+    475.0
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 29,
-   "font_pt": 9.43,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 31,
+   "font_pt": 9.94,
    "min_interior_font_pt": 9.43,
    "max_overlap_pt": 4.9,
    "overlap_flagged": true,
@@ -186,29 +147,21 @@
    "collision_pairs": [],
    "max_x1_pt": 361.7,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    62.3,
-    92.7,
-    361.7,
-    473.7
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "7.1",
    "page": 60,
    "lof_title": "The rivals",
    "bbox": [
-    75.3,
-    95.0,
-    343.6,
-    320.5
+    54.0,
+    41.6,
+    378.0,
+    365.9
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 21,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 23,
+   "font_pt": 8.78,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
@@ -216,59 +169,43 @@
    "collision_pairs": [],
    "max_x1_pt": 343.6,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    75.3,
-    95.0,
-    343.6,
-    320.5
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "8.1",
    "page": 68,
    "lof_title": "The smallest brain",
    "bbox": [
-    69.3,
-    236.2,
-    365.1,
-    542.7
+    54.0,
+    41.6,
+    378.0,
+    561.6
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 23,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 52,
+   "font_pt": 9.87,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
    "n_collisions_gt6pt": 0,
    "collision_pairs": [],
-   "max_x1_pt": 365.1,
+   "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    69.3,
-    236.2,
-    365.1,
-    542.7
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "9.1",
    "page": 78,
    "lof_title": "The brew loop",
    "bbox": [
-    75.3,
-    93.3,
-    367.6,
-    359.6
+    54.0,
+    41.6,
+    378.0,
+    422.5
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 22,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 24,
+   "font_pt": 8.79,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
@@ -276,29 +213,21 @@
    "collision_pairs": [],
    "max_x1_pt": 367.6,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    75.3,
-    93.3,
-    367.6,
-    359.6
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "11.1",
    "page": 102,
-   "lof_title": "Data scaling \u2014 corrected balanced sweep",
+   "lof_title": "Data scaling - corrected balanced sweep",
    "bbox": [
-    51.9,
-    89.0,
-    376.4,
-    384.3
+    54.0,
+    41.6,
+    378.0,
+    384.9
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 32,
-   "font_pt": 8.43,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 34,
+   "font_pt": 9.54,
    "min_interior_font_pt": 8.43,
    "max_overlap_pt": 4.94,
    "overlap_flagged": true,
@@ -306,29 +235,21 @@
    "collision_pairs": [],
    "max_x1_pt": 376.4,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    51.9,
-    89.0,
-    376.4,
-    384.3
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "12.1",
    "page": 112,
    "lof_title": "Model size vs composition",
    "bbox": [
-    61.7,
-    59.2,
-    372.2,
-    298.8
+    54.0,
+    41.6,
+    378.0,
+    299.3
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
    "n_figure_spans": 22,
-   "font_pt": 10.03,
+   "font_pt": 10.9,
    "min_interior_font_pt": 10.03,
    "max_overlap_pt": 5.39,
    "overlap_flagged": true,
@@ -336,29 +257,21 @@
    "collision_pairs": [],
    "max_x1_pt": 372.2,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    61.7,
-    59.2,
-    372.2,
-    298.8
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "12.2",
    "page": 113,
    "lof_title": "Illustrative prompts on five selected checkpoints",
    "bbox": [
-    50.7,
-    59.2,
-    378.0,
-    321.2
+    54.0,
+    31.6,
+    438.4,
+    327.3
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 51,
-   "font_pt": 9.03,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 54,
+   "font_pt": 11.5,
    "min_interior_font_pt": 9.03,
    "max_overlap_pt": 4.65,
    "overlap_flagged": true,
@@ -366,29 +279,21 @@
    "collision_pairs": [],
    "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    50.7,
-    59.2,
-    368.3,
-    270.6
-   ],
-   "bbox_matches_prior_register": false
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "13.1",
    "page": 120,
-   "lof_title": "Diversity at equal count (corrected)",
+   "lof_title": "Diversity at equal count (corrected: 0.950 vs 0.743)",
    "bbox": [
-    50.9,
-    62.4,
-    368.9,
-    353.5
+    54.0,
+    41.6,
+    420.2,
+    354.2
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 27,
-   "font_pt": 8.61,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 28,
+   "font_pt": 10.08,
    "min_interior_font_pt": 8.61,
    "max_overlap_pt": 5.04,
    "overlap_flagged": true,
@@ -396,119 +301,87 @@
    "collision_pairs": [],
    "max_x1_pt": 368.9,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    50.9,
-    89.1,
-    368.9,
-    353.5
-   ],
-   "bbox_matches_prior_register": false
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "13.2",
    "page": 126,
    "lof_title": "Coverage is not a held-out family test",
    "bbox": [
-    81.2,
-    195.1,
-    350.8,
-    501.6
+    54.0,
+    41.6,
+    378.0,
+    524.9
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 25,
-   "font_pt": 8.33,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 47,
+   "font_pt": 9.76,
    "min_interior_font_pt": 8.33,
    "max_overlap_pt": 4.13,
    "overlap_flagged": true,
    "n_collisions_gt6pt": 0,
    "collision_pairs": [],
-   "max_x1_pt": 350.8,
+   "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    81.2,
-    195.1,
-    350.8,
-    501.6
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "15.1",
    "page": 145,
-   "lof_title": "Surface generalization \u2014 corrected 2x2 factorial",
+   "lof_title": "Data scaling - corrected balanced sweep (re-render)",
    "bbox": [
-    50.9,
-    62.4,
-    371.1,
-    441.6
+    26.3,
+    41.1,
+    414.7,
+    442.2
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 47,
-   "font_pt": 8.48,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 49,
+   "font_pt": 9.57,
    "min_interior_font_pt": 8.48,
    "max_overlap_pt": 4.58,
    "overlap_flagged": true,
    "n_collisions_gt6pt": 0,
    "collision_pairs": [],
-   "max_x1_pt": 371.1,
+   "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    50.9,
-    122.9,
-    371.1,
-    441.6
-   ],
-   "bbox_matches_prior_register": false
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "16.1",
    "page": 153,
-   "lof_title": "Same operators, different programs",
+   "lof_title": "What the model actually learned",
    "bbox": [
-    68.9,
-    140.0,
-    356.5,
-    417.4
+    54.0,
+    41.6,
+    378.0,
+    451.7
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 22,
-   "font_pt": 8.39,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 38,
+   "font_pt": 9.56,
    "min_interior_font_pt": 8.39,
    "max_overlap_pt": 4.16,
    "overlap_flagged": true,
    "n_collisions_gt6pt": 0,
    "collision_pairs": [],
-   "max_x1_pt": 356.5,
+   "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    68.9,
-    140.0,
-    356.5,
-    417.4
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "18.1",
    "page": 177,
-   "lof_title": "Sequential vs joint training",
+   "lof_title": "Continual learning timelines",
    "bbox": [
-    50.8,
-    62.4,
+    25.4,
+    4.8,
     378.0,
-    445.5
+    450.4
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
-   "n_figure_spans": 42,
-   "font_pt": 8.74,
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
+   "n_figure_spans": 48,
+   "font_pt": 10.02,
    "min_interior_font_pt": 8.74,
    "max_overlap_pt": 5.12,
    "overlap_flagged": true,
@@ -516,29 +389,21 @@
    "collision_pairs": [],
    "max_x1_pt": 378.0,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    50.8,
-    88.6,
-    360.0,
-    302.0
-   ],
-   "bbox_matches_prior_register": false
+   "past_trim_pt": 0.0
   },
   {
    "figure_id": "18.2",
    "page": 180,
    "lof_title": "Sequential, joint/interleaved, replay-after-A",
    "bbox": [
-    56.1,
-    66.8,
-    375.9,
-    351.1
+    54.0,
+    41.6,
+    378.0,
+    377.8
    ],
-   "detection": "round3 drawings-band + chrome-exclusion (independent)",
+   "detection": "round4 ornith independent drawings-band + chrome-exclusion",
    "n_figure_spans": 17,
-   "font_pt": 8.38,
+   "font_pt": 8.47,
    "min_interior_font_pt": 8.38,
    "max_overlap_pt": 4.15,
    "overlap_flagged": true,
@@ -546,15 +411,7 @@
    "collision_pairs": [],
    "max_x1_pt": 375.9,
    "past_textblock_pt": 0.0,
-   "past_trim_pt": 0.0,
-   "caption_min_font_pt": null,
-   "reg_bbox": [
-    56.1,
-    66.8,
-    375.9,
-    351.1
-   ],
-   "bbox_matches_prior_register": true
+   "past_trim_pt": 0.0
   }
  ]
 }

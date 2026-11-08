@@ -1,0 +1,106 @@
+{
+  "model": "Qwen3.8-27B",
+  "delegation_id": "deleg_7310a40f",
+  "round": 4,
+  "class": "provenance/artifact-integrity",
+  "signoff_surface": "README + build intermediates (rotated)",
+  "SEAT_ACCEPTANCE": "VALID — parent spot-check passed: PDF/EPUB shas == pins (1a084576/c7adb83a); ledger 42; book/figures 19 PDFs + fig_three_meanings absent; .gitignore:30 book/_epub.md; README:111 DERIVED-dropped note; bootstrap byte-identical across README/AppC/manifest (AppC==README True, manifest==README True) AND all contain 'pip install pytest'; (n=300) present ch12 x3, ch21 x3, ch22 x3, appendix_c x6; 3 stage4 manifests all carry test_set {n:300,n_per_op:30,ops_covered:10} and 18/18 entries have successes/denominator == pass_at_1 EXACTLY; README 'Generate the artifacts first' present; build_epub SOURCE_DATE_EPOCH x2 + identifier x1. NOTE: parent's first pass at two checks was buggy (tested pattern-membership in a grep COUNT output; inline python broke on newlines) — re-run correctly, both passed.",
+  "round_header": {
+    "head": "d92fb417",
+    "tag": "v20261001",
+    "tag_target": "a45a881 == manifest",
+    "pdf_build_commit": "f988efe6",
+    "pdf_sha": "1a084576..",
+    "page_count": 308,
+    "epub_sha": "c7adb83a..",
+    "gate": "370/370, 5 WARN, exit 0",
+    "non_decreasing": "370 >= 365",
+    "header_valid": true,
+    "note": "5 WARNs = 3 disclosed dataset-drift NO lines + 2 YES (human_test, pilot_manifest)"
+  },
+  "shared_sweep": {
+    "1_preflight": "PASS (fresh clone at HEAD: controlled exit 1 '[PREFLIGHT] FAIL NOT A VERIFIABLE CLEAN CLONE — the 7 pinned tokenizer files are gitignored...' GATE_EXIT=1, Traceback count 0)",
+    "2_build_witness": "PASS (manuscript diff EMPTY; source-scoped witness f988efe6 == manifest; PDF metadata BUILD_COMMIT f988efe6; merge-base --is-ancestor YES)",
+    "3_surface_parity": "PASS (0 unlabeled superseded across 5 surfaces using gate's ±420 window + FLAW_MARK; PDF 3 residual hits all 0.900 canonical e.g. 0.900 (270/300) seed table + 0.900 vs 0.800 template; EPUB 5 all canonical; README/MANIFEST/LEDGER 0)",
+    "4_tracked_inputs": "PASS (census 119 gate-opened paths: 107 tracked, 12 gitignored (5 datasets + 7 tokenizers), 0 REQUIRED-BUT-UNTRACKED)",
+    "5_ships_claim": "PASS (appendix_c:613 ships claim scoped 'gitignored and ship in no commit (0 files)'; requirements-lock tracked)",
+    "6_ledger_schema": "PASS (42 rows, 42 unique ids, 0 nulls, all produced_by_commit resolve)",
+    "7_makefile_linter": "PASS (4 script tokens exist, 7 .PHONY all have recipes, make -n test/setup rc=0)"
+  },
+  "signoff": {
+    "verdict": "CLEAN",
+    "bootstrap_executed_real_fresh_clone": "BOOTSTRAP_EXIT=0, torch-2.14.0+cpu, editable pkg, pytest-9.2.0",
+    "checkout_idempotent": "git checkout HEAD twice -> d92fb417 both",
+    "forbidden_form": "0 hits in the 3 documented surfaces; repo-wide hits only in review records + the gate's own detection string",
+    "make_setup": "venv ABSENT -> CREATED, MAKE_SETUP_EXIT=0",
+    "make_test_after_bootstrap_alone": "48 passed in 1.50s, MAKE_TEST_EXIT=0",
+    "artifacts_first_paragraph": "present, names generate_data.py --n-per-op 200 --seed 0",
+    "build_intermediates": "git check-ignore -v --no-index -> .gitignore:28 _assembled.md, :29 _for_review.md, :30 _epub.md; none tracked; none in clean clone (ls x3 'No such file')"
+  },
+  "regression": {
+    "DEEP-R3-STAT-01": "FIXED-VERIFIED (3 stage4 manifests: test_set.n=300 + 18/18 entries successes/denominator == pass_at_1 EXACT e.g. 269/300 = 0.8966666666666666; (n=300) at point of use ch12:30-32, ch21:100-102, ch22:268-270, Table C.4:124-126, appendix lines 317-318 & 486-487)",
+    "QWEN-R3-NF-01": "FIXED-VERIFIED (OWN finding: virgin clone, artifacts/datasets ABSENT, `python3 scripts/make_human_test.py` -> 'wrote 16 human test cases', EXIT=0, sha256 5bd643a70d650edf0a61a1fb7c96ef7c2075b36b039cfc3ee112d4edd8447fd5 exact, NO manual mkdir)",
+    "DEEP-R3-GEOM-02": "FIXED-VERIFIED (book/figures 19 PDFs; fig_three_meanings absent; NEGATIVE TEST: stray fig_stray_negative_test.pdf -> '[C] FAIL figure inventory ... unreferenced on disk: [fig_stray_negative_test.pdf]', 368/370 exit 1; removed -> tree clean, 19 PDFs)",
+    "MIMO-R3-EX-01": "FIXED-VERIFIED (bootstrap byte-identical README==AppC True, README==Manifest True, all contain pytest)",
+    "MIMO-R3-EX-02": "FIXED-VERIFIED (README '### Release gate' opens with '**Generate the artifacts first:** ... run the quickstart generation step (python scripts/generate_data.py --n-per-op 200 --seed 0 plus the run scripts...)')",
+    "MIMO-R3-EX-03": "FIXED-VERIFIED (build_epub.py:28 setdefault SOURCE_DATE_EPOCH=1789084800, :146 --metadata identifier=urn:uuid:f5ff5397-...; TWO scratch builds both c7adb83ae7e41bae2199776357a9f456ccca6307c708137f505b8d01c7906e38 == shipped pin; shipped EPUB untouched)",
+    "MIMO-R3-EX-04": "FIXED-VERIFIED (bare system python3: ModuleNotFoundError sklearn; 'cross-val accuracy (prediction operation): sklearn not installed — classifier audit skipped'; TRUE_AUDIT_EXIT=0; skip count 1)",
+    "MIMO-R3-EX-05": "FIXED-VERIFIED (ledger normalized == Table C.12 normalized True, 42/42; truncation_audit row present; git rev-parse 9199887c:scripts/measure_truncation.py blob 1b6e8c6ea0d04e1dcb472c0fd87cd39d50755ed7 match True; '42 in total' present True; stale '41 in total' present False)",
+    "MIMO-R3-EX-06": "FIXED-VERIFIED (.gitignore:30 book/_epub.md; not tracked; absent from clean clone)"
+  },
+  "negative_tests": {
+    "stray_figure_gate_fail": "cp fig_brain.pdf -> fig_stray_negative_test.pdf; gate 368/370 exit 1 with '[C] FAIL figure inventory ... unreferenced on disk: [fig_stray_negative_test.pdf]'; rm -> tree clean, 19 PDFs",
+    "clean_clone_gate_controlled_fail": "fresh clone at HEAD -> controlled exit 1 '[PREFLIGHT] FAIL NOT A VERIFIABLE CLEAN CLONE', 0 tracebacks (no P0)",
+    "forbidden_checkout_pattern": "fixed-string scan of 3 documented surfaces -> 0 hits"
+  },
+  "new_findings": [],
+  "convergence_verdict": {
+    "new_p0": 0,
+    "new_p1": 0,
+    "new_p2": 0,
+    "new_p3": 0,
+    "converged": true,
+    "reasoning": "All 9 OPEN round-3 IDs re-verified FIXED-VERIFIED with pasted real output (including my own QWEN-R3-NF-01: virgin-clone make_human_test exit 0, no mkdir, sha 5bd643a7). The full §0.5 sweep (7/7), my rotated sign-off surface (README + build intermediates, all 7 sub-checks), and the provenance class pass (citation-target sweep, manifest hash census, epistemic-label taxonomy, git lineage, 5 dataset entries with 15406031 drift disclosure, 3 stage4 manifests with test_set/successes) all pass with zero defects. Cross-class spot checks (MiMo make reproduce/smoke, DeepSeek canonical data-scaling+diversity, Ornith geometry register) all hold. No new P0/P1/P2/P3 found — the defect class has fully migrated to wording-of-the-docs and every round-3 refinement is now verified in place. This meets the round-4 stopping rule (0 new P0/P1/P2) and, more strongly, 0 new findings of any severity."
+  },
+  "cross_reproduction": {
+    "quoted_finding": "MIMO-R3-EX-03 (MiMo): EPUB not rebuild-reproducible, fixed by pinning SOURCE_DATE_EPOCH + identifier",
+    "independently_reproduced": true,
+    "held": true,
+    "evidence": "Built the EPUB twice into a scratch copy of book/ (shipped EPUB untouched): both builds byte-identical sha256 c7adb83ae7e41bae2199776357a9f456ccca6307c708137f505b8d01c7906e38, which also equals the shipped pin. build_epub.py:28 setdefault SOURCE_DATE_EPOCH=1789084800 and :146 --metadata identifier=urn:uuid:f5ff5397-..."
+  },
+  "provenance_class_pass": {
+    "citation_targets": "4 distinct 40-hex + tag v20261001 all resolve; short hashes 15406031/a45a881/e753eff7/eaf6e14 resolve as commits; non-resolving tokens are numbers/uuid-fragments (1611835114, 1789084800, 20261001, 463fa7cb8a9a, cceeded, f5ff5397)",
+    "manifest_hash_census": "pdf pin==disk True (1a084576), epub pin==disk True (c7adb83a), 5 dataset pins all True, ALL 7 TOKENIZER PINS MATCH True",
+    "epistemic_labels": "README declares bracketed labels [DERIVED DESIGN HYPOTHESIS INTERPRETATION MEASURED SUPERSEDED UNKNOWN]; manuscript uses only [MEASURED] and [SUPERSEDED] (both declared); README:111 states '[DERIVED] was declared here but never applied anywhere in the book, so it is dropped from the taxonomy'",
+    "git_lineage": "tag target==manifest; build commit ancestor YES; release PDF+EPUB tracked; .gitignore:23 negation present",
+    "dataset_entries": "5/5 carry produced_by_commit + producing_script; 15406031 in notes + produced_by_commit_derivation True; human_test->eaf6e143/make_human_test.py, pilot_*->e753eff7/generate_data.py",
+    "stage4_new_fields": "3/3 carry test_set {n:300,n_per_op:30,ops_covered:10} + per-label successes/denominator"
+  },
+  "surfaces_not_opened": [
+    "Full visual/vision rendering of the built PDF (Ornith's class) — read the geometry register + figure inventory but no vision-based figure rating",
+    "Full re-derivation of every headline number from all 44 manifests (MiMo's class) — spot-checked data-scaling, diversity, and the 3 stage4 composition manifests",
+    "Full statistical CI/dispersion/magnitude-adjective audit (DeepSeek's class) — verified canonical values and point-of-use denominators, not the full inferential-integrity sweep",
+    "book/latex source internals (book.tex/book.pdf tracked build outputs) — used only for the source-scoped build-witness, not a full LaTeX audit",
+    "The 41 non-stage4/non-data-scaling manifests' per-arm realized-vs-requested shapes (MiMo's class) — covered by the gate's 370/370, not independently re-derived"
+  ],
+  "examined_counts": {
+    "surfaces_opened": 14,
+    "forty_hex_commits_swept": 4,
+    "short_hashes_swept": 10,
+    "tags_swept": 1,
+    "manifest_pins_verified": 14,
+    "ledger_rows": 42,
+    "table_c12_rows": 42,
+    "stage4_manifests": 3,
+    "stage4_success_denominator_entries": 18,
+    "dataset_entries_with_provenance": 5,
+    "figure_pdfs": 19,
+    "geometry_register_rows": 18,
+    "gate_checks": 370,
+    "clean_clones_built": 3,
+    "scratch_epub_builds": 2,
+    "regression_ids_reverified": 9,
+    "verification_trail_entries": 40
+  },
+  "tree_clean_at_end": true
+}
