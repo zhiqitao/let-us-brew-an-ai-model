@@ -789,8 +789,13 @@ def _loose(pages):
 
 def _st(s):
     """Supertight: case-folded, no spaces/hyphens -- immune to line breaks,
-    hyphenation, and word spacing in the extracted text."""
-    return re.sub(r"[-\s]", "", s.lower())
+    hyphenation, and word spacing in the extracted text. Also drops ` and *
+    so both sides of a comparison normalize alike: _stable_strings() already
+    strips them from the SOURCE string, but a markdown code span such as
+    `*_bothseeded.*` suppresses emphasis, so the * survives into the rendered
+    PDF -- without dropping them here the forward/reverse build-stamp witness
+    can never match such a line (round-3 gate false positive, C5)."""
+    return re.sub(r"[-\s*`]", "", s.lower())
 
 
 # --- C7 render geometry: a 64-hex tokenizer digest must print COMPLETE and

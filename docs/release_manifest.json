@@ -3,7 +3,7 @@
   "description": "Canonical single release record: tag, tag-target commit, PDF build commit, PDF sha256, and the SHA-256 of ALL SEVEN tokenizer files under artifacts/tokenizer/. Asserted by scripts/verify_release.py (phase D) against git, the built PDF, and the files on disk — including a check that the pin list below is exactly the set of tokenizer files the book cites, so an unpinned tokenizer cannot pass the gate. The tokenizer hashes are the SHA-256 of each tokenizer FILE ON DISK (the reproducible identifier the book cites); run manifests additionally record each tokenizer's in-memory vocabulary hash, which is a different quantity.",
   "tag": "v20261001",
   "tag_target_commit": "a45a881158ed076f615f6d3bc2e72640dc5cdced",
-  "pdf_build_commit": "1cd7381348da8a623591f5ade24466985083549a",
+  "pdf_build_commit": "f988efe66e07527e8778ff0104abac3b6a760126",
   "reproduction_from_a_clean_clone": {
     "structure": "Two commits, two roles. The tag v20261001 (tag_target_commit a45a881158ed076f615f6d3bc2e72640dc5cdced) is the experiment-data snapshot whose manifests and manuscript state the book's numbers cite; the scored dataset files are gitignored and ship in no commit — they are NOT regenerable from the shipped generator at HEAD, because src/data_generator/generator.py drifted after they were generated (see the datasets block below, which records each file's producing commit and producing script). The release gate (scripts/verify_release.py) and the corrected run scripts live at the PDF build commit (this file's pdf_build_commit field) and later — the tag predates the verifier, so a checkout of the tag alone CANNOT run the release gate.",
     "read_the_experiment_snapshot": "git checkout v20261001",
@@ -18,8 +18,8 @@
   },
   "pdf": {
     "path": "book/let-us-brew-an-ai-model-v20261001.pdf",
-    "sha256": "130ee9e594a1bc33bbf650587fb4d59f1b8fe097a0203c21371140ae987bc105",
-    "page_count": 307,
+    "sha256": "1a08457699783f7b4d17467f274aedecbbee0d7e1ac2d64568961f060d0d23d0",
+    "page_count": 308,
     "note": "tracked in git (the book/*.pdf ignore rule is negated for this one path), so the sha256/page_count pins are verifiable from a clean clone — same policy as the EPUB (R2-EX-N06)."
   },
   "tokenizer_sha256": {
@@ -45,7 +45,7 @@
   "verifier": "scripts/verify_release.py",
   "epub": {
     "path": "book/let-us-brew-an-ai-model-v20261001.epub",
-    "sha256": "79cfc523fdd87b7fe356b032bd0cb7882116306df87010bd8b82803ece8adf04",
+    "sha256": "c7adb83ae7e41bae2199776357a9f456ccca6307c708137f505b8d01c7906e38",
     "note": "This pin verifies the SHIPPED artifact, not a rebuild: the EPUB was built 2026-11-08 with no SOURCE_DATE_EPOCH, so pandoc stamped dcterms:modified (2026-11-08T01:01:13Z) and every zip entry mtime with the wall-clock build time and minted a fresh urn:uuid (f5ff5397-617f-4c81-8a75-463fa7cb8a9a, mirrored in toc.ncx) — a rebuild of the same sources therefore produced different bytes and could never match this sha256. book/build_epub.py now pins both (SOURCE_DATE_EPOCH=1789084800 -> 2026-09-11T00:00:00Z, and --metadata identifier=urn:uuid:f5ff5397-617f-4c81-8a75-463fa7cb8a9a), verified by building twice into a scratch location and comparing sha256 (byte-identical). Rebuilds are now reproducible relative to each other, but they still differ from THIS pin until the EPUB is rebuilt and re-pinned. Round-3 MIMO-R3-EX-03."
   },
   "datasets": {
